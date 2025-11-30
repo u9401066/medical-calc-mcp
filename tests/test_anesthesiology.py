@@ -15,7 +15,7 @@ class TestAsaPhysicalStatus:
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
         
         calc = AsaPhysicalStatusCalculator()
-        result = calc.calculate(classification=1)
+        result = calc.calculate(asa_class=1)
         
         assert result.value == 1
         assert "healthy" in result.interpretation.summary.lower()
@@ -25,7 +25,7 @@ class TestAsaPhysicalStatus:
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
         
         calc = AsaPhysicalStatusCalculator()
-        result = calc.calculate(classification=2)
+        result = calc.calculate(asa_class=2)
         
         assert result.value == 2
         assert "mild" in result.interpretation.summary.lower()
@@ -35,7 +35,7 @@ class TestAsaPhysicalStatus:
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
         
         calc = AsaPhysicalStatusCalculator()
-        result = calc.calculate(classification=3)
+        result = calc.calculate(asa_class=3)
         
         assert result.value == 3
 
@@ -44,7 +44,7 @@ class TestAsaPhysicalStatus:
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
         
         calc = AsaPhysicalStatusCalculator()
-        result = calc.calculate(classification=4)
+        result = calc.calculate(asa_class=4)
         
         assert result.value == 4
 
@@ -53,7 +53,7 @@ class TestAsaPhysicalStatus:
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
         
         calc = AsaPhysicalStatusCalculator()
-        result = calc.calculate(classification=5)
+        result = calc.calculate(asa_class=5)
         
         assert result.value == 5
 
@@ -62,7 +62,7 @@ class TestAsaPhysicalStatus:
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
         
         calc = AsaPhysicalStatusCalculator()
-        result = calc.calculate(classification=6)
+        result = calc.calculate(asa_class=6)
         
         assert result.value == 6
 
@@ -82,7 +82,7 @@ class TestMallampatiScore:
         from src.domain.services.calculators import MallampatiScoreCalculator
         
         calc = MallampatiScoreCalculator()
-        result = calc.calculate(grade=1)
+        result = calc.calculate(mallampati_class=1)
         
         assert result.value == 1
         assert result.interpretation is not None
@@ -92,7 +92,7 @@ class TestMallampatiScore:
         from src.domain.services.calculators import MallampatiScoreCalculator
         
         calc = MallampatiScoreCalculator()
-        result = calc.calculate(grade=2)
+        result = calc.calculate(mallampati_class=2)
         
         assert result.value == 2
 
@@ -101,7 +101,7 @@ class TestMallampatiScore:
         from src.domain.services.calculators import MallampatiScoreCalculator
         
         calc = MallampatiScoreCalculator()
-        result = calc.calculate(grade=3)
+        result = calc.calculate(mallampati_class=3)
         
         assert result.value == 3
 
@@ -110,7 +110,7 @@ class TestMallampatiScore:
         from src.domain.services.calculators import MallampatiScoreCalculator
         
         calc = MallampatiScoreCalculator()
-        result = calc.calculate(grade=4)
+        result = calc.calculate(mallampati_class=4)
         
         assert result.value == 4
 
@@ -119,7 +119,7 @@ class TestMallampatiScore:
         from src.domain.services.calculators import MallampatiScoreCalculator
         
         calc = MallampatiScoreCalculator()
-        assert calc.tool_id == "mallampati"
+        assert calc.tool_id == "mallampati_score"
 
 
 class TestRcriCalculator:
@@ -133,10 +133,10 @@ class TestRcriCalculator:
         result = calc.calculate(
             high_risk_surgery=False,
             ischemic_heart_disease=False,
-            congestive_heart_failure=False,
+            heart_failure=False,
             cerebrovascular_disease=False,
-            diabetes_on_insulin=False,
-            creatinine_greater_than_2=False,
+            insulin_diabetes=False,
+            creatinine_above_2=False,
         )
         
         assert result.value == 0
@@ -150,10 +150,10 @@ class TestRcriCalculator:
         result = calc.calculate(
             high_risk_surgery=True,
             ischemic_heart_disease=False,
-            congestive_heart_failure=False,
+            heart_failure=False,
             cerebrovascular_disease=False,
-            diabetes_on_insulin=False,
-            creatinine_greater_than_2=False,
+            insulin_diabetes=False,
+            creatinine_above_2=False,
         )
         
         assert result.value == 1
@@ -166,10 +166,10 @@ class TestRcriCalculator:
         result = calc.calculate(
             high_risk_surgery=True,
             ischemic_heart_disease=True,
-            congestive_heart_failure=True,
+            heart_failure=True,
             cerebrovascular_disease=False,
-            diabetes_on_insulin=True,
-            creatinine_greater_than_2=True,
+            insulin_diabetes=True,
+            creatinine_above_2=True,
         )
         
         assert result.value == 5
@@ -183,10 +183,10 @@ class TestRcriCalculator:
         result = calc.calculate(
             high_risk_surgery=True,
             ischemic_heart_disease=True,
-            congestive_heart_failure=True,
+            heart_failure=True,
             cerebrovascular_disease=True,
-            diabetes_on_insulin=True,
-            creatinine_greater_than_2=True,
+            insulin_diabetes=True,
+            creatinine_above_2=True,
         )
         
         assert result.value == 6
@@ -199,10 +199,10 @@ class TestRcriCalculator:
         result = calc.calculate(
             high_risk_surgery=False,
             ischemic_heart_disease=False,
-            congestive_heart_failure=False,
+            heart_failure=False,
             cerebrovascular_disease=False,
-            diabetes_on_insulin=False,
-            creatinine_greater_than_2=False,
+            insulin_diabetes=False,
+            creatinine_above_2=False,
         )
         
         assert result.references is not None

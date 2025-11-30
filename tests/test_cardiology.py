@@ -16,13 +16,14 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=50,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
-            sex="male",
+            age_65_to_74=False,
+            female_sex=False,
         )
         
         assert result.value == 0
@@ -33,13 +34,14 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=50,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
-            sex="female",
+            age_65_to_74=False,
+            female_sex=True,
         )
         
         assert result.value == 1  # Female sex = +1
@@ -50,13 +52,14 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=70,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
-            sex="male",
+            age_65_to_74=True,
+            female_sex=False,
         )
         
         assert result.value == 1  # Age 65-74 = +1
@@ -67,13 +70,14 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=80,
+            age_gte_75=True,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
-            sex="male",
+            age_65_to_74=False,
+            female_sex=False,
         )
         
         assert result.value == 2  # Age ≥75 = +2
@@ -84,13 +88,14 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=50,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=True,
+            stroke_tia_or_te_history=True,
             vascular_disease=False,
-            sex="male",
+            age_65_to_74=False,
+            female_sex=False,
         )
         
         assert result.value == 2  # Stroke = +2
@@ -101,13 +106,14 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=True,  # +1
-            hypertension=True,              # +1
-            age=80,                         # +2
-            diabetes=True,                  # +1
-            stroke_tia_thromboembolism=True, # +2
-            vascular_disease=True,          # +1
-            sex="female",                   # +1
+            chf_or_lvef_lte_40=True,      # +1
+            hypertension=True,             # +1
+            age_gte_75=True,              # +2
+            diabetes=True,                 # +1
+            stroke_tia_or_te_history=True, # +2
+            vascular_disease=True,         # +1
+            age_65_to_74=False,           # 0 (age ≥75 takes precedence)
+            female_sex=True,              # +1
         )
         
         assert result.value == 9
@@ -118,18 +124,17 @@ class TestChads2VascCalculator:
         
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            congestive_heart_failure=True,
+            chf_or_lvef_lte_40=True,
             hypertension=True,
-            age=75,
+            age_gte_75=True,
             diabetes=True,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
-            sex="male",
+            age_65_to_74=False,
+            female_sex=False,
         )
         
         assert result.value >= 2
-        # Should recommend anticoagulation
-        assert "anticoagul" in result.interpretation.summary.lower() or result.value >= 2
 
     def test_tool_id(self):
         """Test tool ID is correct."""
@@ -148,12 +153,13 @@ class TestChads2VaCalculator:
         
         calc = Chads2VaCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=50,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
+            age_65_to_74=False,
         )
         
         assert result.value == 0
@@ -163,14 +169,14 @@ class TestChads2VaCalculator:
         from src.domain.services.calculators import Chads2VaCalculator
         
         calc = Chads2VaCalculator()
-        # Should work without sex parameter
         result = calc.calculate(
-            congestive_heart_failure=True,
+            chf_or_lvef_lte_40=True,
             hypertension=True,
-            age=70,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
+            age_65_to_74=True,
         )
         
         assert result.value == 3  # CHF + HTN + Age 65-74
@@ -181,52 +187,56 @@ class TestChads2VaCalculator:
         
         calc = Chads2VaCalculator()
         result = calc.calculate(
-            congestive_heart_failure=True,  # +1
-            hypertension=True,              # +1
-            age=80,                         # +2
-            diabetes=True,                  # +1
-            stroke_tia_thromboembolism=True, # +2
-            vascular_disease=True,          # +1
+            chf_or_lvef_lte_40=True,       # +1
+            hypertension=True,             # +1
+            age_gte_75=True,              # +2
+            diabetes=True,                 # +1
+            stroke_tia_or_te_history=True, # +2
+            vascular_disease=True,         # +1
+            age_65_to_74=False,
         )
         
         assert result.value == 8
 
     def test_age_scoring(self):
-        """Test age scoring matches CHA₂DS₂-VASc."""
+        """Test age scoring."""
         from src.domain.services.calculators import Chads2VaCalculator
         
         calc = Chads2VaCalculator()
         
         # Age < 65: 0 points
         result1 = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=60,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
+            age_65_to_74=False,
         )
         assert result1.value == 0
         
         # Age 65-74: 1 point
         result2 = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=70,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
+            age_65_to_74=True,
         )
         assert result2.value == 1
         
         # Age ≥75: 2 points
         result3 = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=80,
+            age_gte_75=True,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
+            age_65_to_74=False,
         )
         assert result3.value == 2
 
@@ -236,17 +246,17 @@ class TestChads2VaCalculator:
         
         calc = Chads2VaCalculator()
         result = calc.calculate(
-            congestive_heart_failure=False,
+            chf_or_lvef_lte_40=False,
             hypertension=False,
-            age=50,
+            age_gte_75=False,
             diabetes=False,
-            stroke_tia_thromboembolism=False,
+            stroke_tia_or_te_history=False,
             vascular_disease=False,
+            age_65_to_74=False,
         )
         
         assert result.references is not None
         assert len(result.references) > 0
-        # Should reference 2024 ESC
         assert any("2024" in ref.citation for ref in result.references)
 
     def test_tool_id(self):
@@ -266,11 +276,11 @@ class TestHeartScoreCalculator:
         
         calc = HeartScoreCalculator()
         result = calc.calculate(
-            history=0,
-            ecg=0,
-            age=40,
-            risk_factors=0,
-            troponin=0,
+            history_score=0,
+            ecg_score=0,
+            age_score=0,
+            risk_factors_score=0,
+            troponin_score=0,
         )
         
         assert result.value == 0
@@ -282,14 +292,14 @@ class TestHeartScoreCalculator:
         
         calc = HeartScoreCalculator()
         result = calc.calculate(
-            history=1,
-            ecg=1,
-            age=55,
-            risk_factors=1,
-            troponin=1,
+            history_score=1,
+            ecg_score=1,
+            age_score=1,
+            risk_factors_score=1,
+            troponin_score=1,
         )
         
-        assert result.value == 5  # 1+1+1+1+1 = 5
+        assert result.value == 5
 
     def test_high_risk_score(self):
         """Test HEART score for high risk patient."""
@@ -297,14 +307,14 @@ class TestHeartScoreCalculator:
         
         calc = HeartScoreCalculator()
         result = calc.calculate(
-            history=2,
-            ecg=2,
-            age=70,
-            risk_factors=2,
-            troponin=2,
+            history_score=2,
+            ecg_score=2,
+            age_score=2,
+            risk_factors_score=2,
+            troponin_score=2,
         )
         
-        assert result.value == 10  # Max score
+        assert result.value == 10
         assert "high" in result.interpretation.summary.lower()
 
     def test_age_scoring(self):
@@ -313,16 +323,22 @@ class TestHeartScoreCalculator:
         
         calc = HeartScoreCalculator()
         
-        # Age < 45: 0 points
-        result1 = calc.calculate(history=0, ecg=0, age=40, risk_factors=0, troponin=0)
+        result1 = calc.calculate(
+            history_score=0, ecg_score=0, age_score=0, 
+            risk_factors_score=0, troponin_score=0
+        )
         assert result1.value == 0
         
-        # Age 45-64: 1 point  
-        result2 = calc.calculate(history=0, ecg=0, age=55, risk_factors=0, troponin=0)
+        result2 = calc.calculate(
+            history_score=0, ecg_score=0, age_score=1, 
+            risk_factors_score=0, troponin_score=0
+        )
         assert result2.value == 1
         
-        # Age ≥65: 2 points
-        result3 = calc.calculate(history=0, ecg=0, age=70, risk_factors=0, troponin=0)
+        result3 = calc.calculate(
+            history_score=0, ecg_score=0, age_score=2, 
+            risk_factors_score=0, troponin_score=0
+        )
         assert result3.value == 2
 
     def test_tool_id(self):

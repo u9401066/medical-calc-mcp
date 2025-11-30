@@ -254,7 +254,7 @@ class MeldScoreCalculator(BaseCalculator):
             risk_level = "moderate"
         elif score < 30:
             mortality = "19.6%"
-            severity = Severity.HIGH
+            severity = Severity.SEVERE
             risk_level = "high"
         elif score < 40:
             mortality = "52.6%"

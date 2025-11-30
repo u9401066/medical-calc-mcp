@@ -222,7 +222,7 @@ class Chads2VascCalculator(BaseCalculator):
         
         if adjusted_score <= 0:
             # Low risk - no anticoagulation needed
-            severity = Severity.MINIMAL
+            severity = Severity.NORMAL
             risk_level = "low"
             summary = f"CHA₂DS₂-VASc = {score}: Low risk ({annual_risk} annual stroke risk)"
             detail = (
@@ -266,7 +266,7 @@ class Chads2VascCalculator(BaseCalculator):
             
         else:
             # High risk - anticoagulation recommended
-            severity = Severity.MODERATE if score <= 4 else Severity.HIGH
+            severity = Severity.MODERATE if score <= 4 else Severity.SEVERE
             risk_level = "moderate" if score <= 4 else "high"
             summary = f"CHA₂DS₂-VASc = {score}: {'High' if score > 4 else 'Moderate'} risk ({annual_risk} annual stroke risk)"
             detail = (
