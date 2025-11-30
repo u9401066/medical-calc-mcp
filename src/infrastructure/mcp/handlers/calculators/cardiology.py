@@ -4,7 +4,7 @@ Cardiology Calculator Handlers
 MCP tool handlers for cardiology calculators.
 """
 
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -289,6 +289,68 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "elderly_gt_65": elderly_gt_65,
                 "drugs_antiplatelet_nsaid": drugs_antiplatelet_nsaid,
                 "alcohol_excess": alcohol_excess,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_corrected_qt(
+        qt_interval: Annotated[float, Field(
+            ge=200, le=800,
+            description="測量 QT 間期 Measured QT interval | Unit: ms | Range: 200-800"
+        )],
+        heart_rate: Annotated[float, Field(
+            ge=30, le=250,
+            description="心率 Heart rate | Unit: bpm | Range: 30-250"
+        )],
+        sex: Annotated[
+            Literal["male", "female"],
+            Field(description="性別 Sex | Options: male, female")
+        ] = "male",
+        formula: Annotated[
+            Literal["bazett", "fridericia", "framingham"],
+            Field(description="校正公式 Formula | Options: bazett (most common), fridericia (better for tachycardia), framingham")
+        ] = "bazett",
+    ) -> dict[str, Any]:
+        """
+        💓 Corrected QT (QTc): 校正 QT 間期計算
+        
+        計算心率校正的 QT 間期，用於藥物安全監測與心律不整風險評估。
+        
+        **公式:**
+        - **Bazett** (最常用): QTc = QT / √RR
+        - **Fridericia** (心搏過速/過緩較準): QTc = QT / ∛RR  
+        - **Framingham** (線性校正): QTc = QT + 154 × (1 - RR)
+        
+        **正常值:**
+        - 男性: ≤450 ms
+        - 女性: ≤460 ms
+        
+        **QTc 延長分級:**
+        - 邊緣: 450-470 ms (男), 460-480 ms (女)
+        - 延長: >470 ms (男), >480 ms (女)
+        - 顯著延長: >500 ms (TdP 高風險)
+        
+        **常見 QT 延長藥物:**
+        - 抗心律不整: amiodarone, sotalol, dofetilide
+        - 抗生素: fluoroquinolones, macrolides, azoles
+        - 抗精神病: haloperidol, droperidol, ziprasidone
+        - 止吐劑: ondansetron (高劑量)
+        - 其他: methadone, TCAs, citalopram
+        
+        **參考文獻:** Bazett 1920, ESC Guidelines 2015. PMID: 26320108
+        
+        Returns:
+            QTc 值 (ms)、風險分級、藥物安全建議
+        """
+        request = CalculateRequest(
+            tool_id="corrected_qt",
+            params={
+                "qt_interval": qt_interval,
+                "heart_rate": heart_rate,
+                "sex": sex,
+                "formula": formula,
             }
         )
         response = use_case.execute(request)

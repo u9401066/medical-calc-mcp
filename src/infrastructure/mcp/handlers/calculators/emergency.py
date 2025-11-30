@@ -4,7 +4,7 @@ Emergency Medicine Calculator Handlers
 MCP tool handlers for emergency medicine calculators.
 """
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal, Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -162,6 +162,76 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "previous_dvt_pe": previous_dvt_pe,
                 "hemoptysis": hemoptysis,
                 "malignancy": malignancy,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_shock_index(
+        heart_rate: Annotated[float, Field(
+            ge=20, le=300,
+            description="心率 Heart rate | Unit: bpm | Range: 20-300"
+        )],
+        systolic_bp: Annotated[float, Field(
+            ge=30, le=300,
+            description="收縮壓 Systolic blood pressure | Unit: mmHg | Range: 30-300"
+        )],
+        diastolic_bp: Annotated[Optional[float], Field(
+            ge=20, le=200,
+            description="舒張壓 Diastolic BP (optional, for Modified SI) | Unit: mmHg | Range: 20-200"
+        )] = None,
+        patient_type: Annotated[
+            Literal["adult", "pediatric", "obstetric"],
+            Field(description="病患類型 Patient type | Options: adult, pediatric, obstetric")
+        ] = "adult",
+    ) -> dict[str, Any]:
+        """
+        🚨 Shock Index (SI): 休克指數 - 快速血流動力學評估
+        
+        計算心率與收縮壓比值，提供快速的血流動力學評估。
+        
+        **公式:**
+        SI = 心率 (bpm) / 收縮壓 (mmHg)
+        
+        **正常範圍:** 0.5 - 0.7
+        
+        **判讀:**
+        - < 0.6: 正常，血流動力學穩定
+        - 0.6 - 0.9: 正常至邊緣
+        - 1.0: 上限 (心率 = 收縮壓)
+        - > 1.0: 升高 - 血流動力學不穩定
+        - > 1.4: 嚴重升高 - 高死亡風險
+        
+        **臨床應用:**
+        - 創傷分級
+        - 早期偵測隱匿性出血
+        - 預測大量輸血需求
+        - 低血容性休克評估
+        - 產後出血評估
+        
+        **優點:**
+        - 床邊快速計算
+        - 僅需生命徵象
+        - 在血壓下降前偵測代償性休克
+        - 預測死亡率優於單獨使用心率或血壓
+        
+        **Modified Shock Index (MSI):**
+        若提供舒張壓，將計算 MSI = HR / MAP
+        正常範圍: 0.7 - 1.3
+        
+        **參考文獻:** Allgöwer 1967, Cannon 2009. PMID: 20009697
+        
+        Returns:
+            Shock Index、風險分級、處置建議、Modified SI (如適用)
+        """
+        request = CalculateRequest(
+            tool_id="shock_index",
+            params={
+                "heart_rate": heart_rate,
+                "systolic_bp": systolic_bp,
+                "diastolic_bp": diastolic_bp,
+                "patient_type": patient_type,
             }
         )
         response = use_case.execute(request)

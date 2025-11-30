@@ -4,7 +4,7 @@ Pulmonology Calculator Handlers
 MCP tool handlers for pulmonology/respiratory medicine calculators.
 """
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -143,6 +143,79 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "hematocrit_lt_30": hematocrit_lt_30,
                 "pao2_lt_60_or_sao2_lt_90": pao2_lt_60_or_sao2_lt_90,
                 "pleural_effusion": pleural_effusion,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_aa_gradient(
+        pao2: Annotated[float, Field(
+            ge=10, le=700,
+            description="動脈血氧分壓 Arterial PaO₂ | Unit: mmHg | Range: 10-700"
+        )],
+        paco2: Annotated[float, Field(
+            ge=10, le=150,
+            description="動脈血二氧化碳分壓 Arterial PaCO₂ | Unit: mmHg | Range: 10-150"
+        )],
+        fio2: Annotated[float, Field(
+            ge=0.21, le=1.0,
+            description="吸入氧濃度 FiO₂ | Range: 0.21-1.0 (e.g., 0.21 = room air)"
+        )],
+        age: Annotated[Optional[int], Field(
+            ge=0, le=120,
+            description="年齡 Age (for expected normal calculation) | Unit: years | Range: 0-120"
+        )] = None,
+        atmospheric_pressure: Annotated[float, Field(
+            ge=500, le=800,
+            description="大氣壓力 Atmospheric pressure | Unit: mmHg | Default: 760 (sea level)"
+        )] = 760.0,
+        respiratory_quotient: Annotated[float, Field(
+            ge=0.7, le=1.0,
+            description="呼吸商 Respiratory quotient (RQ) | Default: 0.8"
+        )] = 0.8,
+    ) -> dict[str, Any]:
+        """
+        🫁 A-a Gradient: 肺泡-動脈氧氣梯度
+        
+        計算肺泡氧分壓 (PAO₂) 與動脈氧分壓 (PaO₂) 的差值，
+        用於評估低血氧原因與氣體交換效率。
+        
+        **公式:**
+        A-a Gradient = PAO₂ - PaO₂
+        
+        PAO₂ = FiO₂ × (Patm - PH₂O) - (PaCO₂ / RQ)
+        - PH₂O = 47 mmHg (37°C 水蒸氣壓)
+        - RQ = 0.8 (呼吸商)
+        
+        **年齡校正正常值:**
+        Expected A-a = 2.5 + (0.21 × 年齡)
+        
+        正常上限 (室內空氣):
+        - < 40 歲: < 15-20 mmHg
+        - ≥ 40 歲: 約 (年齡/4) + 4
+        
+        **臨床判讀:**
+        - **正常 A-a + 低血氧**: 低通氣 (CNS抑制、神經肌肉疾病)、低吸入氧 (高海拔)
+        - **升高 A-a + 低血氧**: 
+          - V/Q 不配合 (COPD, 氣喘, PE)
+          - 分流 (ARDS, 肺炎, 肺不張, AVM)
+          - 擴散障礙 (間質性肺病, 肺水腫)
+        
+        **參考文獻:** West Respiratory Physiology 2016, Kanber 1968. PMID: 5638666
+        
+        Returns:
+            A-a 梯度 (mmHg)、是否升高、鑑別診斷方向
+        """
+        request = CalculateRequest(
+            tool_id="aa_gradient",
+            params={
+                "pao2": pao2,
+                "paco2": paco2,
+                "fio2": fio2,
+                "age": age,
+                "atmospheric_pressure": atmospheric_pressure,
+                "respiratory_quotient": respiratory_quotient,
             }
         )
         response = use_case.execute(request)
