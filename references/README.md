@@ -410,6 +410,102 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
+### Apfel Score (PONV Risk) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Apfel CC, Läärä E, Koivuranta M, Greim CA, Roewer N. A simplified risk score for predicting postoperative nausea and vomiting: conclusions from cross-validations between two centers. *Anesthesiology*. 1999;91(3):693-700. |
+| **DOI** | [10.1097/00000542-199909000-00022](https://doi.org/10.1097/00000542-199909000-00022) |
+| **PMID** | [10485781](https://pubmed.ncbi.nlm.nih.gov/10485781/) |
+| **Year** | 1999 |
+| **Key Points** | 4 risk factors: female, non-smoker, history PONV/motion sickness, postop opioids; baseline 10% rising ~20% per factor |
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Gan TJ, Belani KG, Bergese S, et al. Fourth Consensus Guidelines for the Management of Postoperative Nausea and Vomiting. *Anesth Analg*. 2020;131(2):411-448. |
+| **DOI** | [10.1213/ANE.0000000000004833](https://doi.org/10.1213/ANE.0000000000004833) |
+| **PMID** | [32467512](https://pubmed.ncbi.nlm.nih.gov/32467512/) |
+| **Year** | 2020 |
+| **Key Points** | SAMBA guidelines recommending Apfel score for PONV risk stratification |
+
+---
+
+### STOP-BANG Score (OSA Screening) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Chung F, Yegneswaran B, Liao P, et al. STOP questionnaire: a tool to screen patients for obstructive sleep apnea. *Anesthesiology*. 2008;108(5):812-821. |
+| **DOI** | [10.1097/ALN.0b013e31816d83e4](https://doi.org/10.1097/ALN.0b013e31816d83e4) |
+| **PMID** | [18431116](https://pubmed.ncbi.nlm.nih.gov/18431116/) |
+| **Year** | 2008 |
+| **Key Points** | 8 criteria: Snoring, Tired, Observed apnea, high blood Pressure, BMI>35, Age>50, Neck>40cm, male Gender; score ≥3 = high OSA risk |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Chung F, Subramanyam R, Liao P, et al. High STOP-Bang score indicates a high probability of obstructive sleep apnoea. *Br J Anaesth*. 2012;108(5):768-775. |
+| **DOI** | [10.1093/bja/aes022](https://doi.org/10.1093/bja/aes022) |
+| **PMID** | [22401881](https://pubmed.ncbi.nlm.nih.gov/22401881/) |
+| **Year** | 2012 |
+| **Key Points** | Validation showing high sensitivity; score 5-8 = high probability moderate-severe OSA |
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Chung F, Memtsoudis SG, Ramachandran SK, et al. Society of Anesthesia and Sleep Medicine Guidelines on Preoperative Screening and Assessment of Adult Patients With Obstructive Sleep Apnea. *Anesth Analg*. 2016;123(2):452-473. |
+| **DOI** | [10.1213/ANE.0000000000001416](https://doi.org/10.1213/ANE.0000000000001416) |
+| **PMID** | [27442772](https://pubmed.ncbi.nlm.nih.gov/27442772/) |
+| **Year** | 2016 |
+| **Key Points** | SASM guidelines recommending STOP-BANG for preoperative OSA screening |
+
+---
+
+### NIHSS (NIH Stroke Scale) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Brott T, Adams HP Jr, Olinger CP, et al. Measurements of acute cerebral infarction: a clinical examination scale. *Stroke*. 1989;20(7):864-870. |
+| **DOI** | [10.1161/01.str.20.7.864](https://doi.org/10.1161/01.str.20.7.864) |
+| **PMID** | [2749846](https://pubmed.ncbi.nlm.nih.gov/2749846/) |
+| **Year** | 1989 |
+| **Key Points** | Stroke severity; 15 items; score 0-42; guides thrombolysis eligibility and prognosis |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Lyden P, Brott T, Tilley B, et al. Improved reliability of the NIH Stroke Scale using video training. NINDS TPA Stroke Study Group. *Stroke*. 1994;25(11):2220-2226. |
+| **DOI** | [10.1161/01.str.25.11.2220](https://doi.org/10.1161/01.str.25.11.2220) |
+| **PMID** | [7974549](https://pubmed.ncbi.nlm.nih.gov/7974549/) |
+| **Year** | 1994 |
+| **Key Points** | Reliability study; standardized training improves interrater reliability |
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Powers WJ, Rabinstein AA, Ackerson T, et al. Guidelines for the Early Management of Patients With Acute Ischemic Stroke: 2019 Update. *Stroke*. 2019;50(12):e344-e418. |
+| **DOI** | [10.1161/STR.0000000000000211](https://doi.org/10.1161/STR.0000000000000211) |
+| **PMID** | [31662037](https://pubmed.ncbi.nlm.nih.gov/31662037/) |
+| **Year** | 2019 |
+| **Key Points** | AHA/ASA guidelines using NIHSS for stroke severity and treatment decisions |
+
+---
+
+### Aldrete Score (PACU Recovery) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Aldrete JA, Kroulik D. A postanesthetic recovery score. *Anesth Analg*. 1970;49(6):924-934. |
+| **DOI** | N/A |
+| **PMID** | [5534693](https://pubmed.ncbi.nlm.nih.gov/5534693/) |
+| **Year** | 1970 |
+| **Key Points** | PACU discharge readiness; 5 criteria (activity, respiration, circulation, consciousness, color); score 0-10 |
+
+| Field | Value |
+|-------|-------|
+| **Modified Citation** | Aldrete JA. The post-anesthesia recovery score revisited. *J Clin Anesth*. 1995;7(1):89-91. |
+| **DOI** | [10.1016/0952-8180(94)00001-k](https://doi.org/10.1016/0952-8180(94)00001-k) |
+| **PMID** | [7772368](https://pubmed.ncbi.nlm.nih.gov/7772368/) |
+| **Year** | 1995 |
+| **Key Points** | Modified Aldrete replaces color with SpO₂; widely used; score ≥9 suitable for discharge |
+
+---
+
 ### PSI/PORT Score (Pneumonia Severity Index) ⭐ NEW
 
 | Field | Value |

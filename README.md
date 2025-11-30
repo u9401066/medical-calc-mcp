@@ -598,9 +598,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 47 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 53 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 41 Calculators | 426 Tests | 80% Coverage | Phase 11 Complete ✅
+> **Current Stats**: 47 Calculators | 469 Tests | 80% Coverage | Phase 12 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -608,7 +608,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 | Specialty | Count | Jump To |
 |-----------|-------|---------|
-| 🏥 Anesthesiology / Preoperative | 6 | [→ Jump](#-anesthesiology--preoperative--麻醉科--術前評估) |
+| 🏥 Anesthesiology / Preoperative | 9 | [→ Jump](#-anesthesiology--preoperative--麻醉科--術前評估) |
 | 🩺 Critical Care / ICU | 8 | [→ Jump](#-critical-care--icu--重症加護) |
 | 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
@@ -618,12 +618,13 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 🟤 Hepatology | 2 | [→ Jump](#-hepatology--肝膽科) |
 | 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🩸 Hematology | 1 | [→ Jump](#-hematology--血液科) |
+| 🧠 Neurology | 1 | [→ Jump](#-neurology--神經科) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (41 tools)
+### Calculators | 計算器 (47 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -635,6 +636,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_mabl` | MABL | Maximum allowable blood loss | Gross 1983 |
 | `calculate_transfusion_volume` | Transfusion Calc | Blood product volume calculation | Roseff 2002 |
 | `calculate_caprini_vte` | Caprini VTE | Surgical VTE risk assessment | Caprini 2005 |
+| `calculate_apfel_ponv` | Apfel Score 🆕 | PONV risk prediction | Apfel 1999 |
+| `calculate_stop_bang` | STOP-BANG 🆕 | OSA screening questionnaire | Chung 2008 |
+| `calculate_aldrete_score` | Aldrete Score 🆕 | PACU recovery assessment | Aldrete 1970 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -703,6 +707,14 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_4ts_hit` | 4Ts HIT Score | Heparin-induced thrombocytopenia | Lo 2006, Cuker 2012 |
+
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🧠 Neurology | 神經科
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_nihss` | NIHSS 🆕 | NIH Stroke Scale - stroke severity | Brott 1989 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
