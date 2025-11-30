@@ -66,6 +66,14 @@ from .corrected_qt import CorrectedQtCalculator
 from .aa_gradient import AaGradientCalculator
 from .shock_index import ShockIndexCalculator
 
+# Phase 11: Upcoming Calculators (All Completed)
+from .ideal_body_weight import IdealBodyWeightCalculator
+from .pf_ratio import PfRatioCalculator
+from .rox_index import RoxIndexCalculator
+from .grace_score import GraceScoreCalculator
+from .four_ts_hit import FourTsHitCalculator
+from .acef_ii_score import AcefIiScoreCalculator
+
 
 __all__ = [
     # Nephrology
@@ -130,6 +138,14 @@ __all__ = [
     "CorrectedQtCalculator",
     "AaGradientCalculator",
     "ShockIndexCalculator",
+    
+    # Phase 11: Upcoming Calculators (All Completed)
+    "IdealBodyWeightCalculator",
+    "PfRatioCalculator",
+    "RoxIndexCalculator",
+    "GraceScoreCalculator",
+    "FourTsHitCalculator",
+    "AcefIiScoreCalculator",
 ]
 
 
@@ -181,4 +197,11 @@ CALCULATORS = [
     CorrectedQtCalculator,
     AaGradientCalculator,
     ShockIndexCalculator,
+    # Phase 11: Upcoming Calculators (All Completed)
+    IdealBodyWeightCalculator,
+    PfRatioCalculator,
+    RoxIndexCalculator,
+    GraceScoreCalculator,
+    FourTsHitCalculator,
+    AcefIiScoreCalculator,
 ]

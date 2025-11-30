@@ -15,6 +15,7 @@ from .emergency import register_emergency_tools
 from .hepatology import register_hepatology_tools
 from .surgery import register_surgery_tools
 from .acid_base import register_acid_base_tools
+from .hematology import register_hematology_tools
 
 __all__ = [
     "register_nephrology_tools",
@@ -27,4 +28,5 @@ __all__ = [
     "register_hepatology_tools",
     "register_surgery_tools",
     "register_acid_base_tools",
+    "register_hematology_tools",
 ]

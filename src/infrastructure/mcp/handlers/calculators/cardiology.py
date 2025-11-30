@@ -355,3 +355,148 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_grace_score(
+        age: Annotated[int, Field(
+            ge=18, le=120,
+            description="年齡 Age | Unit: years | Range: 18-120"
+        )],
+        heart_rate: Annotated[int, Field(
+            ge=30, le=250,
+            description="心率 Heart rate | Unit: bpm | Range: 30-250"
+        )],
+        systolic_bp: Annotated[int, Field(
+            ge=50, le=250,
+            description="收縮壓 Systolic BP | Unit: mmHg | Range: 50-250"
+        )],
+        creatinine: Annotated[float, Field(
+            ge=0.3, le=20.0,
+            description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.3-20.0"
+        )],
+        killip_class: Annotated[
+            Literal[1, 2, 3, 4],
+            Field(description="Killip 分級 | Options: 1=No CHF, 2=Rales/JVD, 3=Pulmonary edema, 4=Cardiogenic shock")
+        ],
+        cardiac_arrest: Annotated[bool, Field(
+            description="到院前心跳停止 Cardiac arrest at admission"
+        )],
+        st_deviation: Annotated[bool, Field(
+            description="ST 段偏移 ST-segment deviation (depression or elevation)"
+        )],
+        elevated_troponin: Annotated[bool, Field(
+            description="肌鈣蛋白升高 Elevated cardiac troponin/enzymes"
+        )],
+    ) -> dict[str, Any]:
+        """
+        🫀 GRACE Score: 急性冠心症風險分層
+        
+        評估急性冠心症 (ACS) 病人的住院和 6 個月死亡風險，
+        用於指導治療策略和轉院決策。
+        
+        **GRACE 模型參數:**
+        - 年齡
+        - 心率
+        - 收縮壓
+        - 血清肌酸酐
+        - Killip 分級
+        - 心跳停止
+        - ST 段偏移
+        - 心肌酵素升高
+        
+        **GRACE Score 風險分類 (6 個月死亡):**
+        - **低風險**: <109 分 (<3% 死亡率)
+        - **中風險**: 109-140 分 (3-8% 死亡率)
+        - **高風險**: >140 分 (>8% 死亡率)
+        
+        **臨床應用:**
+        - 高風險 → 早期侵入性策略 (24-72h 內心導管)
+        - 中風險 → 可考慮早期侵入性或保守策略
+        - 低風險 → 可考慮保守策略
+        
+        **Killip 分級:**
+        - I: 無心衰竭
+        - II: 肺囉音/JVD
+        - III: 急性肺水腫
+        - IV: 心因性休克
+        
+        **參考文獻:** Fox KA, et al. BMJ. 2006;333(7578):1091. PMID: 17032691
+        
+        Returns:
+            GRACE Score、6 個月死亡風險、治療策略建議
+        """
+        request = CalculateRequest(
+            tool_id="grace_score",
+            params={
+                "age": age,
+                "heart_rate": heart_rate,
+                "systolic_bp": systolic_bp,
+                "creatinine": creatinine,
+                "killip_class": killip_class,
+                "cardiac_arrest": cardiac_arrest,
+                "st_deviation": st_deviation,
+                "elevated_troponin": elevated_troponin,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_acef_ii(
+        age: Annotated[int, Field(
+            ge=18, le=100,
+            description="年齡 Age | Unit: years | Range: 18-100"
+        )],
+        lvef: Annotated[float, Field(
+            ge=5, le=80,
+            description="左心室射出分率 LVEF | Unit: % | Range: 5-80"
+        )],
+        creatinine: Annotated[float, Field(
+            ge=0.3, le=15,
+            description="血清肌酸酐 Creatinine | Unit: mg/dL | Range: 0.3-15"
+        )],
+        emergency: Annotated[bool, Field(
+            description="緊急手術 Emergency surgery (doubles the score)"
+        )] = False,
+    ) -> dict[str, Any]:
+        """
+        🫀 ACEF II Score: 心臟手術死亡風險預測
+        
+        簡約型心臟手術死亡風險模型，僅用 3 個變數達到與複雜評分相當的預測力。
+        
+        **ACEF II 公式:**
+        ACEF II = (年齡 / LVEF) + 2 (若 Cr >2.0 mg/dL)
+        緊急手術時，分數加倍
+        
+        **風險分類:**
+        - ACEF II <1.0: 低風險 (~1% 死亡率)
+        - ACEF II 1.0-2.0: 中風險 (2-5% 死亡率)
+        - ACEF II 2.0-3.0: 高風險 (5-10% 死亡率)
+        - ACEF II >3.0: 極高風險 (>10% 死亡率)
+        
+        **優點:**
+        - 僅需 3 個變數 (vs EuroSCORE II 的 18+)
+        - 床邊即可計算
+        - 多個世代驗證
+        
+        **臨床應用:**
+        - 術前風險評估
+        - 心臟團隊討論
+        - 與 EuroSCORE II, STS Score 互補使用
+        
+        **參考文獻:** Ranucci M, et al. Eur Heart J. 2018;39(23):2183-2189. PMID: 28498904
+        
+        Returns:
+            ACEF II 分數、預估死亡率、手術風險建議
+        """
+        request = CalculateRequest(
+            tool_id="acef_ii",
+            params={
+                "age": age,
+                "lvef": lvef,
+                "creatinine": creatinine,
+                "emergency": emergency,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()

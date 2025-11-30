@@ -415,9 +415,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 36 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 47 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 35 Calculators | 377 Tests | 80% Coverage | Phase 9b Complete ✅
+> **Current Stats**: 41 Calculators | 426 Tests | 80% Coverage | Phase 11 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -429,17 +429,18 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 🩺 Critical Care / ICU | 7 | [→ Jump](#-critical-care--icu--重症加護) |
 | 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
-| 🫁 Pulmonology | 2 | [→ Jump](#-pulmonology--胸腔科) |
-| ❤️ Cardiology | 5 | [→ Jump](#-cardiology--心臟科) |
+| 🫁 Pulmonology | 5 | [→ Jump](#-pulmonology--胸腔科) |
+| ❤️ Cardiology | 8 | [→ Jump](#-cardiology--心臟科) |
 | 🚑 Emergency Medicine | 3 | [→ Jump](#-emergency-medicine--急診醫學) |
 | 🟤 Hepatology | 2 | [→ Jump](#-hepatology--肝膽科) |
 | 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
+| 🩸 Hematology | 1 | [→ Jump](#-hematology--血液科) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (32 tools)
+### Calculators | 計算器 (41 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -491,6 +492,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_curb65` | CURB-65 | Pneumonia severity & disposition | Lim 2003 |
 | `calculate_psi_port` | PSI/PORT | CAP mortality prediction | Fine 1997 |
+| `calculate_ideal_body_weight` | IBW (Devine) | Ventilator tidal volume (ARDSNet) | Devine 1974, ARDSNet 2000 |
+| `calculate_pf_ratio` | P/F Ratio | ARDS Berlin classification | ARDS Task Force 2012 |
+| `calculate_rox_index` | ROX Index | HFNC failure prediction | Roca 2016 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -503,6 +507,16 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_has_bled` | HAS-BLED | AF bleeding risk (modifiable factors) | Pisters 2010, ESC 2024 |
 | `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
 | `calculate_corrected_qt` | Corrected QT (QTc) | QT interval correction for drug safety | Bazett 1920, ESC 2015 |
+| `calculate_grace_score` | GRACE Score | ACS mortality risk stratification | Fox 2006 |
+| `calculate_acef_ii` | ACEF II Score | Cardiac surgery mortality risk | Ranucci 2018 |
+
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🩸 Hematology | 血液科
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_4ts_hit` | 4Ts HIT Score | Heparin-induced thrombocytopenia | Lo 2006, Cuker 2012 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -765,16 +779,16 @@ Phase 9: ✅ Complete
 └── ✅ Free Water Deficit
 ```
 
-### Upcoming Calculators | 即將推出的計算器
+### Recently Added Calculators | 最近新增的計算器 (Phase 11 Complete ✅)
 
-| Priority | Tool ID | Name | Phase | Reference |
-|----------|---------|------|-------|-----------|
-| 🔴 High | `ideal_body_weight` | Ideal Body Weight | 11 | ARDSNet |
-| 🔴 High | `pf_ratio` | P/F Ratio | 11 | Berlin 2012 |
-| 🔴 High | `rox_index` | ROX Index | 11 | Roca 2016 |
-| 🟡 Med | `grace_score` | GRACE Score | 11 | Fox 2006 |
-| 🟡 Med | `4ts_hit` | 4Ts Score for HIT | 11 | Lo 2006 |
-| 🟡 Med | `acef_ii` | ACEF II Score | 11 | Ranucci 2018 |
+| Priority | Tool ID | Name | Status | Reference |
+|----------|---------|------|--------|-----------|
+| ✅ Done | `ideal_body_weight` | Ideal Body Weight | Complete | ARDSNet |
+| ✅ Done | `pf_ratio` | P/F Ratio | Complete | Berlin 2012 |
+| ✅ Done | `rox_index` | ROX Index | Complete | Roca 2016 |
+| ✅ Done | `grace_score` | GRACE Score | Complete | Fox 2006 |
+| ✅ Done | `4ts_hit` | 4Ts Score for HIT | Complete | Lo 2006 |
+| ✅ Done | `acef_ii` | ACEF II Score | Complete | Ranucci 2018 |
 
 ---
 

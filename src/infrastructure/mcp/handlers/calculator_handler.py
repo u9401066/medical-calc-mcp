@@ -24,6 +24,7 @@ from .calculators import (
     register_hepatology_tools,
     register_surgery_tools,
     register_acid_base_tools,
+    register_hematology_tools,
 )
 
 
@@ -45,6 +46,7 @@ class CalculatorHandler:
     - calculators/hepatology.py     - Liver (MELD, Child-Pugh, etc.)
     - calculators/surgery.py        - Perioperative (Caprini VTE, etc.)
     - calculators/acid_base.py      - Acid-base (Anion Gap, Delta Ratio, etc.)
+    - calculators/hematology.py     - Hematology (4Ts HIT, etc.)
     """
     
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
@@ -87,3 +89,6 @@ class CalculatorHandler:
         
         # Acid-Base / Metabolic calculators
         register_acid_base_tools(self._mcp, self._use_case)
+        
+        # Hematology calculators
+        register_hematology_tools(self._mcp, self._use_case)

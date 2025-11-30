@@ -4,7 +4,7 @@ Pulmonology Calculator Handlers
 MCP tool handlers for pulmonology/respiratory medicine calculators.
 """
 
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any, Literal, Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -216,6 +216,180 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "age": age,
                 "atmospheric_pressure": atmospheric_pressure,
                 "respiratory_quotient": respiratory_quotient,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_ideal_body_weight(
+        height: Annotated[float, Field(
+            ge=100, le=250,
+            description="身高 Height | Unit: cm | Range: 100-250"
+        )],
+        sex: Annotated[
+            Literal["male", "female"],
+            Field(description="性別 Sex | Options: male, female")
+        ],
+        height_unit: Annotated[
+            Literal["cm", "inches"],
+            Field(description="身高單位 Height unit | Default: cm")
+        ] = "cm",
+    ) -> dict[str, Any]:
+        """
+        🫁 Ideal Body Weight (IBW): 理想體重計算 (Devine 公式)
+        
+        計算理想體重，用於呼吸器潮氣量設定與藥物劑量計算。
+        ARDSNet 建議使用 IBW 來計算肺保護性通氣的潮氣量。
+        
+        **Devine 公式:**
+        - 男性: IBW = 50 + 2.3 × (身高英寸 - 60)
+        - 女性: IBW = 45.5 + 2.3 × (身高英寸 - 60)
+        
+        **臨床應用:**
+        - **呼吸器設定**: ARDSNet 建議 TV = 6-8 mL/kg IBW
+        - **藥物劑量**: 親脂性藥物使用 TBW，親水性藥物使用 IBW
+        - **營養評估**: 與實際體重比較評估營養狀態
+        
+        **ARDS 潮氣量建議:**
+        - 輕度 ARDS: 6-8 mL/kg IBW
+        - 中度/重度 ARDS: 4-6 mL/kg IBW
+        - 目標 Pplat ≤ 30 cmH₂O
+        
+        **參考文獻:**
+        - Devine BJ. Drug Intell Clin Pharm. 1974. (原始公式)
+        - ARDSNet. NEJM 2000;342:1301-1308. PMID: 10793162
+        
+        Returns:
+            IBW (kg)、建議潮氣量範圍、與實際體重比較
+        """
+        request = CalculateRequest(
+            tool_id="ideal_body_weight",
+            params={
+                "height": height,
+                "sex": sex,
+                "height_unit": height_unit,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_pf_ratio(
+        pao2: Annotated[float, Field(
+            ge=20, le=700,
+            description="動脈血氧分壓 PaO₂ | Unit: mmHg | Range: 20-700"
+        )],
+        fio2: Annotated[float, Field(
+            ge=0.21, le=1.0,
+            description="吸入氧濃度 FiO₂ | Range: 0.21-1.0"
+        )],
+        on_vent: Annotated[bool, Field(
+            description="是否機械通氣 On mechanical ventilation"
+        )] = False,
+        peep: Annotated[Optional[float], Field(
+            ge=0, le=30,
+            description="呼氣末正壓 PEEP | Unit: cmH₂O | Range: 0-30 (if on vent)"
+        )] = None,
+    ) -> dict[str, Any]:
+        """
+        🫁 P/F Ratio: 氧合指數 (ARDS Berlin 分類)
+        
+        計算 PaO₂/FiO₂ 比值，用於 ARDS 嚴重度分級與氧合評估。
+        
+        **Berlin Definition ARDS 分類 (需 PEEP ≥5 cmH₂O):**
+        - **輕度 ARDS**: P/F 200-300
+        - **中度 ARDS**: P/F 100-200
+        - **重度 ARDS**: P/F <100
+        
+        **P/F 比值解讀:**
+        - >400: 正常
+        - 300-400: 輕度氧合障礙
+        - 200-300: 中度氧合障礙 / 輕度 ARDS
+        - 100-200: 重度氧合障礙 / 中度 ARDS
+        - <100: 極重度氧合障礙 / 重度 ARDS
+        
+        **ARDS 診斷標準 (Berlin 2012):**
+        1. 一週內急性發作
+        2. 雙側肺浸潤 (X-ray/CT)
+        3. 非心因性肺水腫
+        4. P/F ≤300 (PEEP ≥5 cmH₂O)
+        
+        **參考文獻:** ARDS Definition Task Force. JAMA. 2012;307(23):2526-2533. PMID: 22797452
+        
+        Returns:
+            P/F 比值、ARDS 分級、氧合狀態、治療建議
+        """
+        request = CalculateRequest(
+            tool_id="pf_ratio",
+            params={
+                "pao2": pao2,
+                "fio2": fio2,
+                "on_vent": on_vent,
+                "peep": peep,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_rox_index(
+        spo2: Annotated[float, Field(
+            ge=70, le=100,
+            description="血氧飽和度 SpO₂ | Unit: % | Range: 70-100"
+        )],
+        fio2: Annotated[float, Field(
+            ge=0.21, le=1.0,
+            description="吸入氧濃度 FiO₂ | Range: 0.21-1.0"
+        )],
+        respiratory_rate: Annotated[int, Field(
+            ge=5, le=60,
+            description="呼吸速率 Respiratory rate | Unit: breaths/min | Range: 5-60"
+        )],
+        hours_on_hfnc: Annotated[
+            Optional[Literal[2, 6, 12]],
+            Field(description="HFNC 使用時間 Hours on HFNC | Options: 2, 6, 12 (for threshold selection)")
+        ] = None,
+    ) -> dict[str, Any]:
+        """
+        🫁 ROX Index: HFNC 失敗風險預測
+        
+        預測急性低氧性呼吸衰竭病人使用 HFNC 失敗並需要插管的風險。
+        
+        **公式:**
+        ROX Index = (SpO₂ / FiO₂) / 呼吸速率
+        
+        **風險閾值 (Roca 2016):**
+        - **≥4.88**: 低風險 - HFNC 可能成功
+        - **3.85-4.87**: 中間風險 - 需密切監測
+        - **<3.85**: 高風險 - 考慮插管
+        
+        **建議評估時間點:**
+        - 2 小時: 早期預警
+        - 6 小時: 主要決策點 (最佳預測)
+        - 12 小時: 延遲評估
+        
+        **ROX 趨勢更重要:**
+        - ROX 持續下降 → 考慮升級
+        - ROX 穩定或上升 → 繼續 HFNC
+        
+        **不適用情況:**
+        - 血流動力學不穩定
+        - 意識改變 (GCS <13)
+        - 高碳酸血症型呼吸衰竭
+        
+        **參考文獻:** Roca O, et al. J Crit Care. 2016;35:200-205. PMID: 27481760
+        
+        Returns:
+            ROX Index、HFNC 失敗風險、臨床建議
+        """
+        request = CalculateRequest(
+            tool_id="rox_index",
+            params={
+                "spo2": spo2,
+                "fio2": fio2,
+                "respiratory_rate": respiratory_rate,
+                "hours_on_hfnc": hours_on_hfnc,
             }
         )
         response = use_case.execute(request)
