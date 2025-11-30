@@ -197,7 +197,7 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
-### CHA₂DS₂-VASc Score (AF Stroke Risk) ⭐ NEW
+### CHA₂DS₂-VASc Score (AF Stroke Risk - Original)
 
 | Field | Value |
 |-------|-------|
@@ -205,7 +205,7 @@ PDFs are git-ignored for copyright reasons - store locally only.
 | **DOI** | [10.1378/chest.09-1584](https://doi.org/10.1378/chest.09-1584) |
 | **PMID** | [19762550](https://pubmed.ncbi.nlm.nih.gov/19762550/) |
 | **Year** | 2010 |
-| **Key Points** | AF stroke risk; 9 points max; Score ≥2 = anticoagulation recommended |
+| **Key Points** | AF stroke risk; 9 points max (includes sex); Score ≥2 = anticoagulation recommended |
 
 | Field | Value |
 |-------|-------|
@@ -213,7 +213,33 @@ PDFs are git-ignored for copyright reasons - store locally only.
 | **DOI** | [10.1093/eurheartj/ehaa612](https://doi.org/10.1093/eurheartj/ehaa612) |
 | **PMID** | [32860505](https://pubmed.ncbi.nlm.nih.gov/32860505/) |
 | **Year** | 2020 |
-| **Key Points** | ESC guidelines recommending CHA₂DS₂-VASc for anticoagulation decisions |
+| **Key Points** | ESC 2020 guidelines recommending CHA₂DS₂-VASc for anticoagulation decisions |
+
+---
+
+### CHA₂DS₂-VA Score (AF Stroke Risk - 2024 ESC) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines for the management of atrial fibrillation developed in collaboration with EACTS. *Eur Heart J*. 2024;45(36):3314-3414. |
+| **DOI** | [10.1093/eurheartj/ehae176](https://doi.org/10.1093/eurheartj/ehae176) |
+| **PMID** | [39217497](https://pubmed.ncbi.nlm.nih.gov/39217497/) |
+| **Year** | 2024 |
+| **Key Points** | 2024 ESC update removes sex as risk modifier; 8 points max; sex-neutral thresholds |
+
+| Field | Value |
+|-------|-------|
+| **Original Citation** | Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk stratification for predicting stroke and thromboembolism in atrial fibrillation. *Chest*. 2010;137(2):263-272. |
+| **DOI** | [10.1378/chest.09-1584](https://doi.org/10.1378/chest.09-1584) |
+| **PMID** | [19762550](https://pubmed.ncbi.nlm.nih.gov/19762550/) |
+| **Year** | 2010 |
+| **Key Points** | Original score development; basis for 2024 update |
+
+**Why sex was removed (2024 ESC rationale):**
+- Female sex alone does not increase stroke risk without other factors
+- Avoids gender-based treatment disparities  
+- Simplifies clinical decision-making
+- Evidence from meta-analyses showing sex is a risk modifier, not independent risk factor
 
 ---
 

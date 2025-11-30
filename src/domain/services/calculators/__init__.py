@@ -32,6 +32,7 @@ from .curb65 import Curb65Calculator
 
 # Phase 6: Cardiology
 from .chads2_vasc import Chads2VascCalculator
+from .chads2_va import Chads2VaCalculator  # 2024 ESC - sex-neutral
 from .heart_score import HeartScoreCalculator
 
 # Phase 6: Emergency Medicine
@@ -74,6 +75,7 @@ __all__ = [
     
     # Cardiology
     "Chads2VascCalculator",
+    "Chads2VaCalculator",  # 2024 ESC
     "HeartScoreCalculator",
     
     # Emergency Medicine
@@ -113,6 +115,7 @@ CALCULATORS = [
     Curb65Calculator,
     # Phase 6: Cardiology
     Chads2VascCalculator,
+    Chads2VaCalculator,  # 2024 ESC
     HeartScoreCalculator,
     # Phase 6: Emergency Medicine
     WellsDvtCalculator,

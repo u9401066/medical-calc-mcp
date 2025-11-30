@@ -86,6 +86,77 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         return response.to_dict()
     
     @mcp.tool()
+    def calculate_chads2_va(
+        chf_or_lvef_lte_40: Annotated[bool, Field(
+            description="心衰竭或 LVEF ≤40% CHF or LVEF ≤40%"
+        )],
+        hypertension: Annotated[bool, Field(
+            description="高血壓病史 History of hypertension"
+        )],
+        age_gte_75: Annotated[bool, Field(
+            description="年齡 ≥75 歲 Age ≥75 years (+2 points)"
+        )],
+        diabetes: Annotated[bool, Field(
+            description="糖尿病 Diabetes mellitus"
+        )],
+        stroke_tia_or_te_history: Annotated[bool, Field(
+            description="中風/TIA/血栓栓塞病史 Prior stroke, TIA, or thromboembolism (+2 points)"
+        )],
+        vascular_disease: Annotated[bool, Field(
+            description="血管疾病 Prior MI, PAD, or aortic plaque"
+        )],
+        age_65_to_74: Annotated[bool, Field(
+            description="年齡 65-74 歲 Age 65-74 years (if not ≥75)"
+        )],
+    ) -> dict[str, Any]:
+        """
+        🫀 CHA₂DS₂-VA: 心房顫動中風風險評估 (2024 ESC 新版)
+        
+        **2024 ESC 指引更新: 移除性別因素**
+        
+        評估非瓣膜性心房顫動患者的年中風風險，使用 2024 ESC 性別中性標準。
+        
+        **與舊版 CHA₂DS₂-VASc 差異:**
+        - 移除 "Sc" (Sex category - female) 作為風險修飾因子
+        - 最高分從 9 分降為 8 分
+        - 性別中性的抗凝閾值
+        
+        **計分項目:**
+        - **C**HF/LVEF ≤40%: +1
+        - **H**ypertension: +1
+        - **A₂**ge ≥75: +2
+        - **D**iabetes: +1
+        - **S₂**troke/TIA/TE: +2
+        - **V**ascular disease: +1
+        - **A**ge 65-74: +1
+        
+        **抗凝建議 (2024 ESC):**
+        - 0分: 不需抗凝
+        - 1分: 應考慮抗凝
+        - ≥2分: 建議抗凝 (DOAC 優先)
+        
+        **參考文獻:** Van Gelder IC, et al. Eur Heart J. 2024;45(36):3314-3414.
+        PMID: 39217497
+        
+        Returns:
+            CHA₂DS₂-VA 分數 (0-8)、年中風風險、抗凝建議
+        """
+        request = CalculateRequest(
+            tool_id="chads2_va",
+            params={
+                "chf_or_lvef_lte_40": chf_or_lvef_lte_40,
+                "hypertension": hypertension,
+                "age_gte_75": age_gte_75,
+                "diabetes": diabetes,
+                "stroke_tia_or_te_history": stroke_tia_or_te_history,
+                "vascular_disease": vascular_disease,
+                "age_65_to_74": age_65_to_74,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
     def calculate_heart_score(
         history_score: Annotated[int, Field(
             ge=0, le=2,
