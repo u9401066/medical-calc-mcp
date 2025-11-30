@@ -182,6 +182,48 @@ pip install "mcp[cli]"
 mcp dev src/infrastructure/mcp/server.py
 ```
 
+### Configure with VS Code Copilot | 與 VS Code Copilot 整合 ⭐ NEW
+
+The project includes a `.vscode/mcp.json` configuration file for seamless VS Code Copilot integration.
+
+專案已包含 `.vscode/mcp.json` 設定檔，可無縫整合 VS Code Copilot。
+
+**Automatic Setup | 自動設定:**
+
+Simply open this project in VS Code - the MCP server will be auto-discovered!
+
+只需在 VS Code 開啟此專案，MCP 伺服器會自動被發現！
+
+```json
+// .vscode/mcp.json (included in repo)
+{
+  "servers": {
+    "medical-calc-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "python", "-m", "medical_calc_mcp"]
+    }
+  }
+}
+```
+
+**Enable MCP in VS Code | 在 VS Code 啟用 MCP:**
+
+1. Open VS Code Settings (Ctrl+,)
+2. Search for `chat.mcp`
+3. Enable `Chat: Mcp Discovery Enabled`
+4. Restart VS Code
+
+**Usage | 使用方式:**
+
+In GitHub Copilot Chat, use `@medical-calc-mcp` to access calculators:
+
+在 GitHub Copilot Chat 中，使用 `@medical-calc-mcp` 存取計算器：
+
+```
+@medical-calc-mcp Calculate SOFA score with PaO2/FiO2=200, platelets=80...
+```
+
 ### Configure with Claude Desktop | 與 Claude Desktop 整合
 
 Add to your `claude_desktop_config.json`:
