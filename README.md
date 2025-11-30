@@ -417,7 +417,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 36 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 32 Calculators | 331 Tests | 79% Coverage | Phase 10 Complete ✅
+> **Current Stats**: 35 Calculators | 377 Tests | 80% Coverage | Phase 9b Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -532,6 +532,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_anion_gap` | Anion Gap | Metabolic acidosis differential | Kraut 2007, Figge 1998 |
 | `calculate_delta_ratio` | Delta Ratio (Delta Gap) | Mixed acid-base disorder detection | Wrenn 1990, Rastegar 2007 |
 | `calculate_corrected_sodium` | Corrected Sodium | True sodium in hyperglycemia | Katz 1973, Hillier 1999 |
+| `calculate_winters_formula` | Winter's Formula | Expected PaCO₂ in metabolic acidosis | Albert 1967, Narins 1980 |
+| `calculate_osmolar_gap` | Osmolar Gap | Toxic alcohol screening | Hoffman 1993, Lynd 2008 |
+| `calculate_free_water_deficit` | Free Water Deficit | Hypernatremia treatment planning | Adrogue 2000, Sterns 2015 |
 | `calculate_aa_gradient` | A-a Gradient | Alveolar-arterial O₂ gradient | Kanber 1968, West 2016 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
@@ -753,27 +756,25 @@ Phase 8: ✅ Complete             Phase 9-10: Acid-Base/Cardio    Phase 11-14: C
 ├── ✅ Child-Pugh               ├── Corrected QT, Shock Index    ├── Neuro/Sedation
 └── ✅ KDIGO AKI                └── A-a Gradient, IBW           ├── Infectious Disease
                                                                  └── Common Utilities
-Phase 9: 🔄 In Progress
-├── 🔄 Anion Gap                                                 Target: 50+ calculators
-├── 📋 Delta Ratio
-├── 📋 Corrected Sodium
-└── 📋 Winter's Formula
+Phase 9: ✅ Complete
+├── ✅ Anion Gap                                                 Target: 50+ calculators
+├── ✅ Delta Ratio
+├── ✅ Corrected Sodium
+├── ✅ Winter's Formula
+├── ✅ Osmolar Gap
+└── ✅ Free Water Deficit
 ```
 
 ### Upcoming Calculators | 即將推出的計算器
 
 | Priority | Tool ID | Name | Phase | Reference |
 |----------|---------|------|-------|-----------|
-| 🔴 High | `anion_gap` | Anion Gap | 9 | IBCC |
-| 🔴 High | `corrected_qt` | Corrected QT | 10 | Bazett 1920 |
-| 🔴 High | `aa_gradient` | A-a Gradient | 11 | - |
-| 🔴 High | `delta_ratio` | Delta Ratio | 9 | IBCC |
-| 🔴 High | `shock_index` | Shock Index | 10 | Allgöwer 1967 |
-| 🟡 Med | `corrected_sodium` | Corrected Sodium | 9 | Katz 1973 |
-| 🟡 Med | `ideal_body_weight` | Ideal Body Weight | 11 | ARDSNet |
-| 🟡 Med | `pf_ratio` | P/F Ratio | 11 | Berlin 2012 |
-| 🟡 Med | `rox_index` | ROX Index | 11 | Roca 2016 |
-| 🟡 Med | `grace_score` | GRACE Score | 10 | Fox 2006 |
+| 🔴 High | `ideal_body_weight` | Ideal Body Weight | 11 | ARDSNet |
+| 🔴 High | `pf_ratio` | P/F Ratio | 11 | Berlin 2012 |
+| 🔴 High | `rox_index` | ROX Index | 11 | Roca 2016 |
+| 🟡 Med | `grace_score` | GRACE Score | 11 | Fox 2006 |
+| 🟡 Med | `4ts_hit` | 4Ts Score for HIT | 11 | Lo 2006 |
+| 🟡 Med | `acef_ii` | ACEF II Score | 11 | Ranucci 2018 |
 
 ---
 

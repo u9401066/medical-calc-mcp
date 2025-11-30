@@ -56,6 +56,11 @@ from .anion_gap import AnionGapCalculator
 from .delta_ratio import DeltaRatioCalculator
 from .corrected_sodium import CorrectedSodiumCalculator
 
+# Phase 9b: Additional Acid-Base Calculators
+from .winters_formula import WintersFormulaCalculator
+from .osmolar_gap import OsmolarGapCalculator
+from .free_water_deficit import FreeWaterDeficitCalculator
+
 # Phase 10: High-Priority Tools
 from .corrected_qt import CorrectedQtCalculator
 from .aa_gradient import AaGradientCalculator
@@ -116,6 +121,11 @@ __all__ = [
     "DeltaRatioCalculator",
     "CorrectedSodiumCalculator",
     
+    # Phase 9b: Additional Acid-Base Calculators
+    "WintersFormulaCalculator",
+    "OsmolarGapCalculator",
+    "FreeWaterDeficitCalculator",
+    
     # Phase 10: High-Priority Tools
     "CorrectedQtCalculator",
     "AaGradientCalculator",
@@ -163,6 +173,10 @@ CALCULATORS = [
     AnionGapCalculator,
     DeltaRatioCalculator,
     CorrectedSodiumCalculator,
+    # Phase 9b: Additional Acid-Base Calculators
+    WintersFormulaCalculator,
+    OsmolarGapCalculator,
+    FreeWaterDeficitCalculator,
     # Phase 10: High-Priority Tools
     CorrectedQtCalculator,
     AaGradientCalculator,

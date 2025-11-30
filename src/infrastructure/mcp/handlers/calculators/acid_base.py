@@ -212,3 +212,208 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+
+    @mcp.tool()
+    def calculate_winters_formula(
+        hco3: Annotated[
+            float,
+            Field(ge=5, le=30, description="血清碳酸氫鹽 Serum bicarbonate | Unit: mEq/L | Range: 5-30")
+        ],
+        actual_paco2: Annotated[
+            Optional[float],
+            Field(default=None, ge=10, le=80, description="測量 PaCO₂ (optional) Measured arterial CO₂ for comparison | Unit: mmHg | Range: 10-80")
+        ] = None,
+    ) -> dict[str, Any]:
+        """
+        🫁 Winter's Formula: 代謝性酸中毒呼吸代償預測
+        
+        預測代謝性酸中毒患者的適當呼吸代償 (預期 PaCO₂)。
+        
+        **公式:**
+        - 預期 PaCO₂ = (1.5 × HCO₃⁻) + 8 ± 2
+        
+        **判讀:**
+        
+        | 測量 PaCO₂ | 診斷 |
+        |-----------|------|
+        | 在預期範圍內 | 適當呼吸代償，純粹代謝性酸中毒 |
+        | 低於預期下限 | 合併原發性呼吸性鹼中毒 |
+        | 高於預期上限 | 合併原發性呼吸性酸中毒 |
+        
+        **何時使用:**
+        - 已確認代謝性酸中毒 (pH <7.35, HCO₃⁻ <22 mEq/L)
+        - 評估是否有混合型酸鹼障礙
+        
+        **限制:**
+        - 僅適用於代謝性酸中毒
+        - 需時間讓呼吸代償完成 (12-24 小時)
+        - 肺部疾病可能影響代償能力
+        
+        **參考文獻:**
+        - Winter RB, et al. Arch Intern Med. 1967;120(2):209-213. PMID: 5660790
+        - Narins RG, Emmett M. Medicine. 1980;59(3):161-187. PMID: 6247109
+        
+        Returns:
+            預期 PaCO₂ 範圍 (mmHg)、代償評估、混合障礙診斷
+        """
+        request = CalculateRequest(
+            tool_id="winters_formula",
+            params={
+                "hco3": hco3,
+                "actual_paco2": actual_paco2,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+
+    @mcp.tool()
+    def calculate_osmolar_gap(
+        measured_osm: Annotated[
+            float,
+            Field(ge=200, le=450, description="測量血清滲透壓 Measured serum osmolality | Unit: mOsm/kg | Range: 200-450")
+        ],
+        sodium: Annotated[
+            float,
+            Field(ge=100, le=180, description="血清鈉 Serum sodium | Unit: mEq/L | Range: 100-180")
+        ],
+        glucose: Annotated[
+            float,
+            Field(ge=20, le=2000, description="血糖 Blood glucose | Unit: mg/dL | Range: 20-2000")
+        ],
+        bun: Annotated[
+            float,
+            Field(ge=1, le=200, description="血尿素氮 Blood urea nitrogen | Unit: mg/dL | Range: 1-200")
+        ],
+        ethanol: Annotated[
+            Optional[float],
+            Field(default=None, ge=0, le=600, description="血清乙醇 (optional) Serum ethanol level | Unit: mg/dL | Range: 0-600")
+        ] = None,
+    ) -> dict[str, Any]:
+        """
+        🧪 Osmolar Gap: 滲透壓間隙 (毒性醇類篩檢)
+        
+        計算測量與計算滲透壓之差，用於檢測未測量的滲透性物質，
+        特別是**甲醇**和**乙二醇**中毒。
+        
+        **公式:**
+        - 計算滲透壓 = 2×Na + (Glucose/18) + (BUN/2.8) + (Ethanol/4.6)
+        - 滲透壓間隙 = 測量滲透壓 - 計算滲透壓
+        
+        **正常範圍:** -10 to +10 mOsm/kg
+        
+        **判讀:**
+        
+        | Osmolar Gap | 意義 |
+        |-------------|------|
+        | -10 to +10 | 正常 |
+        | >10 | 升高，可能有未測量滲透物質 |
+        | >20-25 | 顯著升高，高度懷疑毒性醇類 |
+        
+        **升高原因:**
+        - **毒性醇類:** 甲醇、乙二醇、異丙醇、丙二醇
+        - 乙醇 (如未納入計算)
+        - 酮症 (DKA)
+        - 慢性腎病
+        - 休克/低灌注
+        - 甘露醇
+        
+        **⚠️ 重要警告:**
+        - 滲透壓間隙正常**不能排除**毒性醇類中毒
+        - 隨著代謝，母體醇類減少，間隙可能正常化
+        - 同時有高陰離子間隙酸中毒更具診斷價值
+        
+        **參考文獻:**
+        - Hoffman RS, et al. J Toxicol Clin Toxicol. 1993;31(1):81-93. PMID: 8433417
+        - Lynd LD, et al. Clin Toxicol. 2008;46(4):309-323. PMID: 17852166
+        
+        Returns:
+            Osmolar Gap (mOsm/kg)、解釋、毒性醇類建議
+        """
+        request = CalculateRequest(
+            tool_id="osmolar_gap",
+            params={
+                "measured_osm": measured_osm,
+                "sodium": sodium,
+                "glucose": glucose,
+                "bun": bun,
+                "ethanol": ethanol,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+
+    @mcp.tool()
+    def calculate_free_water_deficit(
+        current_sodium: Annotated[
+            float,
+            Field(ge=145, le=200, description="目前血鈉 Current serum sodium | Unit: mEq/L | Range: 145-200 (hypernatremia)")
+        ],
+        weight_kg: Annotated[
+            float,
+            Field(ge=2, le=300, description="體重 Body weight | Unit: kg | Range: 2-300")
+        ],
+        target_sodium: Annotated[
+            float,
+            Field(default=140.0, ge=135, le=145, description="目標血鈉 Target sodium | Unit: mEq/L | Default: 140")
+        ] = 140.0,
+        patient_type: Annotated[
+            Literal["adult_male", "adult_female", "elderly_male", "elderly_female", "child"],
+            Field(default="adult_male", description="病患類型 Patient type for TBW calculation: adult_male (60%), adult_female (50%), elderly_male (50%), elderly_female (45%), child (60%)")
+        ] = "adult_male",
+        correction_time_hours: Annotated[
+            int,
+            Field(default=24, ge=1, le=72, description="校正時間 Time for correction | Unit: hours | Range: 1-72 | Recommended: 24-48h")
+        ] = 24,
+    ) -> dict[str, Any]:
+        """
+        💧 Free Water Deficit: 高血鈉自由水補充計算
+        
+        計算高血鈉患者需要補充的自由水量。
+        
+        **公式:**
+        - 自由水缺失 = TBW × ((目前 Na / 目標 Na) - 1)
+        - TBW = 體重 × 水分比例
+        
+        **水分比例:**
+        | 類型 | 比例 |
+        |------|------|
+        | 成年男性 | 60% |
+        | 成年女性 | 50% |
+        | 老年男性 | 50% |
+        | 老年女性 | 45% |
+        | 兒童 | 60% |
+        
+        **⚠️ 安全校正速率:**
+        - **最大: 10-12 mEq/L per 24 hours**
+        - 建議: 0.5 mEq/L per hour
+        - 校正過快可能導致腦水腫
+        
+        **輸液選擇:**
+        - D5W: 100% 自由水
+        - 0.45% NaCl: ~50% 自由水
+        - 0.225% NaCl: ~75% 自由水
+        
+        **治療提醒:**
+        - 需加上維持液和持續流失量
+        - 每 4-6 小時複查血鈉
+        - 找出並治療高血鈉原因
+        
+        **參考文獻:**
+        - Adrogue HJ, Madias NE. N Engl J Med. 2000;342(20):1493-1499. PMID: 10816188
+        - Sterns RH. N Engl J Med. 2015;372(1):55-65. PMID: 25551526
+        
+        Returns:
+            自由水缺失 (L)、輸注速率、安全警示
+        """
+        request = CalculateRequest(
+            tool_id="free_water_deficit",
+            params={
+                "current_sodium": current_sodium,
+                "weight_kg": weight_kg,
+                "target_sodium": target_sodium,
+                "patient_type": patient_type,
+                "correction_time_hours": correction_time_hours,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
