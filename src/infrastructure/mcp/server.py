@@ -21,7 +21,7 @@ Usage:
     python -m src.infrastructure.mcp.server --transport http
 
 Tool Discovery Flow:
-    1. Agent calls discover_tools(), list_by_specialty(), or list_by_context()
+    1. Agent calls search_calculators(), list_by_specialty(), or list_by_context()
     2. Agent calls get_calculator_info(tool_id) for parameters
     3. Agent calls calculate_*(params) for calculation
 """
@@ -85,7 +85,7 @@ class MedicalCalculatorServer:
     
     def _init_handlers(self) -> None:
         """Initialize all MCP handlers"""
-        # Discovery tools (discover_tools, list_by_specialty, etc.)
+        # Discovery tools (search_calculators, list_by_specialty, etc.)
         self._discovery_handler = DiscoveryHandler(self._mcp, self._registry)
         
         # Calculator tools (calculate_sofa, calculate_gcs, etc.)

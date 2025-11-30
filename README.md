@@ -303,7 +303,7 @@ This means:
 
 | Tool | Purpose | 用途 |
 |------|---------|------|
-| `discover_tools(query)` | Free text search | 自由文字搜尋 |
+| `search_calculators(keyword)` | Keyword search | 關鍵字搜尋 |
 | `list_by_specialty(specialty)` | Filter by medical specialty | 依專科篩選 |
 | `list_by_context(context)` | Filter by clinical context | 依臨床情境篩選 |
 | `list_calculators()` | List all available calculators | 列出所有可用計算器 |
@@ -343,7 +343,7 @@ Agent: calculate_rcri(high_risk_surgery=True, ischemic_heart_disease=True, ...)
 User: "Evaluate this ICU patient for sepsis"
 用戶：「評估這位 ICU 病患是否有敗血症」
 
-Agent: discover_tools("sepsis ICU")
+Agent: search_calculators("sepsis")
        → Returns: SOFA, qSOFA, NEWS2, APACHE II
 
 # Per Sepsis-3 guidelines:
@@ -487,12 +487,12 @@ prompt: sepsis_evaluation
 
 ### Example 2: Tool Discovery | 工具探索
 
-**Query | 查詢:** `discover_tools("difficult airway")`
+**Query | 查詢:** `search_calculators("airway")`
 
 **Output | 輸出:**
 ```json
 {
-  "query": "difficult airway",
+  "keyword": "airway",
   "count": 1,
   "tools": [{
     "tool_id": "mallampati_score",
