@@ -120,6 +120,30 @@ This project provides:
 | **FastMCP** | Native Python MCP SDK, simple decorator-based API | 原生 Python MCP SDK，簡潔裝飾器 API |
 | **Dataclasses** | Immutable, type-safe entities | 不可變、型別安全的實體 |
 | **Two-Level Keys** | Enable both precise lookup and exploratory discovery | 同時支援精確查找與探索式發現 |
+| **Layered Validation** | 3-layer validation (MCP/Application/Domain) | 三層驗證架構 |
+
+### Validation Architecture | 驗證架構
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Layer 1: MCP (Infrastructure)                               │
+│  └── Pydantic + JSON Schema: Type validation                │
+│      (Automatic from Annotated[type, Field(description)])   │
+├─────────────────────────────────────────────────────────────┤
+│  Layer 2: Application (Use Case)                             │
+│  └── ParameterValidator: Pre-calculation validation         │
+│      (22 parameter specs with valid ranges)                 │
+├─────────────────────────────────────────────────────────────┤
+│  Layer 3: Domain (Calculator)                                │
+│  └── Medical logic validation                                │
+│      (Clinical rules, formula constraints)                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Domain validation module** (`src/domain/validation/`):
+- `rules.py`: Base classes (RangeRule, EnumRule, TypeRule, CustomRule)
+- `parameter_specs.py`: 22 medical parameter specifications
+- `validators.py`: ParameterValidator with `validate_params()` function
 
 ---
 
@@ -542,7 +566,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 5 | ✅ Complete | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
 | Phase 5.5 | ✅ Complete | MCP Prompts (5 workflows) + Parameter Descriptions + Enhanced Errors |
 | Phase 6 | ⏳ Planned | More Calculators (CURB-65, Wells Score, etc.) |
-| Phase 7 | ⏳ Planned | Validation Layer & Error Handling |
+| Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
 | Phase 8 | ⏳ Planned | Additional Transports (HTTP, WebSocket) |
 
 ### Contributing | 貢獻

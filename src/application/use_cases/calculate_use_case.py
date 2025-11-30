@@ -3,9 +3,10 @@ Calculate Use Case
 
 Application layer use case for executing calculations.
 Provides clear error messages with valid input ranges.
+Uses Domain validation for consistent parameter validation.
 """
 
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from ..dto import (
     CalculateRequest,
@@ -14,33 +15,11 @@ from ..dto import (
     InterpretationDTO,
 )
 from ...domain.registry.tool_registry import ToolRegistry
-
-
-# Input validation hints for common parameters
-PARAMETER_HINTS = {
-    "gcs_score": "Valid range: 3-15 (Eye 1-4 + Verbal 1-5 + Motor 1-6)",
-    "rass_score": "Valid range: -5 to +4 (-5=unarousable, 0=calm, +4=combative)",
-    "temperature": "Valid range: 30.0-45.0 °C",
-    "heart_rate": "Valid range: 20-300 bpm",
-    "respiratory_rate": "Valid range: 0-100 breaths/min",
-    "systolic_bp": "Valid range: 40-300 mmHg",
-    "mean_arterial_pressure": "Valid range: 30-200 mmHg",
-    "spo2": "Valid range: 50-100 %",
-    "fio2": "Valid range: 0.21-1.0 (21%-100%)",
-    "pao2_fio2_ratio": "Valid range: 0-700 mmHg (normal >400)",
-    "serum_creatinine": "Valid range: 0.1-30.0 mg/dL",
-    "creatinine": "Valid range: 0.1-30.0 mg/dL",
-    "platelets": "Valid range: 0-2000 ×10³/µL",
-    "bilirubin": "Valid range: 0-50 mg/dL",
-    "age": "Valid range: 0-120 years",
-    "weight_kg": "Valid range: 0.5-300 kg",
-    "hematocrit": "Valid range: 10-70 %",
-    "hemoglobin": "Valid range: 2-25 g/dL",
-    "asa_class": "Valid range: 1-6 (I=healthy, VI=brain-dead)",
-    "mallampati_class": "Valid range: 1-4 (I=easiest, IV=hardest)",
-    "sex": "Valid values: 'male' or 'female'",
-    "consciousness": "Valid values: A (Alert), V (Voice), P (Pain), U (Unresponsive), C (Confusion)",
-}
+from ...domain.validation import (
+    ParameterValidator,
+    ValidationResult,
+    get_validation_hints,
+)
 
 
 class CalculateUseCase:
@@ -48,13 +27,14 @@ class CalculateUseCase:
     Use case for executing medical calculations.
     
     This use case:
-    1. Validates the tool exists
+    1. Validates inputs using Domain validation layer
     2. Executes the calculation
     3. Formats the response with clear error messages
     """
     
     def __init__(self, registry: ToolRegistry):
         self._registry = registry
+        self._validator = ParameterValidator()
     
     def execute(self, request: CalculateRequest) -> CalculateResponse:
         """
@@ -82,6 +62,19 @@ class CalculateUseCase:
                           f"Use get_calculator_info(tool_id) to see details."
                 )
             
+            # Pre-validate using domain validation
+            validation_result = self._validate_params(request.params)
+            if not validation_result.is_valid:
+                return CalculateResponse(
+                    success=False,
+                    tool_id=request.tool_id,
+                    score_name="",
+                    result=None,
+                    unit="",
+                    error=f"Validation error: {validation_result.get_error_message()}. "
+                          f"Use get_calculator_info('{request.tool_id}') to see required parameters."
+                )
+            
             # Execute calculation
             result = calculator.calculate(**request.params)
             
@@ -90,7 +83,7 @@ class CalculateUseCase:
             
         except TypeError as e:
             error_msg = str(e)
-            hint = self._get_parameter_hint(error_msg)
+            hint = self._get_parameter_hint_from_error(error_msg, request.params)
             return CalculateResponse(
                 success=False,
                 tool_id=request.tool_id,
@@ -102,7 +95,7 @@ class CalculateUseCase:
             )
         except ValueError as e:
             error_msg = str(e)
-            hint = self._get_parameter_hint(error_msg)
+            hint = self._get_parameter_hint_from_error(error_msg, request.params)
             return CalculateResponse(
                 success=False,
                 tool_id=request.tool_id,
@@ -122,17 +115,34 @@ class CalculateUseCase:
                       f"Please check input values and try again."
             )
     
-    def _get_parameter_hint(self, error_msg: str) -> str:
-        """Get parameter hints based on error message"""
+    def _validate_params(self, params: Dict[str, Any]) -> ValidationResult:
+        """Pre-validate parameters using Domain validation"""
+        # Get parameter names from the request
+        param_names = list(params.keys())
+        
+        # Validate all provided parameters
+        return self._validator.validate(params, optional=param_names)
+    
+    def _get_parameter_hint_from_error(
+        self, 
+        error_msg: str, 
+        params: Dict[str, Any]
+    ) -> str:
+        """Get parameter hints based on error message using Domain hints"""
         error_lower = error_msg.lower()
-        hints = []
+        param_names = list(params.keys())
         
-        for param, hint in PARAMETER_HINTS.items():
-            if param.replace("_", " ") in error_lower or param in error_lower:
-                hints.append(hint)
+        # Get hints from Domain validation layer
+        hints = get_validation_hints(param_names)
         
-        if hints:
-            return " ".join(hints) + " "
+        # Find relevant hints based on error message
+        relevant_hints = []
+        for param, hint in hints.items():
+            if hint and (param.replace("_", " ") in error_lower or param in error_lower):
+                relevant_hints.append(hint)
+        
+        if relevant_hints:
+            return " ".join(relevant_hints) + " "
         return ""
     
     def _to_response(self, tool_id: str, result) -> CalculateResponse:
