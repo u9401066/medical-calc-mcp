@@ -214,3 +214,152 @@ class TestRcriCalculator:
         
         calc = RcriCalculator()
         assert calc.tool_id == "rcri"
+
+
+class TestApfelPonvCalculator:
+    """Tests for Apfel Score PONV Risk Calculator."""
+
+    def test_zero_risk_factors(self):
+        """Test Apfel score 0 - very low risk (~10%)."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=False,
+            history_motion_sickness_or_ponv=False,
+            non_smoker=False,  # Smoker
+            postoperative_opioids=False
+        )
+        
+        assert result.value == 0
+        assert result.calculation_details["ponv_risk_percent"] == 10.0
+        assert "very low" in result.interpretation.summary.lower()
+
+    def test_one_risk_factor(self):
+        """Test Apfel score 1 - low risk (~21%)."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=True,
+            history_motion_sickness_or_ponv=False,
+            non_smoker=False,
+            postoperative_opioids=False
+        )
+        
+        assert result.value == 1
+        assert result.calculation_details["ponv_risk_percent"] == 21.0
+
+    def test_two_risk_factors(self):
+        """Test Apfel score 2 - moderate risk (~39%)."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=True,
+            history_motion_sickness_or_ponv=True,
+            non_smoker=False,
+            postoperative_opioids=False
+        )
+        
+        assert result.value == 2
+        assert result.calculation_details["ponv_risk_percent"] == 39.0
+        assert "moderate" in result.interpretation.summary.lower()
+
+    def test_three_risk_factors(self):
+        """Test Apfel score 3 - high risk (~61%)."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=True,
+            history_motion_sickness_or_ponv=True,
+            non_smoker=True,
+            postoperative_opioids=False
+        )
+        
+        assert result.value == 3
+        assert result.calculation_details["ponv_risk_percent"] == 61.0
+        assert "high" in result.interpretation.summary.lower()
+
+    def test_four_risk_factors(self):
+        """Test Apfel score 4 - very high risk (~79%)."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=True,
+            history_motion_sickness_or_ponv=True,
+            non_smoker=True,
+            postoperative_opioids=True
+        )
+        
+        assert result.value == 4
+        assert result.calculation_details["ponv_risk_percent"] == 79.0
+        assert "very high" in result.interpretation.summary.lower()
+
+    def test_typical_high_risk_patient(self):
+        """Test typical high-risk patient: female, non-smoker, with opioids."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=True,
+            history_motion_sickness_or_ponv=False,
+            non_smoker=True,
+            postoperative_opioids=True
+        )
+        
+        assert result.value == 3
+        # Should recommend multi-modal prophylaxis
+        assert any("multi" in rec.lower() for rec in result.interpretation.recommendations)
+
+    def test_risk_factors_tracked(self):
+        """Test that risk factors are tracked in calculation details."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=True,
+            history_motion_sickness_or_ponv=True,
+            non_smoker=False,
+            postoperative_opioids=False
+        )
+        
+        factors = result.calculation_details["risk_factors_present"]
+        assert "Female gender" in factors
+        assert "History of motion sickness or PONV" in factors
+        assert len(factors) == 2
+
+    def test_has_references(self):
+        """Test that Apfel score includes original reference."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        result = calc.calculate(
+            female_gender=False,
+            history_motion_sickness_or_ponv=False,
+            non_smoker=False,
+            postoperative_opioids=False
+        )
+        
+        assert result.references is not None
+        assert len(result.references) >= 1
+        # Check for Apfel 1999 reference
+        ref_text = str(result.references[0])
+        assert "Apfel" in ref_text or "10485781" in ref_text
+
+    def test_tool_id(self):
+        """Test tool ID is correct."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        assert calc.tool_id == "apfel_ponv"
+
+    def test_metadata(self):
+        """Test that metadata is properly configured."""
+        from src.domain.services.calculators import ApfelPonvCalculator
+        
+        calc = ApfelPonvCalculator()
+        assert calc.name == "Apfel Score for PONV"
+        assert "anesthesiology" in [s.value for s in calc.metadata.high_level.specialties]

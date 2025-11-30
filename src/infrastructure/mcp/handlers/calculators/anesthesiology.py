@@ -39,6 +39,53 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         return response.to_dict()
     
     @mcp.tool()
+    def calculate_apfel_ponv(
+        female_gender: Annotated[bool, Field(description="女性 Female gender")],
+        history_motion_sickness_or_ponv: Annotated[bool, Field(description="暈動病或PONV病史 History of motion sickness or previous PONV")],
+        non_smoker: Annotated[bool, Field(description="不吸菸 Non-smoker (does NOT currently smoke)")],
+        postoperative_opioids: Annotated[bool, Field(description="術後使用鴉片類藥物 Postoperative opioids planned/anticipated")]
+    ) -> dict[str, Any]:
+        """
+        🤢 Apfel Score: 術後噁心嘔吐風險評估 (PONV Risk Score)
+        
+        預測成人全身麻醉後發生術後噁心嘔吐的風險，指導預防性止吐藥使用。
+        
+        **四個風險因子 (各+1分):**
+        - **F**emale gender: 女性
+        - **H**istory: 暈動病或 PONV 病史
+        - **N**on-smoking: 不吸菸者
+        - **O**pioids: 術後使用鴉片類藥物
+        
+        **PONV 風險:**
+        - 0 因子: ~10%
+        - 1 因子: ~21%
+        - 2 因子: ~39% → 考慮預防
+        - 3 因子: ~61% → 建議多重預防
+        - 4 因子: ~79% → 積極多重預防
+        
+        **預防策略:**
+        - ≥2 風險因子: 雙重止吐預防 (Ondansetron + Dexamethasone)
+        - ≥3 風險因子: 多重預防 + TIVA + 減少鴉片類
+        
+        **參考文獻:** Apfel CC, et al. Anesthesiology. 1999;91(3):693-700.
+        PMID: 10485781
+        
+        Returns:
+            Apfel 分數 (0-4)、PONV 風險百分比、預防建議
+        """
+        request = CalculateRequest(
+            tool_id="apfel_ponv",
+            params={
+                "female_gender": female_gender,
+                "history_motion_sickness_or_ponv": history_motion_sickness_or_ponv,
+                "non_smoker": non_smoker,
+                "postoperative_opioids": postoperative_opioids
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
     def calculate_mallampati(
         mallampati_class: Annotated[
             Literal[1, 2, 3, 4],

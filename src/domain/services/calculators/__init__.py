@@ -75,6 +75,9 @@ from .grace_score import GraceScoreCalculator
 from .four_ts_hit import FourTsHitCalculator
 from .acef_ii_score import AcefIiScoreCalculator
 
+# Phase 12: Additional Anesthesiology Tools
+from .apfel_ponv import ApfelPonvCalculator
+
 
 __all__ = [
     # Nephrology
@@ -148,6 +151,9 @@ __all__ = [
     "GraceScoreCalculator",
     "FourTsHitCalculator",
     "AcefIiScoreCalculator",
+    
+    # Phase 12: Additional Anesthesiology Tools
+    "ApfelPonvCalculator",
 ]
 
 
@@ -207,4 +213,6 @@ CALCULATORS = [
     GraceScoreCalculator,
     FourTsHitCalculator,
     AcefIiScoreCalculator,
+    # Phase 12: Additional Anesthesiology Tools
+    ApfelPonvCalculator,
 ]
