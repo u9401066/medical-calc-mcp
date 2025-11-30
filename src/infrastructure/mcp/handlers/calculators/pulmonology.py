@@ -22,16 +22,16 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
             description="新發意識混亂 New mental confusion (disorientation in person, place, or time)"
         )],
         bun_gt_19_or_urea_gt_7: Annotated[bool, Field(
-            description="BUN >19 mg/dL 或 Urea >7 mmol/L"
+            description="BUN >19 mg/dL 或 Urea >7 mmol/L (Blood urea nitrogen elevated)"
         )],
         respiratory_rate_gte_30: Annotated[bool, Field(
-            description="呼吸速率 ≥30 次/分 Respiratory rate ≥30/min"
+            description="呼吸速率 ≥30/min Respiratory rate ≥30 breaths per minute"
         )],
         sbp_lt_90_or_dbp_lte_60: Annotated[bool, Field(
-            description="收縮壓 <90 mmHg 或 舒張壓 ≤60 mmHg (Systolic BP <90 OR Diastolic BP ≤60)"
+            description="低血壓 Low BP: Systolic <90 mmHg OR Diastolic ≤60 mmHg"
         )],
         age_gte_65: Annotated[bool, Field(
-            description="年齡 ≥65 歲 Age ≥65 years"
+            description="年齡 ≥65歲 Age ≥65 years"
         )],
     ) -> dict[str, Any]:
         """
@@ -72,29 +72,29 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
     
     @mcp.tool()
     def calculate_psi_port(
-        age_years: Annotated[int, Field(description="年齡 (歲) Patient age in years")],
-        female: Annotated[bool, Field(description="女性 (年齡 -10 分) Female patient", default=False)],
-        nursing_home_resident: Annotated[bool, Field(description="護理之家住民 Nursing home resident (+10)", default=False)],
+        age_years: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
+        female: Annotated[bool, Field(description="女性 Female (age -10 points)")] = False,
+        nursing_home_resident: Annotated[bool, Field(description="護理之家住民 Nursing home resident (+10)")] = False,
         # Comorbidities
-        neoplastic_disease: Annotated[bool, Field(description="惡性腫瘤 Active neoplastic disease (+30)", default=False)],
-        liver_disease: Annotated[bool, Field(description="肝病 Liver disease (+20)", default=False)],
-        chf: Annotated[bool, Field(description="心衰竭 Congestive heart failure (+10)", default=False)],
-        cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 Cerebrovascular disease (+10)", default=False)],
-        renal_disease: Annotated[bool, Field(description="腎病 Renal disease (+10)", default=False)],
+        neoplastic_disease: Annotated[bool, Field(description="惡性腫瘤 Active neoplastic disease (+30)")] = False,
+        liver_disease: Annotated[bool, Field(description="肝病 Liver disease (+20)")] = False,
+        chf: Annotated[bool, Field(description="心衰竭 Congestive heart failure (+10)")] = False,
+        cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 Cerebrovascular disease (+10)")] = False,
+        renal_disease: Annotated[bool, Field(description="腎病 Renal disease (+10)")] = False,
         # Physical exam findings
-        altered_mental_status: Annotated[bool, Field(description="意識改變 Altered mental status (+20)", default=False)],
-        respiratory_rate_gte_30: Annotated[bool, Field(description="呼吸速率 ≥30/min (+20)", default=False)],
-        systolic_bp_lt_90: Annotated[bool, Field(description="收縮壓 <90 mmHg (+20)", default=False)],
-        temperature_abnormal: Annotated[bool, Field(description="體溫 <35°C 或 ≥40°C (+15)", default=False)],
-        pulse_gte_125: Annotated[bool, Field(description="心跳 ≥125/min (+10)", default=False)],
+        altered_mental_status: Annotated[bool, Field(description="意識改變 Altered mental status (+20)")] = False,
+        respiratory_rate_gte_30: Annotated[bool, Field(description="呼吸速率 ≥30/min (+20)")] = False,
+        systolic_bp_lt_90: Annotated[bool, Field(description="收縮壓 <90 mmHg (+20)")] = False,
+        temperature_abnormal: Annotated[bool, Field(description="體溫 <35°C 或 ≥40°C (+15)")] = False,
+        pulse_gte_125: Annotated[bool, Field(description="心跳 ≥125/min (+10)")] = False,
         # Laboratory/radiology findings
-        arterial_ph_lt_7_35: Annotated[bool, Field(description="動脈血 pH <7.35 (+30)", default=False)],
-        bun_gte_30: Annotated[bool, Field(description="BUN ≥30 mg/dL 或 ≥11 mmol/L (+20)", default=False)],
-        sodium_lt_130: Annotated[bool, Field(description="鈉 <130 mEq/L (+20)", default=False)],
-        glucose_gte_250: Annotated[bool, Field(description="血糖 ≥250 mg/dL (+10)", default=False)],
-        hematocrit_lt_30: Annotated[bool, Field(description="血比容 <30% (+10)", default=False)],
-        pao2_lt_60_or_sao2_lt_90: Annotated[bool, Field(description="PaO2 <60 mmHg 或 SaO2 <90% (+10)", default=False)],
-        pleural_effusion: Annotated[bool, Field(description="肋膜積液 Pleural effusion (+10)", default=False)],
+        arterial_ph_lt_7_35: Annotated[bool, Field(description="動脈血 pH <7.35 (+30)")] = False,
+        bun_gte_30: Annotated[bool, Field(description="BUN ≥30 mg/dL 或 ≥11 mmol/L (+20)")] = False,
+        sodium_lt_130: Annotated[bool, Field(description="鈉 <130 mEq/L (+20)")] = False,
+        glucose_gte_250: Annotated[bool, Field(description="血糖 ≥250 mg/dL (+10)")] = False,
+        hematocrit_lt_30: Annotated[bool, Field(description="血比容 <30% (+10)")] = False,
+        pao2_lt_60_or_sao2_lt_90: Annotated[bool, Field(description="PaO2 <60 mmHg 或 SaO2 <90% (+10)")] = False,
+        pleural_effusion: Annotated[bool, Field(description="肋膜積液 Pleural effusion (+10)")] = False,
     ) -> dict[str, Any]:
         """
         🫁 PSI/PORT Score: 肺炎嚴重度指數

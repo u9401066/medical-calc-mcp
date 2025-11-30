@@ -5,7 +5,7 @@ MCP tool handlers for critical care and ICU calculators.
 Uses Annotated + Field to provide rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional, Annotated, List
+from typing import Any, Optional, Annotated, List, Literal
 
 from pydantic import Field
 from mcp.server.fastmcp import FastMCP
@@ -19,24 +19,27 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_apache_ii(
-        temperature: Annotated[float, Field(description="體溫 Temperature in °C (36.0-40.0)")],
-        mean_arterial_pressure: Annotated[float, Field(description="平均動脈壓 MAP in mmHg (50-160)")],
-        heart_rate: Annotated[float, Field(description="心率 Heart rate in bpm (40-180)")],
-        respiratory_rate: Annotated[float, Field(description="呼吸速率 RR in breaths/min (10-50)")],
-        fio2: Annotated[float, Field(description="吸入氧濃度 FiO2 (0.21-1.0)")],
-        arterial_ph: Annotated[float, Field(description="動脈血 pH (7.15-7.70)", default=7.40)],
-        serum_sodium: Annotated[float, Field(description="血鈉 Sodium in mEq/L (120-160)", default=140.0)],
-        serum_potassium: Annotated[float, Field(description="血鉀 Potassium in mEq/L (2.5-7.0)", default=4.0)],
-        serum_creatinine: Annotated[float, Field(description="血肌酐 Creatinine in mg/dL (0.5-15.0)", default=1.0)],
-        hematocrit: Annotated[float, Field(description="血球容積比 Hematocrit in % (20-60)", default=40.0)],
-        wbc_count: Annotated[float, Field(description="白血球 WBC in ×10³/µL (1-40)", default=10.0)],
-        gcs_score: Annotated[int, Field(description="格拉斯哥昏迷指數 GCS (3-15)", default=15)],
-        age: Annotated[int, Field(description="年齡 Age in years (18-100)", default=50)],
-        pao2: Annotated[Optional[float], Field(description="動脈血氧分壓 PaO2 in mmHg (use if FiO2<0.5)", default=None)],
-        aado2: Annotated[Optional[float], Field(description="肺泡動脈氧分壓差 A-a gradient mmHg (if FiO2≥0.5)", default=None)],
-        chronic_conditions: Annotated[Optional[List[str]], Field(description="慢性健康問題 Chronic conditions list", default=None)],
-        admission_type: Annotated[str, Field(description="入院類型: nonoperative, elective_postop, emergency_postop", default="nonoperative")],
-        acute_renal_failure: Annotated[bool, Field(description="急性腎衰竭 Acute renal failure present", default=False)]
+        temperature: Annotated[float, Field(ge=30.0, le=42.0, description="體溫 Temperature | Unit: °C | Range: 30.0-42.0")],
+        mean_arterial_pressure: Annotated[float, Field(ge=20, le=200, description="平均動脈壓 MAP | Unit: mmHg | Range: 20-200")],
+        heart_rate: Annotated[float, Field(ge=20, le=250, description="心率 Heart rate | Unit: bpm | Range: 20-250")],
+        respiratory_rate: Annotated[float, Field(ge=4, le=60, description="呼吸速率 RR | Unit: breaths/min | Range: 4-60")],
+        fio2: Annotated[float, Field(ge=0.21, le=1.0, description="吸入氧濃度 FiO2 | Range: 0.21-1.0")],
+        arterial_ph: Annotated[float, Field(ge=6.8, le=8.0, description="動脈血 pH | Range: 6.8-8.0")] = 7.40,
+        serum_sodium: Annotated[float, Field(ge=100, le=180, description="血鈉 Sodium | Unit: mEq/L | Range: 100-180")] = 140.0,
+        serum_potassium: Annotated[float, Field(ge=1.0, le=10.0, description="血鉀 Potassium | Unit: mEq/L | Range: 1.0-10.0")] = 4.0,
+        serum_creatinine: Annotated[float, Field(gt=0, le=20.0, description="血肌酐 Creatinine | Unit: mg/dL | Range: >0-20.0")] = 1.0,
+        hematocrit: Annotated[float, Field(ge=10, le=70, description="血球容積比 Hematocrit | Unit: % | Range: 10-70")] = 40.0,
+        wbc_count: Annotated[float, Field(ge=0.1, le=100, description="白血球 WBC | Unit: ×10³/µL | Range: 0.1-100")] = 10.0,
+        gcs_score: Annotated[int, Field(ge=3, le=15, description="格拉斯哥昏迷指數 GCS | Range: 3-15")] = 15,
+        age: Annotated[int, Field(ge=16, le=120, description="年齡 Age | Unit: years | Range: 16-120")] = 50,
+        pao2: Annotated[Optional[float], Field(ge=20, le=700, description="動脈血氧分壓 PaO2 | Unit: mmHg (use if FiO2<0.5)")] = None,
+        aado2: Annotated[Optional[float], Field(ge=0, le=700, description="肺泡動脈氧分壓差 A-a gradient | Unit: mmHg (if FiO2≥0.5)")] = None,
+        chronic_conditions: Annotated[Optional[List[str]], Field(description="慢性健康問題 Chronic conditions list")] = None,
+        admission_type: Annotated[
+            Literal["nonoperative", "elective_postop", "emergency_postop"],
+            Field(description="入院類型 | Options: 'nonoperative', 'elective_postop', 'emergency_postop'")
+        ] = "nonoperative",
+        acute_renal_failure: Annotated[bool, Field(description="急性腎衰竭 Acute renal failure present")] = False
     ) -> dict[str, Any]:
         """
         計算 APACHE II 分數 (ICU 嚴重度評估)
@@ -74,7 +77,10 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_rass(
-        rass_score: Annotated[int, Field(description="RASS分數 (-5到+4): +4=好鬥, 0=清醒平靜, -5=無法喚醒")]
+        rass_score: Annotated[
+            Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4],
+            Field(description="RASS分數 | Options: +4=Combative, +3=Very agitated, +2=Agitated, +1=Restless, 0=Alert and calm, -1=Drowsy, -2=Light sedation, -3=Moderate sedation, -4=Deep sedation, -5=Unarousable")
+        ]
     ) -> dict[str, Any]:
         """
         RASS 鎮靜躁動評估量表 (Richmond Agitation-Sedation Scale)
@@ -91,18 +97,18 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_sofa(
-        pao2_fio2_ratio: Annotated[float, Field(description="PaO2/FiO2比值 mmHg (normal>400, use worst in 24h)")],
-        platelets: Annotated[float, Field(description="血小板 Platelets ×10³/µL (normal 150-400)")],
-        bilirubin: Annotated[float, Field(description="總膽紅素 Bilirubin mg/dL (normal <1.2)")],
-        gcs_score: Annotated[int, Field(description="格拉斯哥昏迷指數 GCS 3-15 (use lowest)")],
-        creatinine: Annotated[float, Field(description="血清肌酐 Creatinine mg/dL (normal 0.7-1.3)")],
-        map_value: Annotated[Optional[float], Field(description="平均動脈壓 MAP mmHg (if no vasopressors)", default=None)],
-        dopamine_dose: Annotated[Optional[float], Field(description="Dopamine劑量 µg/kg/min", default=None)],
-        dobutamine_any: Annotated[bool, Field(description="是否使用Dobutamine (any dose)", default=False)],
-        epinephrine_dose: Annotated[Optional[float], Field(description="Epinephrine劑量 µg/kg/min", default=None)],
-        norepinephrine_dose: Annotated[Optional[float], Field(description="Norepinephrine劑量 µg/kg/min", default=None)],
-        is_mechanically_ventilated: Annotated[bool, Field(description="是否機械通氣 (affects respiratory scoring)", default=False)],
-        urine_output_24h: Annotated[Optional[float], Field(description="24h尿量 mL (for renal scoring)", default=None)],
+        pao2_fio2_ratio: Annotated[float, Field(gt=0, le=700, description="PaO2/FiO2比值 | Unit: mmHg | Range: >0-700 (normal >400)")],
+        platelets: Annotated[float, Field(gt=0, le=1000, description="血小板 Platelets | Unit: ×10³/µL | Range: >0-1000 (normal 150-400)")],
+        bilirubin: Annotated[float, Field(ge=0, le=50, description="總膽紅素 Bilirubin | Unit: mg/dL | Range: 0-50 (normal <1.2)")],
+        gcs_score: Annotated[int, Field(ge=3, le=15, description="格拉斯哥昏迷指數 GCS | Range: 3-15 (use lowest in 24h)")],
+        creatinine: Annotated[float, Field(gt=0, le=20, description="血清肌酐 Creatinine | Unit: mg/dL | Range: >0-20 (normal 0.7-1.3)")],
+        map_value: Annotated[Optional[float], Field(ge=0, le=200, description="平均動脈壓 MAP | Unit: mmHg (if no vasopressors)")] = None,
+        dopamine_dose: Annotated[Optional[float], Field(ge=0, le=50, description="Dopamine劑量 | Unit: µg/kg/min")] = None,
+        dobutamine_any: Annotated[bool, Field(description="是否使用Dobutamine (any dose)")] = False,
+        epinephrine_dose: Annotated[Optional[float], Field(ge=0, le=2, description="Epinephrine劑量 | Unit: µg/kg/min")] = None,
+        norepinephrine_dose: Annotated[Optional[float], Field(ge=0, le=2, description="Norepinephrine劑量 | Unit: µg/kg/min")] = None,
+        is_mechanically_ventilated: Annotated[bool, Field(description="是否機械通氣 (affects respiratory scoring)")] = False,
+        urine_output_24h: Annotated[Optional[float], Field(ge=0, le=10000, description="24h尿量 | Unit: mL (for renal scoring)")] = None,
     ) -> dict[str, Any]:
         """
         計算 SOFA 分數 (Sequential Organ Failure Assessment)
@@ -133,10 +139,10 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_qsofa(
-        respiratory_rate: Annotated[int, Field(description="呼吸速率 RR breaths/min (≥22 scores 1)")],
-        systolic_bp: Annotated[int, Field(description="收縮壓 SBP mmHg (≤100 scores 1)")],
-        altered_mentation: Annotated[bool, Field(description="意識改變 GCS<15 or acute change (scores 1)", default=False)],
-        gcs_score: Annotated[int, Field(description="GCS分數 3-15 (alt to altered_mentation)", default=15)],
+        respiratory_rate: Annotated[int, Field(ge=4, le=60, description="呼吸速率 RR | Unit: breaths/min | Range: 4-60 (≥22 scores 1)")],
+        systolic_bp: Annotated[int, Field(ge=30, le=250, description="收縮壓 SBP | Unit: mmHg | Range: 30-250 (≤100 scores 1)")],
+        altered_mentation: Annotated[bool, Field(description="意識改變 GCS<15 or acute change (scores 1)")] = False,
+        gcs_score: Annotated[int, Field(ge=3, le=15, description="GCS分數 | Range: 3-15 (alternative to altered_mentation)")] = 15,
     ) -> dict[str, Any]:
         """
         計算 qSOFA 分數 (Quick SOFA)
@@ -159,14 +165,17 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_news2(
-        respiratory_rate: Annotated[int, Field(description="呼吸速率 RR breaths/min (8-25 normal)")],
-        spo2: Annotated[int, Field(description="血氧飽和度 SpO2 % (94-100 normal on room air)")],
-        on_supplemental_o2: Annotated[bool, Field(description="是否使用氧氣 (scores 2 if on O2)")],
-        temperature: Annotated[float, Field(description="體溫 °C (36.1-38.0 normal)")],
-        systolic_bp: Annotated[int, Field(description="收縮壓 SBP mmHg (111-219 normal)")],
-        heart_rate: Annotated[int, Field(description="心率 HR bpm (51-90 normal)")],
-        consciousness: Annotated[str, Field(description="AVPU意識: A=Alert, V=Voice, P=Pain, U=Unresponsive, C=Confusion", default="A")],
-        use_scale_2: Annotated[bool, Field(description="使用Scale 2 (hypercapnic respiratory failure)", default=False)],
+        respiratory_rate: Annotated[int, Field(ge=4, le=60, description="呼吸速率 RR | Unit: breaths/min | Range: 4-60 (normal 8-25)")],
+        spo2: Annotated[int, Field(ge=50, le=100, description="血氧飽和度 SpO2 | Unit: % | Range: 50-100 (normal 94-100 on room air)")],
+        on_supplemental_o2: Annotated[bool, Field(description="是否使用氧氣 On supplemental O2 (scores 2 if on O2)")],
+        temperature: Annotated[float, Field(ge=30.0, le=42.0, description="體溫 Temperature | Unit: °C | Range: 30.0-42.0 (normal 36.1-38.0)")],
+        systolic_bp: Annotated[int, Field(ge=40, le=250, description="收縮壓 SBP | Unit: mmHg | Range: 40-250 (normal 111-219)")],
+        heart_rate: Annotated[int, Field(ge=20, le=220, description="心率 HR | Unit: bpm | Range: 20-220 (normal 51-90)")],
+        consciousness: Annotated[
+            Literal["A", "V", "P", "U", "C"],
+            Field(description="AVPU意識 | Options: 'A'=Alert, 'V'=Voice, 'P'=Pain, 'U'=Unresponsive, 'C'=Confusion")
+        ] = "A",
+        use_scale_2: Annotated[bool, Field(description="使用Scale 2 (for hypercapnic respiratory failure patients)")] = False,
     ) -> dict[str, Any]:
         """
         計算 NEWS2 分數 (National Early Warning Score 2)
@@ -192,10 +201,19 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_gcs(
-        eye_response: Annotated[int, Field(description="眼睛反應 1=None, 2=Pain, 3=Voice, 4=Spontaneous")],
-        verbal_response: Annotated[int, Field(description="語言反應 1=None, 2=Sounds, 3=Words, 4=Confused, 5=Oriented")],
-        motor_response: Annotated[int, Field(description="運動反應 1=None, 2=Extension, 3=Flexion, 4=Withdrawal, 5=Localizes, 6=Obeys")],
-        is_intubated: Annotated[bool, Field(description="是否插管 (verbal not testable)", default=False)],
+        eye_response: Annotated[
+            Literal[1, 2, 3, 4],
+            Field(description="眼睛反應 Eye Response | Options: 1=None, 2=To pain, 3=To voice, 4=Spontaneous")
+        ],
+        verbal_response: Annotated[
+            Literal[1, 2, 3, 4, 5],
+            Field(description="語言反應 Verbal Response | Options: 1=None, 2=Sounds, 3=Words, 4=Confused, 5=Oriented")
+        ],
+        motor_response: Annotated[
+            Literal[1, 2, 3, 4, 5, 6],
+            Field(description="運動反應 Motor Response | Options: 1=None, 2=Extension, 3=Flexion, 4=Withdrawal, 5=Localizes, 6=Obeys")
+        ],
+        is_intubated: Annotated[bool, Field(description="是否插管 Intubated (verbal not testable)")] = False,
     ) -> dict[str, Any]:
         """
         計算 GCS 分數 (Glasgow Coma Scale)
@@ -217,11 +235,14 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     
     @mcp.tool()
     def calculate_cam_icu(
-        rass_score: Annotated[int, Field(description="當前RASS (-5到+4), CAM-ICU requires RASS≥-3")],
-        acute_onset_fluctuation: Annotated[bool, Field(description="Feature1: 急性發作或波動病程")],
-        inattention_score: Annotated[int, Field(description="Feature2: ASE注意力錯誤數 0-10 (≥3=positive)")],
-        altered_loc: Annotated[bool, Field(description="Feature3: 意識改變 (RASS≠0)", default=False)],
-        disorganized_thinking_errors: Annotated[int, Field(description="Feature4: 思維障礙錯誤數 0-5 (≥1=positive)", default=0)],
+        rass_score: Annotated[
+            Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4],
+            Field(description="當前RASS | Range: -5 to +4 (CAM-ICU requires RASS≥-3)")
+        ],
+        acute_onset_fluctuation: Annotated[bool, Field(description="Feature 1: 急性發作或波動病程 Acute onset or fluctuating course")],
+        inattention_score: Annotated[int, Field(ge=0, le=10, description="Feature 2: ASE注意力錯誤數 | Range: 0-10 (≥3 = positive)")],
+        altered_loc: Annotated[bool, Field(description="Feature 3: 意識改變 Altered level of consciousness (RASS≠0)")] = False,
+        disorganized_thinking_errors: Annotated[int, Field(ge=0, le=5, description="Feature 4: 思維障礙錯誤數 | Range: 0-5 (≥1 = positive)")] = 0,
     ) -> dict[str, Any]:
         """
         計算 CAM-ICU (Confusion Assessment Method for ICU)

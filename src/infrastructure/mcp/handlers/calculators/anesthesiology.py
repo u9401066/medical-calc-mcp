@@ -5,7 +5,7 @@ MCP tool handlers for anesthesiology and preoperative calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Annotated
+from typing import Any, Annotated, Literal
 
 from pydantic import Field
 from mcp.server.fastmcp import FastMCP
@@ -19,8 +19,11 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     
     @mcp.tool()
     def calculate_asa_physical_status(
-        asa_class: Annotated[int, Field(description="ASA分級 1-6: 1=健康, 2=輕度, 3=嚴重, 4=致命, 5=瀕死, 6=腦死")],
-        is_emergency: Annotated[bool, Field(description="是否緊急手術 (adds 'E' suffix)", default=False)]
+        asa_class: Annotated[
+            Literal[1, 2, 3, 4, 5, 6],
+            Field(description="ASA分級 ASA Physical Status | Options: 1=健康Healthy, 2=輕度Mild, 3=嚴重Severe, 4=致命Life-threatening, 5=瀕死Moribund, 6=腦死Brain-dead")
+        ],
+        is_emergency: Annotated[bool, Field(description="是否緊急手術 Emergency surgery (adds 'E' suffix)")] = False
     ) -> dict[str, Any]:
         """
         ASA 身體狀態分級 (ASA Physical Status Classification)
@@ -37,7 +40,10 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     
     @mcp.tool()
     def calculate_mallampati(
-        mallampati_class: Annotated[int, Field(description="Mallampati分級 1-4: 1=全視野, 2=部分懸雍垂, 3=軟顎, 4=硬顎")]
+        mallampati_class: Annotated[
+            Literal[1, 2, 3, 4],
+            Field(description="Mallampati分級 Mallampati Class | Options: 1=全視野Full visibility, 2=部分懸雍垂Partial uvula, 3=軟顎Soft palate only, 4=硬顎Hard palate only")
+        ]
     ) -> dict[str, Any]:
         """
         Mallampati 氣道評估分級 (Modified Mallampati Classification)
@@ -54,12 +60,12 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     
     @mcp.tool()
     def calculate_rcri(
-        high_risk_surgery: Annotated[bool, Field(description="高風險手術 Intra-abdominal/thoracic/suprainguinal vascular", default=False)],
-        ischemic_heart_disease: Annotated[bool, Field(description="缺血性心臟病 MI/angina/positive stress test", default=False)],
-        heart_failure: Annotated[bool, Field(description="心衰竭 CHF/pulmonary edema/S3/rales", default=False)],
-        cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 TIA or stroke history", default=False)],
-        insulin_diabetes: Annotated[bool, Field(description="胰島素糖尿病 Preop insulin use", default=False)],
-        creatinine_above_2: Annotated[bool, Field(description="肌酐>2 Preop Cr >2.0 mg/dL", default=False)]
+        high_risk_surgery: Annotated[bool, Field(description="高風險手術 High-risk surgery (intra-abdominal/thoracic/suprainguinal vascular)")] = False,
+        ischemic_heart_disease: Annotated[bool, Field(description="缺血性心臟病 Ischemic heart disease (MI/angina/positive stress test)")] = False,
+        heart_failure: Annotated[bool, Field(description="心衰竭 Heart failure (CHF/pulmonary edema/S3/rales)")] = False,
+        cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 Cerebrovascular disease (TIA or stroke history)")] = False,
+        insulin_diabetes: Annotated[bool, Field(description="胰島素糖尿病 Insulin-dependent diabetes mellitus")] = False,
+        creatinine_above_2: Annotated[bool, Field(description="肌酐>2 Preoperative Cr >2.0 mg/dL")] = False
     ) -> dict[str, Any]:
         """
         計算 RCRI 心臟風險指數 (Revised Cardiac Risk Index)

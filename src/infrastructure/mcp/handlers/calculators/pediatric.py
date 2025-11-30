@@ -5,7 +5,7 @@ MCP tool handlers for pediatric and anesthesia calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional, Annotated
+from typing import Any, Optional, Annotated, Literal
 
 from pydantic import Field
 from mcp.server.fastmcp import FastMCP
@@ -19,10 +19,16 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_pediatric_drug_dose(
-        drug_name: Annotated[str, Field(description="藥物: acetaminophen, ibuprofen, amoxicillin, ceftriaxone, ondansetron, morphine, fentanyl, ketamine")],
-        weight_kg: Annotated[float, Field(description="體重 Weight kg (0.5-150)")],
-        route: Annotated[str, Field(description="給藥途徑: iv, po, im, pr", default="iv")],
-        indication: Annotated[Optional[str], Field(description="適應症 (may affect dose)", default=None)],
+        drug_name: Annotated[
+            Literal["acetaminophen", "ibuprofen", "amoxicillin", "ceftriaxone", "ondansetron", "morphine", "fentanyl", "ketamine"],
+            Field(description="藥物名稱 Drug name | Options: acetaminophen, ibuprofen, amoxicillin, ceftriaxone, ondansetron, morphine, fentanyl, ketamine")
+        ],
+        weight_kg: Annotated[float, Field(gt=0, le=200, description="體重 Weight | Unit: kg | Range: >0-200")],
+        route: Annotated[
+            Literal["iv", "po", "im", "pr"],
+            Field(description="給藥途徑 Route | Options: 'iv'=Intravenous, 'po'=Oral, 'im'=Intramuscular, 'pr'=Rectal")
+        ] = "iv",
+        indication: Annotated[Optional[str], Field(description="適應症 Indication (may affect dose)")] = None,
     ) -> dict[str, Any]:
         """
         小兒藥物劑量計算器 (Pediatric Drug Dosing)
@@ -46,10 +52,13 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_mabl(
-        weight_kg: Annotated[float, Field(description="體重 Weight kg (0.5-200)")],
-        initial_hematocrit: Annotated[float, Field(description="術前Hct Initial hematocrit % (20-60)")],
-        target_hematocrit: Annotated[float, Field(description="目標Hct Min acceptable hematocrit % (15-40)")],
-        patient_type: Annotated[str, Field(description="病患: preterm_neonate(90), term_neonate(85), infant(80), child(75), adult_male(70), adult_female(65)", default="adult_male")],
+        weight_kg: Annotated[float, Field(gt=0, le=250, description="體重 Weight | Unit: kg | Range: >0-250")],
+        initial_hematocrit: Annotated[float, Field(ge=15, le=70, description="術前Hct Initial hematocrit | Unit: % | Range: 15-70")],
+        target_hematocrit: Annotated[float, Field(ge=15, le=50, description="目標Hct Minimum acceptable hematocrit | Unit: % | Range: 15-50")],
+        patient_type: Annotated[
+            Literal["preterm_neonate", "term_neonate", "infant", "child", "adult_male", "adult_female"],
+            Field(description="病患類型 Patient type | EBV (mL/kg): preterm_neonate=90, term_neonate=85, infant=80, child=75, adult_male=70, adult_female=65")
+        ] = "adult_male",
     ) -> dict[str, Any]:
         """
         計算 MABL 最大允許失血量 (Maximum Allowable Blood Loss)
@@ -73,15 +82,21 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_transfusion_volume(
-        weight_kg: Annotated[float, Field(description="體重 Weight kg (0.5-200)")],
-        product_type: Annotated[str, Field(description="血品: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate", default="prbc")],
-        patient_type: Annotated[str, Field(description="病患類型 for EBV calculation", default="adult_male")],
-        current_hematocrit: Annotated[Optional[float], Field(description="目前Hct Current hematocrit %", default=None)],
-        target_hematocrit: Annotated[Optional[float], Field(description="目標Hct Target hematocrit %", default=None)],
-        current_hemoglobin: Annotated[Optional[float], Field(description="目前Hgb Current hemoglobin g/dL", default=None)],
-        target_hemoglobin: Annotated[Optional[float], Field(description="目標Hgb Target hemoglobin g/dL", default=None)],
-        current_platelet: Annotated[Optional[float], Field(description="目前血小板 Current platelet ×10⁹/L", default=None)],
-        target_platelet: Annotated[Optional[float], Field(description="目標血小板 Target platelet ×10⁹/L", default=None)],
+        weight_kg: Annotated[float, Field(gt=0, le=250, description="體重 Weight | Unit: kg | Range: >0-250")],
+        product_type: Annotated[
+            Literal["prbc", "whole_blood", "platelets", "platelet_concentrate", "ffp", "cryoprecipitate"],
+            Field(description="血品類型 Product | Options: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate")
+        ] = "prbc",
+        patient_type: Annotated[
+            Literal["preterm_neonate", "term_neonate", "infant", "child", "adult_male", "adult_female"],
+            Field(description="病患類型 Patient type for EBV calculation")
+        ] = "adult_male",
+        current_hematocrit: Annotated[Optional[float], Field(ge=5, le=70, description="目前Hct Current hematocrit | Unit: %")] = None,
+        target_hematocrit: Annotated[Optional[float], Field(ge=15, le=50, description="目標Hct Target hematocrit | Unit: %")] = None,
+        current_hemoglobin: Annotated[Optional[float], Field(ge=1, le=25, description="目前Hgb Current hemoglobin | Unit: g/dL")] = None,
+        target_hemoglobin: Annotated[Optional[float], Field(ge=5, le=18, description="目標Hgb Target hemoglobin | Unit: g/dL")] = None,
+        current_platelet: Annotated[Optional[float], Field(ge=0, le=1500, description="目前血小板 Current platelet | Unit: ×10⁹/L")] = None,
+        target_platelet: Annotated[Optional[float], Field(ge=10, le=500, description="目標血小板 Target platelet | Unit: ×10⁹/L")] = None,
     ) -> dict[str, Any]:
         """
         輸血量計算器 (Transfusion Volume Calculator)

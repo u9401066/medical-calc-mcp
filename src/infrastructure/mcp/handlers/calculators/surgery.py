@@ -18,7 +18,7 @@ def register_surgery_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_caprini_vte(
-        age_years: Annotated[int, Field(description="年齡 (歲) Patient age in years")],
+        age_years: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
         # Surgery type (1-2 points)
         minor_surgery: Annotated[bool, Field(description="小手術 Minor surgery planned (+1)", default=False)],
         major_surgery: Annotated[bool, Field(description="大手術 >45分鐘 Major surgery >45 min (+2)", default=False)],

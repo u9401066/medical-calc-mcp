@@ -5,7 +5,7 @@ MCP tool handlers for nephrology calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Annotated, Optional
+from typing import Any, Annotated, Optional, Literal
 
 from pydantic import Field
 from mcp.server.fastmcp import FastMCP
@@ -19,9 +19,18 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_ckd_epi_2021(
-        serum_creatinine: Annotated[float, Field(description="血清肌酐 Creatinine mg/dL (0.5-15.0)")],
-        age: Annotated[int, Field(description="年齡 Age years (18-120)")],
-        sex: Annotated[str, Field(description="性別 Sex: 'male' or 'female'")]
+        serum_creatinine: Annotated[
+            float, 
+            Field(gt=0, le=20.0, description="血清肌酐 Serum creatinine | Unit: mg/dL | Range: 0.1-20.0")
+        ],
+        age: Annotated[
+            int, 
+            Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")
+        ],
+        sex: Annotated[
+            Literal["male", "female"],
+            Field(description="性別 Sex | Options: 'male' or 'female'")
+        ]
     ) -> dict[str, Any]:
         """
         計算 CKD-EPI 2021 eGFR (腎絲球過濾率)

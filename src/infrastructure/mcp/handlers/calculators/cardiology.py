@@ -4,7 +4,7 @@ Cardiology Calculator Handlers
 MCP tool handlers for cardiology calculators.
 """
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -158,26 +158,26 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_heart_score(
-        history_score: Annotated[int, Field(
-            ge=0, le=2,
-            description="病史可疑程度 History: 0=slightly suspicious, 1=moderately, 2=highly suspicious"
-        )],
-        ecg_score: Annotated[int, Field(
-            ge=0, le=2,
-            description="心電圖 ECG: 0=normal, 1=non-specific changes, 2=significant ST deviation"
-        )],
-        age_score: Annotated[int, Field(
-            ge=0, le=2,
-            description="年齡 Age: 0=<45y, 1=45-64y, 2=≥65y"
-        )],
-        risk_factors_score: Annotated[int, Field(
-            ge=0, le=2,
-            description="危險因子 Risk factors: 0=none, 1=1-2, 2=≥3 or known atherosclerosis"
-        )],
-        troponin_score: Annotated[int, Field(
-            ge=0, le=2,
-            description="肌鈣蛋白 Troponin: 0=normal, 1=1-3× ULN, 2=>3× ULN"
-        )],
+        history_score: Annotated[
+            Literal[0, 1, 2],
+            Field(description="病史可疑程度 History | Options: 0=Slightly suspicious, 1=Moderately suspicious, 2=Highly suspicious")
+        ],
+        ecg_score: Annotated[
+            Literal[0, 1, 2],
+            Field(description="心電圖 ECG | Options: 0=Normal, 1=Non-specific repolarization changes, 2=Significant ST deviation")
+        ],
+        age_score: Annotated[
+            Literal[0, 1, 2],
+            Field(description="年齡 Age | Options: 0=<45 years, 1=45-64 years, 2=≥65 years")
+        ],
+        risk_factors_score: Annotated[
+            Literal[0, 1, 2],
+            Field(description="危險因子 Risk factors | Options: 0=None known, 1=1-2 factors, 2=≥3 factors or known atherosclerosis")
+        ],
+        troponin_score: Annotated[
+            Literal[0, 1, 2],
+            Field(description="肌鈣蛋白 Troponin | Options: 0=≤Normal limit, 1=1-3× ULN, 2=>3× ULN")
+        ],
     ) -> dict[str, Any]:
         """
         🫀 HEART Score: 急診胸痛 MACE 風險分層

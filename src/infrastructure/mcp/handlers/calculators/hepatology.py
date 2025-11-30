@@ -4,7 +4,7 @@ Hepatology Calculator Handlers
 MCP tool handlers for hepatology/gastroenterology calculators.
 """
 
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -19,23 +19,23 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     @mcp.tool()
     def calculate_meld_score(
         creatinine: Annotated[float, Field(
-            gt=0,
-            description="血清肌酸酐 Serum creatinine (mg/dL)"
+            gt=0, le=15.0,
+            description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.5-15.0"
         )],
         bilirubin: Annotated[float, Field(
-            gt=0,
-            description="總膽紅素 Total bilirubin (mg/dL)"
+            gt=0, le=50.0,
+            description="總膽紅素 Total bilirubin | Unit: mg/dL | Range: 0.1-50.0"
         )],
         inr: Annotated[float, Field(
-            gt=0,
-            description="國際標準化比值 International Normalized Ratio (INR)"
+            gt=0, le=10.0,
+            description="國際標準化比值 INR | Range: 1.0-10.0"
         )],
         sodium: Annotated[float, Field(
-            default=137.0,
-            description="血清鈉 Serum sodium (mEq/L), default 137"
+            ge=100, le=160,
+            description="血清鈉 Serum sodium | Unit: mEq/L | Range: 100-160 (用於 MELD-Na)"
         )] = 137.0,
         on_dialysis: Annotated[bool, Field(
-            description="透析 Dialyzed ≥2x in past week or CVVHD (sets Cr to 4.0)"
+            description="透析狀態 Dialyzed ≥2x/week or CVVHD? | If true, Cr is set to 4.0"
         )] = False,
     ) -> dict[str, Any]:
         """
@@ -86,24 +86,25 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     @mcp.tool()
     def calculate_child_pugh(
         bilirubin: Annotated[float, Field(
-            gt=0,
-            description="總膽紅素 Total bilirubin (mg/dL)"
+            gt=0, le=30.0,
+            description="總膽紅素 Total bilirubin | Unit: mg/dL | Range: 0.1-30.0"
         )],
         albumin: Annotated[float, Field(
-            gt=0,
-            description="血清白蛋白 Serum albumin (g/dL)"
+            gt=0, le=6.0,
+            description="血清白蛋白 Serum albumin | Unit: g/dL | Range: 1.0-6.0"
         )],
         inr: Annotated[float, Field(
-            gt=0,
-            description="國際標準化比值 INR"
+            gt=0, le=6.0,
+            description="國際標準化比值 INR | Range: 1.0-6.0"
         )],
-        ascites: Annotated[str, Field(
-            description="腹水狀態 Ascites: 'none', 'mild', 'moderate_severe'"
-        )],
-        encephalopathy_grade: Annotated[int, Field(
-            ge=0, le=4,
-            description="肝腦病變分級 Hepatic encephalopathy grade 0-4"
-        )],
+        ascites: Annotated[
+            Literal["none", "mild", "moderate_severe"],
+            Field(description="腹水狀態 Ascites status | Options: 'none'=無, 'mild'=輕度/可控, 'moderate_severe'=中重度")
+        ],
+        encephalopathy_grade: Annotated[
+            Literal[0, 1, 2, 3, 4],
+            Field(description="肝腦病變分級 Hepatic encephalopathy | 0=無, 1=輕度混亂, 2=嗜睡, 3=半昏迷, 4=昏迷")
+        ],
     ) -> dict[str, Any]:
         """
         🫀 Child-Pugh Score: 肝硬化嚴重度評估
