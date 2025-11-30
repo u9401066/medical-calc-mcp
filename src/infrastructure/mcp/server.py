@@ -32,7 +32,7 @@ from ...domain.registry.tool_registry import ToolRegistry
 from ...domain.services.calculators import CALCULATORS
 
 from .config import default_config
-from .handlers import DiscoveryHandler, CalculatorHandler
+from .handlers import DiscoveryHandler, CalculatorHandler, PromptHandler
 from .resources import CalculatorResourceHandler
 
 
@@ -93,6 +93,9 @@ class MedicalCalculatorServer:
         
         # Resources (calculator://list, etc.)
         self._resource_handler = CalculatorResourceHandler(self._mcp, self._registry)
+        
+        # Prompts (clinical workflows)
+        self._prompt_handler = PromptHandler(self._mcp, self._registry)
     
     @property
     def mcp(self) -> FastMCP:

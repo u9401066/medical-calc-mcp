@@ -2,10 +2,12 @@
 Pediatric & Anesthesia Calculator Tools
 
 MCP tool handlers for pediatric and anesthesia calculators.
+Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional
+from typing import Any, Optional, Annotated
 
+from pydantic import Field
 from mcp.server.fastmcp import FastMCP
 
 from .....application.dto import CalculateRequest
@@ -17,29 +19,18 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_pediatric_drug_dose(
-        drug_name: str,
-        weight_kg: float,
-        route: str = "iv",
-        indication: Optional[str] = None,
+        drug_name: Annotated[str, Field(description="藥物: acetaminophen, ibuprofen, amoxicillin, ceftriaxone, ondansetron, morphine, fentanyl, ketamine")],
+        weight_kg: Annotated[float, Field(description="體重 Weight kg (0.5-150)")],
+        route: Annotated[str, Field(description="給藥途徑: iv, po, im, pr", default="iv")],
+        indication: Annotated[Optional[str], Field(description="適應症 (may affect dose)", default=None)],
     ) -> dict[str, Any]:
         """
-        小兒藥物劑量計算器
+        小兒藥物劑量計算器 (Pediatric Drug Dosing)
         
-        根據體重計算常見小兒藥物的建議劑量，包含安全上限檢查。
+        Weight-based dosing with safety limits.
+        ⚠️ Always verify: dose≤max, age-appropriate, interactions.
         
-        Args:
-            drug_name: 藥物名稱 (例如: acetaminophen, ibuprofen, amoxicillin, 
-                       ceftriaxone, ondansetron, morphine, fentanyl, ketamine)
-            weight_kg: 體重 (公斤)
-            route: 給藥途徑 (iv, po, im, pr)
-            indication: 適應症 (可選，用於選擇適當劑量)
-            
-        Returns:
-            建議劑量範圍、最大劑量、給藥頻率和注意事項
-            
-        References:
-            Lexicomp Pediatric & Neonatal Dosage Handbook
-            Nelson Textbook of Pediatrics, 21st ed
+        References: Lexicomp Pediatric Handbook, Nelson Textbook.
         """
         request = CalculateRequest(
             tool_id="pediatric_dosing",
@@ -55,36 +46,18 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_mabl(
-        weight_kg: float,
-        initial_hematocrit: float,
-        target_hematocrit: float,
-        patient_type: str = "adult_male",
+        weight_kg: Annotated[float, Field(description="體重 Weight kg (0.5-200)")],
+        initial_hematocrit: Annotated[float, Field(description="術前Hct Initial hematocrit % (20-60)")],
+        target_hematocrit: Annotated[float, Field(description="目標Hct Min acceptable hematocrit % (15-40)")],
+        patient_type: Annotated[str, Field(description="病患: preterm_neonate(90), term_neonate(85), infant(80), child(75), adult_male(70), adult_female(65)", default="adult_male")],
     ) -> dict[str, Any]:
         """
-        計算最大允許失血量 (Maximum Allowable Blood Loss)
+        計算 MABL 最大允許失血量 (Maximum Allowable Blood Loss)
         
-        MABL 用於術前評估，決定何時需要輸血。
+        Formula: MABL = EBV × (Hi - Hf) / Havg
+        EBV varies by patient type (mL/kg in parentheses).
         
-        公式: MABL = EBV × (Hi - Hf) / Havg
-        
-        Args:
-            weight_kg: 體重 (公斤)
-            initial_hematocrit: 術前血球容積比 (%)
-            target_hematocrit: 目標/最低可接受血球容積比 (%)
-            patient_type: 病患類型
-                - preterm_neonate: 早產兒 (EBV 90 mL/kg)
-                - term_neonate: 足月新生兒 (EBV 85 mL/kg)
-                - infant: 嬰兒 (EBV 80 mL/kg)
-                - child: 兒童 (EBV 75 mL/kg)
-                - adult_male: 成年男性 (EBV 70 mL/kg)
-                - adult_female: 成年女性 (EBV 65 mL/kg)
-                
-        Returns:
-            MABL (mL)、EBV、允許失血百分比和輸血建議
-            
-        Reference:
-            Miller's Anesthesia, 9th ed, Chapter 49
-            Gross JB. Anesthesiology 1983;58(3):277-280
+        Reference: Miller's Anesthesia 9th ed.
         """
         request = CalculateRequest(
             tool_id="mabl",
@@ -100,44 +73,23 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_transfusion_volume(
-        weight_kg: float,
-        product_type: str = "prbc",
-        patient_type: str = "adult_male",
-        current_hematocrit: Optional[float] = None,
-        target_hematocrit: Optional[float] = None,
-        current_hemoglobin: Optional[float] = None,
-        target_hemoglobin: Optional[float] = None,
-        current_platelet: Optional[float] = None,
-        target_platelet: Optional[float] = None,
+        weight_kg: Annotated[float, Field(description="體重 Weight kg (0.5-200)")],
+        product_type: Annotated[str, Field(description="血品: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate", default="prbc")],
+        patient_type: Annotated[str, Field(description="病患類型 for EBV calculation", default="adult_male")],
+        current_hematocrit: Annotated[Optional[float], Field(description="目前Hct Current hematocrit %", default=None)],
+        target_hematocrit: Annotated[Optional[float], Field(description="目標Hct Target hematocrit %", default=None)],
+        current_hemoglobin: Annotated[Optional[float], Field(description="目前Hgb Current hemoglobin g/dL", default=None)],
+        target_hemoglobin: Annotated[Optional[float], Field(description="目標Hgb Target hemoglobin g/dL", default=None)],
+        current_platelet: Annotated[Optional[float], Field(description="目前血小板 Current platelet ×10⁹/L", default=None)],
+        target_platelet: Annotated[Optional[float], Field(description="目標血小板 Target platelet ×10⁹/L", default=None)],
     ) -> dict[str, Any]:
         """
-        輸血量計算器
+        輸血量計算器 (Transfusion Volume Calculator)
         
-        計算達到目標 Hct/Hgb/Plt 所需的血品量。
+        Calculate blood product volume for target Hct/Hgb/Plt.
+        pRBC: 10-15mL/kg raises Hgb ~2-3 g/dL.
         
-        Args:
-            weight_kg: 體重 (公斤)
-            product_type: 血品類型
-                - prbc: 濃縮紅血球
-                - whole_blood: 全血
-                - platelets: 分離術血小板
-                - platelet_concentrate: 濃縮血小板
-                - ffp: 新鮮冷凍血漿
-                - cryoprecipitate: 冷凍沉澱品
-            patient_type: 病患類型 (用於計算 EBV)
-            current_hematocrit: 目前 Hct (%)
-            target_hematocrit: 目標 Hct (%)
-            current_hemoglobin: 目前 Hgb (g/dL) - 替代 Hct
-            target_hemoglobin: 目標 Hgb (g/dL)
-            current_platelet: 目前血小板 (×10⁹/L)
-            target_platelet: 目標血小板 (×10⁹/L)
-            
-        Returns:
-            所需輸血量 (mL)、血品單位數、預期上升值
-            
-        References:
-            Roseff SD, et al. Transfusion. 2002.
-            New HV, et al. Br J Haematol. 2016.
+        References: Roseff 2002, New 2016.
         """
         request = CalculateRequest(
             tool_id="transfusion_calc",

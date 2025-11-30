@@ -20,39 +20,80 @@ class McpServerConfig:
     instructions: str = """
 Medical Calculator MCP Server - 醫學計算工具 MCP 伺服器
 
-This server provides validated medical calculators with intelligent tool discovery.
+A validated medical calculator toolkit for clinical decision support.
 
-## Discovery Tools (探索工具)
+## 🔍 RECOMMENDED USAGE PATTERN
 
-Use these tools to find the right calculator:
+### Path A: By Specialty (Hierarchical Navigation)
+```
+1. list_specialties()              → Get available specialties
+2. list_by_specialty("critical_care") → Get tools in that specialty
+3. get_calculator_info("sofa_score")  → Get input parameters
+4. calculate_sofa(...)                 → Perform calculation
+```
 
-| Tool | Purpose | 用途 |
-|------|---------|------|
-| `discover_tools(query)` | Free text search | 自由文字搜尋 |
-| `list_by_specialty(specialty)` | Filter by specialty | 依專科篩選 |
-| `list_by_context(context)` | Filter by clinical context | 依情境篩選 |
-| `list_calculators()` | List all tools | 列出所有工具 |
-| `get_calculator_info(tool_id)` | Get tool details | 取得工具詳情 |
-| `list_specialties()` | Available specialties | 可用專科清單 |
-| `list_contexts()` | Available contexts | 可用情境清單 |
+### Path B: By Clinical Context
+```
+1. list_contexts()                    → Get available contexts
+2. list_by_context("severity_assessment") → Get relevant tools
+3. get_calculator_info("apache_ii")   → Get input parameters
+4. calculate_apache_ii(...)           → Perform calculation
+```
 
-## Usage Flow (使用流程)
+### Path C: Direct Access (If You Know the Tool)
+```
+1. get_calculator_info("news2_score") → Get input parameters
+2. calculate_news2(...)               → Perform calculation
+```
 
-1. **Discover**: Use discovery tools to find appropriate calculators
-2. **Info**: Get input parameters with `get_calculator_info(tool_id)`
-3. **Calculate**: Call the specific calculator (e.g., `calculate_sofa(...)`)
+## 📋 PROMPTS (Clinical Workflows)
 
-## Specialties Available (可用專科)
+Use prompts for guided multi-tool workflows:
 
-- Critical Care / ICU (重症加護)
-- Anesthesiology (麻醉科)
-- Emergency Medicine (急診)
-- Nephrology (腎臟科)
-- Cardiology (心臟科)
-- And more...
+| Prompt | Description |
+|--------|-------------|
+| `sepsis_evaluation` | qSOFA → SOFA → RASS → CAM-ICU workflow |
+| `preoperative_risk_assessment` | ASA → RCRI → Mallampati workflow |
+| `icu_daily_assessment` | RASS → CAM-ICU → GCS → SOFA daily rounds |
+| `pediatric_drug_dosing` | Weight-based dosing + MABL + transfusion |
+| `acute_kidney_injury_assessment` | CKD-EPI + AKI staging workflow |
 
-All calculators cite peer-reviewed references.
-所有計算器均引用同儕審查論文。
+## 🏥 CLINICAL WORKFLOW EXAMPLES
+
+### Sepsis Evaluation:
+1. `calculate_qsofa` → Quick bedside screen
+2. `calculate_sofa` → Full organ dysfunction (if qSOFA≥2)
+3. `calculate_rass` → Sedation level (ICU)
+4. `calculate_cam_icu` → Delirium screen (requires RASS first)
+
+### Preoperative Assessment:
+1. `calculate_asa_physical_status` → Overall health status
+2. `calculate_rcri` → Cardiac risk for non-cardiac surgery
+3. `calculate_mallampati` → Difficult airway prediction
+
+### Pediatric/Transfusion:
+1. `calculate_pediatric_dosing` → Weight-based drug doses
+2. `calculate_mabl` → Maximum allowable blood loss
+3. `calculate_transfusion` → Blood product volumes
+
+## 📊 AVAILABLE SPECIALTIES
+
+| Specialty | Example Tools |
+|-----------|---------------|
+| Critical Care | SOFA, APACHE II, qSOFA, NEWS2, GCS, RASS, CAM-ICU |
+| Anesthesiology | ASA, RCRI, Mallampati, MABL |
+| Emergency Medicine | qSOFA, NEWS2, GCS |
+| Nephrology | CKD-EPI 2021 |
+| Pediatrics | Pediatric Dosing, Transfusion |
+
+## ⚠️ IMPORTANT NOTES
+
+1. Each response includes `next_step` to guide you to the next action
+2. All calculators cite peer-reviewed references
+3. Use `get_calculator_info(tool_id)` to see exact input parameters
+4. Input validation errors return clear messages about valid ranges
+
+所有計算器均引用同儕審查論文。每個回應都包含下一步指引。
 """
 
 

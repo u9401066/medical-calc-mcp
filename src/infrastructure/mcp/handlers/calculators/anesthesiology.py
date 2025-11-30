@@ -2,10 +2,12 @@
 Anesthesiology / Preoperative Calculator Tools
 
 MCP tool handlers for anesthesiology and preoperative calculators.
+Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional
+from typing import Any, Annotated
 
+from pydantic import Field
 from mcp.server.fastmcp import FastMCP
 
 from .....application.dto import CalculateRequest
@@ -17,26 +19,14 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     
     @mcp.tool()
     def calculate_asa_physical_status(
-        asa_class: int,
-        is_emergency: bool = False
+        asa_class: Annotated[int, Field(description="ASA分級 1-6: 1=健康, 2=輕度, 3=嚴重, 4=致命, 5=瀕死, 6=腦死")],
+        is_emergency: Annotated[bool, Field(description="是否緊急手術 (adds 'E' suffix)", default=False)]
     ) -> dict[str, Any]:
         """
-        ASA 身體狀態分級
+        ASA 身體狀態分級 (ASA Physical Status Classification)
         
-        Classify patient using ASA Physical Status Classification (I-VI).
-        
-        Args:
-            asa_class: ASA 分級 (1-6)
-                1: 健康病人
-                2: 輕度全身性疾病
-                3: 嚴重全身性疾病
-                4: 持續威脅生命的嚴重全身性疾病
-                5: 瀕死病人，不手術無法存活
-                6: 腦死器官捐贈者
-            is_emergency: 是否為緊急手術 (加 E 字尾)
-            
-        Returns:
-            ASA 分級、描述、周術期死亡率風險估計
+        Classify patient overall health for perioperative risk.
+        I=Healthy, II=Mild, III=Severe, IV=Life-threatening, V=Moribund, VI=Brain-dead.
         """
         request = CalculateRequest(
             tool_id="asa_physical_status",
@@ -46,21 +36,14 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         return response.to_dict()
     
     @mcp.tool()
-    def calculate_mallampati(mallampati_class: int) -> dict[str, Any]:
+    def calculate_mallampati(
+        mallampati_class: Annotated[int, Field(description="Mallampati分級 1-4: 1=全視野, 2=部分懸雍垂, 3=軟顎, 4=硬顎")]
+    ) -> dict[str, Any]:
         """
-        Mallampati 氣道評估分級
+        Mallampati 氣道評估分級 (Modified Mallampati Classification)
         
-        Predict difficult intubation using Modified Mallampati Classification.
-        
-        Args:
-            mallampati_class: Mallampati 分級 (1-4)
-                1: 可見軟顎、懸雍垂、咽門弓
-                2: 可見軟顎、懸雍垂
-                3: 可見軟顎、懸雍垂基部
-                4: 只可見硬顎
-                
-        Returns:
-            分級、困難插管風險評估、建議
+        Predict difficult intubation. Higher class = higher difficulty.
+        I=Easy, IV=Most difficult.
         """
         request = CalculateRequest(
             tool_id="mallampati_score",
@@ -71,28 +54,20 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     
     @mcp.tool()
     def calculate_rcri(
-        high_risk_surgery: bool = False,
-        ischemic_heart_disease: bool = False,
-        heart_failure: bool = False,
-        cerebrovascular_disease: bool = False,
-        insulin_diabetes: bool = False,
-        creatinine_above_2: bool = False
+        high_risk_surgery: Annotated[bool, Field(description="高風險手術 Intra-abdominal/thoracic/suprainguinal vascular", default=False)],
+        ischemic_heart_disease: Annotated[bool, Field(description="缺血性心臟病 MI/angina/positive stress test", default=False)],
+        heart_failure: Annotated[bool, Field(description="心衰竭 CHF/pulmonary edema/S3/rales", default=False)],
+        cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 TIA or stroke history", default=False)],
+        insulin_diabetes: Annotated[bool, Field(description="胰島素糖尿病 Preop insulin use", default=False)],
+        creatinine_above_2: Annotated[bool, Field(description="肌酐>2 Preop Cr >2.0 mg/dL", default=False)]
     ) -> dict[str, Any]:
         """
-        計算 RCRI 心臟風險指數 (Lee Index)
+        計算 RCRI 心臟風險指數 (Revised Cardiac Risk Index)
         
-        Estimate risk of major cardiac complications after non-cardiac surgery.
+        Cardiac risk for non-cardiac surgery. Score 0-6.
+        0=0.4%, 1=0.9%, 2=6.6%, ≥3=11% major cardiac event.
         
-        Args:
-            high_risk_surgery: 高風險手術（腹腔內、胸腔內、主動脈上血管手術）
-            ischemic_heart_disease: 缺血性心臟病史
-            heart_failure: 心衰竭病史
-            cerebrovascular_disease: 腦血管疾病史
-            insulin_diabetes: 需胰島素治療的糖尿病
-            creatinine_above_2: 肌酐 >2 mg/dL
-            
-        Returns:
-            RCRI 分數 (0-6)、心臟併發症風險百分比、建議
+        Reference: Lee TH, Circulation 1999.
         """
         request = CalculateRequest(
             tool_id="rcri",

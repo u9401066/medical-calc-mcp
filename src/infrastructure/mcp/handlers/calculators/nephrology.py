@@ -2,10 +2,12 @@
 Nephrology Calculator Tools
 
 MCP tool handlers for nephrology calculators.
+Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional
+from typing import Any, Annotated
 
+from pydantic import Field
 from mcp.server.fastmcp import FastMCP
 
 from .....application.dto import CalculateRequest
@@ -17,25 +19,17 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     
     @mcp.tool()
     def calculate_ckd_epi_2021(
-        serum_creatinine: float,
-        age: int,
-        sex: str
+        serum_creatinine: Annotated[float, Field(description="血清肌酐 Creatinine mg/dL (0.5-15.0)")],
+        age: Annotated[int, Field(description="年齡 Age years (18-120)")],
+        sex: Annotated[str, Field(description="性別 Sex: 'male' or 'female'")]
     ) -> dict[str, Any]:
         """
         計算 CKD-EPI 2021 eGFR (腎絲球過濾率)
         
-        Calculate estimated GFR using the 2021 CKD-EPI equation (race-free).
+        Race-free equation. Returns eGFR in mL/min/1.73m².
+        G1≥90, G2:60-89, G3a:45-59, G3b:30-44, G4:15-29, G5<15.
         
-        Args:
-            serum_creatinine: 血清肌酐值 (mg/dL)
-            age: 年齡 (歲, 18-120)
-            sex: 性別 ("male" 或 "female")
-            
-        Returns:
-            eGFR 值、CKD 分期、臨床解讀和建議
-            
-        Reference:
-            Inker LA, et al. N Engl J Med. 2021;385(19):1737-1749.
+        Reference: Inker LA, et al. NEJM 2021.
         """
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
