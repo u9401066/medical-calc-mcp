@@ -27,6 +27,9 @@ from .pediatric_dosing import PediatricDosingCalculator
 from .mabl import MablCalculator
 from .transfusion_calc import TransfusionCalculator
 
+# Phase 6: Pulmonology
+from .curb65 import Curb65Calculator
+
 
 __all__ = [
     # Nephrology
@@ -50,6 +53,9 @@ __all__ = [
     "PediatricDosingCalculator",
     "MablCalculator",
     "TransfusionCalculator",
+    
+    # Pulmonology
+    "Curb65Calculator",
 ]
 
 
@@ -71,4 +77,6 @@ CALCULATORS = [
     PediatricDosingCalculator,
     MablCalculator,
     TransfusionCalculator,
+    # Phase 6: Pulmonology
+    Curb65Calculator,
 ]

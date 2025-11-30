@@ -18,6 +18,7 @@ from .calculators import (
     register_anesthesiology_tools,
     register_critical_care_tools,
     register_pediatric_tools,
+    register_pulmonology_tools,
 )
 
 
@@ -33,6 +34,7 @@ class CalculatorHandler:
     - calculators/anesthesiology.py - Preoperative (ASA, RCRI, Mallampati)
     - calculators/critical_care.py  - ICU scores (APACHE, SOFA, NEWS2, etc.)
     - calculators/pediatric.py      - Pediatric (drug dosing, transfusion, MABL)
+    - calculators/pulmonology.py    - Respiratory (CURB-65, etc.)
     """
     
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
@@ -57,3 +59,6 @@ class CalculatorHandler:
         
         # Pediatric & Transfusion calculators
         register_pediatric_tools(self._mcp, self._use_case)
+        
+        # Pulmonology / Respiratory calculators
+        register_pulmonology_tools(self._mcp, self._use_case)

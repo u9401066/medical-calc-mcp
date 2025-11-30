@@ -362,7 +362,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 21 Tools + 5 Prompts + 4 Resources
 
-### Calculators | 計算器 (14 tools)
+### Calculators | 計算器 (15 tools)
 
 #### Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -397,6 +397,12 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR (race-free) | Inker 2021 |
+
+#### Pulmonology | 胸腔科
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_curb65` | CURB-65 | Pneumonia severity & disposition | Lim 2003 |
 
 ### Discovery Tools | 探索工具 (7 tools)
 
@@ -565,7 +571,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 4 | ✅ Complete | ICU/ED Calculators (SOFA, qSOFA, NEWS, GCS, CAM-ICU) per Sepsis-3 |
 | Phase 5 | ✅ Complete | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
 | Phase 5.5 | ✅ Complete | MCP Prompts (5 workflows) + Parameter Descriptions + Enhanced Errors |
-| Phase 6 | ⏳ In Progress | More Calculators (CURB-65, Wells DVT/PE, HEART, TIMI) |
+| Phase 6 | 🔄 Active | More Calculators (CURB-65✅, Wells DVT/PE, HEART, TIMI) |
 | Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
 | Phase 8 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
 | Phase 9 | 📋 Planned | Internationalization (i18n for multi-language support) |
@@ -577,7 +583,7 @@ doi:10.1056/NEJMoa2102953
 2025 Q4                          2026 Q1                          2026 Q2
 ───────────────────────────────────────────────────────────────────────────────
 Phase 6: More Calculators        Phase 8: HTTP Transport          Phase 10: Templates
-├── CURB-65 (Pneumonia)          ├── FastAPI/Starlette            ├── Calculator generator
+├── ✅ CURB-65 (Pneumonia)       ├── FastAPI/Starlette            ├── Calculator generator
 ├── Wells DVT                    ├── OpenAPI spec                 ├── CLI scaffolding
 ├── Wells PE                     ├── Docker optimization          └── CI/CD templates
 ├── HEART Score                  └── Cloud deployment
@@ -593,7 +599,6 @@ Phase 7: ✅ Validation Layer
 
 | Priority | Tool ID | Name | Specialty | Reference |
 |----------|---------|------|-----------|-----------|
-| 🔴 High | `curb65` | CURB-65 | Pulmonology | Lim 2003 |
 | 🔴 High | `wells_dvt` | Wells DVT | Emergency | Wells 2003 |
 | 🔴 High | `wells_pe` | Wells PE | Emergency | Wells 2000 |
 | 🔴 High | `heart_score` | HEART Score | Cardiology | Six 2008 |

@@ -81,7 +81,9 @@ class MedicalCalculatorServer:
         """Register all calculators with the registry"""
         for calculator_cls in CALCULATORS:
             instance = calculator_cls()
-            self._registry.register(instance)
+            # Skip if already registered (singleton pattern may have existing entries)
+            if self._registry.get_calculator(instance.tool_id) is None:
+                self._registry.register(instance)
     
     def _init_handlers(self) -> None:
         """Initialize all MCP handlers"""
