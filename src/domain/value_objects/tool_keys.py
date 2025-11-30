@@ -15,33 +15,45 @@ from typing import List
 class Specialty(Enum):
     """Medical specialties"""
     
+    # Primary specialties
+    ANESTHESIOLOGY = "anesthesiology"  # 麻醉科
     CARDIOLOGY = "cardiology"
-    NEPHROLOGY = "nephrology"
-    PULMONOLOGY = "pulmonology"
-    NEUROLOGY = "neurology"
-    GASTROENTEROLOGY = "gastroenterology"
-    HEPATOLOGY = "hepatology"
-    HEMATOLOGY = "hematology"
-    ONCOLOGY = "oncology"
-    ENDOCRINOLOGY = "endocrinology"
-    RHEUMATOLOGY = "rheumatology"
-    INFECTIOUS_DISEASE = "infectious_disease"
+    CRITICAL_CARE = "critical_care"  # ICU
     EMERGENCY_MEDICINE = "emergency_medicine"
-    CRITICAL_CARE = "critical_care"
-    INTERNAL_MEDICINE = "internal_medicine"
-    PEDIATRICS = "pediatrics"
-    OBSTETRICS = "obstetrics"
-    SURGERY = "surgery"
-    ORTHOPEDICS = "orthopedics"
-    PSYCHIATRY = "psychiatry"
+    ENDOCRINOLOGY = "endocrinology"
+    GASTROENTEROLOGY = "gastroenterology"
     GERIATRICS = "geriatrics"
+    HEMATOLOGY = "hematology"
+    HEPATOLOGY = "hepatology"
+    INFECTIOUS_DISEASE = "infectious_disease"
+    INTERNAL_MEDICINE = "internal_medicine"
+    NEPHROLOGY = "nephrology"
+    NEUROLOGY = "neurology"
+    OBSTETRICS = "obstetrics"
+    ONCOLOGY = "oncology"
+    ORTHOPEDICS = "orthopedics"
+    PEDIATRICS = "pediatrics"
+    PSYCHIATRY = "psychiatry"
+    PULMONOLOGY = "pulmonology"
+    RHEUMATOLOGY = "rheumatology"
+    SURGERY = "surgery"
     TOXICOLOGY = "toxicology"
+    
+    # Subspecialties
+    PAIN_MEDICINE = "pain_medicine"  # 疼痛醫學
+    CARDIAC_ANESTHESIA = "cardiac_anesthesia"  # 心臟麻醉
+    NEUROANESTHESIA = "neuroanesthesia"  # 神經麻醉
+    PEDIATRIC_ANESTHESIA = "pediatric_anesthesia"  # 小兒麻醉
+    OBSTETRIC_ANESTHESIA = "obstetric_anesthesia"  # 產科麻醉
+    REGIONAL_ANESTHESIA = "regional_anesthesia"  # 區域麻醉
+    
     OTHER = "other"
 
 
 class ClinicalContext(Enum):
     """Clinical use contexts for calculators"""
     
+    # General
     DIAGNOSIS = "diagnosis"  # Helps establish a diagnosis
     SCREENING = "screening"  # Population screening
     STAGING = "staging"  # Disease staging/classification
@@ -54,6 +66,20 @@ class ClinicalContext(Enum):
     DISPOSITION = "disposition"  # Admission/discharge decisions
     ELIGIBILITY = "eligibility"  # Trial/treatment eligibility
     PHYSIOLOGIC = "physiologic"  # Normal physiology calculations
+    
+    # Anesthesia / ICU specific
+    PREOPERATIVE_ASSESSMENT = "preoperative_assessment"  # 術前評估
+    AIRWAY_MANAGEMENT = "airway_management"  # 氣道管理
+    VENTILATOR_MANAGEMENT = "ventilator_management"  # 呼吸器設定
+    FLUID_MANAGEMENT = "fluid_management"  # 輸液管理
+    HEMODYNAMIC_MONITORING = "hemodynamic_monitoring"  # 血流動力學監測
+    SEDATION_ASSESSMENT = "sedation_assessment"  # 鎮靜評估
+    PAIN_ASSESSMENT = "pain_assessment"  # 疼痛評估
+    NEUROMUSCULAR_MONITORING = "neuromuscular_monitoring"  # 神經肌肉監測
+    TRANSFUSION_DECISION = "transfusion_decision"  # 輸血決策
+    WEANING_ASSESSMENT = "weaning_assessment"  # 脫機評估
+    DELIRIUM_ASSESSMENT = "delirium_assessment"  # 譫妄評估
+    NUTRITION_ASSESSMENT = "nutrition_assessment"  # 營養評估
 
 
 @dataclass(frozen=True)
