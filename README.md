@@ -19,7 +19,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Why This Project? | 為什麼需要這個專案？](#-why-this-project--為什麼需要這個專案)
 - [Architecture | 架構](#-architecture--架構)
 - [Quick Start | 快速開始](#-quick-start--快速開始)
-- [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署--new) 🐳 NEW
+- [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署--new) 🐳
+- [REST API | REST API 接口](#-rest-api--rest-api-接口--new) 🌐 NEW
 - [Tool Discovery | 工具探索](#-tool-discovery--工具探索)
 - [Available Tools | 可用工具](#-available-tools--可用工具)
   - [Quick Navigation | 快速導覽](#-quick-navigation--快速導覽)
@@ -287,11 +288,12 @@ curl http://localhost:8000/health
 
 ### Transport Modes | 傳輸模式
 
-| Mode | Use Case | Command |
-|------|----------|---------|
-| `stdio` | Local Claude Desktop integration | `python -m src.main --mode stdio` |
-| `sse` | Remote Docker/Cloud deployment | `python -m src.main --mode sse --port 8000` |
-| `http` | Streamable HTTP transport | `python -m src.main --mode http` |
+| Mode | Use Case | Port | Command |
+|------|----------|------|---------|
+| `stdio` | Local Claude Desktop | - | `python src/main.py --mode stdio` |
+| `sse` | Remote MCP (Docker/Cloud) | 8000 | `python src/main.py --mode sse --port 8000` |
+| `api` | REST API (FastAPI) | 8080 | `python src/main.py --mode api --port 8080` |
+| `http` | Streamable HTTP transport | - | `python src/main.py --mode http` |
 
 ### Remote MCP Client Configuration | 遠端 MCP 客戶端設定
 
@@ -343,19 +345,97 @@ curl http://localhost:8000/health
 ```yaml
 version: '3.8'
 services:
+  # MCP Server (SSE mode)
   medical-calc-mcp:
     build: .
     ports:
       - "8000:8000"
     environment:
       - MCP_MODE=sse
-      - LOG_LEVEL=INFO
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
+    
+  # REST API Server (FastAPI)
+  medical-calc-api:
+    build: .
+    ports:
+      - "8080:8080"
+    command: ["python", "src/main.py", "--mode", "api", "--port", "8080"]
+```
+
+---
+
+## 🌐 REST API | REST API 接口 ⭐ NEW
+
+Besides MCP protocol, the server also provides a **standalone REST API** for direct HTTP access.
+
+除了 MCP 協議，伺服器還提供**獨立的 REST API**，可直接透過 HTTP 存取。
+
+### Quick Start | 快速開始
+
+```bash
+# Start API server | 啟動 API 伺服器
+python src/main.py --mode api --port 8080
+
+# With uvicorn (production) | 使用 uvicorn（生產環境）
+uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080
+```
+
+### API Documentation | API 文件
+
+Once running, visit:
+- **Swagger UI**: http://localhost:8080/docs
+- **ReDoc**: http://localhost:8080/redoc
+- **OpenAPI JSON**: http://localhost:8080/openapi.json
+
+### API Endpoints | API 端點
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/api/v1/calculators` | GET | List all calculators |
+| `/api/v1/calculators/{tool_id}` | GET | Get calculator info |
+| `/api/v1/search?q={keyword}` | GET | Search calculators |
+| `/api/v1/specialties` | GET | List specialties |
+| `/api/v1/specialties/{specialty}` | GET | List by specialty |
+| `/api/v1/calculate/{tool_id}` | POST | Execute calculation |
+
+### Example: Calculate CKD-EPI | 範例：計算 CKD-EPI
+
+```bash
+# Using curl
+curl -X POST "http://localhost:8080/api/v1/calculate/ckd_epi_2021" \
+  -H "Content-Type: application/json" \
+  -d '{"params": {"serum_creatinine": 1.2, "age": 65, "sex": "female"}}'
+```
+
+**Response | 回應:**
+```json
+{
+  "success": true,
+  "calculator": "ckd_epi_2021",
+  "result": {
+    "score_name": "CKD-EPI 2021",
+    "value": 49.2,
+    "unit": "mL/min/1.73m²",
+    "interpretation": {
+      "summary": "G3a: Mildly to moderately decreased",
+      "severity": "moderate"
+    }
+  }
+}
+```
+
+### Quick Calculate Endpoints | 快速計算端點
+
+Some calculators have dedicated endpoints with query parameters:
+
+部分計算器有專用端點，使用查詢參數：
+
+```bash
+# CKD-EPI (Query parameters)
+curl "http://localhost:8080/api/v1/ckd-epi?serum_creatinine=1.2&age=65&sex=female"
+
+# SOFA Score
+curl -X POST "http://localhost:8080/api/v1/sofa?pao2_fio2_ratio=200&platelets=100&bilirubin=2.0&cardiovascular=dopamine_lte_5&gcs_score=13&creatinine=2.5"
 ```
 
 ---

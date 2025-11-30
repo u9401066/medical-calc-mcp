@@ -5,16 +5,20 @@ Supports multiple transport modes:
 - stdio: Local mode for MCP Inspector and Claude Desktop
 - sse: Server-Sent Events for remote/Docker deployment
 - http: Streamable HTTP transport
+- api: REST API mode (FastAPI)
 
 Usage:
     # Local STDIO mode (default)
-    python -m src.main
+    python src/main.py
     
     # SSE mode for remote access
-    python -m src.main --mode sse --host 0.0.0.0 --port 8000
+    python src/main.py --mode sse --host 0.0.0.0 --port 8000
+    
+    # REST API mode
+    python src/main.py --mode api --port 8080
     
     # HTTP mode
-    python -m src.main --mode http
+    python src/main.py --mode http
     
 Docker:
     docker build -t medical-calc-mcp .
@@ -148,6 +152,28 @@ def run_http():
     server.run(transport="http")
 
 
+def run_api(host: str = "0.0.0.0", port: int = 8080):
+    """Run in REST API mode (FastAPI)"""
+    try:
+        import uvicorn
+    except ImportError as e:
+        logger.error(f"API mode requires uvicorn: {e}")
+        logger.error("Run: pip install uvicorn fastapi")
+        sys.exit(1)
+    
+    logger.info(f"Starting REST API Server on {host}:{port}...")
+    logger.info(f"📚 API Docs: http://{host}:{port}/docs")
+    logger.info(f"📖 ReDoc: http://{host}:{port}/redoc")
+    
+    uvicorn.run(
+        "src.infrastructure.api.server:app",
+        host=host,
+        port=port,
+        reload=os.environ.get("DEBUG", "false").lower() == "true",
+        log_level=os.environ.get("LOG_LEVEL", "info").lower(),
+    )
+
+
 def main():
     """Main entry point with argument parsing"""
     parser = argparse.ArgumentParser(
@@ -155,44 +181,55 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Local mode (for Claude Desktop)
-  python -m src.main
+  # Local MCP mode (for Claude Desktop)
+  python src/main.py
   
   # Remote SSE mode (for Docker)
-  python -m src.main --mode sse --port 8000
+  python src/main.py --mode sse --port 8000
+  
+  # REST API mode
+  python src/main.py --mode api --port 8080
   
   # HTTP mode
-  python -m src.main --mode http
+  python src/main.py --mode http
 
 Environment Variables:
-  MCP_MODE     Transport mode (stdio, sse, http)
+  MCP_MODE     Transport mode (stdio, sse, http, api)
   MCP_HOST     Host to bind (default: 0.0.0.0)
   MCP_PORT     Port to bind (default: 8000)
+  API_PORT     Port for API mode (default: 8080)
   LOG_LEVEL    Logging level (default: INFO)
         """
     )
     
     parser.add_argument(
         "--mode", "-m",
-        choices=["stdio", "sse", "http"],
+        choices=["stdio", "sse", "http", "api"],
         default=os.environ.get("MCP_MODE", "stdio"),
         help="Transport mode (default: stdio)"
     )
     parser.add_argument(
         "--host", "-H",
         default=os.environ.get("MCP_HOST", "0.0.0.0"),
-        help="Host to bind for SSE mode (default: 0.0.0.0)"
+        help="Host to bind (default: 0.0.0.0)"
     )
     parser.add_argument(
         "--port", "-p",
         type=int,
-        default=int(os.environ.get("MCP_PORT", "8000")),
-        help="Port to bind for SSE mode (default: 8000)"
+        default=None,
+        help="Port to bind (default: 8000 for sse, 8080 for api)"
     )
     
     args = parser.parse_args()
     
-    logger.info(f"Medical Calculator MCP Server starting...")
+    # Set default port based on mode
+    if args.port is None:
+        if args.mode == "api":
+            args.port = int(os.environ.get("API_PORT", "8080"))
+        else:
+            args.port = int(os.environ.get("MCP_PORT", "8000"))
+    
+    logger.info(f"Medical Calculator Server starting...")
     logger.info(f"Mode: {args.mode}")
     
     if args.mode == "stdio":
@@ -201,6 +238,8 @@ Environment Variables:
         run_sse(host=args.host, port=args.port)
     elif args.mode == "http":
         run_http()
+    elif args.mode == "api":
+        run_api(host=args.host, port=args.port)
     else:
         logger.error(f"Unknown mode: {args.mode}")
         sys.exit(1)
