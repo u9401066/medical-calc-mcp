@@ -32,54 +32,112 @@ class DiscoveryHandler:
         """Register all discovery tools with MCP"""
         
         @self._mcp.tool()
-        def discover_tools(query: str, limit: int = 10) -> dict[str, Any]:
+        def discover_tools(
+            keyword: str = "",
+            specialty: str = "",
+            context: str = "",
+            condition: str = "",
+            limit: int = 10
+        ) -> dict[str, Any]:
             """
-            搜尋醫學計算工具
+            🔍 搜尋醫學計算工具 (Menu-Based Discovery)
             
-            Search for medical calculators by:
-            - Clinical question (e.g., "What is the cardiac risk?")
-            - Specialty (e.g., "anesthesiology", "critical care")
-            - Condition (e.g., "sepsis", "difficult airway")
-            - Keywords (e.g., "SOFA", "qSOFA", "eGFR")
+            這是一個結構化的搜尋工具。請使用以下其中一種方式搜尋:
+            
+            ## 搜尋方式 (擇一使用):
+            
+            1. **keyword** - 用關鍵字搜尋 (必須完全匹配)
+               Examples: "rcri", "sofa", "gcs", "cardiac risk", "sepsis"
+               
+            2. **specialty** - 依專科篩選
+               Options: "critical_care", "anesthesiology", "nephrology", 
+                        "cardiology", "surgery", "emergency_medicine",
+                        "internal_medicine", "neurology", "pediatrics"
+                        
+            3. **context** - 依臨床情境篩選  
+               Options: "preoperative_assessment", "severity_assessment",
+                        "prognosis", "risk_stratification", "icu_management",
+                        "sedation_assessment", "delirium_assessment",
+                        "transfusion_decision", "drug_dosing", "screening"
+                        
+            4. **condition** - 依疾病/狀況篩選
+               Examples: "sepsis", "head injury", "difficult airway",
+                         "perioperative mi", "delirium", "hemorrhage"
+            
+            ## 建議流程:
+            1. 先用 list_specialties() 或 list_contexts() 查看可用選項
+            2. 再用此工具搭配正確的參數搜尋
+            3. 或直接呼叫已知的計算工具 (如 calculate_rcri)
             
             Args:
-                query: 搜尋關鍵字、臨床問題或專科名稱
+                keyword: 關鍵字 (如 "rcri", "sofa", "cardiac risk")
+                specialty: 專科名稱 (如 "anesthesiology")
+                context: 臨床情境 (如 "preoperative_assessment")
+                condition: 疾病/狀況 (如 "sepsis")
                 limit: 最多回傳幾個結果 (預設 10)
                 
             Returns:
-                匹配的計算工具清單
+                匹配的計算工具清單，包含 tool_id 供後續呼叫使用
             """
-            request = DiscoveryRequest(
-                mode=DiscoveryMode.SEARCH,
-                query=query,
-                limit=limit
-            )
+            # Determine search mode based on provided parameters
+            if specialty:
+                request = DiscoveryRequest(
+                    mode=DiscoveryMode.BY_SPECIALTY,
+                    specialty=specialty,
+                    limit=limit
+                )
+            elif context:
+                request = DiscoveryRequest(
+                    mode=DiscoveryMode.BY_CONTEXT,
+                    context=context,
+                    limit=limit
+                )
+            elif condition:
+                request = DiscoveryRequest(
+                    mode=DiscoveryMode.BY_CONDITION,
+                    condition=condition,
+                    limit=limit
+                )
+            elif keyword:
+                request = DiscoveryRequest(
+                    mode=DiscoveryMode.SEARCH,
+                    query=keyword,
+                    limit=limit
+                )
+            else:
+                # No parameters - list all
+                request = DiscoveryRequest(
+                    mode=DiscoveryMode.LIST_ALL,
+                    limit=limit
+                )
+            
             response = self._use_case.execute(request)
             return response.to_dict()
         
         @self._mcp.tool()
         def list_by_specialty(specialty: str, limit: int = 20) -> dict[str, Any]:
             """
-            依專科列出工具
-            
-            List calculators for a specific medical specialty.
+            依專科列出工具 (先用 list_specialties 查看可用選項)
             
             Args:
-                specialty: 專科名稱 (e.g., "critical_care", "anesthesiology", "nephrology")
-                limit: 最多回傳幾個結果 (預設 20)
+                specialty: 專科名稱 - 必須是以下其中之一:
+                    - critical_care (重症加護)
+                    - anesthesiology (麻醉科)
+                    - surgery (外科)
+                    - emergency_medicine (急診醫學)
+                    - nephrology (腎臟科)
+                    - cardiology (心臟科)
+                    - internal_medicine (內科)
+                    - pulmonology (胸腔內科)
+                    - neurology (神經科)
+                    - pediatrics (小兒科)
+                    - hematology (血液科)
+                limit: 最多回傳幾個結果
                 
             Returns:
-                該專科的計算工具清單
+                該專科的計算工具清單 (包含 tool_id)
                 
-            Available specialties (可用專科):
-                - critical_care: 重症加護
-                - anesthesiology: 麻醉科
-                - emergency_medicine: 急診醫學
-                - nephrology: 腎臟科
-                - cardiology: 心臟科
-                - internal_medicine: 內科
-                - pulmonology: 胸腔內科
-                - neurology: 神經科
+            Tip: 不確定有哪些專科？先呼叫 list_specialties()
             """
             request = DiscoveryRequest(
                 mode=DiscoveryMode.BY_SPECIALTY,
@@ -92,27 +150,28 @@ class DiscoveryHandler:
         @self._mcp.tool()
         def list_by_context(context: str, limit: int = 20) -> dict[str, Any]:
             """
-            依臨床情境列出工具
-            
-            List calculators for a specific clinical context.
+            依臨床情境列出工具 (先用 list_contexts 查看可用選項)
             
             Args:
-                context: 臨床情境 (e.g., "preoperative_assessment", "severity_assessment")
-                limit: 最多回傳幾個結果 (預設 20)
+                context: 臨床情境 - 必須是以下其中之一:
+                    - preoperative_assessment (術前評估)
+                    - severity_assessment (嚴重度評估)
+                    - risk_stratification (風險分層)
+                    - prognosis (預後評估)
+                    - icu_management (ICU 管理)
+                    - sedation_assessment (鎮靜評估)
+                    - delirium_assessment (譫妄評估)
+                    - transfusion_decision (輸血決策)
+                    - drug_dosing (藥物劑量)
+                    - screening (篩檢)
+                    - monitoring (監測)
+                    - airway_management (氣道管理)
+                limit: 最多回傳幾個結果
                 
             Returns:
-                該情境的計算工具清單
+                該情境的計算工具清單 (包含 tool_id)
                 
-            Available contexts (可用情境):
-                - preoperative_assessment: 術前評估
-                - severity_assessment: 嚴重度評估
-                - prognosis: 預後評估
-                - diagnosis: 診斷
-                - risk_stratification: 風險分層
-                - sedation_assessment: 鎮靜評估
-                - delirium_assessment: 譫妄評估
-                - airway_management: 氣道管理
-                - icu_management: ICU 管理
+            Tip: 不確定有哪些情境？先呼叫 list_contexts()
             """
             request = DiscoveryRequest(
                 mode=DiscoveryMode.BY_CONTEXT,
