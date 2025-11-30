@@ -80,19 +80,23 @@ This project provides:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    infrastructure/                           │
-│              (MCP Server, FastMCP, Transport)                │
+│                    infrastructure/mcp/                       │
+│                (MCP Server, Handlers, Resources)             │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  MCP Tools: discover_tools, calculate_*, list_*     │    │
+│  │  MedicalCalculatorServer                             │    │
+│  │  ├── handlers/DiscoveryHandler (discover, list...)   │    │
+│  │  ├── handlers/CalculatorHandler (calculate_*)        │    │
+│  │  └── resources/CalculatorResourceHandler             │    │
 │  └─────────────────────────────────────────────────────┘    │
 └──────────────────────────┬──────────────────────────────────┘
-                           │ depends on
+                           │ uses
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     application/                             │
-│                  (Use Cases, DTOs)                           │
+│               (Use Cases, DTOs, Validation)                  │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  CalculateUseCase, DiscoverToolsUseCase             │    │
+│  │  DiscoveryUseCase, CalculateUseCase                  │    │
+│  │  DiscoveryRequest/Response, CalculateRequest/Response│    │
 │  └─────────────────────────────────────────────────────┘    │
 └──────────────────────────┬──────────────────────────────────┘
                            │ depends on
@@ -189,11 +193,13 @@ When an AI agent needs a medical calculator, it can:
 | Approach | Method | When to Use | 使用時機 |
 |----------|--------|-------------|----------|
 | **Direct Call** | `calculate_sofa(...)` | Agent knows exactly which tool | 確切知道需要哪個工具 |
-| **Search** | `discover_tools("sepsis mortality")` | Need to find relevant tools | 需要搜尋相關工具 |
-| **By Specialty** | `discover_tools("critical care")` | Browse tools by specialty | 依專科瀏覽工具 |
-| **By Condition** | `discover_tools("difficult airway")` | Find tools for a condition | 依病況尋找工具 |
-| **Full List** | `list_calculators()` | See all available options | 查看所有可用選項 |
-| **Details** | `get_calculator_info("sofa")` | Get params and references | 取得參數與引用文獻 |
+| **Search** | `discover_tools("sepsis")` | Free text search | 自由文字搜尋 |
+| **By Specialty** | `list_by_specialty("critical_care")` | Filter by specialty | 依專科篩選 |
+| **By Context** | `list_by_context("preoperative_assessment")` | Filter by clinical context | 依情境篩選 |
+| **Full List** | `list_calculators()` | See all available tools | 查看所有可用工具 |
+| **Details** | `get_calculator_info("sofa_score")` | Get params and references | 取得參數與引用文獻 |
+| **Available Specialties** | `list_specialties()` | See what specialties exist | 查看有哪些專科 |
+| **Available Contexts** | `list_contexts()` | See what contexts exist | 查看有哪些情境 |
 
 ### Low Level Key | 低階 Key（精準選擇）
 
@@ -261,9 +267,13 @@ This means:
 
 | Tool | Purpose | 用途 |
 |------|---------|------|
-| `discover_tools(query)` | Search by keyword, specialty, or clinical question | 依關鍵字、專科或臨床問題搜尋 |
+| `discover_tools(query)` | Free text search | 自由文字搜尋 |
+| `list_by_specialty(specialty)` | Filter by medical specialty | 依專科篩選 |
+| `list_by_context(context)` | Filter by clinical context | 依臨床情境篩選 |
 | `list_calculators()` | List all available calculators | 列出所有可用計算器 |
-| `get_calculator_info(tool_id)` | Get full metadata for a specific tool | 取得特定工具的完整 metadata |
+| `get_calculator_info(tool_id)` | Get full metadata for a tool | 取得工具的完整 metadata |
+| `list_specialties()` | List available specialties | 列出可用專科 |
+| `list_contexts()` | List available clinical contexts | 列出可用臨床情境 |
 
 ### Example: AI Agent Workflow | 範例：AI Agent 工作流程
 
@@ -332,13 +342,17 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR (race-free) | Inker 2021 |
 
-### Discovery Tools | 探索工具 (3 tools)
+### Discovery Tools | 探索工具 (7 tools)
 
 | Tool | Description | 說明 |
 |------|-------------|------|
 | `discover_tools` | Free-text search across all metadata | 跨所有 metadata 的自由文字搜尋 |
+| `list_by_specialty` | Filter tools by medical specialty | 依專科篩選工具 |
+| `list_by_context` | Filter tools by clinical context | 依臨床情境篩選工具 |
 | `list_calculators` | List all registered calculators | 列出所有已註冊的計算器 |
 | `get_calculator_info` | Get detailed info for one calculator | 取得單一計算器的詳細資訊 |
+| `list_specialties` | List available specialties | 列出可用專科 |
+| `list_contexts` | List available clinical contexts | 列出可用臨床情境 |
 
 ### Resources | 資源
 
