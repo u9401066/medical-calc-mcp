@@ -15,6 +15,13 @@ from .rcri import RcriCalculator
 from .apache_ii import ApacheIiCalculator
 from .rass import RassCalculator
 
+# Phase 4: ICU/Emergency Calculators
+from .sofa_score import SofaScoreCalculator
+from .qsofa_score import QsofaScoreCalculator
+from .news_score import NewsScoreCalculator
+from .gcs import GlasgowComaScaleCalculator
+from .cam_icu import CamIcuCalculator
+
 
 __all__ = [
     # Nephrology
@@ -28,6 +35,11 @@ __all__ = [
     # Critical Care / ICU
     "ApacheIiCalculator",
     "RassCalculator",
+    "SofaScoreCalculator",
+    "QsofaScoreCalculator",
+    "NewsScoreCalculator",
+    "GlasgowComaScaleCalculator",
+    "CamIcuCalculator",
 ]
 
 
@@ -39,4 +51,10 @@ CALCULATORS = [
     RcriCalculator,
     ApacheIiCalculator,
     RassCalculator,
+    # Phase 4: ICU/Emergency
+    SofaScoreCalculator,
+    QsofaScoreCalculator,
+    NewsScoreCalculator,
+    GlasgowComaScaleCalculator,
+    CamIcuCalculator,
 ]

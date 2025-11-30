@@ -55,5 +55,8 @@ class Unit(Enum):
     # Dimensionless
     NONE = ""
     
+    # Boolean/Binary
+    BINARY = "present/absent"  # For yes/no results (e.g., delirium present)
+    
     def __str__(self) -> str:
         return self.value

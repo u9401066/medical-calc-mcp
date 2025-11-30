@@ -187,7 +187,7 @@ class RcriCalculator(BaseCalculator):
         
         return ScoreResult(
             value=float(score),
-            unit=Unit.POINTS,
+            unit=Unit.SCORE,
             interpretation=interpretation,
             references=list(self.references),
             tool_id=self.tool_id,
