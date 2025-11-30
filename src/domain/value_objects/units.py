@@ -31,6 +31,14 @@ class Unit(Enum):
     L_MIN = "L/min"  # Flow
     MM = "mm"  # e.g., tracheal diameter
     
+    # Volume (for transfusion, MABL)
+    ML = "mL"  # Milliliters
+    
+    # Mass (for drug dosing)
+    MG = "mg"  # Milligrams
+    MG_DOSE = "mg/dose"  # Milligrams per dose
+    MG_KG = "mg/kg"  # Dose per kg
+    
     # Laboratory
     MEQ_L = "mEq/L"  # Electrolytes
     MMOL_L = "mmol/L"  # Glucose, etc.

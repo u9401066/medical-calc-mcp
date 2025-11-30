@@ -28,7 +28,7 @@ Tool Discovery Flow:
 
 from mcp.server.fastmcp import FastMCP
 
-from ...domain.registry.tool_registry import ToolRegistry
+from ...domain.registry.tool_registry import ToolRegistry, get_registry
 from ...domain.services.calculators import CALCULATORS
 
 from .config import default_config
@@ -68,8 +68,8 @@ class MedicalCalculatorServer:
             instructions=self._config.instructions
         )
         
-        # Initialize registry
-        self._registry = ToolRegistry()
+        # Use singleton registry for consistency
+        self._registry = get_registry()
         
         # Register all calculators
         self._register_calculators()

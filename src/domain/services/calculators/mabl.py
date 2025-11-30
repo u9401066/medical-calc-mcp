@@ -25,26 +25,13 @@ from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.clinical_constants import EBV_ML_PER_KG, get_ebv_per_kg
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
     Specialty,
     ClinicalContext
 )
-
-
-# Estimated Blood Volume (EBV) by patient type (mL/kg)
-EBV_BY_TYPE = {
-    "preterm_neonate": 90,      # Premature infant
-    "term_neonate": 85,         # Full-term newborn
-    "infant": 80,               # 1-12 months
-    "child": 75,                # 1-12 years
-    "adolescent": 70,           # >12 years
-    "adult_male": 70,           # Adult male
-    "adult_female": 65,         # Adult female
-    "obese_adult": 60,          # Obese adult (use IBW)
-    "elderly": 65,              # >65 years
-}
 
 
 class MablCalculator(BaseCalculator):
@@ -196,13 +183,12 @@ class MablCalculator(BaseCalculator):
             ebv = estimated_blood_volume_ml
             ebv_source = "provided"
         else:
-            patient_type_lower = patient_type.lower().replace(" ", "_").replace("-", "_")
-            if patient_type_lower not in EBV_BY_TYPE:
+            ebv_per_kg = get_ebv_per_kg(patient_type)
+            if ebv_per_kg == 70 and patient_type.lower() not in EBV_ML_PER_KG:
                 raise ValueError(
                     f"Unknown patient type: {patient_type}. "
-                    f"Available types: {list(EBV_BY_TYPE.keys())}"
+                    f"Available types: {list(EBV_ML_PER_KG.keys())}"
                 )
-            ebv_per_kg = EBV_BY_TYPE[patient_type_lower]
             ebv = weight_kg * ebv_per_kg
             ebv_source = f"{ebv_per_kg} mL/kg × {weight_kg} kg"
         
@@ -253,7 +239,7 @@ class MablCalculator(BaseCalculator):
             tool_name="Maximum Allowable Blood Loss",
             tool_id="mabl",
             value=round(mabl, 0),
-            unit=Unit.ML_MIN,  # Using mL as closest available
+            unit=Unit.ML,  # Using proper mL unit
             interpretation=interpretation,
             references=list(self.metadata.references),
             calculation_details={
@@ -266,4 +252,4 @@ class MablCalculator(BaseCalculator):
     @staticmethod
     def get_ebv_reference() -> dict[str, int]:
         """Return the EBV reference table"""
-        return EBV_BY_TYPE.copy()
+        return EBV_ML_PER_KG.copy()

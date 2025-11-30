@@ -27,7 +27,7 @@ Guideline Citation:
     PMID: 34605781
 """
 
-from typing import Optional, Literal
+from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

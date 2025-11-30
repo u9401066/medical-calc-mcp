@@ -29,63 +29,18 @@ from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.clinical_constants import (
+    EBV_ML_PER_KG, 
+    BLOOD_PRODUCTS, 
+    get_ebv_per_kg,
+    get_blood_product,
+)
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
     Specialty,
     ClinicalContext
 )
-
-
-# Blood product specifications
-BLOOD_PRODUCTS = {
-    "prbc": {
-        "name": "Packed Red Blood Cells (PRBC)",
-        "hematocrit": 60,  # Typical Hct of PRBC is 55-65%
-        "volume_per_unit_ml": 300,
-        "expected_hct_rise_per_unit": 3,  # % rise per unit in 70kg adult
-    },
-    "whole_blood": {
-        "name": "Whole Blood",
-        "hematocrit": 40,  # Hct of whole blood ~40%
-        "volume_per_unit_ml": 450,
-        "expected_hct_rise_per_unit": 3,
-    },
-    "platelets": {
-        "name": "Platelets (Apheresis)",
-        "platelet_count": 300,  # ×10⁹/L per unit
-        "volume_per_unit_ml": 250,
-        "expected_plt_rise_per_unit": 30,  # ×10⁹/L rise per unit in 70kg adult
-    },
-    "platelet_concentrate": {
-        "name": "Platelet Concentrate (Random Donor)",
-        "platelet_count": 60,  # ×10⁹/L per unit (pooled = 4-6 units)
-        "volume_per_unit_ml": 50,
-        "expected_plt_rise_per_unit": 5,  # per single unit
-    },
-    "ffp": {
-        "name": "Fresh Frozen Plasma (FFP)",
-        "volume_per_unit_ml": 250,
-        "dose_ml_per_kg": 15,  # 10-15 mL/kg typical dose
-    },
-    "cryoprecipitate": {
-        "name": "Cryoprecipitate",
-        "volume_per_unit_ml": 15,
-        "fibrinogen_per_unit_mg": 250,  # ~250 mg fibrinogen per unit
-        "dose_units_per_10kg": 1,  # 1 unit per 10 kg body weight
-    },
-}
-
-# EBV by patient type (mL/kg)
-EBV_BY_TYPE = {
-    "preterm_neonate": 90,
-    "term_neonate": 85,
-    "infant": 80,
-    "child": 75,
-    "adolescent": 70,
-    "adult_male": 70,
-    "adult_female": 65,
-}
 
 
 class TransfusionCalculator(BaseCalculator):
@@ -95,12 +50,12 @@ class TransfusionCalculator(BaseCalculator):
     Calculates the volume of blood products needed to achieve target levels:
     
     For PRBC/Whole Blood:
-        Volume (mL) = EBV × (Target Hct - Current Hct) / Product Hct
+        Volume (mL) = EBV ? (Target Hct - Current Hct) / Product Hct
         
     For Pediatric PRBC (simplified):
-        Volume (mL) = Weight (kg) × (Target Hb - Current Hb) × 3
+        Volume (mL) = Weight (kg) ? (Target Hb - Current Hb) ? 3
         or
-        Volume (mL) = Weight (kg) × (Target Hct - Current Hct) / Hct of PRBC × 100
+        Volume (mL) = Weight (kg) ? (Target Hct - Current Hct) / Hct of PRBC ? 100
         
     General rule: 10-15 mL/kg of PRBC raises Hgb by ~2-3 g/dL
     """
@@ -213,8 +168,8 @@ class TransfusionCalculator(BaseCalculator):
             target_hemoglobin: Target Hgb (g/dL)
             product_type: Blood product type (prbc, whole_blood, platelets, ffp)
             patient_type: Patient category for EBV calculation
-            current_platelet: Current platelet count (×10⁹/L)
-            target_platelet: Target platelet count (×10⁹/L)
+            current_platelet: Current platelet count (?10??L)
+            target_platelet: Target platelet count (?10??L)
             
         Returns:
             ScoreResult with calculated transfusion volume
@@ -273,7 +228,7 @@ class TransfusionCalculator(BaseCalculator):
     ) -> ScoreResult:
         """Calculate PRBC or whole blood transfusion volume"""
         
-        # Convert Hgb to Hct if needed (Hct ≈ Hgb × 3)
+        # Convert Hgb to Hct if needed (Hct ??Hgb ? 3)
         if current_hematocrit is None and current_hemoglobin is not None:
             current_hematocrit = current_hemoglobin * 3
         if target_hematocrit is None and target_hemoglobin is not None:
@@ -293,17 +248,12 @@ class TransfusionCalculator(BaseCalculator):
         product = BLOOD_PRODUCTS[product_type]
         product_hct = product["hematocrit"]
         
-        # Get EBV
-        patient_type_lower = patient_type.lower().replace(" ", "_").replace("-", "_")
-        if patient_type_lower not in EBV_BY_TYPE:
-            ebv_per_kg = 70  # Default adult
-        else:
-            ebv_per_kg = EBV_BY_TYPE[patient_type_lower]
-        
+        # Get EBV using helper function
+        ebv_per_kg = get_ebv_per_kg(patient_type, default=70)
         ebv = weight_kg * ebv_per_kg
         
         # Calculate transfusion volume
-        # Formula: Volume = EBV × (Target Hct - Current Hct) / Product Hct
+        # Formula: Volume = EBV ? (Target Hct - Current Hct) / Product Hct
         hct_deficit = target_hematocrit - current_hematocrit
         volume_needed = ebv * hct_deficit / product_hct
         
@@ -336,7 +286,7 @@ class TransfusionCalculator(BaseCalculator):
             tool_name="Transfusion Volume",
             tool_id="transfusion_calc",
             value=round(volume_needed, 0),
-            unit=Unit.ML_MIN,
+            unit=Unit.ML,
             interpretation=interpretation,
             references=list(self.metadata.references),
             calculation_details={
@@ -364,10 +314,10 @@ class TransfusionCalculator(BaseCalculator):
                 tool_name="Platelet Transfusion Volume",
                 tool_id="transfusion_calc",
                 value=round(volume, 0),
-                unit=Unit.ML_MIN,
+                unit=Unit.ML,
                 interpretation=Interpretation(
                     summary=f"Transfuse {volume:.0f} mL platelets (10 mL/kg)",
-                    detail="Standard pediatric dose: 10-15 mL/kg. Expected rise: 50-100 ×10⁹/L",
+                    detail="Standard pediatric dose: 10-15 mL/kg. Expected rise: 50-100 ?10??L",
                     severity=Severity.NORMAL,
                     recommendations=("Use standard pediatric dose: 10-15 mL/kg",),
                 ),
@@ -377,9 +327,8 @@ class TransfusionCalculator(BaseCalculator):
         if target_platelet <= current_platelet:
             raise ValueError("Target platelet must be greater than current")
         
-        # Get EBV
-        patient_type_lower = patient_type.lower().replace(" ", "_").replace("-", "_")
-        ebv_per_kg = EBV_BY_TYPE.get(patient_type_lower, 70)
+        # Get EBV using helper function
+        ebv_per_kg = get_ebv_per_kg(patient_type, default=70)
         ebv = weight_kg * ebv_per_kg
         
         # Calculate platelet increment needed
@@ -389,9 +338,9 @@ class TransfusionCalculator(BaseCalculator):
         product = BLOOD_PRODUCTS[product_type]
         
         if product_type == "platelets":
-            # Apheresis unit: ~3×10¹¹ platelets per unit
-            # Expected increment = (Platelets transfused × 10¹¹) / (Blood volume in L × 10)
-            # Simplified: 1 apheresis unit raises PLT by ~30-60 ×10⁹/L in 70kg adult
+            # Apheresis unit: ~3?10¹¹ platelets per unit
+            # Expected increment = (Platelets transfused ? 10¹¹) / (Blood volume in L ? 10)
+            # Simplified: 1 apheresis unit raises PLT by ~30-60 ?10??L in 70kg adult
             expected_rise_per_unit = product["expected_plt_rise_per_unit"]
             correction_factor = 70 / weight_kg  # Adjust for weight
             units_needed = plt_deficit / (expected_rise_per_unit * correction_factor)
@@ -405,16 +354,16 @@ class TransfusionCalculator(BaseCalculator):
         
         interpretation = Interpretation(
             summary=f"Transfuse {volume:.0f} mL platelets (~{units_needed:.1f} units)",
-            detail=f"Raise platelets from {current_platelet:.0f} to {target_platelet:.0f} ×10⁹/L. Deficit: {plt_deficit:.0f}",
+            detail=f"Raise platelets from {current_platelet:.0f} to {target_platelet:.0f} ?10??L. Deficit: {plt_deficit:.0f}",
             severity=Severity.NORMAL,
-            recommendations=(f"Give to raise platelets from {current_platelet:.0f} to {target_platelet:.0f} ×10⁹/L",),
+            recommendations=(f"Give to raise platelets from {current_platelet:.0f} to {target_platelet:.0f} ?10??L",),
         )
         
         return ScoreResult(
             tool_name="Platelet Transfusion Volume",
             tool_id="transfusion_calc",
             value=round(volume, 0),
-            unit=Unit.ML_MIN,
+            unit=Unit.ML,
             interpretation=interpretation,
             references=list(self.metadata.references),
         )
@@ -437,7 +386,7 @@ class TransfusionCalculator(BaseCalculator):
             tool_name="FFP Volume",
             tool_id="transfusion_calc",
             value=round(volume, 0),
-            unit=Unit.ML_MIN,
+            unit=Unit.ML,
             interpretation=interpretation,
             references=list(self.metadata.references),
         )

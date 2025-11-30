@@ -15,7 +15,6 @@ Note:
 """
 
 from typing import Optional, Literal
-import math
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
