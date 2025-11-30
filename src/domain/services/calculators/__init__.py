@@ -41,6 +41,10 @@ from .wells_pe import WellsPeCalculator
 # Phase 6: Hepatology
 from .meld_score import MeldScoreCalculator
 
+# Phase 7: Surgery/Perioperative & Pulmonology
+from .caprini_vte import CapriniVteCalculator
+from .psi_port import PsiPortCalculator
+
 
 __all__ = [
     # Nephrology
@@ -78,6 +82,12 @@ __all__ = [
     
     # Hepatology
     "MeldScoreCalculator",
+    
+    # Surgery/Perioperative
+    "CapriniVteCalculator",
+    
+    # Pulmonology (additional)
+    "PsiPortCalculator",
 ]
 
 
@@ -109,4 +119,7 @@ CALCULATORS = [
     WellsPeCalculator,
     # Phase 6: Hepatology
     MeldScoreCalculator,
+    # Phase 7: Surgery/Perioperative & Pulmonology
+    CapriniVteCalculator,
+    PsiPortCalculator,
 ]

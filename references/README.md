@@ -297,6 +297,113 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
+### SOFA Score (Sequential Organ Failure Assessment)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Vincent JL, Moreno R, Takala J, et al. The SOFA (Sepsis-related Organ Failure Assessment) score to describe organ dysfunction/failure. *Intensive Care Med*. 1996;22(7):707-710. |
+| **DOI** | [10.1007/BF01709751](https://doi.org/10.1007/BF01709751) |
+| **PMID** | [8844239](https://pubmed.ncbi.nlm.nih.gov/8844239/) |
+| **Year** | 1996 |
+| **Key Points** | 6 organ systems; score 0-24; daily assessment for ICU mortality |
+
+---
+
+### qSOFA Score (Quick SOFA)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Seymour CW, Liu VX, Iwashyna TJ, et al. Assessment of Clinical Criteria for Sepsis: For the Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). *JAMA*. 2016;315(8):762-774. |
+| **DOI** | [10.1001/jama.2016.0288](https://doi.org/10.1001/jama.2016.0288) |
+| **PMID** | [26903335](https://pubmed.ncbi.nlm.nih.gov/26903335/) |
+| **Year** | 2016 |
+| **Key Points** | Bedside screening for sepsis; 3 criteria (RR, SBP, GCS); score ≥2 = high risk |
+
+---
+
+### NEWS/NEWS2 (National Early Warning Score)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Royal College of Physicians. National Early Warning Score (NEWS) 2: Standardising the assessment of acute-illness severity in the NHS. Updated report of a working party. London: RCP, 2017. |
+| **URL** | [https://www.rcplondon.ac.uk/projects/outputs/national-early-warning-score-news-2](https://www.rcplondon.ac.uk/projects/outputs/national-early-warning-score-news-2) |
+| **Year** | 2017 |
+| **Key Points** | 7 physiological parameters; score 0-20; guides clinical escalation |
+
+---
+
+### Glasgow Coma Scale (GCS)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Teasdale G, Jennett B. Assessment of coma and impaired consciousness. A practical scale. *Lancet*. 1974;2(7872):81-84. |
+| **DOI** | [10.1016/s0140-6736(74)91639-0](https://doi.org/10.1016/s0140-6736(74)91639-0) |
+| **PMID** | [4136544](https://pubmed.ncbi.nlm.nih.gov/4136544/) |
+| **Year** | 1974 |
+| **Key Points** | Consciousness assessment; 3-15 scale; Eye, Verbal, Motor responses |
+
+---
+
+### CAM-ICU (Confusion Assessment Method for ICU)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Ely EW, Inouye SK, Bernard GR, et al. Delirium in mechanically ventilated patients: validity and reliability of the confusion assessment method for the intensive care unit (CAM-ICU). *JAMA*. 2001;286(21):2703-2710. |
+| **DOI** | [10.1001/jama.286.21.2703](https://doi.org/10.1001/jama.286.21.2703) |
+| **PMID** | [11730446](https://pubmed.ncbi.nlm.nih.gov/11730446/) |
+| **Year** | 2001 |
+| **Key Points** | ICU delirium screening; 4 features; requires RASS assessment |
+
+---
+
+### Caprini VTE Risk Assessment ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Caprini JA. Thrombosis risk assessment as a guide to quality patient care. *Dis Mon*. 2005;51(2-3):70-78. |
+| **DOI** | [10.1016/j.disamonth.2005.02.003](https://doi.org/10.1016/j.disamonth.2005.02.003) |
+| **PMID** | [15900257](https://pubmed.ncbi.nlm.nih.gov/15900257/) |
+| **Year** | 2005 |
+| **Key Points** | Perioperative VTE risk; 40+ risk factors; guides prophylaxis |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Bahl V, Hu HM, Henke PK, Wakefield TW, Campbell DA Jr, Caprini JA. A validation study of a retrospective venous thromboembolism risk scoring method. *Ann Surg*. 2010;251(2):344-350. |
+| **DOI** | [10.1097/SLA.0b013e3181b7fca6](https://doi.org/10.1097/SLA.0b013e3181b7fca6) |
+| **PMID** | [19779324](https://pubmed.ncbi.nlm.nih.gov/19779324/) |
+| **Year** | 2010 |
+| **Key Points** | Validation in 8,216 patients; stratifies VTE risk by score |
+
+| Field | Value |
+|-------|-------|
+| **Review Citation** | Caprini JA. Risk assessment as a guide for the prevention of the many faces of venous thromboembolism. *Am J Surg*. 2010;199(1 Suppl):S3-10. |
+| **DOI** | [10.1016/j.amjsurg.2009.10.006](https://doi.org/10.1016/j.amjsurg.2009.10.006) |
+| **PMID** | [20103082](https://pubmed.ncbi.nlm.nih.gov/20103082/) |
+| **Year** | 2010 |
+| **Key Points** | Comprehensive review of VTE risk assessment and prophylaxis |
+
+---
+
+### PSI/PORT Score (Pneumonia Severity Index) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Fine MJ, Auble TE, Yealy DM, et al. A prediction rule to identify low-risk patients with community-acquired pneumonia. *N Engl J Med*. 1997;336(4):243-250. |
+| **DOI** | [10.1056/NEJM199701233360402](https://doi.org/10.1056/NEJM199701233360402) |
+| **PMID** | [8995086](https://pubmed.ncbi.nlm.nih.gov/8995086/) |
+| **Year** | 1997 |
+| **Key Points** | CAP severity; 5 risk classes; guides inpatient vs outpatient treatment |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Aujesky D, Auble TE, Yealy DM, et al. Prospective comparison of three validated prediction rules for prognosis in community-acquired pneumonia. *Am J Med*. 2005;118(4):384-392. |
+| **DOI** | [10.1016/j.amjmed.2005.01.006](https://doi.org/10.1016/j.amjmed.2005.01.006) |
+| **PMID** | [15808136](https://pubmed.ncbi.nlm.nih.gov/15808136/) |
+| **Year** | 2005 |
+| **Key Points** | Comparison with CURB-65 and CRB-65; PSI validated for CAP prognosis |
+
+---
+
 ## Notes on Copyright
 
 - All medical formulas are derived from peer-reviewed scientific literature

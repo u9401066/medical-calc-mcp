@@ -13,6 +13,7 @@ from .pulmonology import register_pulmonology_tools
 from .cardiology import register_cardiology_tools
 from .emergency import register_emergency_tools
 from .hepatology import register_hepatology_tools
+from .surgery import register_surgery_tools
 
 __all__ = [
     "register_nephrology_tools",
@@ -23,4 +24,5 @@ __all__ = [
     "register_cardiology_tools",
     "register_emergency_tools",
     "register_hepatology_tools",
+    "register_surgery_tools",
 ]

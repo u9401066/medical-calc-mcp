@@ -22,6 +22,7 @@ from .calculators import (
     register_cardiology_tools,
     register_emergency_tools,
     register_hepatology_tools,
+    register_surgery_tools,
 )
 
 
@@ -41,6 +42,7 @@ class CalculatorHandler:
     - calculators/cardiology.py     - Cardiac (CHA₂DS₂-VASc, HEART, etc.)
     - calculators/emergency.py      - ED tools (Wells DVT/PE, etc.)
     - calculators/hepatology.py     - Liver (MELD, Child-Pugh, etc.)
+    - calculators/surgery.py        - Perioperative (Caprini VTE, etc.)
     """
     
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
@@ -77,3 +79,6 @@ class CalculatorHandler:
         
         # Hepatology / GI calculators
         register_hepatology_tools(self._mcp, self._use_case)
+        
+        # Surgery / Perioperative calculators
+        register_surgery_tools(self._mcp, self._use_case)
