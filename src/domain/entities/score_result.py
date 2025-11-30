@@ -95,9 +95,9 @@ class ScoreResult:
             
             # Detailed interpretation
             "detail": self.interpretation.detail,
-            "recommendations": list(self.interpretation.recommendations),
-            "warnings": list(self.interpretation.warnings),
-            "next_steps": list(self.interpretation.next_steps),
+            "recommendations": list(self.interpretation.recommendations) if self.interpretation.recommendations else [],
+            "warnings": list(self.interpretation.warnings) if self.interpretation.warnings else [],
+            "next_steps": list(self.interpretation.next_steps) if self.interpretation.next_steps else [],
             
             # Calculation transparency
             "inputs_used": self.raw_inputs,

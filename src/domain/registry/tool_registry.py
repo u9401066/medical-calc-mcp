@@ -84,22 +84,22 @@ class ToolRegistry:
         for icd10 in high_level.icd10_codes:
             self._by_icd10[icd10.upper()].add(tool_id)
     
-    def get(self, tool_id: str) -> Optional[BaseCalculator]:
-        """Get a calculator by tool_id"""
-        return self._calculators.get(tool_id)
-    
-    def get_metadata(self, tool_id: str) -> Optional[ToolMetadata]:
-        """Get metadata for a tool"""
-        calc = self.get(tool_id)
+    def get(self, tool_id: str) -> Optional[ToolMetadata]:
+        """Get metadata for a tool by tool_id"""
+        calc = self._calculators.get(tool_id)
         return calc.metadata if calc else None
     
-    def list_all(self) -> List[str]:
-        """List all registered tool IDs"""
-        return list(self._calculators.keys())
+    def get_calculator(self, tool_id: str) -> Optional[BaseCalculator]:
+        """Get a calculator instance by tool_id"""
+        return self._calculators.get(tool_id)
     
-    def list_all_metadata(self) -> List[ToolMetadata]:
+    def list_all(self) -> List[ToolMetadata]:
         """List metadata for all registered tools"""
         return [calc.metadata for calc in self._calculators.values()]
+    
+    def list_all_ids(self) -> List[str]:
+        """List all registered tool IDs"""
+        return list(self._calculators.keys())
     
     def count(self) -> int:
         """Get total number of registered calculators"""
@@ -108,6 +108,68 @@ class ToolRegistry:
     # Search methods
     
     def search(
+        self,
+        query: str,
+        limit: int = 10
+    ) -> List[ToolMetadata]:
+        """
+        Search for tools by free text query.
+        
+        Searches across tool names, purposes, conditions, keywords, 
+        clinical questions, and specialties.
+        
+        Args:
+            query: Free text search query
+            limit: Maximum number of results to return
+            
+        Returns:
+            List of matching ToolMetadata, sorted by relevance
+        """
+        query_lower = query.lower()
+        results: List[tuple[int, ToolMetadata]] = []
+        
+        for calc in self._calculators.values():
+            score = 0
+            meta = calc.metadata
+            low = meta.low_level
+            high = meta.high_level
+            
+            # Exact matches score higher
+            if query_lower in low.tool_id.lower():
+                score += 10
+            if query_lower in low.name.lower():
+                score += 8
+            if query_lower in low.purpose.lower():
+                score += 5
+            
+            # Check specialties
+            for specialty in high.specialties:
+                if query_lower in specialty.value.lower():
+                    score += 7
+            
+            # Check conditions
+            for condition in high.conditions:
+                if query_lower in condition.lower():
+                    score += 6
+            
+            # Check keywords
+            for keyword in high.keywords:
+                if query_lower in keyword.lower():
+                    score += 4
+            
+            # Check clinical questions
+            for question in high.clinical_questions:
+                if query_lower in question.lower():
+                    score += 3
+            
+            if score > 0:
+                results.append((score, meta))
+        
+        # Sort by score descending
+        results.sort(key=lambda x: x[0], reverse=True)
+        return [meta for _, meta in results[:limit]]
+    
+    def search_by_filters(
         self,
         specialty: Optional[Specialty] = None,
         condition: Optional[str] = None,
@@ -158,61 +220,6 @@ class ToolRegistry:
             matching_ids = set(self._calculators.keys())
         
         return [self._calculators[tid].metadata for tid in matching_ids]
-    
-    def search_by_text(self, query: str) -> List[ToolMetadata]:
-        """
-        Search tools by free text query.
-        
-        Searches across:
-        - Tool name
-        - Purpose
-        - Conditions
-        - Keywords
-        
-        Args:
-            query: Free text search query
-            
-        Returns:
-            List of matching ToolMetadata, sorted by relevance
-        """
-        query_lower = query.lower()
-        results: List[tuple[int, ToolMetadata]] = []
-        
-        for calc in self._calculators.values():
-            score = 0
-            meta = calc.metadata
-            low = meta.low_level
-            high = meta.high_level
-            
-            # Exact matches score higher
-            if query_lower in low.tool_id.lower():
-                score += 10
-            if query_lower in low.name.lower():
-                score += 8
-            if query_lower in low.purpose.lower():
-                score += 5
-            
-            # Check conditions
-            for condition in high.conditions:
-                if query_lower in condition.lower():
-                    score += 6
-            
-            # Check keywords
-            for keyword in high.keywords:
-                if query_lower in keyword.lower():
-                    score += 4
-            
-            # Check clinical questions
-            for question in high.clinical_questions:
-                if query_lower in question.lower():
-                    score += 3
-            
-            if score > 0:
-                results.append((score, meta))
-        
-        # Sort by score descending
-        results.sort(key=lambda x: x[0], reverse=True)
-        return [meta for _, meta in results]
     
     def list_by_specialty(self, specialty: Specialty) -> List[ToolMetadata]:
         """List all tools for a given specialty"""

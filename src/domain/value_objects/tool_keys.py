@@ -21,6 +21,7 @@ class Specialty(Enum):
     CRITICAL_CARE = "critical_care"  # ICU
     EMERGENCY_MEDICINE = "emergency_medicine"
     ENDOCRINOLOGY = "endocrinology"
+    ENT = "ent"  # 耳鼻喉科 (Otolaryngology)
     GASTROENTEROLOGY = "gastroenterology"
     GERIATRICS = "geriatrics"
     HEMATOLOGY = "hematology"
@@ -80,6 +81,8 @@ class ClinicalContext(Enum):
     WEANING_ASSESSMENT = "weaning_assessment"  # 脫機評估
     DELIRIUM_ASSESSMENT = "delirium_assessment"  # 譫妄評估
     NUTRITION_ASSESSMENT = "nutrition_assessment"  # 營養評估
+    CARDIAC_ASSESSMENT = "cardiac_assessment"  # 心臟評估
+    ICU_MANAGEMENT = "icu_management"  # ICU 管理
 
 
 @dataclass(frozen=True)
