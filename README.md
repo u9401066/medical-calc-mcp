@@ -454,6 +454,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_chads2_vasc` | CHA₂DS₂-VASc | AF stroke risk for anticoagulation | Lip 2010 |
 | `calculate_chads2_va` | CHA₂DS₂-VA ⭐2024 | AF stroke risk (sex-neutral, 2024 ESC) | Van Gelder 2024 |
+| `calculate_has_bled` | HAS-BLED ⭐2024 | AF bleeding risk (modifiable factors) | Pisters 2010, ESC 2024 |
 | `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
 
 #### Emergency Medicine | 急診醫學 ⭐ NEW
@@ -660,38 +661,42 @@ doi:10.1056/NEJMoa2102953
 | Phase 6 | ✅ Complete | More Calculators (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) |
 | Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
 | Phase 7.5 | ✅ Complete | CHA₂DS₂-VA (2024 ESC), Caprini VTE, PSI/PORT + Type Safety Fixes |
-| Phase 8 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
-| Phase 9 | 📋 Planned | Internationalization (i18n for multi-language support) |
-| Phase 10 | 📋 Planned | Calculator Templates (rapid development tools) |
+| Phase 8 | � In Progress | **Guideline-Recommended Tools** (✅ HAS-BLED, 🔜 Child-Pugh, 🔜 KDIGO AKI) |
+| Phase 9 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
+| Phase 10 | 📋 Planned | Internationalization (i18n for multi-language support) |
 
 ### Roadmap | 路線圖
 
 ```
 2025 Q4                          2026 Q1                          2026 Q2
 ───────────────────────────────────────────────────────────────────────────────
-Phase 6: ✅ Complete             Phase 8: HTTP Transport          Phase 10: Templates
-├── ✅ CURB-65 (Pneumonia)       ├── FastAPI/Starlette            ├── Calculator generator
-├── ✅ CHA₂DS₂-VASc (AF)         ├── OpenAPI spec                 ├── CLI scaffolding
-├── ✅ HEART Score               ├── Docker optimization          └── CI/CD templates
-├── ✅ Wells DVT                 └── Cloud deployment
-├── ✅ Wells PE                                                   Phase 11: Advanced
-├── ✅ MELD Score                Phase 9: i18n                    ├── Drug interactions
-│                                ├── zh-TW translations           ├── Lab result parsers
-Phase 7: ✅ Validation Layer     ├── Translation framework        └── FHIR integration
-                                 └── Locale-aware formatting
+Phase 7.5: ✅ Complete           Phase 9: HTTP Transport          Phase 10: i18n
+├── ✅ CHA₂DS₂-VA (2024 ESC)     ├── FastAPI/Starlette            ├── zh-TW translations
+├── ✅ Caprini VTE               ├── OpenAPI spec                 └── Translation framework
+├── ✅ PSI/PORT                  └── Docker optimization
+└── ✅ Type Safety Fixes                                          Phase 11: Templates
+                                                                   └── Calculator generator
+Phase 8: � Guideline Tools
+├── ✅ HAS-BLED (2024 ESC)
+├── 🔜 Child-Pugh (Hepatology)
+└── 🔜 KDIGO AKI Staging
 ```
 
 ### Upcoming Calculators | 即將推出的計算器
 
+Based on **2024 ESC Guidelines** and **2024 Sepsis Expert Consensus** (see [docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md))
+
+根據 **2024 ESC 指引**與 **2024 Sepsis 專家共識**（參見 [docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)）
+
 | Priority | Tool ID | Name | Specialty | Reference |
 |----------|---------|------|-----------|-----------|
-| 🔴 High | `timi_nstemi` | TIMI NSTEMI | Cardiology | Antman 2000 |
-| 🔴 High | `has_bled` | HAS-BLED | Cardiology | Pisters 2010 |
-| 🟡 Medium | `pesi` | PESI Score | Pulmonology | Aujesky 2005 |
-| 🟡 Medium | `geneva_score` | Geneva Score | Emergency | Le Gal 2006 |
-| 🟡 Medium | `child_pugh` | Child-Pugh | Hepatology | Pugh 1973 |
-| 🟢 Low | `apache_iv` | APACHE IV | Critical Care | Zimmerman 2006 |
-| 🟢 Low | `saps_ii` | SAPS II | Critical Care | Le Gall 1993 |
+| ✅ Done | `has_bled` | HAS-BLED | Cardiology | Pisters 2010, **2024 ESC AF** |
+| 🔴 High | `child_pugh` | Child-Pugh | Hepatology | Pugh 1973 |
+| 🔴 High | `kdigo_aki` | KDIGO AKI Staging | Nephrology | KDIGO 2012 |
+| 🟡 Medium | `pesi` | PESI/sPESI | Pulmonology | Aujesky 2005 |
+| 🟡 Medium | `grace_score` | GRACE Score | Cardiology | Fox 2006 |
+| 🟡 Medium | `timi_nstemi` | TIMI NSTEMI | Cardiology | Antman 2000 |
+| 🟢 Low | `geneva_score` | Geneva Score | Emergency | Le Gal 2006 |
 
 ---
 

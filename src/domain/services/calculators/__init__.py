@@ -34,6 +34,7 @@ from .curb65 import Curb65Calculator
 from .chads2_vasc import Chads2VascCalculator
 from .chads2_va import Chads2VaCalculator  # 2024 ESC - sex-neutral
 from .heart_score import HeartScoreCalculator
+from .has_bled import HasBledCalculator  # Phase 8: 2024 ESC recommended
 
 # Phase 6: Emergency Medicine
 from .wells_dvt import WellsDvtCalculator
@@ -77,6 +78,7 @@ __all__ = [
     "Chads2VascCalculator",
     "Chads2VaCalculator",  # 2024 ESC
     "HeartScoreCalculator",
+    "HasBledCalculator",  # 2024 ESC recommended
     
     # Emergency Medicine
     "WellsDvtCalculator",
@@ -117,6 +119,7 @@ CALCULATORS = [
     Chads2VascCalculator,
     Chads2VaCalculator,  # 2024 ESC
     HeartScoreCalculator,
+    HasBledCalculator,  # Phase 8: 2024 ESC recommended
     # Phase 6: Emergency Medicine
     WellsDvtCalculator,
     WellsPeCalculator,

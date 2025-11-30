@@ -218,3 +218,78 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_has_bled(
+        hypertension_uncontrolled: Annotated[bool, Field(
+            description="未控制高血壓 Uncontrolled hypertension (SBP >160 mmHg)"
+        )],
+        renal_disease: Annotated[bool, Field(
+            description="腎功能異常 Chronic dialysis, transplant, or Cr >2.26 mg/dL"
+        )],
+        liver_disease: Annotated[bool, Field(
+            description="肝功能異常 Chronic hepatic disease (cirrhosis) or biochemical evidence"
+        )],
+        stroke_history: Annotated[bool, Field(
+            description="中風病史 Previous stroke (ischemic or hemorrhagic)"
+        )],
+        bleeding_history: Annotated[bool, Field(
+            description="出血病史 Previous major bleeding or predisposition"
+        )],
+        labile_inr: Annotated[bool, Field(
+            description="不穩定INR Unstable/high INRs, TTR <60% (only if on warfarin)"
+        )] = False,
+        elderly_gt_65: Annotated[bool, Field(
+            description="年齡>65歲 Age >65 years"
+        )] = False,
+        drugs_antiplatelet_nsaid: Annotated[bool, Field(
+            description="併用藥物 Concomitant antiplatelet agents or NSAIDs"
+        )] = False,
+        alcohol_excess: Annotated[bool, Field(
+            description="過量飲酒 Alcohol excess (≥8 drinks/week)"
+        )] = False,
+    ) -> dict[str, Any]:
+        """
+        🩸 HAS-BLED: 心房顫動出血風險評估 (2024 ESC 推薦)
+        
+        評估心房顫動患者使用抗凝劑時的主要出血風險。
+        2024 ESC 指引建議與 CHA₂DS₂-VA 合併使用以平衡中風/出血風險。
+        
+        **計分項目 (各 1 分):**
+        - **H**ypertension: 未控制高血壓 (SBP >160)
+        - **A**bnormal renal/liver function: 腎/肝功能異常 (各 1 分，最多 2 分)
+        - **S**troke: 中風病史
+        - **B**leeding: 出血史或傾向
+        - **L**abile INR: 不穩定 INR (TTR <60%，僅限 warfarin)
+        - **E**lderly: 年齡 >65 歲
+        - **D**rugs/alcohol: 抗血小板/NSAID 或酒精過量 (各 1 分，最多 2 分)
+        
+        **風險分層:**
+        - 0-2 分: 低出血風險
+        - ≥3 分: 高出血風險 - 需處理可修正因子
+        
+        **重要:** 高 HAS-BLED 分數不是抗凝禁忌症，而是提醒需要
+        更密切監測並處理可修正的出血風險因子。
+        
+        **參考文獻:** Pisters R, et al. Chest. 2010;138(5):1093-1100. PMID: 20299623
+        2024 ESC: Van Gelder IC, et al. Eur Heart J. 2024. PMID: 39217497
+        
+        Returns:
+            HAS-BLED 分數 (0-9)、年主要出血風險、管理建議
+        """
+        request = CalculateRequest(
+            tool_id="has_bled",
+            params={
+                "hypertension_uncontrolled": hypertension_uncontrolled,
+                "renal_disease": renal_disease,
+                "liver_disease": liver_disease,
+                "stroke_history": stroke_history,
+                "bleeding_history": bleeding_history,
+                "labile_inr": labile_inr,
+                "elderly_gt_65": elderly_gt_65,
+                "drugs_antiplatelet_nsaid": drugs_antiplatelet_nsaid,
+                "alcohol_excess": alcohol_excess,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()

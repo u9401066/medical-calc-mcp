@@ -1,7 +1,7 @@
 """
 Tests for Cardiology Calculators
 
-Tests CHA₂DS₂-VASc, CHA₂DS₂-VA (2024 ESC), and HEART Score calculators.
+Tests CHA₂DS₂-VASc, CHA₂DS₂-VA (2024 ESC), HEART Score, and HAS-BLED calculators.
 """
 
 import pytest
@@ -347,3 +347,155 @@ class TestHeartScoreCalculator:
         
         calc = HeartScoreCalculator()
         assert calc.tool_id == "heart_score"
+
+
+class TestHasBledCalculator:
+    """Tests for HAS-BLED Score (2024 ESC recommended bleeding risk)."""
+
+    def test_score_zero(self):
+        """Test HAS-BLED with no risk factors."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=False,
+            renal_disease=False,
+            liver_disease=False,
+            stroke_history=False,
+            bleeding_history=False,
+            labile_inr=False,
+            elderly_gt_65=False,
+            drugs_antiplatelet_nsaid=False,
+            alcohol_excess=False,
+        )
+        
+        assert result.value == 0
+        assert "low" in result.interpretation.summary.lower()
+
+    def test_low_risk_score(self):
+        """Test HAS-BLED score of 2 is still low risk."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=True,  # +1
+            renal_disease=False,
+            liver_disease=False,
+            stroke_history=False,
+            bleeding_history=False,
+            labile_inr=False,
+            elderly_gt_65=True,  # +1
+            drugs_antiplatelet_nsaid=False,
+            alcohol_excess=False,
+        )
+        
+        assert result.value == 2
+        assert "low" in result.interpretation.summary.lower()
+
+    def test_high_risk_score(self):
+        """Test HAS-BLED ≥3 is high risk."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=True,  # +1
+            renal_disease=True,              # +1
+            liver_disease=False,
+            stroke_history=True,             # +1
+            bleeding_history=False,
+            labile_inr=False,
+            elderly_gt_65=False,
+            drugs_antiplatelet_nsaid=False,
+            alcohol_excess=False,
+        )
+        
+        assert result.value == 3
+        assert "high" in result.interpretation.summary.lower()
+
+    def test_max_score(self):
+        """Test maximum HAS-BLED score."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=True,   # +1
+            renal_disease=True,               # +1
+            liver_disease=True,               # +1
+            stroke_history=True,              # +1
+            bleeding_history=True,            # +1
+            labile_inr=True,                  # +1
+            elderly_gt_65=True,               # +1
+            drugs_antiplatelet_nsaid=True,    # +1
+            alcohol_excess=True,              # +1
+        )
+        
+        assert result.value == 9
+
+    def test_modifiable_factors_identified(self):
+        """Test that modifiable risk factors are identified in recommendations."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=True,
+            renal_disease=False,
+            liver_disease=False,
+            stroke_history=True,
+            bleeding_history=False,
+            labile_inr=True,
+            elderly_gt_65=True,
+            drugs_antiplatelet_nsaid=True,
+            alcohol_excess=True,
+        )
+        
+        # Should mention modifiable factors
+        recommendations = " ".join(result.interpretation.recommendations)
+        assert "hypertension" in recommendations.lower() or "BP" in recommendations
+
+    def test_high_score_not_contraindication(self):
+        """Test that high score does NOT contraindicate anticoagulation."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=True,
+            renal_disease=True,
+            liver_disease=True,
+            stroke_history=True,
+            bleeding_history=False,
+            labile_inr=False,
+            elderly_gt_65=False,
+            drugs_antiplatelet_nsaid=False,
+            alcohol_excess=False,
+        )
+        
+        # High score but should mention NOT a contraindication
+        recommendations = " ".join(result.interpretation.recommendations).lower()
+        assert "not" in recommendations and "contraindication" in recommendations
+
+    def test_references_include_2024_esc(self):
+        """Test that 2024 ESC Guidelines are referenced."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        result = calc.calculate(
+            hypertension_uncontrolled=False,
+            renal_disease=False,
+            liver_disease=False,
+            stroke_history=False,
+            bleeding_history=False,
+        )
+        
+        assert result.references is not None
+        assert len(result.references) >= 2
+        # Check for Pisters 2010 (original) and 2024 ESC
+        citations = [ref.citation for ref in result.references]
+        assert any("Pisters" in c for c in citations)
+        assert any("2024" in c for c in citations)
+
+    def test_tool_id(self):
+        """Test tool ID is correct."""
+        from src.domain.services.calculators import HasBledCalculator
+        
+        calc = HasBledCalculator()
+        assert calc.tool_id == "has_bled"
