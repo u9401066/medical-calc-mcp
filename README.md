@@ -180,6 +180,21 @@ The **Two-Level Key System** is the core innovation of this project:
 
 **雙層 Key 系統**是本專案的核心創新：
 
+### Discovery Philosophy | 探索理念
+
+When an AI agent needs a medical calculator, it can:
+
+當 AI Agent 需要醫學計算工具時，可以：
+
+| Approach | Method | When to Use | 使用時機 |
+|----------|--------|-------------|----------|
+| **Direct Call** | `calculate_sofa(...)` | Agent knows exactly which tool | 確切知道需要哪個工具 |
+| **Search** | `discover_tools("sepsis mortality")` | Need to find relevant tools | 需要搜尋相關工具 |
+| **By Specialty** | `discover_tools("critical care")` | Browse tools by specialty | 依專科瀏覽工具 |
+| **By Condition** | `discover_tools("difficult airway")` | Find tools for a condition | 依病況尋找工具 |
+| **Full List** | `list_calculators()` | See all available options | 查看所有可用選項 |
+| **Details** | `get_calculator_info("sofa")` | Get params and references | 取得參數與引用文獻 |
+
 ### Low Level Key | 低階 Key（精準選擇）
 
 For **precise tool selection** when you know exactly what you need:
@@ -216,6 +231,32 @@ HighLevelKey(
 )
 ```
 
+### 🔑 Key Feature: Multi-Specialty Tools | 關鍵特性：跨專科工具
+
+**One tool can belong to multiple High Level categories!**
+
+**一個工具可以屬於多個高階類別！**
+
+Example: SOFA Score belongs to:
+
+範例：SOFA 分數屬於：
+
+| Category | Values | 值 |
+|----------|--------|-----|
+| Specialties | Critical Care, Emergency Medicine, Internal Medicine, Pulmonology | 重症、急診、內科、胸腔 |
+| Conditions | Sepsis, Septic Shock, Organ Dysfunction, MODS | 敗血症、敗血性休克、器官衰竭 |
+| Contexts | Severity Assessment, Prognosis, ICU Management, Diagnosis | 嚴重度評估、預後、ICU 管理、診斷 |
+
+This means:
+- Search "sepsis" → Returns SOFA, qSOFA, NEWS, ...
+- Search "critical care" → Returns SOFA, APACHE II, RASS, GCS, CAM-ICU, ...
+- Search "organ dysfunction" → Returns SOFA, ...
+
+這表示：
+- 搜尋 "sepsis" → 回傳 SOFA, qSOFA, NEWS, ...
+- 搜尋 "critical care" → 回傳 SOFA, APACHE II, RASS, GCS, CAM-ICU, ...
+- 搜尋 "organ dysfunction" → 回傳 SOFA, ...
+
 ### Discovery MCP Tools | 探索 MCP 工具
 
 | Tool | Purpose | 用途 |
@@ -240,20 +281,56 @@ Agent: calculate_rcri(high_risk_surgery=True, ischemic_heart_disease=True, ...)
        → Returns: Score, risk percentage, recommendations
 ```
 
+### Example: ICU Sepsis Workup | 範例：ICU 敗血症評估
+
+```
+User: "Evaluate this ICU patient for sepsis"
+用戶：「評估這位 ICU 病患是否有敗血症」
+
+Agent: discover_tools("sepsis ICU")
+       → Returns: SOFA, qSOFA, NEWS2, APACHE II
+
+# Per Sepsis-3 guidelines:
+# 依據 Sepsis-3 指引：
+
+Agent: calculate_qsofa(respiratory_rate=24, systolic_bp=95, altered_mentation=True)
+       → qSOFA = 3 (High risk, prompt evaluation needed)
+
+Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
+       → SOFA = 8 (Sepsis confirmed if infection suspected, ≥2 point increase)
+```
+
 ---
 
 ## 🔧 Available Tools | 可用工具
 
-### Calculators | 計算器 (6 tools)
+### Calculators | 計算器 (11 tools)
 
-| Tool ID | Name | Specialty | Purpose |
-|---------|------|-----------|---------|
-| `calculate_ckd_epi_2021` | CKD-EPI 2021 | Nephrology | eGFR calculation (2021 race-free equation) |
-| `calculate_asa_physical_status` | ASA-PS | Anesthesiology | Preoperative physical status classification |
-| `calculate_mallampati` | Mallampati | Anesthesiology | Airway assessment for difficult intubation |
-| `calculate_rcri` | RCRI (Lee Index) | Cardiology | Cardiac risk for non-cardiac surgery |
-| `calculate_apache_ii` | APACHE II | Critical Care | ICU mortality prediction |
-| `calculate_rass` | RASS | Critical Care | Sedation/agitation assessment |
+#### Anesthesiology / Preoperative | 麻醉科 / 術前評估
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_asa_physical_status` | ASA-PS | Physical status classification | Mayhew 2019 |
+| `calculate_mallampati` | Mallampati | Airway assessment | Mallampati 1985 |
+| `calculate_rcri` | RCRI (Lee Index) | Cardiac risk non-cardiac surgery | Lee 1999 |
+
+#### Critical Care / ICU | 重症加護
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_apache_ii` | APACHE II | ICU mortality prediction | Knaus 1985 |
+| `calculate_sofa` | SOFA Score | Organ dysfunction (Sepsis-3) | Vincent 1996, Singer 2016 |
+| `calculate_qsofa` | qSOFA | Bedside sepsis screening | Singer 2016 (Sepsis-3) |
+| `calculate_news2` | NEWS2 | Clinical deterioration | RCP 2017 |
+| `calculate_gcs` | Glasgow Coma Scale | Consciousness assessment | Teasdale 1974 |
+| `calculate_rass` | RASS | Sedation/agitation | Sessler 2002 |
+| `calculate_cam_icu` | CAM-ICU | ICU delirium screening | Ely 2001 |
+
+#### Nephrology | 腎臟科
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR (race-free) | Inker 2021 |
 
 ### Discovery Tools | 探索工具 (3 tools)
 
@@ -378,11 +455,12 @@ doi:10.1056/NEJMoa2102953
 | Phase | Status | Description |
 |-------|--------|-------------|
 | Phase 1 | ✅ Complete | Foundation Layer (DDD architecture) |
-| Phase 2 | ✅ Complete | 6 Example Calculators |
-| Phase 3 | ✅ Complete | MCP Integration (FastMCP) |
-| Phase 4 | ⏳ Planned | More Calculators (from nobra_calculator) |
-| Phase 5 | ⏳ Planned | Validation Layer & Error Handling |
-| Phase 6 | ⏳ Planned | Additional Transports (HTTP, WebSocket) |
+| Phase 2 | ✅ Complete | 6 Example Calculators (CKD-EPI, ASA, Mallampati, RCRI, APACHE II, RASS) |
+| Phase 3 | ✅ Complete | MCP Integration (FastMCP) with Tool Discovery |
+| Phase 4 | ✅ Complete | ICU/ED Calculators (SOFA, qSOFA, NEWS, GCS, CAM-ICU) per Sepsis-3 |
+| Phase 5 | ⏳ Planned | More Calculators (CURB-65, Wells Score, etc.) |
+| Phase 6 | ⏳ Planned | Validation Layer & Error Handling |
+| Phase 7 | ⏳ Planned | Additional Transports (HTTP, WebSocket) |
 
 ### Contributing | 貢獻
 
