@@ -21,7 +21,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -187,7 +187,7 @@ class HeartScoreCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int) -> Interpretation:
@@ -196,7 +196,7 @@ class HeartScoreCalculator(BaseCalculator):
         if score <= 3:
             # Low risk
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             mace_risk = "0.9-1.7%"
             summary = f"HEART Score = {score}: Low risk ({mace_risk} 6-week MACE)"
             detail = (
@@ -221,7 +221,7 @@ class HeartScoreCalculator(BaseCalculator):
         elif score <= 6:
             # Moderate risk
             severity = Severity.MODERATE
-            risk_level = "moderate"
+            risk_level = RiskLevel.INTERMEDIATE
             mace_risk = "12-16.6%"
             summary = f"HEART Score = {score}: Moderate risk ({mace_risk} 6-week MACE)"
             detail = (
@@ -245,8 +245,8 @@ class HeartScoreCalculator(BaseCalculator):
             
         else:
             # High risk (score 7-10)
-            severity = Severity.SEVERE if score >= 8 else Severity.HIGH
-            risk_level = "high"
+            severity = Severity.SEVERE
+            risk_level = RiskLevel.HIGH
             mace_risk = "50-65%"
             summary = f"HEART Score = {score}: High risk ({mace_risk} 6-week MACE)"
             detail = (

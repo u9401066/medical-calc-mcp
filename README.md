@@ -402,9 +402,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 26 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 30 Tools + 5 Prompts + 4 Resources
 
-### Calculators | 計算器 (20 tools)
+### Calculators | 計算器 (23 tools)
 
 #### Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -415,6 +415,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_rcri` | RCRI (Lee Index) | Cardiac risk non-cardiac surgery | Lee 1999 |
 | `calculate_mabl` | MABL | Maximum allowable blood loss | Gross 1983 |
 | `calculate_transfusion_volume` | Transfusion Calc | Blood product volume calculation | Roseff 2002 |
+| `calculate_caprini_vte` | Caprini VTE ⭐NEW | Surgical VTE risk assessment | Caprini 2005 |
 
 #### Critical Care / ICU | 重症加護
 
@@ -445,12 +446,14 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_curb65` | CURB-65 | Pneumonia severity & disposition | Lim 2003 |
+| `calculate_psi_port` | PSI/PORT ⭐NEW | CAP mortality prediction | Fine 1997 |
 
 #### Cardiology | 心臟科 ⭐ NEW
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_chads2_vasc` | CHA₂DS₂-VASc | AF stroke risk for anticoagulation | Lip 2010 |
+| `calculate_chads2_va` | CHA₂DS₂-VA ⭐2024 | AF stroke risk (sex-neutral, 2024 ESC) | Van Gelder 2024 |
 | `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
 
 #### Emergency Medicine | 急診醫學 ⭐ NEW
@@ -523,6 +526,27 @@ prompt: sepsis_evaluation
 ---
 
 ## 📖 Usage Examples | 使用範例
+
+### Python Examples | Python 範例 ⭐ NEW
+
+The project includes ready-to-run example scripts in the `examples/` folder:
+
+專案在 `examples/` 資料夾中包含可直接執行的範例腳本：
+
+```bash
+# Basic usage examples | 基本使用範例
+python examples/basic_usage.py
+
+# Clinical workflow examples | 臨床工作流程範例
+python examples/clinical_workflows.py
+```
+
+**Available Examples | 可用範例:**
+
+| File | Description | 說明 |
+|------|-------------|------|
+| `basic_usage.py` | Individual calculator usage (CKD-EPI, SOFA, RCRI, CHA₂DS₂-VASc, Wells PE) | 單一計算器使用 |
+| `clinical_workflows.py` | Multi-calculator clinical scenarios (Sepsis, Preop, Chest Pain, AF) | 多計算器臨床情境 |
 
 ### Example 1: CKD-EPI 2021 (eGFR)
 
@@ -635,6 +659,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 5.5 | ✅ Complete | MCP Prompts (5 workflows) + Parameter Descriptions + Enhanced Errors |
 | Phase 6 | ✅ Complete | More Calculators (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) |
 | Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
+| Phase 7.5 | ✅ Complete | CHA₂DS₂-VA (2024 ESC), Caprini VTE, PSI/PORT + Type Safety Fixes |
 | Phase 8 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
 | Phase 9 | 📋 Planned | Internationalization (i18n for multi-language support) |
 | Phase 10 | 📋 Planned | Calculator Templates (rapid development tools) |

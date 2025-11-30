@@ -26,7 +26,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -465,7 +465,7 @@ class CapriniVteCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int, hit_history: bool) -> Interpretation:
@@ -473,7 +473,7 @@ class CapriniVteCalculator(BaseCalculator):
         
         if score == 0:
             severity = Severity.NORMAL
-            risk_level = "very low"
+            risk_level = RiskLevel.VERY_LOW
             vte_rate = "~0.5%"
             category = "Very Low Risk"
             recommendations = [
@@ -485,7 +485,7 @@ class CapriniVteCalculator(BaseCalculator):
             
         elif score <= 2:
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             vte_rate = "~1.5%"
             category = "Low Risk"
             recommendations = [
@@ -497,7 +497,7 @@ class CapriniVteCalculator(BaseCalculator):
             
         elif score <= 4:
             severity = Severity.MODERATE
-            risk_level = "moderate"
+            risk_level = RiskLevel.INTERMEDIATE
             vte_rate = "~3%"
             category = "Moderate Risk"
             recommendations = [
@@ -510,7 +510,7 @@ class CapriniVteCalculator(BaseCalculator):
             
         else:  # score >= 5
             severity = Severity.SEVERE
-            risk_level = "high"
+            risk_level = RiskLevel.HIGH
             vte_rate = "~6%"
             category = "High Risk"
             recommendations = [

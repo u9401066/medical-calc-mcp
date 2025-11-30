@@ -17,7 +17,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -195,7 +195,7 @@ class Chads2VascCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int, female_sex: bool) -> Interpretation:
@@ -223,7 +223,7 @@ class Chads2VascCalculator(BaseCalculator):
         if adjusted_score <= 0:
             # Low risk - no anticoagulation needed
             severity = Severity.NORMAL
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             summary = f"CHA₂DS₂-VASc = {score}: Low risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"Low stroke risk. The annual ischemic stroke rate is approximately {annual_risk}. "
@@ -244,7 +244,7 @@ class Chads2VascCalculator(BaseCalculator):
         elif adjusted_score == 1:
             # Intermediate risk - consider anticoagulation
             severity = Severity.MILD
-            risk_level = "low-moderate"
+            risk_level = RiskLevel.LOW
             summary = f"CHA₂DS₂-VASc = {score}: Low-moderate risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"Borderline stroke risk. Annual ischemic stroke rate is approximately {annual_risk}. "
@@ -267,7 +267,7 @@ class Chads2VascCalculator(BaseCalculator):
         else:
             # High risk - anticoagulation recommended
             severity = Severity.MODERATE if score <= 4 else Severity.SEVERE
-            risk_level = "moderate" if score <= 4 else "high"
+            risk_level = RiskLevel.INTERMEDIATE if score <= 4 else RiskLevel.HIGH
             summary = f"CHA₂DS₂-VASc = {score}: {'High' if score > 4 else 'Moderate'} risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"Significant stroke risk. Annual ischemic stroke rate is approximately {annual_risk}. "

@@ -21,7 +21,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -213,7 +213,7 @@ class Chads2VaCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int) -> Interpretation:
@@ -241,7 +241,7 @@ class Chads2VaCalculator(BaseCalculator):
         if score == 0:
             # Very low risk - no anticoagulation
             severity = Severity.NORMAL
-            risk_level = "very low"
+            risk_level = RiskLevel.VERY_LOW
             summary = f"CHA₂DS₂-VA = {score}: Very low risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"Very low stroke risk per 2024 ESC guidelines. "
@@ -267,7 +267,7 @@ class Chads2VaCalculator(BaseCalculator):
         elif score == 1:
             # Low risk - consider anticoagulation
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             summary = f"CHA₂DS₂-VA = {score}: Low risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"Low stroke risk per 2024 ESC guidelines. "
@@ -296,15 +296,15 @@ class Chads2VaCalculator(BaseCalculator):
             # Score ≥2: Anticoagulation recommended
             if score <= 3:
                 severity = Severity.MODERATE
-                risk_level = "moderate"
+                risk_level = RiskLevel.INTERMEDIATE
             elif score <= 5:
                 severity = Severity.SEVERE
-                risk_level = "high"
+                risk_level = RiskLevel.HIGH
             else:
                 severity = Severity.CRITICAL
-                risk_level = "very high"
+                risk_level = RiskLevel.VERY_HIGH
                 
-            summary = f"CHA₂DS₂-VA = {score}: {risk_level.title()} risk ({annual_risk} annual stroke risk)"
+            summary = f"CHA₂DS₂-VA = {score}: {risk_level.value.replace('_', ' ').title()} risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"{'Significant' if score <= 4 else 'High'} stroke risk per 2024 ESC guidelines. "
                 f"Annual stroke rate approximately {annual_risk}. "

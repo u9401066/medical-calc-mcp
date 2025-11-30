@@ -25,7 +25,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -199,7 +199,7 @@ class WellsPeCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: float) -> Interpretation:
@@ -213,13 +213,13 @@ class WellsPeCalculator(BaseCalculator):
             if score < 2:
                 # Three-level: Low probability
                 severity = Severity.MILD
-                risk_level = "low"
+                risk_level = RiskLevel.LOW
                 pe_probability = "~3.6%"
                 three_level = "Low probability"
             else:
                 # Three-level: Moderate probability (2-4)
                 severity = Severity.MILD
-                risk_level = "low-moderate"
+                risk_level = RiskLevel.LOW
                 pe_probability = "~12%"
                 three_level = "Moderate probability"
             
@@ -245,14 +245,14 @@ class WellsPeCalculator(BaseCalculator):
             # PE Likely (score >4)
             if score > 6:
                 # Three-level: High probability
-                severity = Severity.HIGH
-                risk_level = "high"
+                severity = Severity.SEVERE
+                risk_level = RiskLevel.HIGH
                 pe_probability = "~67%"
                 three_level = "High probability"
             else:
                 # Three-level: Moderate probability (4-6)
                 severity = Severity.MODERATE
-                risk_level = "moderate"
+                risk_level = RiskLevel.INTERMEDIATE
                 pe_probability = "~37%"
                 three_level = "Moderate probability"
             

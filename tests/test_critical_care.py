@@ -69,6 +69,6 @@ class TestApacheIiCalculator:
             respiratory_rate=16, fio2=0.21, pao2=80, arterial_ph=7.4,
             serum_sodium=140, serum_potassium=4.0, serum_creatinine=1.0,
             hematocrit=40, wbc_count=10, gcs_score=15, age=50,
-            chronic_health_conditions="none", admission_type="elective_postoperative"
+            chronic_health_conditions=(), admission_type="elective_postoperative"
         )
         assert result.value >= 0

@@ -29,7 +29,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -234,7 +234,7 @@ class MeldScoreCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, meld: int, meld_na: int) -> Interpretation:
@@ -247,23 +247,23 @@ class MeldScoreCalculator(BaseCalculator):
         if score < 10:
             mortality = "1.9%"
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
         elif score < 20:
             mortality = "6.0%"
             severity = Severity.MODERATE
-            risk_level = "moderate"
+            risk_level = RiskLevel.INTERMEDIATE
         elif score < 30:
             mortality = "19.6%"
             severity = Severity.SEVERE
-            risk_level = "high"
+            risk_level = RiskLevel.HIGH
         elif score < 40:
             mortality = "52.6%"
             severity = Severity.SEVERE
-            risk_level = "very high"
+            risk_level = RiskLevel.VERY_HIGH
         else:
             mortality = "71.3%"
             severity = Severity.CRITICAL
-            risk_level = "critical"
+            risk_level = RiskLevel.VERY_HIGH
         
         summary = f"MELD = {meld}, MELD-Na = {meld_na}: {mortality} 90-day mortality"
         

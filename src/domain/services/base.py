@@ -51,12 +51,13 @@ class BaseCalculator(ABC):
         pass
     
     @abstractmethod
-    def calculate(self, **params) -> ScoreResult:
+    def calculate(self, *args: Any, **kwargs: Any) -> ScoreResult:
         """
         Execute the calculation.
         
         Args:
-            **params: Calculator-specific parameters
+            *args: Calculator-specific positional parameters
+            **kwargs: Calculator-specific keyword parameters
             
         Returns:
             ScoreResult with value, interpretation, and references

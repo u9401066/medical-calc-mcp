@@ -127,10 +127,27 @@ class MedicalCalculatorServer:
 # =============================================================================
 
 # Create default server instance for module-level access
-_server = MedicalCalculatorServer()
+# Lazy initialization to avoid import order issues
+_server = None
+
+def get_server():
+    """Get or create the server instance"""
+    global _server
+    if _server is None:
+        _server = MedicalCalculatorServer()
+    return _server
 
 # Export the mcp instance for FastMCP compatibility
-mcp = _server.mcp
+# This is accessed after module is fully loaded
+def _get_mcp():
+    return get_server().mcp
+
+# For backward compatibility - lazy property
+class _McpProxy:
+    def __getattr__(self, name):
+        return getattr(get_server().mcp, name)
+
+mcp = _McpProxy()
 
 
 # =============================================================================
@@ -147,7 +164,7 @@ def main():
         if idx + 1 < len(sys.argv):
             transport = sys.argv[idx + 1]
     
-    _server.run(transport)
+    get_server().run(transport)
 
 
 if __name__ == "__main__":

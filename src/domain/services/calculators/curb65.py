@@ -16,7 +16,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -175,7 +175,7 @@ class Curb65Calculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int) -> Interpretation:
@@ -196,7 +196,7 @@ class Curb65Calculator(BaseCalculator):
         if score <= 1:
             # Low risk
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             summary = f"CURB-65 = {score}: Low risk ({mortality} 30-day mortality)"
             detail = (
                 f"Low severity pneumonia. The 30-day mortality rate for CURB-65 score "
@@ -218,7 +218,7 @@ class Curb65Calculator(BaseCalculator):
         elif score == 2:
             # Moderate risk
             severity = Severity.MODERATE
-            risk_level = "moderate"
+            risk_level = RiskLevel.INTERMEDIATE
             summary = f"CURB-65 = {score}: Moderate risk ({mortality} 30-day mortality)"
             detail = (
                 f"Moderate severity pneumonia. The 30-day mortality rate is approximately "
@@ -238,8 +238,8 @@ class Curb65Calculator(BaseCalculator):
             
         else:
             # High risk (score 3-5)
-            severity = Severity.SEVERE if score >= 4 else Severity.HIGH
-            risk_level = "high"
+            severity = Severity.SEVERE
+            risk_level = RiskLevel.HIGH
             summary = f"CURB-65 = {score}: High risk ({mortality} 30-day mortality)"
             detail = (
                 f"Severe pneumonia with high mortality risk ({mortality}). "
@@ -279,7 +279,7 @@ class Curb65Calculator(BaseCalculator):
             severity=severity,
             detail=detail,
             stage=f"CURB-65 = {score}",
-            stage_description=f"{risk_level.capitalize()} risk - {disposition}",
+            stage_description=f"{risk_level.value.replace('_', ' ').title()} risk - {disposition}",
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),

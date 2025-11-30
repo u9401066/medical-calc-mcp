@@ -22,7 +22,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -211,7 +211,7 @@ class WellsDvtCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int) -> Interpretation:
@@ -221,7 +221,7 @@ class WellsDvtCalculator(BaseCalculator):
         if score <= 1:
             # DVT Unlikely
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             dvt_probability = "~10%"
             category = "DVT Unlikely"
             summary = f"Wells DVT = {score}: {category} ({dvt_probability} probability)"
@@ -244,12 +244,12 @@ class WellsDvtCalculator(BaseCalculator):
         else:
             # DVT Likely (score ≥2)
             if score >= 3:
-                severity = Severity.HIGH
-                risk_level = "high"
+                severity = Severity.SEVERE
+                risk_level = RiskLevel.HIGH
                 dvt_probability = "~53%"
             else:
                 severity = Severity.MODERATE
-                risk_level = "moderate"
+                risk_level = RiskLevel.INTERMEDIATE
                 dvt_probability = "~25%"
             
             category = "DVT Likely"

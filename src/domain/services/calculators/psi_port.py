@@ -24,7 +24,7 @@ from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
     LowLevelKey,
     HighLevelKey,
@@ -375,7 +375,7 @@ class PsiPortCalculator(BaseCalculator):
             unit=Unit.SCORE,
             interpretation=interpretation,
             calculation_details=components,
-            references=self.references,
+            references=list(self.references),
         )
     
     def _interpret_score(self, score: int, risk_class: str, is_class_i: bool) -> Interpretation:
@@ -391,7 +391,7 @@ class PsiPortCalculator(BaseCalculator):
         
         if risk_class == "I":
             severity = Severity.NORMAL
-            risk_level = "very low"
+            risk_level = RiskLevel.VERY_LOW
             mortality = mortality_rates["I"]
             disposition = "Outpatient treatment"
             recommendations = [
@@ -409,7 +409,7 @@ class PsiPortCalculator(BaseCalculator):
             
         elif risk_class == "II":
             severity = Severity.MILD
-            risk_level = "low"
+            risk_level = RiskLevel.LOW
             mortality = mortality_rates["II"]
             disposition = "Outpatient treatment"
             recommendations = [
@@ -427,7 +427,7 @@ class PsiPortCalculator(BaseCalculator):
             
         elif risk_class == "III":
             severity = Severity.MODERATE
-            risk_level = "moderate"
+            risk_level = RiskLevel.INTERMEDIATE
             mortality = mortality_rates["III"]
             disposition = "Brief inpatient stay or extended observation"
             recommendations = [
@@ -445,7 +445,7 @@ class PsiPortCalculator(BaseCalculator):
             
         elif risk_class == "IV":
             severity = Severity.SEVERE
-            risk_level = "high"
+            risk_level = RiskLevel.HIGH
             mortality = mortality_rates["IV"]
             disposition = "Inpatient admission"
             recommendations = [
@@ -464,7 +464,7 @@ class PsiPortCalculator(BaseCalculator):
             
         else:  # Class V
             severity = Severity.CRITICAL
-            risk_level = "very high"
+            risk_level = RiskLevel.VERY_HIGH
             mortality = mortality_rates["V"]
             disposition = "Inpatient admission; consider ICU"
             recommendations = [
