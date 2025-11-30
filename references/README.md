@@ -177,6 +177,126 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
+### CURB-65 (Pneumonia Severity)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Lim WS, van der Eerden MM, Laing R, et al. Defining community acquired pneumonia severity on presentation to hospital: an international derivation and validation study. *Thorax*. 2003;58(5):377-382. |
+| **DOI** | [10.1136/thorax.58.5.377](https://doi.org/10.1136/thorax.58.5.377) |
+| **PMID** | [12728155](https://pubmed.ncbi.nlm.nih.gov/12728155/) |
+| **Year** | 2003 |
+| **Key Points** | 5 criteria: Confusion, Urea, RR, BP, Age ≥65; score 0-5; guides hospital admission |
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Mandell LA, Wunderink RG, Anzueto A, et al. Infectious Diseases Society of America/American Thoracic Society consensus guidelines on the management of community-acquired pneumonia in adults. *Clin Infect Dis*. 2007;44 Suppl 2:S27-72. |
+| **DOI** | [10.1086/511159](https://doi.org/10.1086/511159) |
+| **PMID** | [17278083](https://pubmed.ncbi.nlm.nih.gov/17278083/) |
+| **Year** | 2007 |
+| **Key Points** | IDSA/ATS guidelines recommending CURB-65 for severity assessment |
+
+---
+
+### CHA₂DS₂-VASc Score (AF Stroke Risk) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk stratification for predicting stroke and thromboembolism in atrial fibrillation using a novel risk factor-based approach: the euro heart survey on atrial fibrillation. *Chest*. 2010;137(2):263-272. |
+| **DOI** | [10.1378/chest.09-1584](https://doi.org/10.1378/chest.09-1584) |
+| **PMID** | [19762550](https://pubmed.ncbi.nlm.nih.gov/19762550/) |
+| **Year** | 2010 |
+| **Key Points** | AF stroke risk; 9 points max; Score ≥2 = anticoagulation recommended |
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Hindricks G, Potpara T, Dagres N, et al. 2020 ESC Guidelines for the diagnosis and management of atrial fibrillation. *Eur Heart J*. 2021;42(5):373-498. |
+| **DOI** | [10.1093/eurheartj/ehaa612](https://doi.org/10.1093/eurheartj/ehaa612) |
+| **PMID** | [32860505](https://pubmed.ncbi.nlm.nih.gov/32860505/) |
+| **Year** | 2020 |
+| **Key Points** | ESC guidelines recommending CHA₂DS₂-VASc for anticoagulation decisions |
+
+---
+
+### HEART Score (Chest Pain Risk) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: value of the HEART score. *Neth Heart J*. 2008;16(6):191-196. |
+| **DOI** | [10.1007/BF03086144](https://doi.org/10.1007/BF03086144) |
+| **PMID** | [18665203](https://pubmed.ncbi.nlm.nih.gov/18665203/) |
+| **Year** | 2008 |
+| **Key Points** | ED chest pain triage; 5 criteria; score 0-3 low risk for MACE |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Backus BE, Six AJ, Kelder JC, et al. Chest pain in the emergency room: a multicenter validation of the HEART Score. *Crit Pathw Cardiol*. 2010;9(3):164-169. |
+| **DOI** | [10.1097/HPC.0b013e3181ec36d8](https://doi.org/10.1097/HPC.0b013e3181ec36d8) |
+| **PMID** | [20802272](https://pubmed.ncbi.nlm.nih.gov/20802272/) |
+| **Year** | 2010 |
+| **Key Points** | Multicenter validation of HEART score |
+
+---
+
+### Wells Score for DVT ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in the diagnosis of suspected deep-vein thrombosis. *N Engl J Med*. 2003;349(13):1227-1235. |
+| **DOI** | [10.1056/NEJMoa023153](https://doi.org/10.1056/NEJMoa023153) |
+| **PMID** | [14507948](https://pubmed.ncbi.nlm.nih.gov/14507948/) |
+| **Year** | 2003 |
+| **Key Points** | DVT probability; combines clinical score with D-dimer; guides ultrasound |
+
+| Field | Value |
+|-------|-------|
+| **Original Citation** | Wells PS, Hirsh J, Anderson DR, et al. Accuracy of clinical assessment of deep-vein thrombosis. *Lancet*. 1995;345(8961):1326-1330. |
+| **DOI** | [10.1016/s0140-6736(95)92535-x](https://doi.org/10.1016/s0140-6736(95)92535-x) |
+| **PMID** | [7752753](https://pubmed.ncbi.nlm.nih.gov/7752753/) |
+| **Year** | 1995 |
+| **Key Points** | Original Wells criteria development |
+
+---
+
+### Wells Score for PE ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple clinical model to categorize patients probability of pulmonary embolism: increasing the models utility with the SimpliRED D-dimer. *Thromb Haemost*. 2000;83(3):416-420. |
+| **DOI** | N/A |
+| **PMID** | [10744147](https://pubmed.ncbi.nlm.nih.gov/10744147/) |
+| **Year** | 2000 |
+| **Key Points** | PE probability; 7 criteria; guides CTPA vs D-dimer |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | van Belle A, Büller HR, Huisman MV, et al. Effectiveness of managing suspected pulmonary embolism using an algorithm combining clinical probability, D-dimer testing, and computed tomography. *JAMA*. 2006;295(2):172-179. |
+| **DOI** | [10.1001/jama.295.2.172](https://doi.org/10.1001/jama.295.2.172) |
+| **PMID** | [16403929](https://pubmed.ncbi.nlm.nih.gov/16403929/) |
+| **Year** | 2006 |
+| **Key Points** | CHRISTOPHER study validating Wells PE + D-dimer algorithm |
+
+---
+
+### MELD Score (End-Stage Liver Disease) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Kamath PS, Wiesner RH, Malinchoc M, et al. A model to predict survival in patients with end-stage liver disease. *Hepatology*. 2001;33(2):464-470. |
+| **DOI** | [10.1053/jhep.2001.22172](https://doi.org/10.1053/jhep.2001.22172) |
+| **PMID** | [11172350](https://pubmed.ncbi.nlm.nih.gov/11172350/) |
+| **Year** | 2001 |
+| **Key Points** | Original MELD formula; 3-month mortality prediction; transplant prioritization |
+
+| Field | Value |
+|-------|-------|
+| **MELD-Na Citation** | Kim WR, Biggins SW, Kremers WK, et al. Hyponatremia and mortality among patients on the liver-transplant waiting list. *N Engl J Med*. 2008;359(10):1018-1026. |
+| **DOI** | [10.1056/NEJMoa0801209](https://doi.org/10.1056/NEJMoa0801209) |
+| **PMID** | [18768945](https://pubmed.ncbi.nlm.nih.gov/18768945/) |
+| **Year** | 2008 |
+| **Key Points** | MELD-Na incorporates sodium; adopted by UNOS 2016 |
+
+---
+
 ## Notes on Copyright
 
 - All medical formulas are derived from peer-reviewed scientific literature
