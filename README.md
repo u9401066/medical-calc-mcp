@@ -469,6 +469,14 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
+| `calculate_child_pugh` | Child-Pugh ⭐Phase8 | Cirrhosis severity staging | Pugh 1973 |
+
+#### Nephrology | 腎臟科 ⭐ NEW
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR without race | Inker 2021 |
+| `calculate_kdigo_aki` | KDIGO AKI ⭐Phase8 | Acute kidney injury staging | KDIGO 2012 |
 
 ### Discovery Tools | 探索工具 (7 tools)
 
@@ -661,7 +669,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 6 | ✅ Complete | More Calculators (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) |
 | Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
 | Phase 7.5 | ✅ Complete | CHA₂DS₂-VA (2024 ESC), Caprini VTE, PSI/PORT + Type Safety Fixes |
-| Phase 8 | � In Progress | **Guideline-Recommended Tools** (✅ HAS-BLED, 🔜 Child-Pugh, 🔜 KDIGO AKI) |
+| Phase 8 | 🔄 In Progress | **Guideline-Recommended Tools** (✅ HAS-BLED, ✅ Child-Pugh, ✅ KDIGO AKI) |
 | Phase 9 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
 | Phase 10 | 📋 Planned | Internationalization (i18n for multi-language support) |
 
@@ -676,10 +684,10 @@ Phase 7.5: ✅ Complete           Phase 9: HTTP Transport          Phase 10: i18
 ├── ✅ PSI/PORT                  └── Docker optimization
 └── ✅ Type Safety Fixes                                          Phase 11: Templates
                                                                    └── Calculator generator
-Phase 8: � Guideline Tools
+Phase 8: ✅ Guideline Tools
 ├── ✅ HAS-BLED (2024 ESC)
-├── 🔜 Child-Pugh (Hepatology)
-└── 🔜 KDIGO AKI Staging
+├── ✅ Child-Pugh (Hepatology)
+└── ✅ KDIGO AKI Staging
 ```
 
 ### Upcoming Calculators | 即將推出的計算器
@@ -691,8 +699,8 @@ Based on **2024 ESC Guidelines** and **2024 Sepsis Expert Consensus** (see [docs
 | Priority | Tool ID | Name | Specialty | Reference |
 |----------|---------|------|-----------|-----------|
 | ✅ Done | `has_bled` | HAS-BLED | Cardiology | Pisters 2010, **2024 ESC AF** |
-| 🔴 High | `child_pugh` | Child-Pugh | Hepatology | Pugh 1973 |
-| 🔴 High | `kdigo_aki` | KDIGO AKI Staging | Nephrology | KDIGO 2012 |
+| ✅ Done | `child_pugh` | Child-Pugh | Hepatology | Pugh 1973 |
+| ✅ Done | `kdigo_aki` | KDIGO AKI Staging | Nephrology | KDIGO 2012 |
 | 🟡 Medium | `pesi` | PESI/sPESI | Pulmonology | Aujesky 2005 |
 | 🟡 Medium | `grace_score` | GRACE Score | Cardiology | Fox 2006 |
 | 🟡 Medium | `timi_nstemi` | TIMI NSTEMI | Cardiology | Antman 2000 |

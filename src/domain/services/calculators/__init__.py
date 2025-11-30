@@ -47,6 +47,10 @@ from .meld_score import MeldScoreCalculator
 from .caprini_vte import CapriniVteCalculator
 from .psi_port import PsiPortCalculator
 
+# Phase 8: Guideline-Recommended Tools
+from .child_pugh import ChildPughCalculator
+from .kdigo_aki import KdigoAkiCalculator
+
 
 __all__ = [
     # Nephrology
@@ -86,6 +90,10 @@ __all__ = [
     
     # Hepatology
     "MeldScoreCalculator",
+    "ChildPughCalculator",  # Phase 8
+    
+    # Nephrology (additional)
+    "KdigoAkiCalculator",  # Phase 8
     
     # Surgery/Perioperative
     "CapriniVteCalculator",
@@ -128,4 +136,7 @@ CALCULATORS = [
     # Phase 7: Surgery/Perioperative & Pulmonology
     CapriniVteCalculator,
     PsiPortCalculator,
+    # Phase 8: Guideline-Recommended Tools
+    ChildPughCalculator,
+    KdigoAkiCalculator,
 ]

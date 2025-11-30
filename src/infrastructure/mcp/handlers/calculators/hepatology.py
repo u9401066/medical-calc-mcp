@@ -82,3 +82,71 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+
+    @mcp.tool()
+    def calculate_child_pugh(
+        bilirubin: Annotated[float, Field(
+            gt=0,
+            description="總膽紅素 Total bilirubin (mg/dL)"
+        )],
+        albumin: Annotated[float, Field(
+            gt=0,
+            description="血清白蛋白 Serum albumin (g/dL)"
+        )],
+        inr: Annotated[float, Field(
+            gt=0,
+            description="國際標準化比值 INR"
+        )],
+        ascites: Annotated[str, Field(
+            description="腹水狀態 Ascites: 'none', 'mild', 'moderate_severe'"
+        )],
+        encephalopathy_grade: Annotated[int, Field(
+            ge=0, le=4,
+            description="肝腦病變分級 Hepatic encephalopathy grade 0-4"
+        )],
+    ) -> dict[str, Any]:
+        """
+        🫀 Child-Pugh Score: 肝硬化嚴重度評估
+        
+        評估慢性肝病（肝硬化）的嚴重程度，用於預後及治療決策。
+        
+        **計分標準 (5項指標，每項1-3分):**
+        
+        | 參數 | 1分 | 2分 | 3分 |
+        |------|-----|-----|-----|
+        | Bilirubin (mg/dL) | <2 | 2-3 | >3 |
+        | Albumin (g/dL) | >3.5 | 2.8-3.5 | <2.8 |
+        | INR | <1.7 | 1.7-2.2 | >2.2 |
+        | 腹水 | 無 | 輕度 | 中重度 |
+        | 肝腦病變 | 無 | I-II級 | III-IV級 |
+        
+        **分級與預後:**
+        - Class A (5-6分): 代償良好，1年存活率 ~100%
+        - Class B (7-9分): 功能受損，1年存活率 ~80%
+        - Class C (10-15分): 失代償，1年存活率 ~45%
+        
+        **臨床應用:**
+        - 肝硬化預後評估
+        - 手術風險分層（圍手術期死亡率）
+        - 肝移植評估（常與 MELD 互補）
+        - 肝功能不全時藥物劑量調整
+        
+        **參考文獻:** 
+        - Pugh RNH, et al. Br J Surg. 1973;60(8):646-649. PMID: 4541913
+        - Child CG, Turcotte JG. The Liver and Portal Hypertension. 1964.
+        
+        Returns:
+            Child-Pugh 分數 (5-15)、分級 (A/B/C)、存活率估計
+        """
+        request = CalculateRequest(
+            tool_id="child_pugh",
+            params={
+                "bilirubin": bilirubin,
+                "albumin": albumin,
+                "inr": inr,
+                "ascites": ascites,
+                "encephalopathy_grade": encephalopathy_grade,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
