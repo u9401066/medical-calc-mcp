@@ -402,9 +402,11 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 30 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 33 Tools + 5 Prompts + 4 Resources
+>
+> **Current Stats**: 26 Calculators | 101 Tests | Phase 8 Complete ✅
 
-### Calculators | 計算器 (23 tools)
+### Calculators | 計算器 (26 tools)
 
 #### Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -440,6 +442,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR (race-free) | Inker 2021 |
+| `calculate_kdigo_aki` | KDIGO AKI ⭐Phase8 | Acute kidney injury staging | KDIGO 2012 |
 
 #### Pulmonology | 胸腔科
 
@@ -470,13 +473,6 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
 | `calculate_child_pugh` | Child-Pugh ⭐Phase8 | Cirrhosis severity staging | Pugh 1973 |
-
-#### Nephrology | 腎臟科 ⭐ NEW
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR without race | Inker 2021 |
-| `calculate_kdigo_aki` | KDIGO AKI ⭐Phase8 | Acute kidney injury staging | KDIGO 2012 |
 
 ### Discovery Tools | 探索工具 (7 tools)
 
@@ -669,7 +665,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 6 | ✅ Complete | More Calculators (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) |
 | Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
 | Phase 7.5 | ✅ Complete | CHA₂DS₂-VA (2024 ESC), Caprini VTE, PSI/PORT + Type Safety Fixes |
-| Phase 8 | 🔄 In Progress | **Guideline-Recommended Tools** (✅ HAS-BLED, ✅ Child-Pugh, ✅ KDIGO AKI) |
+| Phase 8 | ✅ Complete | **Guideline-Recommended Tools** (HAS-BLED, Child-Pugh, KDIGO AKI) |
 | Phase 9 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
 | Phase 10 | 📋 Planned | Internationalization (i18n for multi-language support) |
 
