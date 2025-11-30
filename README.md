@@ -186,20 +186,32 @@ The **Two-Level Key System** is the core innovation of this project:
 
 ### Discovery Philosophy | 探索理念
 
-When an AI agent needs a medical calculator, it can:
+When an AI agent needs a medical calculator, it uses **Hierarchical Navigation**:
 
-當 AI Agent 需要醫學計算工具時，可以：
+當 AI Agent 需要醫學計算工具時，使用**階層式導航**：
 
-| Approach | Method | When to Use | 使用時機 |
-|----------|--------|-------------|----------|
-| **Direct Call** | `calculate_sofa(...)` | Agent knows exactly which tool | 確切知道需要哪個工具 |
-| **Search** | `discover_tools("sepsis")` | Free text search | 自由文字搜尋 |
-| **By Specialty** | `list_by_specialty("critical_care")` | Filter by specialty | 依專科篩選 |
-| **By Context** | `list_by_context("preoperative_assessment")` | Filter by clinical context | 依情境篩選 |
-| **Full List** | `list_calculators()` | See all available tools | 查看所有可用工具 |
-| **Details** | `get_calculator_info("sofa_score")` | Get params and references | 取得參數與引用文獻 |
-| **Available Specialties** | `list_specialties()` | See what specialties exist | 查看有哪些專科 |
-| **Available Contexts** | `list_contexts()` | See what contexts exist | 查看有哪些情境 |
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Path A: Specialty-based (依專科)                           │
+│  ① list_specialties() → ["critical_care", "anesthesiology"]│
+│  ② list_by_specialty("anesthesiology") → [tool_id, ...]    │
+│  ③ get_calculator_info("rcri") → params, references        │
+│  ④ calculate_rcri(...)                                      │
+├─────────────────────────────────────────────────────────────┤
+│  Path B: Context-based (依臨床情境)                          │
+│  ① list_contexts() → ["preoperative_assessment", ...]      │
+│  ② list_by_context("preoperative_assessment") → [tools]    │
+│  ③ get_calculator_info("asa_physical_status")              │
+│  ④ calculate_asa_physical_status(...)                       │
+├─────────────────────────────────────────────────────────────┤
+│  Path C: Quick Search (快速搜尋 - 已知關鍵字)                 │
+│  ① search_calculators("sepsis") → [sofa_score, qsofa, ...] │
+│  ② get_calculator_info("sofa_score")                        │
+│  ③ calculate_sofa(...)                                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**每一步回傳都包含 `next_step` 提示，Agent 不會迷路！**
 
 ### Low Level Key | 低階 Key（精準選擇）
 
@@ -281,12 +293,22 @@ This means:
 User: "I need to assess this patient's cardiac risk before surgery"
 用戶：「我需要評估這位病患術前的心臟風險」
 
-Agent: discover_tools("cardiac risk surgery")
-       → Returns: RCRI (Lee Index), ASA Physical Status, ...
+# Step 1: Agent uses hierarchical navigation
+Agent: list_contexts()
+       → Returns: [..., "preoperative_assessment", ...]
+       → next_step: "list_by_context('preoperative_assessment')"
 
+# Step 2: Filter by context
+Agent: list_by_context("preoperative_assessment")
+       → Returns: [rcri, asa_physical_status, mallampati_score, ...]
+       → next_step: "get_calculator_info('rcri')"
+
+# Step 3: Get tool details
 Agent: get_calculator_info("rcri")
        → Returns: Full metadata with input params, references
+       → next_step: "calculate_rcri(...)"
 
+# Step 4: Calculate
 Agent: calculate_rcri(high_risk_surgery=True, ischemic_heart_disease=True, ...)
        → Returns: Score, risk percentage, recommendations
 ```
@@ -314,7 +336,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-### Calculators | 計算器 (11 tools)
+### Calculators | 計算器 (14 tools)
 
 #### Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -323,6 +345,8 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_asa_physical_status` | ASA-PS | Physical status classification | Mayhew 2019 |
 | `calculate_mallampati` | Mallampati | Airway assessment | Mallampati 1985 |
 | `calculate_rcri` | RCRI (Lee Index) | Cardiac risk non-cardiac surgery | Lee 1999 |
+| `calculate_mabl` | MABL | Maximum allowable blood loss | Gross 1983 |
+| `calculate_transfusion_volume` | Transfusion Calc | Blood product volume calculation | Roseff 2002 |
 
 #### Critical Care / ICU | 重症加護
 
@@ -336,6 +360,12 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_rass` | RASS | Sedation/agitation | Sessler 2002 |
 | `calculate_cam_icu` | CAM-ICU | ICU delirium screening | Ely 2001 |
 
+#### Pediatrics | 小兒科
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_pediatric_drug_dose` | Pediatric Dosing | Weight-based drug dosing | Lexicomp, Anderson 2017 |
+
 #### Nephrology | 腎臟科
 
 | Tool ID | Name | Purpose | Reference |
@@ -344,15 +374,27 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ### Discovery Tools | 探索工具 (7 tools)
 
+#### Step 1: Entry Points (起點)
+
 | Tool | Description | 說明 |
 |------|-------------|------|
-| `discover_tools` | Free-text search across all metadata | 跨所有 metadata 的自由文字搜尋 |
-| `list_by_specialty` | Filter tools by medical specialty | 依專科篩選工具 |
-| `list_by_context` | Filter tools by clinical context | 依臨床情境篩選工具 |
-| `list_calculators` | List all registered calculators | 列出所有已註冊的計算器 |
-| `get_calculator_info` | Get detailed info for one calculator | 取得單一計算器的詳細資訊 |
-| `list_specialties` | List available specialties | 列出可用專科 |
-| `list_contexts` | List available clinical contexts | 列出可用臨床情境 |
+| `list_specialties()` | 📋 List available specialties | 列出可用專科 (返回 next_step) |
+| `list_contexts()` | 📋 List available clinical contexts | 列出可用臨床情境 (返回 next_step) |
+| `list_calculators()` | 📋 List all registered calculators | 列出所有計算器 |
+
+#### Step 2: Filter by Category (篩選)
+
+| Tool | Description | 說明 |
+|------|-------------|------|
+| `list_by_specialty(specialty)` | Filter tools by medical specialty | 依專科篩選工具 |
+| `list_by_context(context)` | Filter tools by clinical context | 依臨床情境篩選工具 |
+| `search_calculators(keyword)` | 🔍 Quick keyword search | 快速關鍵字搜尋 |
+
+#### Step 3: Get Details (取得詳情)
+
+| Tool | Description | 說明 |
+|------|-------------|------|
+| `get_calculator_info(tool_id)` | 📖 Get params, references, examples | 取得參數、引用文獻、範例 |
 
 ### Resources | 資源
 
@@ -472,9 +514,10 @@ doi:10.1056/NEJMoa2102953
 | Phase 2 | ✅ Complete | 6 Example Calculators (CKD-EPI, ASA, Mallampati, RCRI, APACHE II, RASS) |
 | Phase 3 | ✅ Complete | MCP Integration (FastMCP) with Tool Discovery |
 | Phase 4 | ✅ Complete | ICU/ED Calculators (SOFA, qSOFA, NEWS, GCS, CAM-ICU) per Sepsis-3 |
-| Phase 5 | ⏳ Planned | More Calculators (CURB-65, Wells Score, etc.) |
-| Phase 6 | ⏳ Planned | Validation Layer & Error Handling |
-| Phase 7 | ⏳ Planned | Additional Transports (HTTP, WebSocket) |
+| Phase 5 | 🔄 In Progress | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
+| Phase 6 | ⏳ Planned | More Calculators (CURB-65, Wells Score, etc.) |
+| Phase 7 | ⏳ Planned | Validation Layer & Error Handling |
+| Phase 8 | ⏳ Planned | Additional Transports (HTTP, WebSocket) |
 
 ### Contributing | 貢獻
 
