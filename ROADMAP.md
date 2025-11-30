@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
 > **Last Updated**: 2025-11-30
-> **Current Version**: Phase 10 Complete ✅
-> **Total Calculators**: 32 → Target: 50+
+> **Current Version**: Phase 12 Complete ✅
+> **Total Calculators**: 42 → Target: 50+
 
 ---
 
@@ -37,6 +37,8 @@
 | 8 | Guideline Tools (HAS-BLED, Child-Pugh, KDIGO AKI) | 3 | ✅ |
 | 9a | Acid-Base Core (Anion Gap, Delta Ratio, Corrected Na) | 3 | ✅ |
 | 10 | High-Priority Tools (QTc, A-a Gradient, Shock Index) | 3 | ✅ |
+| 11 | Upcoming (IBW, P/F Ratio, ROX, GRACE, 4Ts, ACEF II) | 6 | ✅ |
+| 12 | **SOFA-2 (JAMA 2025)** 🆕 | 1 | ✅ |
 
 ### Current Stats | 目前統計
 
@@ -44,12 +46,14 @@
 ┌─────────────────────────────────────────────┐
 │  📊 Project Statistics                       │
 ├─────────────────────────────────────────────┤
-│  Calculators:          32                    │
-│  MCP Tools:            39                    │
-│  Tests:               331                    │
+│  Calculators:          42                    │
+│  MCP Tools:            48                    │
+│  Tests:               437                    │
 │  Coverage:             79%                   │
 │  Prompts:               5                    │
 │  Resources:             4                    │
+│  Docker:               ✅                    │
+│  REST API:             ✅                    │
 └─────────────────────────────────────────────┘
 ```
 

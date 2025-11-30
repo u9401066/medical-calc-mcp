@@ -609,7 +609,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Specialty | Count | Jump To |
 |-----------|-------|---------|
 | 🏥 Anesthesiology / Preoperative | 6 | [→ Jump](#-anesthesiology--preoperative--麻醉科--術前評估) |
-| 🩺 Critical Care / ICU | 7 | [→ Jump](#-critical-care--icu--重症加護) |
+| 🩺 Critical Care / ICU | 8 | [→ Jump](#-critical-care--icu--重症加護) |
 | 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
 | 🫁 Pulmonology | 5 | [→ Jump](#-pulmonology--胸腔科) |
@@ -644,11 +644,14 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_apache_ii` | APACHE II | ICU mortality prediction | Knaus 1985 |
 | `calculate_sofa` | SOFA Score | Organ dysfunction (Sepsis-3) | Vincent 1996, Singer 2016 |
+| `calculate_sofa2` | **SOFA-2 (2025)** 🆕 | Updated organ dysfunction (3.3M pts) | Ranzani JAMA 2025 |
 | `calculate_qsofa` | qSOFA | Bedside sepsis screening | Singer 2016 (Sepsis-3) |
 | `calculate_news2` | NEWS2 | Clinical deterioration | RCP 2017 |
 | `calculate_gcs` | Glasgow Coma Scale | Consciousness assessment | Teasdale 1974 |
 | `calculate_rass` | RASS | Sedation/agitation | Sessler 2002 |
 | `calculate_cam_icu` | CAM-ICU | ICU delirium screening | Ely 2001 |
+
+**SOFA-2 (2025 Update)**: New P/F thresholds (300/225/150/75), updated platelet thresholds (150/100/80/50), combined NE+Epi dosing, ECMO and RRT criteria. AUROC 0.79.
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

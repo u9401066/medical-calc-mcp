@@ -138,6 +138,55 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         return response.to_dict()
     
     @mcp.tool()
+    def calculate_sofa2(
+        gcs_score: Annotated[int, Field(ge=3, le=15, description="格拉斯哥昏迷指數 GCS | Range: 3-15")],
+        pao2_fio2_ratio: Annotated[float, Field(gt=0, le=700, description="PaO2/FiO2比值 | Unit: mmHg | Range: >0-700 (SOFA-2 thresholds: 300, 225, 150, 75)")],
+        bilirubin: Annotated[float, Field(ge=0, le=50, description="總膽紅素 Bilirubin | Unit: mg/dL | Range: 0-50 (SOFA-2 thresholds: 1.2, 3, 6, 12)")],
+        creatinine: Annotated[float, Field(gt=0, le=20, description="血清肌酐 Creatinine | Unit: mg/dL | Range: >0-20 (SOFA-2 thresholds: 1.2, 2.0, 3.5)")],
+        platelets: Annotated[float, Field(gt=0, le=1000, description="血小板 Platelets | Unit: ×10³/µL | Range: >0-1000 (SOFA-2 thresholds: 150, 100, 80, 50)")],
+        map_value: Annotated[Optional[float], Field(ge=0, le=200, description="平均動脈壓 MAP | Unit: mmHg (if no vasopressors, threshold <70)")] = None,
+        norepinephrine_epinephrine_dose: Annotated[Optional[float], Field(ge=0, le=5, description="NE+Epi合併劑量 | Unit: µg/kg/min (thresholds: ≤0.2=low, >0.2-0.4=medium, >0.4=high)")] = None,
+        receiving_sedation_or_delirium_drugs: Annotated[bool, Field(description="是否接受鎮靜/譫妄藥物 (GCS 15 with sedation = score 1)")] = False,
+        advanced_ventilatory_support: Annotated[bool, Field(description="進階呼吸支持 High FiO2 (>0.6), High PEEP, or proning")] = False,
+        on_ecmo: Annotated[bool, Field(description="是否使用ECMO (automatically scores 4 for respiratory)")] = False,
+        urine_output_6h: Annotated[Optional[float], Field(ge=0, le=10, description="6小時尿量 | Unit: mL/kg/h (< 0.5 for 6-12h = score 1)")] = None,
+        urine_output_12h: Annotated[Optional[float], Field(ge=0, le=10, description="12小時尿量 | Unit: mL/kg/h (< 0.5 for ≥12h = score 2)")] = None,
+        urine_output_24h: Annotated[Optional[float], Field(ge=0, le=10, description="24小時尿量 | Unit: mL/kg/h (< 0.3 for ≥24h = score 3)")] = None,
+        on_rrt: Annotated[bool, Field(description="是否接受RRT (腎臟替代治療, automatically scores 4 for kidney)")] = False,
+    ) -> dict[str, Any]:
+        """
+        計算 SOFA-2 分數 (2025 JAMA 更新版)
+        
+        SOFA-2 is the updated 2025 version validated on 3.34 million ICU patients.
+        Key updates: New P/F thresholds (300,225,150,75), updated platelet thresholds (150,100,80,50),
+        combined NE+Epi dosing, ECMO and RRT criteria.
+        Score range: 0-24. AUROC 0.79 for ICU mortality.
+        
+        Reference: Ranzani OT, et al. JAMA. 2025. doi:10.1001/jama.2025.20516
+        """
+        request = CalculateRequest(
+            tool_id="sofa2_score",
+            params={
+                "gcs_score": gcs_score,
+                "pao2_fio2_ratio": pao2_fio2_ratio,
+                "bilirubin": bilirubin,
+                "creatinine": creatinine,
+                "platelets": platelets,
+                "map_value": map_value,
+                "norepinephrine_epinephrine_dose": norepinephrine_epinephrine_dose,
+                "receiving_sedation_or_delirium_drugs": receiving_sedation_or_delirium_drugs,
+                "advanced_ventilatory_support": advanced_ventilatory_support,
+                "on_ecmo": on_ecmo,
+                "urine_output_6h": urine_output_6h,
+                "urine_output_12h": urine_output_12h,
+                "urine_output_24h": urine_output_24h,
+                "on_rrt": on_rrt,
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
     def calculate_qsofa(
         respiratory_rate: Annotated[int, Field(ge=4, le=60, description="呼吸速率 RR | Unit: breaths/min | Range: 4-60 (≥22 scores 1)")],
         systolic_bp: Annotated[int, Field(ge=30, le=250, description="收縮壓 SBP | Unit: mmHg | Range: 30-250 (≤100 scores 1)")],

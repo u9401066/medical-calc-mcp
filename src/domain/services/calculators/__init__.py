@@ -17,6 +17,7 @@ from .rass import RassCalculator
 
 # Phase 4: ICU/Emergency Calculators
 from .sofa_score import SofaScoreCalculator
+from .sofa2_score import Sofa2ScoreCalculator  # SOFA-2 (JAMA 2025)
 from .qsofa_score import QsofaScoreCalculator
 from .news_score import NewsScoreCalculator
 from .gcs import GlasgowComaScaleCalculator
@@ -88,6 +89,7 @@ __all__ = [
     "ApacheIiCalculator",
     "RassCalculator",
     "SofaScoreCalculator",
+    "Sofa2ScoreCalculator",  # SOFA-2 (JAMA 2025)
     "QsofaScoreCalculator",
     "NewsScoreCalculator",
     "GlasgowComaScaleCalculator",
@@ -159,6 +161,7 @@ CALCULATORS = [
     RassCalculator,
     # Phase 4: ICU/Emergency
     SofaScoreCalculator,
+    Sofa2ScoreCalculator,  # SOFA-2 (JAMA 2025)
     QsofaScoreCalculator,
     NewsScoreCalculator,
     GlasgowComaScaleCalculator,
