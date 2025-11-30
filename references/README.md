@@ -99,6 +99,84 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
+### Pediatric Drug Dosing Calculator
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Taketomo CK, Hodding JH, Kraus DM. Pediatric & Neonatal Dosage Handbook. 29th ed. Hudson, OH: Lexicomp; 2022. |
+| **DOI** | N/A (Textbook) |
+| **Key Points** | Standard reference for pediatric drug dosing; weight-based calculations |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Kliegman RM, et al. Nelson Textbook of Pediatrics. 21st ed. Philadelphia: Elsevier; 2020. |
+| **Key Points** | Comprehensive pediatric reference; includes drug dosing guidelines |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Anderson BJ, Holford NH. Getting the dose right for obese children. *Arch Dis Child*. 2017;102(1):54-55. |
+| **DOI** | [10.1136/archdischild-2016-311696](https://doi.org/10.1136/archdischild-2016-311696) |
+| **PMID** | [27831906](https://pubmed.ncbi.nlm.nih.gov/27831906/) |
+| **Year** | 2017 |
+| **Key Points** | Weight-based dosing considerations for pediatric patients |
+
+---
+
+### Maximum Allowable Blood Loss (MABL)
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Gross JB. Estimating allowable blood loss: corrected for dilution. *Anesthesiology*. 1983;58(3):277-280. |
+| **DOI** | [10.1097/00000542-198303000-00016](https://doi.org/10.1097/00000542-198303000-00016) |
+| **PMID** | [6829965](https://pubmed.ncbi.nlm.nih.gov/6829965/) |
+| **Year** | 1983 |
+| **Key Points** | Dilution-corrected MABL formula; more accurate than simple calculation |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Butterworth JF, Mackey DC, Wasnick JD. Morgan & Mikhail's Clinical Anesthesiology. 7th ed. New York: McGraw-Hill; 2022. Chapter 51: Fluid Management & Blood Component Therapy. |
+| **Key Points** | EBV estimation by patient type; MABL calculation methods |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Miller RD, et al. Miller's Anesthesia. 9th ed. Philadelphia: Elsevier; 2020. Chapter 49: Blood Therapy. |
+| **Key Points** | Blood conservation and transfusion thresholds |
+
+---
+
+### Transfusion Volume Calculator
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Roseff SD, Luban NL, Manno CS. Guidelines for assessing appropriateness of pediatric transfusion. *Transfusion*. 2002;42(11):1398-1413. |
+| **DOI** | [10.1046/j.1537-2995.2002.00208.x](https://doi.org/10.1046/j.1537-2995.2002.00208.x) |
+| **PMID** | [12421212](https://pubmed.ncbi.nlm.nih.gov/12421212/) |
+| **Year** | 2002 |
+| **Key Points** | Pediatric transfusion guidelines; volume calculations |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | New HV, Berryman J, Bolton-Maggs PH, et al. Guidelines on transfusion for fetuses, neonates and older children. *Br J Haematol*. 2016;175(5):784-828. |
+| **DOI** | [10.1111/bjh.14233](https://doi.org/10.1111/bjh.14233) |
+| **PMID** | [27861734](https://pubmed.ncbi.nlm.nih.gov/27861734/) |
+| **Year** | 2016 |
+| **Key Points** | UK guidelines for pediatric transfusion; comprehensive recommendations |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Carson JL, Stanworth SJ, Dennis JA, et al. Transfusion thresholds for guiding red blood cell transfusion. *Cochrane Database Syst Rev*. 2021;12(12):CD002042. |
+| **DOI** | [10.1002/14651858.CD002042.pub5](https://doi.org/10.1002/14651858.CD002042.pub5) |
+| **PMID** | [34932836](https://pubmed.ncbi.nlm.nih.gov/34932836/) |
+| **Year** | 2021 |
+| **Key Points** | Restrictive vs liberal transfusion thresholds; Cochrane review |
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Cote CJ, Lerman J, Anderson BJ. A Practice of Anesthesia for Infants and Children. 6th ed. Philadelphia: Elsevier; 2019. Chapter 10: Blood Conservation. |
+| **Key Points** | Pediatric blood conservation strategies; transfusion calculations |
+
+---
+
 ## Notes on Copyright
 
 - All medical formulas are derived from peer-reviewed scientific literature

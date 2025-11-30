@@ -22,6 +22,11 @@ from .news_score import NewsScoreCalculator
 from .gcs import GlasgowComaScaleCalculator
 from .cam_icu import CamIcuCalculator
 
+# Phase 5: Pediatric & Anesthesia Calculators
+from .pediatric_dosing import PediatricDosingCalculator
+from .mabl import MablCalculator
+from .transfusion_calc import TransfusionCalculator
+
 
 __all__ = [
     # Nephrology
@@ -40,6 +45,11 @@ __all__ = [
     "NewsScoreCalculator",
     "GlasgowComaScaleCalculator",
     "CamIcuCalculator",
+    
+    # Pediatric & Anesthesia
+    "PediatricDosingCalculator",
+    "MablCalculator",
+    "TransfusionCalculator",
 ]
 
 
@@ -57,4 +67,8 @@ CALCULATORS = [
     NewsScoreCalculator,
     GlasgowComaScaleCalculator,
     CamIcuCalculator,
+    # Phase 5: Pediatric & Anesthesia
+    PediatricDosingCalculator,
+    MablCalculator,
+    TransfusionCalculator,
 ]
