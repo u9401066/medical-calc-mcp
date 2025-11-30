@@ -336,6 +336,8 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
+> **MCP Primitives**: 21 Tools + 5 Prompts + 4 Resources
+
 ### Calculators | 計算器 (14 tools)
 
 #### Anesthesiology / Preoperative | 麻醉科 / 術前評估
@@ -402,6 +404,29 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |--------------|-------------|
 | `calculator://list` | Markdown list of all calculators |
 | `calculator://{tool_id}/references` | Paper references for a calculator |
+| `calculator://{tool_id}/parameters` | Input parameter definitions |
+| `calculator://{tool_id}/info` | Full calculator metadata |
+
+### Prompts | 提示詞工作流程 (5 prompts)
+
+Prompts provide guided multi-tool workflows for common clinical scenarios:
+
+提示詞提供常見臨床情境的多工具引導工作流程：
+
+| Prompt | Description | 說明 |
+|--------|-------------|------|
+| `sepsis_evaluation` | qSOFA → SOFA → RASS → CAM-ICU workflow | 敗血症評估流程 |
+| `preoperative_risk_assessment` | ASA → RCRI → Mallampati workflow | 術前風險評估流程 |
+| `icu_daily_assessment` | RASS → CAM-ICU → GCS → SOFA daily rounds | ICU 每日評估流程 |
+| `pediatric_drug_dosing` | Weight-based dosing + MABL + transfusion | 兒科藥物劑量流程 |
+| `acute_kidney_injury_assessment` | CKD-EPI + AKI staging workflow | 急性腎損傷評估流程 |
+
+**Usage | 使用方式:**
+```
+# In MCP client, request a prompt:
+prompt: sepsis_evaluation
+→ Returns structured workflow with step-by-step guidance
+```
 
 ---
 
@@ -514,7 +539,8 @@ doi:10.1056/NEJMoa2102953
 | Phase 2 | ✅ Complete | 6 Example Calculators (CKD-EPI, ASA, Mallampati, RCRI, APACHE II, RASS) |
 | Phase 3 | ✅ Complete | MCP Integration (FastMCP) with Tool Discovery |
 | Phase 4 | ✅ Complete | ICU/ED Calculators (SOFA, qSOFA, NEWS, GCS, CAM-ICU) per Sepsis-3 |
-| Phase 5 | 🔄 In Progress | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
+| Phase 5 | ✅ Complete | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
+| Phase 5.5 | ✅ Complete | MCP Prompts (5 workflows) + Parameter Descriptions + Enhanced Errors |
 | Phase 6 | ⏳ Planned | More Calculators (CURB-65, Wells Score, etc.) |
 | Phase 7 | ⏳ Planned | Validation Layer & Error Handling |
 | Phase 8 | ⏳ Planned | Additional Transports (HTTP, WebSocket) |
