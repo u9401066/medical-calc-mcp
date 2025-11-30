@@ -19,6 +19,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Why This Project? | 為什麼需要這個專案？](#-why-this-project--為什麼需要這個專案)
 - [Architecture | 架構](#-architecture--架構)
 - [Quick Start | 快速開始](#-quick-start--快速開始)
+- [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署--new) 🐳 NEW
 - [Tool Discovery | 工具探索](#-tool-discovery--工具探索)
 - [Available Tools | 可用工具](#-available-tools--可用工具)
   - [Quick Navigation | 快速導覽](#-quick-navigation--快速導覽)
@@ -28,6 +29,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
   - [Nephrology](#-nephrology--腎臟科)
   - [Pulmonology](#-pulmonology--胸腔科)
   - [Cardiology](#-cardiology--心臟科)
+  - [Hematology](#-hematology--血液科)
   - [Emergency Medicine](#-emergency-medicine--急診醫學)
   - [Hepatology](#-hepatology--肝膽科)
   - [Acid-Base / Metabolic](#-acid-base--metabolic--酸鹼代謝)
@@ -36,7 +38,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Usage Examples | 使用範例](#-usage-examples--使用範例)
 - [References | 參考文獻](#-references--參考文獻)
 - [Development | 開發指南](#-development--開發指南)
-- [Roadmap | 路線圖](ROADMAP.md) 📋 NEW
+- [Roadmap | 路線圖](ROADMAP.md)
 
 ---
 
