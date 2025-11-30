@@ -77,6 +77,11 @@ from .acef_ii_score import AcefIiScoreCalculator
 
 # Phase 12: Additional Anesthesiology Tools
 from .apfel_ponv import ApfelPonvCalculator
+from .stop_bang import StopBangCalculator
+from .aldrete_score import AldreteScoreCalculator
+
+# Phase 12: Neurology
+from .nihss import NihssCalculator
 
 
 __all__ = [
@@ -154,6 +159,11 @@ __all__ = [
     
     # Phase 12: Additional Anesthesiology Tools
     "ApfelPonvCalculator",
+    "StopBangCalculator",
+    "AldreteScoreCalculator",
+    
+    # Phase 12: Neurology
+    "NihssCalculator",
 ]
 
 
@@ -215,4 +225,8 @@ CALCULATORS = [
     AcefIiScoreCalculator,
     # Phase 12: Additional Anesthesiology Tools
     ApfelPonvCalculator,
+    StopBangCalculator,
+    AldreteScoreCalculator,
+    # Phase 12: Neurology
+    NihssCalculator,
 ]

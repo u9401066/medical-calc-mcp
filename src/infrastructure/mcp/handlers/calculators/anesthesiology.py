@@ -135,3 +135,129 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         )
         response = use_case.execute(request)
         return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_stop_bang(
+        snoring: Annotated[bool, Field(description="打鼾 Snoring loudly (loud enough to be heard through closed doors)")],
+        tired: Annotated[bool, Field(description="疲倦 Tired during daytime (frequently tired, fatigued, or sleepy)")],
+        observed_apnea: Annotated[bool, Field(description="觀察到呼吸暫停 Observed stop breathing during sleep")],
+        high_blood_pressure: Annotated[bool, Field(description="高血壓 High blood pressure (treated or untreated)")],
+        bmi_over_35: Annotated[bool, Field(description="BMI>35 Obesity with BMI >35 kg/m²")],
+        age_over_50: Annotated[bool, Field(description="年齡>50 Age >50 years")],
+        neck_over_40cm: Annotated[bool, Field(description="頸圍>40cm Neck circumference >40 cm (>16 inches)")],
+        male_gender: Annotated[bool, Field(description="男性 Male gender")]
+    ) -> dict[str, Any]:
+        """
+        😴 STOP-BANG: 阻塞性睡眠呼吸中止症篩檢 (OSA Screening Questionnaire)
+        
+        術前評估阻塞性睡眠呼吸中止症 (OSA) 的風險，這是麻醉科超常用的篩檢工具。
+        OSA 病人周術期風險增加，需特別注意氣道管理和術後監測。
+        
+        **STOP-BANG 八項評估 (各+1分):**
+        - **S**noring: 大聲打鼾 (隔著門都聽得到)
+        - **T**ired: 日間疲倦嗜睡
+        - **O**bserved: 睡眠中被觀察到呼吸暫停
+        - **P**ressure: 高血壓 (有無治療皆計)
+        - **B**MI >35: 肥胖 BMI >35 kg/m²
+        - **A**ge >50: 年齡大於50歲
+        - **N**eck >40cm: 頸圍大於40公分
+        - **G**ender: 男性
+        
+        **OSA 風險分層:**
+        - 0-2 分: 低風險 OSA (~15%)
+        - 3-4 分: 中度風險 OSA (~30%)
+        - 5-8 分: 高風險 OSA (~60%)
+        
+        **周術期注意事項:**
+        - 中高風險: 考慮術前 PSG 確診
+        - 高風險: 減少鴉片類、術後延長監測、準備困難氣道
+        
+        **參考文獻:** Chung F, et al. Anesthesiology. 2008;108(5):812-821.
+        PMID: 18431116
+        
+        Returns:
+            STOP-BANG 分數 (0-8)、OSA 風險等級、周術期建議
+        """
+        request = CalculateRequest(
+            tool_id="stop_bang",
+            params={
+                "snoring": snoring,
+                "tired": tired,
+                "observed_apnea": observed_apnea,
+                "high_blood_pressure": high_blood_pressure,
+                "bmi_over_35": bmi_over_35,
+                "age_over_50": age_over_50,
+                "neck_over_40cm": neck_over_40cm,
+                "male_gender": male_gender
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+    
+    @mcp.tool()
+    def calculate_aldrete_score(
+        activity: Annotated[
+            Literal[0, 1, 2],
+            Field(description="活動力 Activity | Options: 0=無法移動四肢Unable to move, 1=可移動兩肢Moves 2 extremities, 2=可移動四肢Moves 4 extremities voluntarily")
+        ],
+        respiration: Annotated[
+            Literal[0, 1, 2],
+            Field(description="呼吸 Respiration | Options: 0=呼吸暫停Apneic, 1=呼吸困難/淺弱Dyspnea or shallow breathing, 2=可深呼吸咳嗽Able to breathe deeply and cough")
+        ],
+        circulation: Annotated[
+            Literal[0, 1, 2],
+            Field(description="循環 Circulation (BP vs pre-anesthesia) | Options: 0=BP±50%以上BP±50%+, 1=BP±20-50%BP±20-50%, 2=BP±20%以內BP±20% of pre-anesthesia")
+        ],
+        consciousness: Annotated[
+            Literal[0, 1, 2],
+            Field(description="意識 Consciousness | Options: 0=無反應Not responding, 1=可喚醒Arousable on calling, 2=完全清醒Fully awake")
+        ],
+        oxygen_saturation: Annotated[
+            Literal[0, 1, 2],
+            Field(description="血氧飽和度 O2 Saturation | Options: 0=SpO2<90%即使給氧SpO2<90% on O2, 1=需給氧維持SpO2>90%Needs O2 to maintain SpO2>90%, 2=室內空氣SpO2>92%SpO2>92% on room air")
+        ]
+    ) -> dict[str, Any]:
+        """
+        🏥 Aldrete Score: 麻醉後恢復評估 (Post-Anesthesia Recovery Score)
+        
+        評估病人從麻醉恢復的程度，決定是否可從恢復室 (PACU) 出院。
+        這是判斷病人是否可離開 PACU 的標準評估工具。
+        
+        **Aldrete 五項評估 (各 0-2 分):**
+        - **Activity 活動力:** 
+          - 0分=無法移動四肢, 1分=可動兩肢, 2分=可動四肢
+        - **Respiration 呼吸:**
+          - 0分=呼吸暫停, 1分=呼吸淺弱/困難, 2分=可深呼吸咳嗽
+        - **Circulation 循環:** (與術前血壓比較)
+          - 0分=±50%以上, 1分=±20-50%, 2分=±20%以內
+        - **Consciousness 意識:**
+          - 0分=無反應, 1分=可喚醒, 2分=完全清醒
+        - **O2 Saturation 血氧:**
+          - 0分=給氧仍<90%, 1分=需給氧維持>90%, 2分=室內空氣>92%
+        
+        **出院標準:**
+        - ≥9 分: 可考慮離開 PACU
+        - <9 分: 需繼續在 PACU 監測
+        
+        **注意事項:**
+        - 分數應每 5-15 分鐘評估一次
+        - 需同時考慮手術特定因素和病人共病
+        
+        **參考文獻:** Aldrete JA, Kroulik D. Anesth Analg. 1970;49(6):924-934.
+        PMID: 5534693
+        
+        Returns:
+            Aldrete 分數 (0-10)、恢復狀態、PACU 出院建議
+        """
+        request = CalculateRequest(
+            tool_id="aldrete_score",
+            params={
+                "activity": activity,
+                "respiration": respiration,
+                "circulation": circulation,
+                "consciousness": consciousness,
+                "oxygen_saturation": oxygen_saturation
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()

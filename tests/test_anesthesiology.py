@@ -363,3 +363,235 @@ class TestApfelPonvCalculator:
         calc = ApfelPonvCalculator()
         assert calc.name == "Apfel Score for PONV"
         assert "anesthesiology" in [s.value for s in calc.metadata.high_level.specialties]
+
+
+class TestStopBangCalculator:
+    """Tests for STOP-BANG OSA Screening Calculator."""
+
+    def test_low_risk(self):
+        """Test STOP-BANG score 0-2 - low risk for OSA."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        result = calc.calculate(
+            snoring=True,
+            tired=False,
+            observed_apnea=False,
+            high_blood_pressure=False,
+            bmi_over_35=False,
+            age_over_50=False,
+            neck_over_40cm=False,
+            male_gender=True
+        )
+        
+        assert result.value == 2
+        assert "low" in result.interpretation.summary.lower()
+
+    def test_intermediate_risk(self):
+        """Test STOP-BANG score 3-4 - intermediate risk for OSA."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        result = calc.calculate(
+            snoring=True,
+            tired=True,
+            observed_apnea=False,
+            high_blood_pressure=True,
+            bmi_over_35=False,
+            age_over_50=False,
+            neck_over_40cm=False,
+            male_gender=False
+        )
+        
+        assert result.value == 3
+        assert "intermediate" in result.interpretation.summary.lower() or "moderate" in result.interpretation.summary.lower()
+
+    def test_high_risk(self):
+        """Test STOP-BANG score 5-8 - high risk for OSA."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        result = calc.calculate(
+            snoring=True,
+            tired=True,
+            observed_apnea=True,
+            high_blood_pressure=True,
+            bmi_over_35=True,
+            age_over_50=True,
+            neck_over_40cm=False,
+            male_gender=True
+        )
+        
+        assert result.value == 7
+        assert "high" in result.interpretation.summary.lower()
+
+    def test_max_score(self):
+        """Test STOP-BANG maximum score of 8."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        result = calc.calculate(
+            snoring=True,
+            tired=True,
+            observed_apnea=True,
+            high_blood_pressure=True,
+            bmi_over_35=True,
+            age_over_50=True,
+            neck_over_40cm=True,
+            male_gender=True
+        )
+        
+        assert result.value == 8
+        assert "high" in result.interpretation.summary.lower()
+
+    def test_zero_score(self):
+        """Test STOP-BANG score of 0."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        result = calc.calculate(
+            snoring=False,
+            tired=False,
+            observed_apnea=False,
+            high_blood_pressure=False,
+            bmi_over_35=False,
+            age_over_50=False,
+            neck_over_40cm=False,
+            male_gender=False
+        )
+        
+        assert result.value == 0
+
+    def test_has_references(self):
+        """Test that STOP-BANG includes Chung 2008 reference."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        result = calc.calculate(
+            snoring=True,
+            tired=False,
+            observed_apnea=False,
+            high_blood_pressure=False,
+            bmi_over_35=False,
+            age_over_50=False,
+            neck_over_40cm=False,
+            male_gender=False
+        )
+        
+        assert result.references is not None
+        assert len(result.references) >= 1
+        ref_text = str(result.references[0])
+        assert "Chung" in ref_text or "18431116" in ref_text
+
+    def test_tool_id(self):
+        """Test tool ID is correct."""
+        from src.domain.services.calculators import StopBangCalculator
+        
+        calc = StopBangCalculator()
+        assert calc.tool_id == "stop_bang"
+
+
+class TestAldreteScoreCalculator:
+    """Tests for Aldrete Score Post-Anesthesia Recovery Calculator."""
+
+    def test_ready_for_discharge(self):
+        """Test Aldrete score >= 9 - ready for PACU discharge."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        result = calc.calculate(
+            activity=2,
+            respiration=2,
+            circulation=2,
+            consciousness=2,
+            oxygen_saturation=2
+        )
+        
+        assert result.value == 10
+        assert "discharge" in result.interpretation.summary.lower()
+
+    def test_need_monitoring(self):
+        """Test Aldrete score < 9 - continue PACU monitoring."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        result = calc.calculate(
+            activity=1,
+            respiration=1,
+            circulation=2,
+            consciousness=1,
+            oxygen_saturation=1
+        )
+        
+        assert result.value == 6
+        assert result.value < 9
+
+    def test_minimal_recovery(self):
+        """Test Aldrete score with minimal recovery."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        result = calc.calculate(
+            activity=0,
+            respiration=0,
+            circulation=1,
+            consciousness=0,
+            oxygen_saturation=0
+        )
+        
+        assert result.value == 1
+
+    def test_nine_threshold(self):
+        """Test Aldrete score exactly at 9 threshold."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        result = calc.calculate(
+            activity=2,
+            respiration=2,
+            circulation=2,
+            consciousness=2,
+            oxygen_saturation=1
+        )
+        
+        assert result.value == 9
+
+    def test_max_score(self):
+        """Test Aldrete maximum score of 10."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        result = calc.calculate(
+            activity=2,
+            respiration=2,
+            circulation=2,
+            consciousness=2,
+            oxygen_saturation=2
+        )
+        
+        assert result.value == 10
+
+    def test_has_references(self):
+        """Test that Aldrete score includes original 1970 reference."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        result = calc.calculate(
+            activity=2,
+            respiration=2,
+            circulation=2,
+            consciousness=2,
+            oxygen_saturation=2
+        )
+        
+        assert result.references is not None
+        assert len(result.references) >= 1
+        ref_text = str(result.references[0])
+        assert "Aldrete" in ref_text or "5534693" in ref_text
+
+    def test_tool_id(self):
+        """Test tool ID is correct."""
+        from src.domain.services.calculators import AldreteScoreCalculator
+        
+        calc = AldreteScoreCalculator()
+        assert calc.tool_id == "aldrete_score"

@@ -25,6 +25,7 @@ from .calculators import (
     register_surgery_tools,
     register_acid_base_tools,
     register_hematology_tools,
+    register_neurology_tools,
 )
 
 
@@ -92,3 +93,6 @@ class CalculatorHandler:
         
         # Hematology calculators
         register_hematology_tools(self._mcp, self._use_case)
+        
+        # Neurology calculators
+        register_neurology_tools(self._mcp, self._use_case)
