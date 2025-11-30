@@ -1,0 +1,51 @@
+# Medical Calculator MCP Server
+# Supports both STDIO (local) and SSE (remote) modes
+
+FROM python:3.11-slim
+
+LABEL maintainer="Medical-Calc-MCP"
+LABEL description="Medical Calculator MCP Server for AI Agent Integration"
+LABEL version="1.0.0"
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY src/ ./src/
+COPY pyproject.toml .
+
+# Install the package in development mode
+RUN pip install --no-cache-dir -e .
+
+# Create non-root user for security
+RUN useradd --create-home --shell /bin/bash mcpuser
+RUN chown -R mcpuser:mcpuser /app
+USER mcpuser
+
+# Environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV MCP_MODE=sse
+ENV MCP_HOST=0.0.0.0
+ENV MCP_PORT=8000
+
+# Expose port for SSE mode
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${MCP_PORT}/health || exit 1
+
+# Default command: Run in SSE mode
+CMD ["python", "src/main.py", "--mode", "sse", "--host", "0.0.0.0", "--port", "8000"]

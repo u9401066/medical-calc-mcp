@@ -257,6 +257,107 @@ Add to your `claude_desktop_config.json`:
 
 ---
 
+## 🐳 Docker Deployment | Docker 部署 ⭐ NEW
+
+The MCP server can run as a **remote SSE (Server-Sent Events) server** via Docker, enabling:
+- 🌐 Remote access from any MCP-compatible client
+- ☁️ Cloud deployment (AWS, GCP, Azure, etc.)
+- 🔄 Easy scaling with Docker Compose or Kubernetes
+
+MCP 伺服器可透過 Docker 作為**遠端 SSE (Server-Sent Events) 伺服器**執行，支援：
+- 🌐 從任何 MCP 相容客戶端遠端存取
+- ☁️ 雲端部署（AWS、GCP、Azure 等）
+- 🔄 使用 Docker Compose 或 Kubernetes 輕鬆擴展
+
+### Quick Start with Docker | 使用 Docker 快速開始
+
+```bash
+# Build and run | 建構並執行
+docker-compose up -d
+
+# Or build manually | 或手動建構
+docker build -t medical-calc-mcp .
+docker run -p 8000:8000 medical-calc-mcp
+
+# Check health | 檢查健康狀態
+curl http://localhost:8000/health
+```
+
+### Transport Modes | 傳輸模式
+
+| Mode | Use Case | Command |
+|------|----------|---------|
+| `stdio` | Local Claude Desktop integration | `python -m src.main --mode stdio` |
+| `sse` | Remote Docker/Cloud deployment | `python -m src.main --mode sse --port 8000` |
+| `http` | Streamable HTTP transport | `python -m src.main --mode http` |
+
+### Remote MCP Client Configuration | 遠端 MCP 客戶端設定
+
+**Claude Desktop (Remote SSE):**
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "url": "http://localhost:8000/sse"
+    }
+  }
+}
+```
+
+**For cloud deployment, replace `localhost` with your server address:**
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "url": "https://your-server.example.com/sse"
+    }
+  }
+}
+```
+
+### API Endpoints | API 端點
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Server info and configuration |
+| `/health` | GET | Health check for Docker/K8s |
+| `/sse` | GET | SSE connection endpoint |
+| `/messages/` | POST | MCP message endpoint |
+
+### Environment Variables | 環境變數
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MCP_MODE` | `stdio` | Transport mode (stdio, sse, http) |
+| `MCP_HOST` | `0.0.0.0` | Host to bind |
+| `MCP_PORT` | `8000` | Port to bind |
+| `LOG_LEVEL` | `INFO` | Logging level |
+| `DEBUG` | `false` | Enable debug mode |
+
+### Docker Compose Example | Docker Compose 範例
+
+```yaml
+version: '3.8'
+services:
+  medical-calc-mcp:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MCP_MODE=sse
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+```
+
+---
+
 ## 🔍 Tool Discovery | 工具探索
 
 The **Two-Level Key System** is the core innovation of this project:
