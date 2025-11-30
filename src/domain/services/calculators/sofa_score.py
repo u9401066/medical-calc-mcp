@@ -277,27 +277,37 @@ class SofaScoreCalculator(BaseCalculator):
         epinephrine_dose: Optional[float],
         norepinephrine_dose: Optional[float]
     ) -> int:
-        """Calculate cardiovascular component"""
-        # Check for high-dose vasopressors first
-        if (epinephrine_dose and epinephrine_dose > 0.1) or \
+        """
+        Calculate cardiovascular component
+        
+        Per Vincent 1996 (Original SOFA):
+        Score 0: No hypotension
+        Score 1: MAP < 70 mmHg (no vasopressors)
+        Score 2: Dopamine ≤5 µg/kg/min OR Dobutamine (any dose)
+        Score 3: Dopamine >5 µg/kg/min OR Epinephrine ≤0.1 OR Norepinephrine ≤0.1
+        Score 4: Dopamine >15 µg/kg/min OR Epinephrine >0.1 OR Norepinephrine >0.1
+        """
+        # Score 4: High-dose vasopressors
+        if (dopamine_dose and dopamine_dose > 15) or \
+           (epinephrine_dose and epinephrine_dose > 0.1) or \
            (norepinephrine_dose and norepinephrine_dose > 0.1):
             return 4
         
-        if (dopamine_dose and dopamine_dose > 15) or \
-           (epinephrine_dose and epinephrine_dose <= 0.1) or \
-           (norepinephrine_dose and norepinephrine_dose <= 0.1):
+        # Score 3: Medium-dose vasopressors
+        if (dopamine_dose and dopamine_dose > 5) or \
+           (epinephrine_dose and epinephrine_dose > 0 and epinephrine_dose <= 0.1) or \
+           (norepinephrine_dose and norepinephrine_dose > 0 and norepinephrine_dose <= 0.1):
             return 3
         
-        if (dopamine_dose and dopamine_dose > 5) or dobutamine_any:
+        # Score 2: Low-dose dopamine OR any dobutamine
+        if (dopamine_dose and dopamine_dose > 0 and dopamine_dose <= 5) or dobutamine_any:
             return 2
         
-        if dopamine_dose and dopamine_dose <= 5:
-            return 1
-        
-        # No vasopressors, check MAP
+        # Score 1: MAP < 70 mmHg without vasopressors
         if map_value is not None and map_value < 70:
             return 1
         
+        # Score 0: No hypotension, no vasopressors
         return 0
     
     def _cns_score(self, gcs: int) -> int:
