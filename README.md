@@ -417,7 +417,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 36 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 29 Calculators | 282 Tests | 79% Coverage | Phase 9a Complete ✅
+> **Current Stats**: 32 Calculators | 331 Tests | 79% Coverage | Phase 10 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -430,16 +430,16 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
 | 🫁 Pulmonology | 2 | [→ Jump](#-pulmonology--胸腔科) |
-| ❤️ Cardiology | 4 | [→ Jump](#-cardiology--心臟科) |
-| 🚑 Emergency Medicine | 2 | [→ Jump](#-emergency-medicine--急診醫學) |
+| ❤️ Cardiology | 5 | [→ Jump](#-cardiology--心臟科) |
+| 🚑 Emergency Medicine | 3 | [→ Jump](#-emergency-medicine--急診醫學) |
 | 🟤 Hepatology | 2 | [→ Jump](#-hepatology--肝膽科) |
-| 🧪 Acid-Base / Metabolic | 3 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
+| 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (29 tools)
+### Calculators | 計算器 (32 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -502,6 +502,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_chads2_va` | CHA₂DS₂-VA (2024 ESC) | AF stroke risk (sex-neutral) | Van Gelder 2024 |
 | `calculate_has_bled` | HAS-BLED | AF bleeding risk (modifiable factors) | Pisters 2010, ESC 2024 |
 | `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
+| `calculate_corrected_qt` | Corrected QT (QTc) | QT interval correction for drug safety | Bazett 1920, ESC 2015 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -511,6 +512,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_wells_dvt` | Wells DVT | DVT probability assessment | Wells 2003 |
 | `calculate_wells_pe` | Wells PE | PE probability assessment | Wells 2000 |
+| `calculate_shock_index` | Shock Index (SI) | Rapid hemodynamic assessment | Allgöwer 1967 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -530,6 +532,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_anion_gap` | Anion Gap | Metabolic acidosis differential | Kraut 2007, Figge 1998 |
 | `calculate_delta_ratio` | Delta Ratio (Delta Gap) | Mixed acid-base disorder detection | Wrenn 1990, Rastegar 2007 |
 | `calculate_corrected_sodium` | Corrected Sodium | True sodium in hyperglycemia | Katz 1973, Hillier 1999 |
+| `calculate_aa_gradient` | A-a Gradient | Alveolar-arterial O₂ gradient | Kanber 1968, West 2016 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

@@ -56,6 +56,11 @@ from .anion_gap import AnionGapCalculator
 from .delta_ratio import DeltaRatioCalculator
 from .corrected_sodium import CorrectedSodiumCalculator
 
+# Phase 10: High-Priority Tools
+from .corrected_qt import CorrectedQtCalculator
+from .aa_gradient import AaGradientCalculator
+from .shock_index import ShockIndexCalculator
+
 
 __all__ = [
     # Nephrology
@@ -110,6 +115,11 @@ __all__ = [
     "AnionGapCalculator",
     "DeltaRatioCalculator",
     "CorrectedSodiumCalculator",
+    
+    # Phase 10: High-Priority Tools
+    "CorrectedQtCalculator",
+    "AaGradientCalculator",
+    "ShockIndexCalculator",
 ]
 
 
@@ -153,4 +163,8 @@ CALCULATORS = [
     AnionGapCalculator,
     DeltaRatioCalculator,
     CorrectedSodiumCalculator,
+    # Phase 10: High-Priority Tools
+    CorrectedQtCalculator,
+    AaGradientCalculator,
+    ShockIndexCalculator,
 ]

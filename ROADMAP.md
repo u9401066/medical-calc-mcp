@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
 > **Last Updated**: 2025-11-30
-> **Current Version**: Phase 9 In Progress 🚧
-> **Total Calculators**: 29 → Target: 50+
+> **Current Version**: Phase 10 Complete ✅
+> **Total Calculators**: 32 → Target: 50+
 
 ---
 
@@ -36,6 +36,7 @@
 | 7.5 | Type Safety (CHA₂DS₂-VA, Caprini, PSI/PORT) | 3 | ✅ |
 | 8 | Guideline Tools (HAS-BLED, Child-Pugh, KDIGO AKI) | 3 | ✅ |
 | 9a | Acid-Base Core (Anion Gap, Delta Ratio, Corrected Na) | 3 | ✅ |
+| 10 | High-Priority Tools (QTc, A-a Gradient, Shock Index) | 3 | ✅ |
 
 ### Current Stats | 目前統計
 
@@ -43,9 +44,9 @@
 ┌─────────────────────────────────────────────┐
 │  📊 Project Statistics                       │
 ├─────────────────────────────────────────────┤
-│  Calculators:          29                    │
-│  MCP Tools:            36                    │
-│  Tests:               282                    │
+│  Calculators:          32                    │
+│  MCP Tools:            39                    │
+│  Tests:               331                    │
 │  Coverage:             79%                   │
 │  Prompts:               5                    │
 │  Resources:             4                    │
@@ -101,42 +102,41 @@ Acid-Base Analysis Workflow:
 
 ## ❤️ Phase 10: Cardiovascular Extended (心血管擴充)
 
-> **Priority**: 🔴 HIGH - ACS/心衰常用
-> **Estimated**: 5 calculators
+> **Status**: ✅ COMPLETE (Partial - High Priority Items)
+> **Completed**: 2025-11-30
 > **Source**: AHA/ESC Guidelines, IBCC
 
 ### Calculators
 
-| Tool ID | Name | Purpose | Reference | Priority |
-|---------|------|---------|-----------|----------|
-| `corrected_qt` | Corrected QT (QTc) | 藥物致心律不整風險 | Bazett 1920, Fridericia 1920 | 🔴 |
-| `shock_index` | Shock Index | 快速血流動力學評估 | Allgöwer 1967 | 🔴 |
-| `map_calculation` | Mean Arterial Pressure | MAP 計算 | - | 🟡 |
-| `fick_cardiac_output` | Fick Cardiac Output | 心輸出量估算 | Miller's Anesthesia | 🟡 |
-| `grace_score` | GRACE Score | ACS 預後評估 | Fox 2006 | 🟡 |
+| Tool ID | Name | Purpose | Reference | Priority | Status |
+|---------|------|---------|-----------|----------|--------|
+| `corrected_qt` | Corrected QT (QTc) | 藥物致心律不整風險 | Bazett 1920, ESC 2015 | 🔴 | ✅ |
+| `shock_index` | Shock Index | 快速血流動力學評估 | Allgöwer 1967 | 🔴 | ✅ |
+| `map_calculation` | Mean Arterial Pressure | MAP 計算 | - | 🟡 | 📋 |
+| `fick_cardiac_output` | Fick Cardiac Output | 心輸出量估算 | Miller's Anesthesia | 🟡 | 📋 |
+| `grace_score` | GRACE Score | ACS 預後評估 | Fox 2006 | 🟡 | 📋 |
 
 ### Notes
 
-- **Corrected QT**: 支援 Bazett (most common)、Fridericia (for tachycardia)、Framingham
-- **Shock Index**: HR/SBP > 1.0 suggests hemodynamic instability
+- **Corrected QT**: 支援 Bazett (most common)、Fridericia (for tachycardia)、Framingham formulas
+- **Shock Index**: HR/SBP > 1.0 suggests hemodynamic instability; supports adult, pediatric, obstetric patients
 
 ---
 
 ## 🫁 Phase 11: Respiratory & Oxygenation (呼吸氧合)
 
-> **Priority**: 🔴 HIGH - 機械通氣必用
-> **Estimated**: 5 calculators
+> **Status**: ✅ PARTIAL (A-a Gradient Complete)
 > **Source**: ARDSNet, Berlin Definition, IBCC
 
 ### Calculators
 
-| Tool ID | Name | Purpose | Reference | Priority |
-|---------|------|---------|-----------|----------|
-| `aa_gradient` | A-a Gradient | 低血氧原因鑑別 | - | 🔴 |
-| `pf_ratio` | P/F Ratio | ARDS 嚴重度分級 | Berlin 2012 | 🔴 |
-| `ideal_body_weight` | Ideal Body Weight | 機械通氣 Vt 計算 | ARDSNet | 🔴 |
-| `rox_index` | ROX Index | HFNC 失敗預測 | Roca 2016 | 🟡 |
-| `pesi_score` | PESI/sPESI | PE 預後評估 | Aujesky 2005 | 🟡 |
+| Tool ID | Name | Purpose | Reference | Priority | Status |
+|---------|------|---------|-----------|----------|--------|
+| `aa_gradient` | A-a Gradient | 低血氧原因鑑別 | Kanber 1968, West 2016 | 🔴 | ✅ |
+| `pf_ratio` | P/F Ratio | ARDS 嚴重度分級 | Berlin 2012 | 🔴 | 📋 |
+| `ideal_body_weight` | Ideal Body Weight | 機械通氣 Vt 計算 | ARDSNet | 🔴 | 📋 |
+| `rox_index` | ROX Index | HFNC 失敗預測 | Roca 2016 | 🟡 | 📋 |
+| `pesi_score` | PESI/sPESI | PE 預後評估 | Aujesky 2005 | 🟡 | 📋 |
 
 ### Clinical Context
 

@@ -49,6 +49,8 @@ class Unit(Enum):
     DAYS = "days"
     MONTHS = "months"
     YEARS = "years"
+    MS = "ms"  # Milliseconds (QT interval)
+    SECONDS = "s"  # Seconds
     
     # Temperature
     CELSIUS = "°C"
