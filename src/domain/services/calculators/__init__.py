@@ -30,6 +30,17 @@ from .transfusion_calc import TransfusionCalculator
 # Phase 6: Pulmonology
 from .curb65 import Curb65Calculator
 
+# Phase 6: Cardiology
+from .chads2_vasc import Chads2VascCalculator
+from .heart_score import HeartScoreCalculator
+
+# Phase 6: Emergency Medicine
+from .wells_dvt import WellsDvtCalculator
+from .wells_pe import WellsPeCalculator
+
+# Phase 6: Hepatology
+from .meld_score import MeldScoreCalculator
+
 
 __all__ = [
     # Nephrology
@@ -56,6 +67,17 @@ __all__ = [
     
     # Pulmonology
     "Curb65Calculator",
+    
+    # Cardiology
+    "Chads2VascCalculator",
+    "HeartScoreCalculator",
+    
+    # Emergency Medicine
+    "WellsDvtCalculator",
+    "WellsPeCalculator",
+    
+    # Hepatology
+    "MeldScoreCalculator",
 ]
 
 
@@ -79,4 +101,12 @@ CALCULATORS = [
     TransfusionCalculator,
     # Phase 6: Pulmonology
     Curb65Calculator,
+    # Phase 6: Cardiology
+    Chads2VascCalculator,
+    HeartScoreCalculator,
+    # Phase 6: Emergency Medicine
+    WellsDvtCalculator,
+    WellsPeCalculator,
+    # Phase 6: Hepatology
+    MeldScoreCalculator,
 ]

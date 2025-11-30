@@ -19,6 +19,9 @@ from .calculators import (
     register_critical_care_tools,
     register_pediatric_tools,
     register_pulmonology_tools,
+    register_cardiology_tools,
+    register_emergency_tools,
+    register_hepatology_tools,
 )
 
 
@@ -35,6 +38,9 @@ class CalculatorHandler:
     - calculators/critical_care.py  - ICU scores (APACHE, SOFA, NEWS2, etc.)
     - calculators/pediatric.py      - Pediatric (drug dosing, transfusion, MABL)
     - calculators/pulmonology.py    - Respiratory (CURB-65, etc.)
+    - calculators/cardiology.py     - Cardiac (CHA₂DS₂-VASc, HEART, etc.)
+    - calculators/emergency.py      - ED tools (Wells DVT/PE, etc.)
+    - calculators/hepatology.py     - Liver (MELD, Child-Pugh, etc.)
     """
     
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
@@ -62,3 +68,12 @@ class CalculatorHandler:
         
         # Pulmonology / Respiratory calculators
         register_pulmonology_tools(self._mcp, self._use_case)
+        
+        # Cardiology calculators
+        register_cardiology_tools(self._mcp, self._use_case)
+        
+        # Emergency Medicine calculators
+        register_emergency_tools(self._mcp, self._use_case)
+        
+        # Hepatology / GI calculators
+        register_hepatology_tools(self._mcp, self._use_case)

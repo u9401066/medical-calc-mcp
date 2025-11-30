@@ -360,9 +360,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 21 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 26 Tools + 5 Prompts + 4 Resources
 
-### Calculators | 計算器 (15 tools)
+### Calculators | 計算器 (20 tools)
 
 #### Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -403,6 +403,26 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_curb65` | CURB-65 | Pneumonia severity & disposition | Lim 2003 |
+
+#### Cardiology | 心臟科 ⭐ NEW
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_chads2_vasc` | CHA₂DS₂-VASc | AF stroke risk for anticoagulation | Lip 2010 |
+| `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
+
+#### Emergency Medicine | 急診醫學 ⭐ NEW
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_wells_dvt` | Wells DVT | DVT probability assessment | Wells 2003 |
+| `calculate_wells_pe` | Wells PE | PE probability assessment | Wells 2000 |
+
+#### Hepatology | 肝膽科 ⭐ NEW
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
 
 ### Discovery Tools | 探索工具 (7 tools)
 
@@ -571,7 +591,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 4 | ✅ Complete | ICU/ED Calculators (SOFA, qSOFA, NEWS, GCS, CAM-ICU) per Sepsis-3 |
 | Phase 5 | ✅ Complete | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
 | Phase 5.5 | ✅ Complete | MCP Prompts (5 workflows) + Parameter Descriptions + Enhanced Errors |
-| Phase 6 | 🔄 Active | More Calculators (CURB-65✅, Wells DVT/PE, HEART, TIMI) |
+| Phase 6 | ✅ Complete | More Calculators (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) |
 | Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
 | Phase 8 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
 | Phase 9 | 📋 Planned | Internationalization (i18n for multi-language support) |
@@ -582,32 +602,29 @@ doi:10.1056/NEJMoa2102953
 ```
 2025 Q4                          2026 Q1                          2026 Q2
 ───────────────────────────────────────────────────────────────────────────────
-Phase 6: More Calculators        Phase 8: HTTP Transport          Phase 10: Templates
+Phase 6: ✅ Complete             Phase 8: HTTP Transport          Phase 10: Templates
 ├── ✅ CURB-65 (Pneumonia)       ├── FastAPI/Starlette            ├── Calculator generator
-├── Wells DVT                    ├── OpenAPI spec                 ├── CLI scaffolding
-├── Wells PE                     ├── Docker optimization          └── CI/CD templates
-├── HEART Score                  └── Cloud deployment
-├── TIMI Risk                                                     Phase 11: Advanced
-├── CHADS-VASc                   Phase 9: i18n                    ├── Drug interactions
-├── HAS-BLED                     ├── zh-TW translations           ├── Lab result parsers
-└── MELD Score                   ├── Translation framework        └── FHIR integration
+├── ✅ CHA₂DS₂-VASc (AF)         ├── OpenAPI spec                 ├── CLI scaffolding
+├── ✅ HEART Score               ├── Docker optimization          └── CI/CD templates
+├── ✅ Wells DVT                 └── Cloud deployment
+├── ✅ Wells PE                                                   Phase 11: Advanced
+├── ✅ MELD Score                Phase 9: i18n                    ├── Drug interactions
+│                                ├── zh-TW translations           ├── Lab result parsers
+Phase 7: ✅ Validation Layer     ├── Translation framework        └── FHIR integration
                                  └── Locale-aware formatting
-Phase 7: ✅ Validation Layer
 ```
 
 ### Upcoming Calculators | 即將推出的計算器
 
 | Priority | Tool ID | Name | Specialty | Reference |
 |----------|---------|------|-----------|-----------|
-| 🔴 High | `wells_dvt` | Wells DVT | Emergency | Wells 2003 |
-| 🔴 High | `wells_pe` | Wells PE | Emergency | Wells 2000 |
-| 🔴 High | `heart_score` | HEART Score | Cardiology | Six 2008 |
-| 🟡 Medium | `timi_nstemi` | TIMI NSTEMI | Cardiology | Antman 2000 |
-| 🟡 Medium | `chads2_vasc` | CHA₂DS₂-VASc | Cardiology | Lip 2010 |
-| 🟡 Medium | `has_bled` | HAS-BLED | Cardiology | Pisters 2010 |
-| 🟡 Medium | `meld_score` | MELD Score | Hepatology | Kamath 2001 |
-| 🟢 Low | `pesi` | PESI Score | Pulmonology | Aujesky 2005 |
-| 🟢 Low | `geneva_score` | Geneva Score | Emergency | Le Gal 2006 |
+| 🔴 High | `timi_nstemi` | TIMI NSTEMI | Cardiology | Antman 2000 |
+| 🔴 High | `has_bled` | HAS-BLED | Cardiology | Pisters 2010 |
+| 🟡 Medium | `pesi` | PESI Score | Pulmonology | Aujesky 2005 |
+| 🟡 Medium | `geneva_score` | Geneva Score | Emergency | Le Gal 2006 |
+| 🟡 Medium | `child_pugh` | Child-Pugh | Hepatology | Pugh 1973 |
+| 🟢 Low | `apache_iv` | APACHE IV | Critical Care | Zimmerman 2006 |
+| 🟢 Low | `saps_ii` | SAPS II | Critical Care | Le Gall 1993 |
 
 ---
 
