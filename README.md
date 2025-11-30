@@ -21,9 +21,21 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Quick Start | 快速開始](#-quick-start--快速開始)
 - [Tool Discovery | 工具探索](#-tool-discovery--工具探索)
 - [Available Tools | 可用工具](#-available-tools--可用工具)
+  - [Quick Navigation | 快速導覽](#-quick-navigation--快速導覽)
+  - [Anesthesiology](#-anesthesiology--preoperative--麻醉科--術前評估)
+  - [Critical Care](#-critical-care--icu--重症加護)
+  - [Pediatrics](#-pediatrics--小兒科)
+  - [Nephrology](#-nephrology--腎臟科)
+  - [Pulmonology](#-pulmonology--胸腔科)
+  - [Cardiology](#-cardiology--心臟科)
+  - [Emergency Medicine](#-emergency-medicine--急診醫學)
+  - [Hepatology](#-hepatology--肝膽科)
+  - [Discovery Tools](#-discovery-tools--探索工具)
+  - [Prompts](#-prompts--提示詞工作流程)
 - [Usage Examples | 使用範例](#-usage-examples--使用範例)
 - [References | 參考文獻](#-references--參考文獻)
 - [Development | 開發指南](#-development--開發指南)
+- [Roadmap | 路線圖](ROADMAP.md) 📋 NEW
 
 ---
 
@@ -404,11 +416,30 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 33 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 26 Calculators | 101 Tests | Phase 8 Complete ✅
+> **Current Stats**: 26 Calculators | 128 Tests | 67% Coverage | Phase 8 Complete ✅
+>
+> 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
+
+### 📑 Quick Navigation | 快速導覽
+
+| Specialty | Count | Jump To |
+|-----------|-------|---------|
+| 🏥 Anesthesiology / Preoperative | 6 | [→ Jump](#-anesthesiology--preoperative--麻醉科--術前評估) |
+| 🩺 Critical Care / ICU | 7 | [→ Jump](#-critical-care--icu--重症加護) |
+| 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
+| 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
+| 🫁 Pulmonology | 2 | [→ Jump](#-pulmonology--胸腔科) |
+| ❤️ Cardiology | 4 | [→ Jump](#-cardiology--心臟科) |
+| 🚑 Emergency Medicine | 2 | [→ Jump](#-emergency-medicine--急診醫學) |
+| 🟤 Hepatology | 2 | [→ Jump](#-hepatology--肝膽科) |
+| 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
+| 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
+
+---
 
 ### Calculators | 計算器 (26 tools)
 
-#### Anesthesiology / Preoperative | 麻醉科 / 術前評估
+#### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
@@ -417,9 +448,11 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_rcri` | RCRI (Lee Index) | Cardiac risk non-cardiac surgery | Lee 1999 |
 | `calculate_mabl` | MABL | Maximum allowable blood loss | Gross 1983 |
 | `calculate_transfusion_volume` | Transfusion Calc | Blood product volume calculation | Roseff 2002 |
-| `calculate_caprini_vte` | Caprini VTE ⭐NEW | Surgical VTE risk assessment | Caprini 2005 |
+| `calculate_caprini_vte` | Caprini VTE | Surgical VTE risk assessment | Caprini 2005 |
 
-#### Critical Care / ICU | 重症加護
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🩺 Critical Care / ICU | 重症加護
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
@@ -431,50 +464,66 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_rass` | RASS | Sedation/agitation | Sessler 2002 |
 | `calculate_cam_icu` | CAM-ICU | ICU delirium screening | Ely 2001 |
 
-#### Pediatrics | 小兒科
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 👶 Pediatrics | 小兒科
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_pediatric_drug_dose` | Pediatric Dosing | Weight-based drug dosing | Lexicomp, Anderson 2017 |
 
-#### Nephrology | 腎臟科
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🫘 Nephrology | 腎臟科
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR (race-free) | Inker 2021 |
-| `calculate_kdigo_aki` | KDIGO AKI ⭐Phase8 | Acute kidney injury staging | KDIGO 2012 |
+| `calculate_kdigo_aki` | KDIGO AKI | Acute kidney injury staging | KDIGO 2012 |
 
-#### Pulmonology | 胸腔科
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🫁 Pulmonology | 胸腔科
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_curb65` | CURB-65 | Pneumonia severity & disposition | Lim 2003 |
-| `calculate_psi_port` | PSI/PORT ⭐NEW | CAP mortality prediction | Fine 1997 |
+| `calculate_psi_port` | PSI/PORT | CAP mortality prediction | Fine 1997 |
 
-#### Cardiology | 心臟科 ⭐ NEW
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### ❤️ Cardiology | 心臟科
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_chads2_vasc` | CHA₂DS₂-VASc | AF stroke risk for anticoagulation | Lip 2010 |
-| `calculate_chads2_va` | CHA₂DS₂-VA ⭐2024 | AF stroke risk (sex-neutral, 2024 ESC) | Van Gelder 2024 |
-| `calculate_has_bled` | HAS-BLED ⭐2024 | AF bleeding risk (modifiable factors) | Pisters 2010, ESC 2024 |
+| `calculate_chads2_va` | CHA₂DS₂-VA (2024 ESC) | AF stroke risk (sex-neutral) | Van Gelder 2024 |
+| `calculate_has_bled` | HAS-BLED | AF bleeding risk (modifiable factors) | Pisters 2010, ESC 2024 |
 | `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
 
-#### Emergency Medicine | 急診醫學 ⭐ NEW
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🚑 Emergency Medicine | 急診醫學
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_wells_dvt` | Wells DVT | DVT probability assessment | Wells 2003 |
 | `calculate_wells_pe` | Wells PE | PE probability assessment | Wells 2000 |
 
-#### Hepatology | 肝膽科 ⭐ NEW
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🟤 Hepatology | 肝膽科
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
-| `calculate_child_pugh` | Child-Pugh ⭐Phase8 | Cirrhosis severity staging | Pugh 1973 |
+| `calculate_child_pugh` | Child-Pugh | Cirrhosis severity staging | Pugh 1973 |
 
-### Discovery Tools | 探索工具 (7 tools)
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+---
+
+### 🔍 Discovery Tools | 探索工具
 
 #### Step 1: Entry Points (起點)
 
@@ -498,7 +547,11 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |------|-------------|------|
 | `get_calculator_info(tool_id)` | 📖 Get params, references, examples | 取得參數、引用文獻、範例 |
 
-### Resources | 資源
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+---
+
+### 📦 Resources | 資源
 
 | Resource URI | Description |
 |--------------|-------------|
@@ -507,7 +560,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculator://{tool_id}/parameters` | Input parameter definitions |
 | `calculator://{tool_id}/info` | Full calculator metadata |
 
-### Prompts | 提示詞工作流程 (5 prompts)
+---
+
+### 📝 Prompts | 提示詞工作流程
 
 Prompts provide guided multi-tool workflows for common clinical scenarios:
 
@@ -527,6 +582,8 @@ Prompts provide guided multi-tool workflows for common clinical scenarios:
 prompt: sepsis_evaluation
 → Returns structured workflow with step-by-step guidance
 ```
+
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
 
 ---
 
@@ -671,36 +728,37 @@ doi:10.1056/NEJMoa2102953
 
 ### Roadmap | 路線圖
 
+> 📋 **[See Full Roadmap →](ROADMAP.md)** for detailed implementation plans
+
 ```
-2025 Q4                          2026 Q1                          2026 Q2
+2025 Q4 (Current)                2026 Q1                          2026 Q2
 ───────────────────────────────────────────────────────────────────────────────
-Phase 7.5: ✅ Complete           Phase 9: HTTP Transport          Phase 10: i18n
-├── ✅ CHA₂DS₂-VA (2024 ESC)     ├── FastAPI/Starlette            ├── zh-TW translations
-├── ✅ Caprini VTE               ├── OpenAPI spec                 └── Translation framework
-├── ✅ PSI/PORT                  └── Docker optimization
-└── ✅ Type Safety Fixes                                          Phase 11: Templates
-                                                                   └── Calculator generator
-Phase 8: ✅ Guideline Tools
-├── ✅ HAS-BLED (2024 ESC)
-├── ✅ Child-Pugh (Hepatology)
-└── ✅ KDIGO AKI Staging
+Phase 8: ✅ Complete             Phase 9-10: Acid-Base/Cardio    Phase 11-14: Complete
+├── ✅ HAS-BLED (2024 ESC)       ├── Anion Gap, Delta Ratio      ├── Resp/Oxygenation
+├── ✅ Child-Pugh               ├── Corrected QT, Shock Index    ├── Neuro/Sedation
+└── ✅ KDIGO AKI                └── A-a Gradient, IBW           ├── Infectious Disease
+                                                                 └── Common Utilities
+Phase 9: 🔄 In Progress
+├── 🔄 Anion Gap                                                 Target: 50+ calculators
+├── 📋 Delta Ratio
+├── 📋 Corrected Sodium
+└── 📋 Winter's Formula
 ```
 
 ### Upcoming Calculators | 即將推出的計算器
 
-Based on **2024 ESC Guidelines** and **2024 Sepsis Expert Consensus** (see [docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md))
-
-根據 **2024 ESC 指引**與 **2024 Sepsis 專家共識**（參見 [docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)）
-
-| Priority | Tool ID | Name | Specialty | Reference |
-|----------|---------|------|-----------|-----------|
-| ✅ Done | `has_bled` | HAS-BLED | Cardiology | Pisters 2010, **2024 ESC AF** |
-| ✅ Done | `child_pugh` | Child-Pugh | Hepatology | Pugh 1973 |
-| ✅ Done | `kdigo_aki` | KDIGO AKI Staging | Nephrology | KDIGO 2012 |
-| 🟡 Medium | `pesi` | PESI/sPESI | Pulmonology | Aujesky 2005 |
-| 🟡 Medium | `grace_score` | GRACE Score | Cardiology | Fox 2006 |
-| 🟡 Medium | `timi_nstemi` | TIMI NSTEMI | Cardiology | Antman 2000 |
-| 🟢 Low | `geneva_score` | Geneva Score | Emergency | Le Gal 2006 |
+| Priority | Tool ID | Name | Phase | Reference |
+|----------|---------|------|-------|-----------|
+| 🔴 High | `anion_gap` | Anion Gap | 9 | IBCC |
+| 🔴 High | `corrected_qt` | Corrected QT | 10 | Bazett 1920 |
+| 🔴 High | `aa_gradient` | A-a Gradient | 11 | - |
+| 🔴 High | `delta_ratio` | Delta Ratio | 9 | IBCC |
+| 🔴 High | `shock_index` | Shock Index | 10 | Allgöwer 1967 |
+| 🟡 Med | `corrected_sodium` | Corrected Sodium | 9 | Katz 1973 |
+| 🟡 Med | `ideal_body_weight` | Ideal Body Weight | 11 | ARDSNet |
+| 🟡 Med | `pf_ratio` | P/F Ratio | 11 | Berlin 2012 |
+| 🟡 Med | `rox_index` | ROX Index | 11 | Roca 2016 |
+| 🟡 Med | `grace_score` | GRACE Score | 10 | Fox 2006 |
 
 ---
 
