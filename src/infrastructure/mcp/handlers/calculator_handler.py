@@ -23,6 +23,7 @@ from .calculators import (
     register_emergency_tools,
     register_hepatology_tools,
     register_surgery_tools,
+    register_acid_base_tools,
 )
 
 
@@ -43,6 +44,7 @@ class CalculatorHandler:
     - calculators/emergency.py      - ED tools (Wells DVT/PE, etc.)
     - calculators/hepatology.py     - Liver (MELD, Child-Pugh, etc.)
     - calculators/surgery.py        - Perioperative (Caprini VTE, etc.)
+    - calculators/acid_base.py      - Acid-base (Anion Gap, Delta Ratio, etc.)
     """
     
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
@@ -82,3 +84,6 @@ class CalculatorHandler:
         
         # Surgery / Perioperative calculators
         register_surgery_tools(self._mcp, self._use_case)
+        
+        # Acid-Base / Metabolic calculators
+        register_acid_base_tools(self._mcp, self._use_case)

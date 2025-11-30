@@ -30,6 +30,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
   - [Cardiology](#-cardiology--心臟科)
   - [Emergency Medicine](#-emergency-medicine--急診醫學)
   - [Hepatology](#-hepatology--肝膽科)
+  - [Acid-Base / Metabolic](#-acid-base--metabolic--酸鹼代謝)
   - [Discovery Tools](#-discovery-tools--探索工具)
   - [Prompts](#-prompts--提示詞工作流程)
 - [Usage Examples | 使用範例](#-usage-examples--使用範例)
@@ -432,12 +433,13 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | ❤️ Cardiology | 4 | [→ Jump](#-cardiology--心臟科) |
 | 🚑 Emergency Medicine | 2 | [→ Jump](#-emergency-medicine--急診醫學) |
 | 🟤 Hepatology | 2 | [→ Jump](#-hepatology--肝膽科) |
+| 🧪 Acid-Base / Metabolic | 3 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (26 tools)
+### Calculators | 計算器 (29 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -518,6 +520,16 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
 | `calculate_child_pugh` | Child-Pugh | Cirrhosis severity staging | Pugh 1973 |
+
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🧪 Acid-Base / Metabolic | 酸鹼代謝
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_anion_gap` | Anion Gap | Metabolic acidosis differential | Kraut 2007, Figge 1998 |
+| `calculate_delta_ratio` | Delta Ratio (Delta Gap) | Mixed acid-base disorder detection | Wrenn 1990, Rastegar 2007 |
+| `calculate_corrected_sodium` | Corrected Sodium | True sodium in hyperglycemia | Katz 1973, Hillier 1999 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

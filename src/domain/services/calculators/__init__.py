@@ -51,6 +51,11 @@ from .psi_port import PsiPortCalculator
 from .child_pugh import ChildPughCalculator
 from .kdigo_aki import KdigoAkiCalculator
 
+# Phase 9: Acid-Base & Electrolytes
+from .anion_gap import AnionGapCalculator
+from .delta_ratio import DeltaRatioCalculator
+from .corrected_sodium import CorrectedSodiumCalculator
+
 
 __all__ = [
     # Nephrology
@@ -100,6 +105,11 @@ __all__ = [
     
     # Pulmonology (additional)
     "PsiPortCalculator",
+    
+    # Phase 9: Acid-Base & Electrolytes
+    "AnionGapCalculator",
+    "DeltaRatioCalculator",
+    "CorrectedSodiumCalculator",
 ]
 
 
@@ -139,4 +149,8 @@ CALCULATORS = [
     # Phase 8: Guideline-Recommended Tools
     ChildPughCalculator,
     KdigoAkiCalculator,
+    # Phase 9: Acid-Base & Electrolytes
+    AnionGapCalculator,
+    DeltaRatioCalculator,
+    CorrectedSodiumCalculator,
 ]

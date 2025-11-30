@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
 > **Last Updated**: 2025-11-30
-> **Current Version**: Phase 8 Complete ✅
-> **Total Calculators**: 26 → Target: 50+
+> **Current Version**: Phase 9 In Progress 🚧
+> **Total Calculators**: 29 → Target: 50+
 
 ---
 
@@ -35,6 +35,7 @@
 | 7 | Validation Layer (22 Parameter Specs) | - | ✅ |
 | 7.5 | Type Safety (CHA₂DS₂-VA, Caprini, PSI/PORT) | 3 | ✅ |
 | 8 | Guideline Tools (HAS-BLED, Child-Pugh, KDIGO AKI) | 3 | ✅ |
+| 9a | Acid-Base Core (Anion Gap, Delta Ratio, Corrected Na) | 3 | ✅ |
 
 ### Current Stats | 目前統計
 
@@ -42,9 +43,9 @@
 ┌─────────────────────────────────────────────┐
 │  📊 Project Statistics                       │
 ├─────────────────────────────────────────────┤
-│  Calculators:          26                    │
-│  MCP Tools:            33                    │
-│  Tests:               128                    │
+│  Calculators:          29                    │
+│  MCP Tools:            36                    │
+│  Tests:               156                    │
 │  Coverage:             67%                   │
 │  Prompts:               5                    │
 │  Resources:             4                    │
@@ -61,14 +62,14 @@
 
 ### Calculators
 
-| Tool ID | Name | Purpose | Reference | Priority |
-|---------|------|---------|-----------|----------|
-| `anion_gap` | Anion Gap | 代謝性酸中毒鑑別 | Oh's ICU | 🔴 |
-| `delta_ratio` | Delta Ratio (Delta Gap) | 混合型酸鹼障礙鑑別 | IBCC | 🔴 |
-| `corrected_sodium` | Corrected Sodium | 高血糖校正真實血鈉 | Katz 1973 | 🔴 |
-| `winters_formula` | Winter's Formula | 預測代謝性酸中毒 PCO₂ | Winter 1967 | 🟡 |
-| `osmolar_gap` | Osmolar Gap | 毒物中毒篩檢 | IBCC | 🟡 |
-| `free_water_deficit` | Free Water Deficit | 高鈉血症治療計劃 | Adrogue 2000 | 🟡 |
+| Tool ID | Name | Purpose | Reference | Priority | Status |
+|---------|------|---------|-----------|----------|--------|
+| `anion_gap` | Anion Gap | 代謝性酸中毒鑑別 | Kraut 2007 | 🔴 | ✅ |
+| `delta_ratio` | Delta Ratio (Delta Gap) | 混合型酸鹼障礙鑑別 | Wrenn 1990 | 🔴 | ✅ |
+| `corrected_sodium` | Corrected Sodium | 高血糖校正真實血鈉 | Katz 1973 | 🔴 | ✅ |
+| `winters_formula` | Winter's Formula | 預測代謝性酸中毒 PCO₂ | Winter 1967 | 🟡 | 📋 |
+| `osmolar_gap` | Osmolar Gap | 毒物中毒篩檢 | IBCC | 🟡 | 📋 |
+| `free_water_deficit` | Free Water Deficit | 高鈉血症治療計劃 | Adrogue 2000 | 🟡 | 📋 |
 
 ### Clinical Workflow
 
