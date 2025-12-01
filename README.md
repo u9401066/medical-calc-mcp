@@ -23,6 +23,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Agent Integration | Agent 整合](#-agent-integration--agent-整合) 🤖 NEW
 - [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署--new) 🐳
 - [REST API | REST API 接口](#-rest-api--rest-api-接口--new) 🌐 NEW
+- [Security | 安全性](#-security--安全性--new) 🔐 NEW
 - [Tool Discovery | 工具探索](#-tool-discovery--工具探索)
 - [Available Tools | 可用工具](#-available-tools--可用工具)
   - [Quick Navigation | 快速導覽](#-quick-navigation--快速導覽)
@@ -527,6 +528,87 @@ curl "http://localhost:8080/api/v1/ckd-epi?serum_creatinine=1.2&age=65&sex=femal
 # SOFA Score
 curl -X POST "http://localhost:8080/api/v1/sofa?pao2_fio2_ratio=200&platelets=100&bilirubin=2.0&cardiovascular=dopamine_lte_5&gcs_score=13&creatinine=2.5"
 ```
+
+---
+
+## 🔐 Security | 安全性 ⭐ NEW
+
+### Security Features | 安全特性
+
+This project implements multiple security layers:
+
+本專案實施多層安全機制：
+
+| Layer | Feature | Description |
+|-------|---------|-------------|
+| **Input Validation** | 3-layer validation | Pydantic → ParameterValidator → Domain rules |
+| **CORS** | Configurable origins | Environment variable controlled |
+| **Dependencies** | Vulnerability scanning | pip-audit integrated |
+| **No Database** | In-memory only | No SQL injection risk |
+| **No Secrets** | Stateless | No credentials stored |
+
+### Configuration | 設定
+
+**CORS Configuration | CORS 設定:**
+
+```bash
+# Development (default) - Allow all origins
+# 開發環境（預設）- 允許所有來源
+CORS_ORIGINS="*"
+
+# Production - Restrict to specific domains
+# 生產環境 - 限制特定網域
+CORS_ORIGINS="https://your-app.com,https://api.your-app.com"
+```
+
+**Other Security Settings | 其他安全設定:**
+
+```bash
+# API Server
+API_HOST=0.0.0.0   # Use 127.0.0.1 for local only
+API_PORT=8080
+
+# MCP Server  
+MCP_HOST=0.0.0.0   # Use 127.0.0.1 for local only
+MCP_PORT=8000
+```
+
+### Production Recommendations | 生產環境建議
+
+| Item | Recommendation | 建議 |
+|------|----------------|------|
+| **CORS** | Set specific `CORS_ORIGINS` | 設定特定 `CORS_ORIGINS` |
+| **HTTPS** | Use reverse proxy (nginx/Caddy) with TLS | 使用反向代理搭配 TLS |
+| **Rate Limiting** | Add rate limiting at proxy level | 在代理層添加速率限制 |
+| **Authentication** | Add API key or OAuth2 if needed | 如需要可加入 API key 或 OAuth2 |
+| **Network** | Run in private network/VPC | 在私有網路/VPC 中執行 |
+| **Monitoring** | Enable access logging | 啟用存取日誌 |
+
+### Dependency Security | 依賴安全
+
+```bash
+# Check for known vulnerabilities | 檢查已知漏洞
+pip install pip-audit
+pip-audit --strict
+
+# Upgrade all packages | 升級所有套件
+pip install --upgrade pip setuptools
+pip install -r requirements.txt --upgrade
+```
+
+### Security Audit Results | 安全審查結果 (2025-06)
+
+✅ **Passed Checks | 通過檢查:**
+- No SQL/Command injection vulnerabilities
+- No hardcoded secrets or credentials
+- No sensitive data exposure in error messages
+- Input validation at all layers
+- Dependencies updated (no known CVEs)
+
+⚠️ **Notes | 注意事項:**
+- Default CORS is permissive (`*`) - configure for production
+- No built-in authentication - add at infrastructure layer if needed
+- Medical calculations are for reference only - not for clinical decisions
 
 ---
 

@@ -30,7 +30,7 @@ if str(project_root) not in sys.path:
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from src.domain.registry.tool_registry import get_registry
 from src.domain.services.calculators import CALCULATORS
@@ -49,8 +49,8 @@ class CalculatorInput(BaseModel):
     """Generic calculator input model"""
     params: Dict[str, Any] = Field(..., description="Calculator parameters")
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "params": {
                     "serum_creatinine": 1.2,
@@ -59,6 +59,7 @@ class CalculatorInput(BaseModel):
                 }
             }
         }
+    )
 
 
 class CalculatorResponse(BaseModel):
@@ -139,13 +140,18 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-# CORS middleware
+# CORS middleware - Configure via environment variables for production
+# Default: Allow all origins (development mode)
+# Production: Set CORS_ORIGINS="https://example.com,https://api.example.com"
+_cors_origins = os.environ.get("CORS_ORIGINS", "*")
+_allowed_origins = ["*"] if _cors_origins == "*" else [o.strip() for o in _cors_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_allowed_origins,
+    allow_credentials=True if _cors_origins != "*" else False,  # Credentials only with specific origins
+    allow_methods=["GET", "POST", "OPTIONS"],  # Only necessary methods
+    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
 )
 
 
@@ -399,7 +405,18 @@ async def calculate_ckd_epi(
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error_message)
     
-    return result.model_dump(exclude={"success", "error_message"})
+    # Convert dataclass result to dict
+    result_dict = {
+        "tool_id": result.tool_id,
+        "score_name": result.score_name,
+        "value": result.result,
+        "unit": result.unit,
+    }
+    if result.interpretation:
+        result_dict["interpretation"] = {
+            "summary": result.interpretation.summary,
+        }
+    return result_dict
 
 
 @app.post("/api/v1/sofa", tags=["Quick Calculate"])
@@ -435,7 +452,18 @@ async def calculate_sofa(
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error_message)
     
-    return result.model_dump(exclude={"success", "error_message"})
+    # Convert dataclass result to dict
+    result_dict = {
+        "tool_id": result.tool_id,
+        "score_name": result.score_name,
+        "value": result.result,
+        "unit": result.unit,
+    }
+    if result.interpretation:
+        result_dict["interpretation"] = {
+            "summary": result.interpretation.summary,
+        }
+    return result_dict
 
 
 # =============================================================================
