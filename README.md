@@ -598,9 +598,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 53 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 58 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 47 Calculators | 469 Tests | 80% Coverage | Phase 12 Complete ✅
+> **Current Stats**: 51 Calculators | 518 Tests | 80% Coverage | Phase 13 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -613,18 +613,18 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
 | 🫁 Pulmonology | 5 | [→ Jump](#-pulmonology--胸腔科) |
-| ❤️ Cardiology | 8 | [→ Jump](#-cardiology--心臟科) |
+| ❤️ Cardiology | 9 | [→ Jump](#-cardiology--心臟科) |
 | 🚑 Emergency Medicine | 3 | [→ Jump](#-emergency-medicine--急診醫學) |
-| 🟤 Hepatology | 2 | [→ Jump](#-hepatology--肝膽科) |
+| 🟤 Hepatology | 4 | [→ Jump](#-hepatology--肝膽科) |
 | 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🩸 Hematology | 1 | [→ Jump](#-hematology--血液科) |
-| 🧠 Neurology | 1 | [→ Jump](#-neurology--神經科) |
+| 🧠 Neurology | 4 | [→ Jump](#-neurology--神經科) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (47 tools)
+### Calculators | 計算器 (51 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -699,6 +699,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_corrected_qt` | Corrected QT (QTc) | QT interval correction for drug safety | Bazett 1920, ESC 2015 |
 | `calculate_grace_score` | GRACE Score | ACS mortality risk stratification | Fox 2006 |
 | `calculate_acef_ii` | ACEF II Score | Cardiac surgery mortality risk | Ranucci 2018 |
+| `calculate_timi_stemi` | TIMI STEMI 🆕 | STEMI 30-day mortality prediction | Morrow 2000 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -714,7 +715,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
-| `calculate_nihss` | NIHSS 🆕 | NIH Stroke Scale - stroke severity | Brott 1989 |
+| `calculate_nihss` | NIHSS | NIH Stroke Scale - stroke severity | Brott 1989 |
+| `calculate_abcd2` | ABCD2 Score 🆕 | TIA 7-day stroke risk prediction | Johnston 2007 |
+| `calculate_modified_rankin_scale` | Modified Rankin Scale 🆕 | Post-stroke disability assessment | van Swieten 1988 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -734,6 +737,8 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |---------|------|---------|-----------|
 | `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
 | `calculate_child_pugh` | Child-Pugh | Cirrhosis severity staging | Pugh 1973 |
+| `calculate_rockall_score` | Rockall Score 🆕 | Upper GI bleeding risk (mortality/rebleeding) | Rockall 1996 |
+| `calculate_fib4_index` | FIB-4 Index 🆕 | Liver fibrosis non-invasive assessment | Sterling 2006 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -955,6 +960,7 @@ doi:10.1056/NEJMoa2102953
 | Phase 8 | ✅ Complete | **Guideline-Recommended Tools** (HAS-BLED, Child-Pugh, KDIGO AKI) |
 | Phase 9 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
 | Phase 10 | 📋 Planned | Internationalization (i18n for multi-language support) |
+| Phase 13 | ✅ Complete | **Additional Clinical Tools** (ABCD2, mRS, TIMI STEMI, Rockall, FIB-4) |
 
 ### Roadmap | 路線圖
 
@@ -977,16 +983,15 @@ Phase 9: ✅ Complete
 └── ✅ Free Water Deficit
 ```
 
-### Recently Added Calculators | 最近新增的計算器 (Phase 11 Complete ✅)
+### Recently Added Calculators | 最近新增的計算器 (Phase 13 Complete ✅)
 
 | Priority | Tool ID | Name | Status | Reference |
 |----------|---------|------|--------|-----------|
-| ✅ Done | `ideal_body_weight` | Ideal Body Weight | Complete | ARDSNet |
-| ✅ Done | `pf_ratio` | P/F Ratio | Complete | Berlin 2012 |
-| ✅ Done | `rox_index` | ROX Index | Complete | Roca 2016 |
-| ✅ Done | `grace_score` | GRACE Score | Complete | Fox 2006 |
-| ✅ Done | `4ts_hit` | 4Ts Score for HIT | Complete | Lo 2006 |
-| ✅ Done | `acef_ii` | ACEF II Score | Complete | Ranucci 2018 |
+| ✅ Done | `abcd2` | ABCD2 Score | Complete | Johnston 2007 |
+| ✅ Done | `modified_rankin_scale` | Modified Rankin Scale (mRS) | Complete | van Swieten 1988 |
+| ✅ Done | `timi_stemi` | TIMI STEMI Risk Score | Complete | Morrow 2000 |
+| ✅ Done | `rockall_score` | Rockall Score | Complete | Rockall 1996 |
+| ✅ Done | `fib4_index` | FIB-4 Index | Complete | Sterling 2006 |
 
 ---
 

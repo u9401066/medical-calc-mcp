@@ -82,6 +82,13 @@ from .aldrete_score import AldreteScoreCalculator
 
 # Phase 12: Neurology
 from .nihss import NihssCalculator
+from .abcd2 import Abcd2Calculator
+from .modified_rankin_scale import ModifiedRankinScaleCalculator
+
+# Phase 13: Additional Scores
+from .timi_stemi import TimiStemiCalculator
+from .rockall_score import RockallScoreCalculator
+from .fib4_index import Fib4IndexCalculator
 
 
 __all__ = [
@@ -164,6 +171,13 @@ __all__ = [
     
     # Phase 12: Neurology
     "NihssCalculator",
+    "Abcd2Calculator",
+    "ModifiedRankinScaleCalculator",
+    
+    # Phase 13: Additional Scores
+    "TimiStemiCalculator",
+    "RockallScoreCalculator",
+    "Fib4IndexCalculator",
 ]
 
 
@@ -229,4 +243,10 @@ CALCULATORS = [
     AldreteScoreCalculator,
     # Phase 12: Neurology
     NihssCalculator,
+    Abcd2Calculator,
+    ModifiedRankinScaleCalculator,
+    # Phase 13: Additional Scores
+    TimiStemiCalculator,
+    RockallScoreCalculator,
+    Fib4IndexCalculator,
 ]

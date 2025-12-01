@@ -486,6 +486,122 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
+### ABCD2 Score (TIA Stroke Risk) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Johnston SC, Rothwell PM, Nguyen-Huynh MN, et al. Validation and refinement of scores to predict very early stroke risk after transient ischaemic attack. *Lancet*. 2007;369(9558):283-292. |
+| **DOI** | [10.1016/S0140-6736(07)60150-0](https://doi.org/10.1016/S0140-6736(07)60150-0) |
+| **PMID** | [17258668](https://pubmed.ncbi.nlm.nih.gov/17258668/) |
+| **Year** | 2007 |
+| **Key Points** | TIA stroke risk prediction; 5 criteria (Age, BP, Clinical features, Duration, Diabetes); score 0-7; guides hospitalization |
+
+| Field | Value |
+|-------|-------|
+| **Guideline Citation** | Kleindorfer DO, Towfighi A, Chaturvedi S, et al. 2021 Guideline for the Prevention of Stroke in Patients With Stroke and Transient Ischemic Attack. *Stroke*. 2021;52(7):e364-e467. |
+| **DOI** | [10.1161/STR.0000000000000375](https://doi.org/10.1161/STR.0000000000000375) |
+| **PMID** | [34024117](https://pubmed.ncbi.nlm.nih.gov/34024117/) |
+| **Year** | 2021 |
+| **Key Points** | AHA/ASA guideline recommending ABCD2 for TIA risk stratification |
+
+---
+
+### Modified Rankin Scale (mRS) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | van Swieten JC, Koudstaal PJ, Visser MC, Schouten HJ, van Gijn J. Interobserver agreement for the assessment of handicap in stroke patients. *Stroke*. 1988;19(5):604-607. |
+| **DOI** | [10.1161/01.str.19.5.604](https://doi.org/10.1161/01.str.19.5.604) |
+| **PMID** | [3363593](https://pubmed.ncbi.nlm.nih.gov/3363593/) |
+| **Year** | 1988 |
+| **Key Points** | Post-stroke disability assessment; 7-point scale (0-6); widely used outcome measure |
+
+| Field | Value |
+|-------|-------|
+| **Original Citation** | Rankin J. Cerebral vascular accidents in patients over the age of 60. II. Prognosis. *Scott Med J*. 1957;2(5):200-215. |
+| **DOI** | [10.1177/003693305700200504](https://doi.org/10.1177/003693305700200504) |
+| **PMID** | [13432835](https://pubmed.ncbi.nlm.nih.gov/13432835/) |
+| **Year** | 1957 |
+| **Key Points** | Original Rankin Scale development |
+
+| Field | Value |
+|-------|-------|
+| **Structured mRS Citation** | Wilson JT, Hareendran A, Grant M, et al. Improving the assessment of outcomes in stroke: use of a structured interview to assign grades on the modified Rankin Scale. *Stroke*. 2002;33(9):2243-2246. |
+| **DOI** | [10.1161/01.str.0000027437.22450.bd](https://doi.org/10.1161/01.str.0000027437.22450.bd) |
+| **PMID** | [12215594](https://pubmed.ncbi.nlm.nih.gov/12215594/) |
+| **Year** | 2002 |
+| **Key Points** | Structured interview improves reliability |
+
+---
+
+### TIMI Risk Score for STEMI ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Morrow DA, Antman EM, Charlesworth A, et al. TIMI risk score for ST-elevation myocardial infarction: A convenient, bedside, clinical score for risk assessment at presentation: An intravenous nPA for treatment of infarcting myocardium early II trial substudy. *Circulation*. 2000;102(17):2031-2037. |
+| **DOI** | [10.1161/01.cir.102.17.2031](https://doi.org/10.1161/01.cir.102.17.2031) |
+| **PMID** | [11044416](https://pubmed.ncbi.nlm.nih.gov/11044416/) |
+| **Year** | 2000 |
+| **Key Points** | STEMI 30-day mortality prediction; 8 criteria; score 0-14; guides reperfusion urgency |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Morrow DA, Antman EM, Parsons L, et al. Application of the TIMI risk score for ST-elevation MI in the National Registry of Myocardial Infarction 3. *JAMA*. 2001;286(11):1356-1359. |
+| **DOI** | [10.1001/jama.286.11.1356](https://doi.org/10.1001/jama.286.11.1356) |
+| **PMID** | [11560541](https://pubmed.ncbi.nlm.nih.gov/11560541/) |
+| **Year** | 2001 |
+| **Key Points** | Validation in NRMI-3 with >15,000 patients |
+
+---
+
+### Rockall Score (Upper GI Bleeding) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Rockall TA, Logan RF, Devlin HB, Northfield TC. Risk assessment after acute upper gastrointestinal haemorrhage. *Gut*. 1996;38(3):316-321. |
+| **DOI** | [10.1136/gut.38.3.316](https://doi.org/10.1136/gut.38.3.316) |
+| **PMID** | [8675081](https://pubmed.ncbi.nlm.nih.gov/8675081/) |
+| **Year** | 1996 |
+| **Key Points** | UGIB mortality and rebleeding risk; Clinical + endoscopic components; score 0-11 |
+
+| Field | Value |
+|-------|-------|
+| **Validation Citation** | Rockall TA, Logan RF, Devlin HB, Northfield TC. Incidence of and mortality from acute upper gastrointestinal haemorrhage in the United Kingdom. *BMJ*. 1995;311(6999):222-226. |
+| **DOI** | [10.1136/bmj.311.6999.222](https://doi.org/10.1136/bmj.311.6999.222) |
+| **PMID** | [7627034](https://pubmed.ncbi.nlm.nih.gov/7627034/) |
+| **Year** | 1995 |
+| **Key Points** | National audit of UGIB establishing mortality rates |
+
+---
+
+### FIB-4 Index (Liver Fibrosis) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Sterling RK, Lissen E, Clumeck N, et al. Development of a simple noninvasive index to predict significant fibrosis in patients with HIV/HCV coinfection. *Hepatology*. 2006;43(6):1317-1325. |
+| **DOI** | [10.1002/hep.21178](https://doi.org/10.1002/hep.21178) |
+| **PMID** | [16729309](https://pubmed.ncbi.nlm.nih.gov/16729309/) |
+| **Year** | 2006 |
+| **Key Points** | Non-invasive fibrosis assessment; formula: (Age × AST) / (Platelets × √ALT); cutoffs <1.30 (low) and >2.67 (high) |
+
+| Field | Value |
+|-------|-------|
+| **Age-Adjusted Citation** | McPherson S, Hardy T, Dufour JF, et al. Age as a Confounding Factor for the Accurate Non-Invasive Diagnosis of Advanced NAFLD Fibrosis. *Am J Gastroenterol*. 2017;112(5):740-751. |
+| **DOI** | [10.1038/ajg.2016.453](https://doi.org/10.1038/ajg.2016.453) |
+| **PMID** | [27725647](https://pubmed.ncbi.nlm.nih.gov/27725647/) |
+| **Year** | 2017 |
+| **Key Points** | Age-adjusted cutoffs for patients >65; improves specificity |
+
+| Field | Value |
+|-------|-------|
+| **NAFLD Validation Citation** | Shah AG, Lydecker A, Murray K, et al. Comparison of noninvasive markers of fibrosis in patients with nonalcoholic fatty liver disease. *Clin Gastroenterol Hepatol*. 2009;7(10):1104-1112. |
+| **DOI** | [10.1016/j.cgh.2009.05.033](https://doi.org/10.1016/j.cgh.2009.05.033) |
+| **PMID** | [19523535](https://pubmed.ncbi.nlm.nih.gov/19523535/) |
+| **Year** | 2009 |
+| **Key Points** | FIB-4 validated in NAFLD/NASH population |
+
+---
+
 ### Aldrete Score (PACU Recovery) ⭐ NEW
 
 | Field | Value |

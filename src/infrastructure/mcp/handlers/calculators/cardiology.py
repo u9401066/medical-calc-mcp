@@ -500,3 +500,94 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+
+    @mcp.tool()
+    def calculate_timi_stemi(
+        age_years: Annotated[int, Field(
+            description="年齡 Age in years",
+            ge=18, le=120
+        )],
+        has_dm_htn_or_angina: Annotated[bool, Field(
+            description="糖尿病、高血壓或心絞痛史 History of diabetes, hypertension, or angina"
+        )],
+        systolic_bp_lt_100: Annotated[bool, Field(
+            description="收縮壓 <100 mmHg Systolic BP <100 mmHg"
+        )],
+        heart_rate_gt_100: Annotated[bool, Field(
+            description="心率 >100 bpm Heart rate >100 bpm"
+        )],
+        killip_class: Annotated[int, Field(
+            description="Killip 分級 (1-4) | 1=無心衰, 2=肺囉音/S3, 3=肺水腫, 4=心因性休克",
+            ge=1, le=4
+        )],
+        weight_lt_67kg: Annotated[bool, Field(
+            description="體重 <67 kg Body weight <67 kg"
+        )],
+        anterior_ste_or_lbbb: Annotated[bool, Field(
+            description="前壁ST上升或左束支傳導阻滯 Anterior ST elevation or LBBB"
+        )],
+        time_to_treatment_gt_4h: Annotated[bool, Field(
+            description="症狀發作至治療 >4 小時 Time from symptom onset to treatment >4 hours"
+        )]
+    ) -> dict[str, Any]:
+        """
+        ❤️ TIMI Risk Score for STEMI: ST 上升心肌梗塞死亡風險
+        
+        預測 STEMI 病患 30 天死亡率的床邊評分工具，
+        由 InTIME-II 試驗資料發展並驗證。
+        
+        **TIMI STEMI 計分項目 (總分 0-14 分):**
+        
+        - **年齡**: 65-74歲 +2分, ≥75歲 +3分
+        - **DM/HTN/心絞痛史**: +1分
+        - **收縮壓 <100 mmHg**: +3分
+        - **心率 >100 bpm**: +2分
+        - **Killip II-IV**: +2分
+        - **體重 <67 kg**: +1分
+        - **前壁 STE 或 LBBB**: +1分
+        - **治療延遲 >4 小時**: +1分
+        
+        **30 天死亡率 (依分數):**
+        - 0 分: 0.8%
+        - 1 分: 1.6%
+        - 2 分: 2.2%
+        - 3 分: 4.4%
+        - 4 分: 7.3%
+        - 5 分: 12.4%
+        - 6 分: 16.1%
+        - 7 分: 23.4%
+        - 8 分: 26.8%
+        - >8 分: 35.9%
+        
+        **風險分層:**
+        - 0-2: 低風險 (<3%)
+        - 3-4: 中風險 (4-7%)
+        - 5-6: 高風險 (12-16%)
+        - ≥7: 極高風險 (>23%)
+        
+        **臨床意義:**
+        - 高分患者考慮 CCU/ICU 收治
+        - Killip III-IV 考慮機械循環支持
+        - Door-to-balloon <90 分鐘仍為關鍵
+        
+        **參考文獻:** Morrow DA, et al. Circulation. 2000;102(17):2031-2037.
+        PMID: 11044416
+        
+        Returns:
+            TIMI STEMI 分數 (0-14)、30 天死亡率、風險分層與處置建議
+        """
+        request = CalculateRequest(
+            tool_id="timi_stemi",
+            params={
+                "age_years": age_years,
+                "has_dm_htn_or_angina": has_dm_htn_or_angina,
+                "systolic_bp_lt_100": systolic_bp_lt_100,
+                "heart_rate_gt_100": heart_rate_gt_100,
+                "killip_class": killip_class,
+                "weight_lt_67kg": weight_lt_67kg,
+                "anterior_ste_or_lbbb": anterior_ste_or_lbbb,
+                "time_to_treatment_gt_4h": time_to_treatment_gt_4h
+            }
+        )
+        response = use_case.execute(request)
+        return response.to_dict()

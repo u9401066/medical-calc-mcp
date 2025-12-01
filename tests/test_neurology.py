@@ -289,3 +289,268 @@ class TestNihssCalculator:
         assert "5b_motor_arm_right" in component_scores
         assert "6a_motor_leg_left" in component_scores
         assert "6b_motor_leg_right" in component_scores
+
+
+class TestAbcd2Calculator:
+    """Tests for ABCD2 Score (TIA Stroke Risk) Calculator."""
+
+    def test_low_risk_score_0(self):
+        """Test ABCD2 score 0 - very low risk."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=False,
+            bp_gte_140_90=False,
+            clinical_features="none",
+            duration_minutes="lt_10",
+            diabetes=False
+        )
+        
+        assert result.value == 0
+        assert "low" in result.interpretation.summary.lower()
+
+    def test_low_risk_score_3(self):
+        """Test ABCD2 score 3 - low risk upper bound."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,    # +1
+            bp_gte_140_90=True, # +1
+            clinical_features="speech_only",  # +1
+            duration_minutes="lt_10",
+            diabetes=False
+        )
+        
+        assert result.value == 3
+        assert "low" in result.interpretation.summary.lower()
+
+    def test_moderate_risk_score_4(self):
+        """Test ABCD2 score 4 - moderate risk lower bound."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,    # +1
+            bp_gte_140_90=True, # +1
+            clinical_features="unilateral_weakness",  # +2
+            duration_minutes="lt_10",
+            diabetes=False
+        )
+        
+        assert result.value == 4
+        assert "moderate" in result.interpretation.summary.lower()
+
+    def test_moderate_risk_score_5(self):
+        """Test ABCD2 score 5 - moderate risk."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,    # +1
+            bp_gte_140_90=True, # +1
+            clinical_features="unilateral_weakness",  # +2
+            duration_minutes="lt_10",
+            diabetes=True       # +1
+        )
+        
+        assert result.value == 5
+        assert "moderate" in result.interpretation.summary.lower()
+
+    def test_high_risk_score_6(self):
+        """Test ABCD2 score 6 - high risk."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,    # +1
+            bp_gte_140_90=True, # +1
+            clinical_features="unilateral_weakness",  # +2
+            duration_minutes="10_to_59",  # +1
+            diabetes=True       # +1
+        )
+        
+        assert result.value == 6
+        assert "high" in result.interpretation.summary.lower()
+
+    def test_high_risk_score_7_max(self):
+        """Test ABCD2 maximum score 7 - high risk."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,    # +1
+            bp_gte_140_90=True, # +1
+            clinical_features="unilateral_weakness",  # +2
+            duration_minutes="gte_60",  # +2
+            diabetes=True       # +1
+        )
+        
+        assert result.value == 7
+        assert "high" in result.interpretation.summary.lower()
+
+    def test_stroke_risk_values_included(self):
+        """Test that 2-day and 7-day stroke risks are in calculation details."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,
+            bp_gte_140_90=True,
+            clinical_features="unilateral_weakness",
+            duration_minutes="gte_60",
+            diabetes=True
+        )
+        
+        details = result.calculation_details
+        assert "stroke_risk_2day" in details
+        assert "stroke_risk_7day" in details
+        assert "stroke_risk_90day" in details
+
+    def test_component_scores_breakdown(self):
+        """Test that component scores are broken down correctly."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=True,
+            bp_gte_140_90=False,
+            clinical_features="speech_only",
+            duration_minutes="10_to_59",
+            diabetes=True
+        )
+        
+        details = result.calculation_details
+        assert "component_scores" in details
+        components = details["component_scores"]
+        assert components["A_age"] == 1
+        assert components["B_blood_pressure"] == 0
+        assert components["C_clinical_features"] == 1
+        assert components["D1_duration"] == 1
+        assert components["D2_diabetes"] == 1
+
+    def test_tool_id(self):
+        """Test tool ID is correct."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        assert calc.tool_id == "abcd2"
+
+    def test_has_references(self):
+        """Test that ABCD2 includes Johnston 2007 reference."""
+        from src.domain.services.calculators import Abcd2Calculator
+        
+        calc = Abcd2Calculator()
+        result = calc.calculate(
+            age_gte_60=False,
+            bp_gte_140_90=False,
+            clinical_features="none",
+            duration_minutes="lt_10",
+            diabetes=False
+        )
+        
+        assert result.references is not None
+        assert len(result.references) >= 1
+        ref_text = str(result.references[0])
+        assert "Johnston" in ref_text or "17258668" in ref_text
+
+
+class TestModifiedRankinScaleCalculator:
+    """Tests for Modified Rankin Scale (mRS) Calculator."""
+
+    def test_mrs_0_no_symptoms(self):
+        """Test mRS 0 - no symptoms."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=0)
+        
+        assert result.value == 0
+        assert "no symptoms" in result.interpretation.summary.lower()
+        assert result.calculation_details["favorable_outcome"] is True
+
+    def test_mrs_1_no_significant_disability(self):
+        """Test mRS 1 - no significant disability."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=1)
+        
+        assert result.value == 1
+        assert result.calculation_details["favorable_outcome"] is True
+        assert result.calculation_details["independent"] is True
+
+    def test_mrs_2_slight_disability(self):
+        """Test mRS 2 - slight disability (still favorable)."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=2)
+        
+        assert result.value == 2
+        assert "slight" in result.interpretation.summary.lower()
+        assert result.calculation_details["favorable_outcome"] is True
+
+    def test_mrs_3_moderate_disability(self):
+        """Test mRS 3 - moderate disability (not favorable)."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=3)
+        
+        assert result.value == 3
+        assert "moderate" in result.interpretation.summary.lower()
+        assert result.calculation_details["favorable_outcome"] is False
+        assert result.calculation_details["ambulatory"] is True
+
+    def test_mrs_4_moderately_severe_disability(self):
+        """Test mRS 4 - moderately severe disability."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=4)
+        
+        assert result.value == 4
+        assert result.calculation_details["favorable_outcome"] is False
+        assert result.calculation_details["ambulatory"] is False
+
+    def test_mrs_5_severe_disability(self):
+        """Test mRS 5 - severe disability."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=5)
+        
+        assert result.value == 5
+        assert "severe" in result.interpretation.summary.lower()
+        assert result.calculation_details["favorable_outcome"] is False
+
+    def test_mrs_6_dead(self):
+        """Test mRS 6 - dead."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=6)
+        
+        assert result.value == 6
+        assert "dead" in result.interpretation.summary.lower()
+
+    def test_tool_id(self):
+        """Test tool ID is correct."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        assert calc.tool_id == "modified_rankin_scale"
+
+    def test_has_references(self):
+        """Test that mRS includes van Swieten 1988 reference."""
+        from src.domain.services.calculators import ModifiedRankinScaleCalculator
+        
+        calc = ModifiedRankinScaleCalculator()
+        result = calc.calculate(mrs_score=0)
+        
+        assert result.references is not None
+        assert len(result.references) >= 1
+
+
