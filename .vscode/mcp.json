@@ -1,9 +1,17 @@
 {
   "servers": {
+    // Linux 版本 (目前使用)
     "medical-calc-mcp": {
       "type": "stdio",
-      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "command": "${workspaceFolder}/.venv/bin/python",
       "args": ["-m", "src.infrastructure.mcp.server"]
     }
+
+    // Windows 版本 (如需在 Windows 使用，請註解上方並取消下方註解)
+    // "medical-calc-mcp": {
+    //   "type": "stdio",
+    //   "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    //   "args": ["-m", "src.infrastructure.mcp.server"]
+    // }
   }
 }

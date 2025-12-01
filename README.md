@@ -19,6 +19,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Why This Project? | 為什麼需要這個專案？](#-why-this-project--為什麼需要這個專案)
 - [Architecture | 架構](#-architecture--架構)
 - [Quick Start | 快速開始](#-quick-start--快速開始)
+- [Deployment Modes | 部署模式](#-deployment-modes--部署模式) 🚀 NEW
+- [Agent Integration | Agent 整合](#-agent-integration--agent-整合) 🤖 NEW
 - [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署--new) 🐳
 - [REST API | REST API 接口](#-rest-api--rest-api-接口--new) 🌐 NEW
 - [Tool Discovery | 工具探索](#-tool-discovery--工具探索)
@@ -39,6 +41,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Usage Examples | 使用範例](#-usage-examples--使用範例)
 - [References | 參考文獻](#-references--參考文獻)
 - [Development | 開發指南](#-development--開發指南)
+- [Deployment Guide | 部署指南](docs/DEPLOYMENT.md) 📘
 - [Roadmap | 路線圖](ROADMAP.md)
 
 ---
@@ -256,6 +259,93 @@ Add to your `claude_desktop_config.json`:
     }
   }
 }
+```
+
+---
+
+## 🚀 Deployment Modes | 部署模式 ⭐ NEW
+
+本專案支援多種部署模式，可根據使用場景選擇：
+
+This project supports multiple deployment modes for different use cases:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        Deployment Options                            │
+├─────────────────┬─────────────────┬─────────────────────────────────┤
+│   REST API      │   MCP SSE       │   MCP stdio                     │
+│   (Port 8080)   │   (Port 8000)   │   (Local)                       │
+├─────────────────┼─────────────────┼─────────────────────────────────┤
+│ ✅ Any HTTP     │ ✅ MCP Clients  │ ✅ Claude Desktop               │
+│    client       │    (remote)     │ ✅ VS Code Copilot              │
+│ ✅ Custom Agent │ ✅ Docker/Cloud │ ✅ MCP Inspector                │
+│ ✅ Web Apps     │                 │                                 │
+│ ✅ Python/JS    │                 │                                 │
+└─────────────────┴─────────────────┴─────────────────────────────────┘
+```
+
+| Mode | Command | Port | Best For |
+|------|---------|------|----------|
+| **api** | `python src/main.py --mode api` | 8080 | Custom agents, web apps, scripts |
+| **sse** | `python src/main.py --mode sse` | 8000 | Remote MCP clients, Docker |
+| **stdio** | `python src/main.py --mode stdio` | - | Local Claude Desktop, VS Code |
+
+> 📘 詳細部署指南請參閱 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
+---
+
+## 🤖 Agent Integration | Agent 整合 ⭐ NEW
+
+### Python Agent Example | Python Agent 範例
+
+```python
+import requests
+
+class MedicalCalculatorClient:
+    def __init__(self, base_url: str = "http://localhost:8080"):
+        self.api_url = f"{base_url}/api/v1"
+    
+    def search(self, query: str) -> list:
+        r = requests.get(f"{self.api_url}/search", params={"q": query})
+        return r.json()
+    
+    def calculate(self, tool_id: str, params: dict) -> dict:
+        r = requests.post(f"{self.api_url}/calculate/{tool_id}", json={"params": params})
+        return r.json()
+
+# Usage
+client = MedicalCalculatorClient()
+
+# Search for sepsis calculators
+results = client.search("sepsis")
+
+# Calculate SOFA score
+result = client.calculate("sofa", {
+    "pao2_fio2_ratio": 200,
+    "platelets": 100,
+    "bilirubin": 2.0,
+    "gcs_score": 13,
+    "creatinine": 2.5
+})
+print(f"SOFA Score: {result['result']['value']}")
+```
+
+### LangChain / OpenAI Function Calling
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#-agent-integration-examples--agent-整合範例) for LangChain and OpenAI integration examples.
+
+### Quick API Test | 快速 API 測試
+
+```bash
+# Start API server
+python src/main.py --mode api --port 8080
+
+# Test endpoints
+curl http://localhost:8080/health
+curl "http://localhost:8080/api/v1/search?q=sepsis"
+curl -X POST "http://localhost:8080/api/v1/calculate/gcs" \
+  -H "Content-Type: application/json" \
+  -d '{"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}}'
 ```
 
 ---
