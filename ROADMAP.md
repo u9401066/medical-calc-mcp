@@ -1,8 +1,10 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
 > **Last Updated**: 2025-12-01
-> **Current Version**: Phase 11 Complete ✅ + Infrastructure Complete ✅
-> **Total Calculators**: 42 → Target: 50+
+> **Current Version**: v1.0.0 (Production Ready)
+> **Status**: 51 Calculators | 546 Tests | 79% Coverage
+
+本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
 ---
 
@@ -10,336 +12,341 @@
 
 | Section | Description |
 |---------|-------------|
-| [Current Status](#-current-status--目前狀態) | 目前進度總覽 |
-| [Completed Phases](#-completed-phases--已完成階段) | 所有已完成階段詳情 |
-| [Next Phase: Neurology](#-next-phase-neurology--sedation-神經鎮靜) | 下一階段計畫 |
-| [Future Phases](#-future-phases--未來階段) | 未來開發計畫 |
-| [Infrastructure Status](#-infrastructure-status--基礎設施狀態) | Docker, REST API 狀態 |
+| [Improvement Areas](#-improvement-areas--改進方向) | 可改進的領域 |
+| [New Calculators](#-new-calculators--新計算器) | 計畫新增的計算器 |
+| [Infrastructure](#-infrastructure--基礎設施) | 技術改進計畫 |
+| [Developer Experience](#-developer-experience--開發體驗) | 開發者工具改進 |
+| [Timeline](#-timeline--時程規劃) | 開發時程 |
 
 ---
 
-## 📈 Current Status | 目前狀態
+## 🎯 Improvement Areas | 改進方向
 
-### 🎉 Milestones Achieved | 已達成里程碑
+根據專案現況分析，以下是主要改進方向：
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  🏆 PROJECT MILESTONES                                  │
-├─────────────────────────────────────────────────────────┤
-│  ✅ 42 Clinical Calculators                             │
-│  ✅ 48 MCP Tools                                        │
-│  ✅ 437 Test Cases                                      │
-│  ✅ Docker + SSE Remote Server                          │
-│  ✅ REST API (FastAPI + Swagger)                        │
-│  ✅ SOFA-2 (JAMA 2025) - Latest Evidence               │
-│  ✅ 2024 ESC Guidelines (CHA₂DS₂-VA, HAS-BLED)         │
-└─────────────────────────────────────────────────────────┘
-```
+### 1. 🔐 Security & Production Readiness | 安全與生產就緒
 
-### Current Stats | 目前統計
+| Item | Current | Target | Priority |
+|------|---------|--------|----------|
+| **Rate Limiting** | ❌ None | ✅ Request throttling | 🔴 HIGH |
+| **API Authentication** | ❌ None | ✅ API Key / OAuth2 | 🔴 HIGH |
+| **Request Logging** | ❌ Basic | ✅ Structured logging | 🟡 MEDIUM |
+| **Health Metrics** | ❌ Basic | ✅ Prometheus metrics | 🟡 MEDIUM |
+| **CORS Configuration** | ✅ Done | ✅ Complete | ✅ DONE |
+| **Input Validation** | ✅ Done | ✅ Complete | ✅ DONE |
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  📊 Project Statistics (2025-12-01)                     │
-├─────────────────────────────────────────────────────────┤
-│  Calculators:          42                               │
-│  MCP Tools:            48                               │
-│  Tests:               437                               │
-│  Test Coverage:        79%                              │
-│  Prompts:               5                               │
-│  Resources:             4                               │
-├─────────────────────────────────────────────────────────┤
-│  🐳 Docker:            ✅ Complete                      │
-│  🌐 REST API:          ✅ Complete (FastAPI)            │
-│  📡 SSE Transport:     ✅ Complete                      │
-│  📖 Swagger/OpenAPI:   ✅ Complete                      │
-└─────────────────────────────────────────────────────────┘
-```
+### 2. 🌐 Internationalization (i18n) | 國際化
 
----
+| Item | Current | Target | Priority |
+|------|---------|--------|----------|
+| **繁體中文 (zh-TW)** | 部分 | ✅ 完整支援 | 🟡 MEDIUM |
+| **簡體中文 (zh-CN)** | ❌ None | ✅ Full support | 🟢 LOW |
+| **日本語 (ja)** | ❌ None | ✅ Full support | 🟢 LOW |
+| **Tool Descriptions** | EN only | Multi-language | 🟡 MEDIUM |
+| **Error Messages** | EN only | Multi-language | 🟡 MEDIUM |
 
-## ✅ Completed Phases | 已完成階段
+### 3. 📊 Observability | 可觀測性
 
-### Phase Summary Table
+| Item | Current | Target | Priority |
+|------|---------|--------|----------|
+| **Structured Logging** | print() | JSON logging (structlog) | 🟡 MEDIUM |
+| **Request Tracing** | ❌ None | OpenTelemetry | 🟢 LOW |
+| **Metrics Export** | ❌ None | Prometheus /metrics | 🟡 MEDIUM |
+| **Error Tracking** | ❌ None | Sentry integration | 🟢 LOW |
 
-| Phase | Description | Calculators | Status |
-|-------|-------------|-------------|--------|
-| 1-3 | Foundation + MCP Integration | - | ✅ |
-| 4 | ICU/ED Core (SOFA, qSOFA, NEWS, GCS, CAM-ICU, RASS, APACHE II) | 7 | ✅ |
-| 5 | Pediatric/Anesthesia (MABL, Transfusion, Dosing, ASA, Mallampati, RCRI) | 6 | ✅ |
-| 5.5 | MCP Prompts + Enhanced Errors | - | ✅ |
-| 6 | Multi-specialty (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) | 6 | ✅ |
-| 7 | Validation Layer (22 Parameter Specs) | - | ✅ |
-| 7.5 | Type Safety (CHA₂DS₂-VA 2024, Caprini, PSI/PORT) | 3 | ✅ |
-| 8 | Guideline Tools (HAS-BLED 2024, Child-Pugh, KDIGO AKI) | 3 | ✅ |
-| 9 | Acid-Base Complete (AG, Delta Ratio, Corrected Na, Winter's, Osmolar Gap, FWD) | 6 | ✅ |
-| 10 | High-Priority (QTc, A-a Gradient, Shock Index) | 3 | ✅ |
-| 11 | Extended (IBW, P/F Ratio, ROX Index, GRACE, 4Ts HIT, ACEF II, SOFA-2) | 7 | ✅ |
-| Infra | Docker + SSE + REST API | - | ✅ |
+### 4. 🧪 Testing & Quality | 測試與品質
 
-### Detailed Calculator List by Specialty
-
-#### 🩺 Critical Care / ICU (8 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_apache_ii` | APACHE II | Knaus 1985 | ✅ |
-| `calculate_sofa` | SOFA Score | Vincent 1996, Sepsis-3 2016 | ✅ |
-| `calculate_sofa2` | **SOFA-2 (2025)** 🆕 | Ranzani JAMA 2025 | ✅ |
-| `calculate_qsofa` | qSOFA | Singer 2016 | ✅ |
-| `calculate_news2` | NEWS2 | RCP 2017 | ✅ |
-| `calculate_gcs` | Glasgow Coma Scale | Teasdale 1974 | ✅ |
-| `calculate_rass` | RASS | Sessler 2002 | ✅ |
-| `calculate_cam_icu` | CAM-ICU | Ely 2001 | ✅ |
-
-#### 💉 Anesthesiology / Preoperative (6 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_asa_physical_status` | ASA Physical Status | ASA Guidelines | ✅ |
-| `calculate_mallampati` | Mallampati Score | Mallampati 1985 | ✅ |
-| `calculate_rcri` | RCRI (Revised Cardiac Risk) | Lee 1999 | ✅ |
-| `calculate_mabl` | Maximum Allowable Blood Loss | Miller's Anesthesia | ✅ |
-| `calculate_transfusion_volume` | Transfusion Calculator | Roseff 2002 | ✅ |
-| `calculate_pediatric_drug_dose` | Pediatric Dosing | Lexicomp | ✅ |
-
-#### ❤️ Cardiology (7 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_chads2_vasc` | CHA₂DS₂-VASc | Lip 2010 | ✅ |
-| `calculate_chads2_va` | CHA₂DS₂-VA (2024 ESC) | Van Gelder 2024 | ✅ |
-| `calculate_has_bled` | HAS-BLED (2024 ESC) | Pisters 2010, ESC 2024 | ✅ |
-| `calculate_heart_score` | HEART Score | Six 2008 | ✅ |
-| `calculate_corrected_qt` | Corrected QT (QTc) | Bazett, Fridericia | ✅ |
-| `calculate_grace_score` | GRACE Score | Fox 2006 | ✅ |
-| `calculate_acef_ii` | ACEF II Score | Ranucci 2018 | ✅ |
-
-#### 🫁 Pulmonology (5 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_curb65` | CURB-65 | Lim 2003 | ✅ |
-| `calculate_psi_port` | PSI/PORT | Fine 1997 | ✅ |
-| `calculate_aa_gradient` | A-a Gradient | West Physiology | ✅ |
-| `calculate_pf_ratio` | P/F Ratio | Berlin ARDS 2012 | ✅ |
-| `calculate_rox_index` | ROX Index | Roca 2016 | ✅ |
-
-#### 🫘 Nephrology (2 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_ckd_epi_2021` | CKD-EPI 2021 | Inker 2021 | ✅ |
-| `calculate_kdigo_aki` | KDIGO AKI Staging | KDIGO 2012 | ✅ |
-
-#### 🟤 Hepatology (2 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_meld_score` | MELD / MELD-Na | Kamath 2001, Kim 2008 | ✅ |
-| `calculate_child_pugh` | Child-Pugh Score | Pugh 1973 | ✅ |
-
-#### 🚑 Emergency Medicine (3 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_wells_dvt` | Wells DVT | Wells 2003 | ✅ |
-| `calculate_wells_pe` | Wells PE | Wells 2000 | ✅ |
-| `calculate_shock_index` | Shock Index | Allgöwer 1967 | ✅ |
-
-#### 🩸 Hematology (2 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_4ts_hit` | 4Ts HIT Score | Lo 2006, Cuker 2012 | ✅ |
-| `calculate_caprini_vte` | Caprini VTE Risk | Caprini 2005 | ✅ |
-
-#### ⚗️ Acid-Base & Electrolytes (6 tools)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_anion_gap` | Anion Gap | Kraut 2007 | ✅ |
-| `calculate_delta_ratio` | Delta Ratio | Wrenn 1990 | ✅ |
-| `calculate_corrected_sodium` | Corrected Sodium | Katz 1973 | ✅ |
-| `calculate_winters_formula` | Winter's Formula | Winter 1967 | ✅ |
-| `calculate_osmolar_gap` | Osmolar Gap | IBCC | ✅ |
-| `calculate_free_water_deficit` | Free Water Deficit | Adrogue 2000 | ✅ |
-
-#### 📐 Common Utilities (1 tool)
-
-| Tool ID | Name | Reference | Status |
-|---------|------|-----------|--------|
-| `calculate_ideal_body_weight` | Ideal Body Weight | Devine 1974, ARDSNet | ✅ |
+| Item | Current | Target | Priority |
+|------|---------|--------|----------|
+| **Test Coverage** | 79% | 90%+ | 🟡 MEDIUM |
+| **E2E Tests** | ❌ None | Docker-based E2E | 🟡 MEDIUM |
+| **Load Testing** | ❌ None | Locust / k6 scripts | 🟢 LOW |
+| **Mutation Testing** | ❌ None | mutmut | 🟢 LOW |
+| **Type Checking** | Partial | mypy --strict | 🟡 MEDIUM |
 
 ---
 
-## 🔜 Next Phase: Neurology & Sedation (神經鎮靜)
+## 🧮 New Calculators | 新計算器
+
+### Phase 12: Neurology Extended (神經科擴充)
+
+> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_hunt_hess` | Hunt & Hess Scale | SAH 分級預後 | Hunt & Hess 1968 |
+| `calculate_fisher_grade` | Fisher Grade | SAH CT 分級 | Fisher 1980 |
+| `calculate_four_score` | FOUR Score | 優於 GCS 的昏迷評估 | Wijdicks 2005 |
+| `calculate_ich_score` | ICH Score | 腦出血預後 | Hemphill 2001 |
+
+**已完成**: NIHSS ✅, ABCD2 ✅, mRS ✅
+
+### Phase 13: Infectious Disease (感染症)
+
+> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q1
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_mascc` | MASCC Score | 嗜中性白血球低下發燒風險 | Klastersky 2000 |
+| `calculate_pitt_bacteremia` | Pitt Bacteremia | 菌血症預後 | Paterson 2004 |
+| `calculate_centor` | Centor/McIsaac | 咽炎抗生素決策 | Centor 1981 |
+| `calculate_quick_cpis` | Clinical Pulmonary Infection Score | VAP 診斷輔助 | Pugin 1991 |
+
+### Phase 14: Common Utilities (通用工具)
+
+> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q2
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_bsa` | Body Surface Area | 化療/燒傷計算 | Du Bois 1916, Mosteller |
+| `calculate_cockcroft_gault` | Creatinine Clearance | 藥物劑量調整 | Cockcroft-Gault 1976 |
+| `calculate_corrected_calcium` | Albumin-Corrected Ca | 真實血鈣評估 | Payne 1973 |
+| `calculate_parkland` | Parkland Formula | 燒傷輸液計劃 | Baxter 1968 |
+
+### Phase 15: Obstetrics & Pediatrics (婦產兒科)
+
+> **Priority**: 🟢 LOW | **Target**: 2026 Q3
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_bishop_score` | Bishop Score | 子宮頸成熟度/引產評估 | Bishop 1964 |
+| `calculate_apgar` | APGAR Score | 新生兒評估 | Apgar 1953 |
+| `calculate_pews` | Pediatric Early Warning | 兒童病情惡化 | Parshuram 2009 |
+| `calculate_ballard` | Ballard Score | 新生兒胎齡評估 | Ballard 1991 |
+
+---
+
+## 🛠️ Infrastructure | 基礎設施
+
+### API Gateway & Security (安全閘道)
+
+> **Priority**: 🔴 HIGH
+
+| Feature | Description | Approach |
+|---------|-------------|----------|
+| **Rate Limiting** | 限制請求頻率 | slowapi / redis-based |
+| **API Key Auth** | API 金鑰認證 | Header-based X-API-Key |
+| **OAuth2 (Optional)** | 企業級認證 | FastAPI OAuth2 |
+| **Request Validation** | 請求大小限制 | Middleware |
+| **IP Allowlist** | 白名單機制 | Middleware |
+
+**Implementation Example:**
+```python
+# Rate limiting with slowapi
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
+
+@app.get("/api/v1/calculate/{tool_id}")
+@limiter.limit("100/minute")
+async def calculate(...):
+    ...
+```
+
+### Cloud Deployment Templates (雲端部署模板)
 
 > **Priority**: 🟡 MEDIUM
-> **Estimated**: 4 calculators
-> **Target**: 2026 Q1
 
-### Planned Calculators
+| Platform | Status | Template |
+|----------|--------|----------|
+| **Docker Compose** | ✅ Done | `docker-compose.yml` |
+| **Kubernetes** | 📋 Planned | `k8s/` manifests |
+| **AWS ECS/Fargate** | 📋 Planned | CloudFormation / Terraform |
+| **GCP Cloud Run** | 📋 Planned | `cloudbuild.yaml` |
+| **Azure Container Apps** | 📋 Planned | ARM template |
 
-| Tool ID | Name | Purpose | Reference | Priority |
-|---------|------|---------|-----------|----------|
-| `nihss` | NIHSS | 急性中風嚴重度 | Brott 1989 | 🟡 |
-| `hunt_hess` | Hunt & Hess Scale | SAH 分級 | Hunt & Hess 1968 | 🟡 |
-| `four_score` | FOUR Score | 細緻昏迷評估 (優於 GCS) | Wijdicks 2005 | 🟡 |
-| `abcd2_score` | ABCD² Score | TIA 後中風風險 | Johnston 2007 | 🟡 |
+### Streamable HTTP Transport (MCP 串流傳輸)
+
+> **Priority**: 🟢 LOW
+
+MCP SDK 支援的新傳輸方式，適合長時間連線場景：
+
+```python
+# Future: Streamable HTTP
+from mcp.server.fastmcp import FastMCP
+mcp = FastMCP("medical-calc")
+mcp.run(transport="streamable-http")
+```
 
 ---
 
-## 📋 Future Phases | 未來階段
+## 🧑‍💻 Developer Experience | 開發體驗
 
-### Phase: Infectious Disease (感染症)
+### Calculator CLI Generator (計算器產生器)
 
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `mascc_score` | MASCC Score | 嗜中性白血球低下發燒風險 | Klastersky 2000 |
-| `pitt_bacteremia` | Pitt Bacteremia Score | 菌血症預後 | Paterson 2004 |
-| `centor_score` | Centor/McIsaac Score | 咽炎抗生素決策 | Centor 1981 |
+> **Priority**: 🟡 MEDIUM
 
-### Phase: Common Utilities (通用工具)
+自動產生新計算器的腳手架工具：
 
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `bsa_calculation` | Body Surface Area | 化療/燒傷 | Du Bois 1916 |
-| `creatinine_clearance` | Creatinine Clearance (CG) | 藥物劑量調整 | Cockcroft-Gault 1976 |
-| `albumin_corrected_calcium` | Albumin-Corrected Ca | 真實血鈣評估 | Payne 1973 |
-| `parkland_formula` | Parkland Formula | 燒傷輸液計劃 | Baxter 1968 |
+```bash
+# Future CLI usage
+python -m medical_calc.cli new calculator \
+    --name "Bishop Score" \
+    --specialty obstetrics \
+    --reference "Bishop 1964"
 
-### Phase: Advanced Infrastructure
+# Generates:
+# - src/domain/services/calculators/bishop_score.py
+# - tests/test_bishop_score.py
+# - Updates __init__.py
+```
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| Streamable HTTP | MCP Streamable HTTP transport | 📋 Planned |
-| i18n (zh-TW) | 繁體中文完整支援 | 📋 Planned |
-| Calculator CLI | CLI scaffolding tool | 📋 Planned |
-| Cloud Deploy | GCP Cloud Run / AWS Lambda | 📋 Planned |
+### VS Code Extension (VS Code 擴充)
+
+> **Priority**: 🟢 LOW
+
+提供開發者更好的編輯體驗：
+
+| Feature | Description |
+|---------|-------------|
+| **Calculator Snippets** | 快速插入計算器模板 |
+| **Reference Lookup** | 快速查詢論文 PMID |
+| **Test Runner** | 一鍵執行單一計算器測試 |
+| **Validation Preview** | 即時預覽參數驗證 |
+
+### Documentation Site (文件網站)
+
+> **Priority**: 🟡 MEDIUM
+
+使用 MkDocs Material 建立文件網站：
+
+| Section | Content |
+|---------|---------|
+| **Getting Started** | 快速開始指南 |
+| **Calculator Reference** | 所有計算器 API 文件 |
+| **Clinical Workflows** | 臨床工作流程範例 |
+| **API Reference** | REST API 完整文件 |
+| **Contributing** | 貢獻者指南 |
+
+```bash
+# Future docs build
+pip install mkdocs-material
+mkdocs build
+mkdocs serve  # http://localhost:8000
+```
 
 ---
 
-## 🔧 Infrastructure Status | 基礎設施狀態
+## 🔧 Technical Debt | 技術債
 
-### ✅ Completed Infrastructure
+### Code Quality Issues (程式碼品質)
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| **Docker** | Python 3.11-slim container | ✅ Complete |
-| **SSE Transport** | Remote MCP via Server-Sent Events | ✅ Complete |
-| **REST API** | FastAPI with Swagger UI | ✅ Complete |
-| **docker-compose** | Multi-service orchestration | ✅ Complete |
+| Issue | Location | Status |
+|-------|----------|--------|
+| **Pydantic deprecation** | `api/server.py` | ✅ Fixed |
+| **Type hints incomplete** | Various | 📋 Add mypy --strict |
+| **Docstring inconsistency** | Some calculators | 📋 Standardize format |
+| **Test duplication** | test_*.py | 📋 Extract fixtures |
 
-### Deployment Options
+### Architecture Improvements (架構改進)
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  🚀 DEPLOYMENT OPTIONS                                  │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Option 1: Local (stdio)                                │
-│  └── python -m src.main --mode stdio                    │
-│                                                         │
-│  Option 2: Docker SSE                                   │
-│  └── docker-compose up medical-calc-mcp                 │
-│  └── Exposes: http://localhost:8000/                    │
-│                                                         │
-│  Option 3: Docker REST API                              │
-│  └── docker-compose up medical-calc-api                 │
-│  └── Swagger: http://localhost:8080/docs                │
-│                                                         │
-│  Option 4: Both Services                                │
-│  └── docker-compose up -d                               │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
+| Item | Current | Improved |
+|------|---------|----------|
+| **Result serialization** | Manual `asdict()` | Dedicated serializer |
+| **Error handling** | String messages | Error codes + i18n |
+| **Configuration** | Environment vars | Pydantic Settings |
+| **Dependency injection** | Manual | FastAPI Depends |
 
 ---
 
 ## 📅 Timeline | 時程規劃
 
 ```
-2025 Q4 (Completed ✅)
-├── Phase 9: ✅ Acid-Base Complete (6 calculators)
-├── Phase 10: ✅ High-Priority (3 calculators)
-├── Phase 11: ✅ Extended (7 calculators including SOFA-2)
-└── Infrastructure: ✅ Docker + SSE + REST API
+2025 Q4 (Current - DONE ✅)
+├── 51 Calculators complete
+├── Security audit complete  
+├── Docker + REST API + SSE complete
+└── 546 tests, 79% coverage
 
 2026 Q1 (Planned)
-├── Neurology Phase (4 calculators: NIHSS, Hunt-Hess, FOUR, ABCD²)
-├── Infectious Disease (3 calculators)
-└── Target: 49 calculators
+├── Phase 12: Neurology Extended (4 calculators)
+├── Phase 13: Infectious Disease (4 calculators)
+├── Rate Limiting + API Auth
+└── Target: 59 calculators
 
 2026 Q2 (Planned)
-├── Common Utilities (4 calculators)
-├── i18n Framework (zh-TW)
-└── Target: 53+ calculators
+├── Phase 14: Common Utilities (4 calculators)
+├── i18n Framework (zh-TW, zh-CN)
+├── Kubernetes templates
+├── Documentation site (MkDocs)
+└── Target: 63 calculators
 
-2026 Q3+ (Planned)
-├── Streamable HTTP Transport
-├── Cloud Deployment Templates
-└── Calculator CLI Generator
+2026 Q3 (Planned)
+├── Phase 15: Obstetrics & Pediatrics (4 calculators)
+├── Calculator CLI generator
+├── Cloud deployment templates
+├── Test coverage 90%+
+└── Target: 67+ calculators
 ```
 
 ---
 
 ## 📋 Priority Queue | 優先佇列
 
-### Next 8 Calculators to Implement
+### Immediate (Next Sprint) - Security First
 
-| Rank | Tool | Category | Clinical Reason |
-|------|------|----------|-----------------|
-| 1 | NIHSS | Neurology | 急性中風必用 |
-| 2 | Hunt-Hess | Neurology | SAH 標準分級 |
-| 3 | ABCD² | Neurology | TIA 風險評估 |
-| 4 | FOUR Score | Neurology | 優於 GCS 的昏迷評估 |
-| 5 | MASCC | Infectious | 發燒嗜中性低下風險 |
-| 6 | BSA | Utility | 化療劑量基礎 |
-| 7 | CrCl (CG) | Utility | 藥物劑量調整 |
-| 8 | Centor/McIsaac | Infectious | 咽炎抗生素決策 |
+| Rank | Item | Category | Effort |
+|------|------|----------|--------|
+| 1 | Rate Limiting | Security | S |
+| 2 | API Key Authentication | Security | M |
+| 3 | Structured Logging | Observability | S |
+| 4 | Hunt & Hess Calculator | Neurology | S |
+| 5 | Fisher Grade Calculator | Neurology | S |
 
----
+### Short-term (Next Month)
 
-## 🔗 References | 參考來源
+| Rank | Item | Category | Effort |
+|------|------|----------|--------|
+| 6 | FOUR Score Calculator | Neurology | M |
+| 7 | ICH Score Calculator | Neurology | S |
+| 8 | MASCC Score Calculator | Infectious | M |
+| 9 | i18n Framework | DX | L |
+| 10 | MkDocs Site | DX | M |
 
-| Source | Type | Usage |
-|--------|------|-------|
-| **JAMA** | Original Research | SOFA-2 (2025) |
-| **ESC Guidelines 2024** | Professional Guidelines | CHA₂DS₂-VA, HAS-BLED |
-| **IBCC (EMCrit)** | Free Online Resource | Acid-base, Critical Care |
-| **AHA/ACC Guidelines** | Professional Guidelines | Cardiology tools |
-| **SCCM** | Professional Society | ICU scoring systems |
-| **ARDSNet** | Clinical Trial Protocol | Ventilation parameters |
-| **KDIGO** | Clinical Practice Guidelines | Nephrology staging |
-| **Original Papers** | Primary Literature | All calculator validation |
+### Long-term (Next Quarter)
 
----
+| Rank | Item | Category | Effort |
+|------|------|----------|--------|
+| 11 | Kubernetes templates | Infra | M |
+| 12 | Calculator CLI generator | DX | L |
+| 13 | Prometheus metrics | Observability | M |
+| 14 | Load testing suite | Testing | M |
+| 15 | OpenTelemetry tracing | Observability | M |
 
-## 📝 Notes for Contributors
-
-1. **新增計算器前**請先查閱 [CONTRIBUTING.md](CONTRIBUTING.md)
-2. **每個計算器必須**引用原始論文 (PMID/DOI)
-3. **優先實作**高優先級工具
-4. **測試覆蓋**：每個計算器至少 5 個測試案例
-5. **驗證**：使用原始論文的範例數據驗證公式
-6. **Infrastructure**: Docker 和 REST API 已完成，可專注於新計算器
+**Effort Legend**: S = Small (1-2 days), M = Medium (3-5 days), L = Large (1-2 weeks)
 
 ---
 
-## 🏆 Achievement Summary | 成就總結
+## 🏆 Success Metrics | 成功指標
 
-| Milestone | Target | Achieved | Status |
-|-----------|--------|----------|--------|
-| Core Calculators | 30 | 42 | ✅ 140% |
-| MCP Tools | 30 | 48 | ✅ 160% |
-| Test Coverage | 70% | 79% | ✅ |
-| Docker Support | Yes | Yes | ✅ |
-| REST API | Yes | Yes | ✅ |
-| 2024/2025 Guidelines | 2 | 3 | ✅ |
+| Metric | Current | Target (2026 Q2) |
+|--------|---------|------------------|
+| Calculators | 51 | 63+ |
+| Test Coverage | 79% | 90%+ |
+| API Response Time (p95) | ~50ms | <100ms |
+| Documentation | README only | Full MkDocs site |
+| i18n Languages | 1 (EN) | 3 (EN, zh-TW, zh-CN) |
+| Production Deployments | 0 | 3+ (examples) |
+| Security Features | CORS only | Rate limit + Auth |
 
 ---
 
-*This roadmap is a living document and will be updated as development progresses.*
+## 🤝 Contributing | 貢獻
 
-*本路線圖為動態文件，將隨開發進度更新。*
+歡迎貢獻！請參閱 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+### Quick Contribution Ideas
+
+1. **🔐 Security** - 實作 Rate Limiting 或 API Auth
+2. **🧮 新計算器** - 從 Priority Queue 選擇一個
+3. **📝 文件** - 改善 README 或新增範例
+4. **🧪 測試** - 提高測試覆蓋率
+5. **🌐 翻譯** - 協助翻譯工具描述為中文
+6. **🐛 Bug 修復** - 查看 Issues 清單
+
+---
+
+*This roadmap focuses on future improvements. For completed features, see [README.md](README.md).*
+
+*本路線圖聚焦於未來改進。已完成功能請參閱 [README.md](README.md)。*
