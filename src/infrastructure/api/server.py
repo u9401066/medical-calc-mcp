@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 
 # Ensure project root is in path
 project_root = Path(__file__).parent.parent.parent.parent
@@ -200,7 +201,7 @@ async def list_calculators(
     
     return DiscoveryResponse(
         count=len(result.tools),
-        tools=[t.model_dump() for t in result.tools]
+        tools=[asdict(t) for t in result.tools]
     )
 
 
@@ -221,7 +222,7 @@ async def get_calculator_info(tool_id: str):
     if result.tool_detail is None:
         raise HTTPException(status_code=404, detail=f"Calculator '{tool_id}' not found")
     
-    return result.tool_detail.model_dump()
+    return asdict(result.tool_detail)
 
 
 @app.get("/api/v1/search", response_model=DiscoveryResponse, tags=["Discovery"])
@@ -237,12 +238,12 @@ async def search_calculators(
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
     
-    request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, keyword=q, limit=limit)
+    request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query=q, limit=limit)
     result = use_case.execute(request)
     
     return DiscoveryResponse(
         count=len(result.tools),
-        tools=[t.model_dump() for t in result.tools]
+        tools=[asdict(t) for t in result.tools]
     )
 
 
@@ -260,8 +261,8 @@ async def list_specialties():
     result = use_case.execute(request)
     
     return {
-        "specialties": result.specialties,
-        "count": len(result.specialties) if result.specialties else 0
+        "specialties": result.available_specialties,
+        "count": len(result.available_specialties) if result.available_specialties else 0
     }
 
 
@@ -283,7 +284,7 @@ async def list_by_specialty(
     
     return DiscoveryResponse(
         count=len(result.tools),
-        tools=[t.model_dump() for t in result.tools]
+        tools=[asdict(t) for t in result.tools]
     )
 
 
@@ -301,8 +302,8 @@ async def list_contexts():
     result = use_case.execute(request)
     
     return {
-        "contexts": result.contexts,
-        "count": len(result.contexts) if result.contexts else 0
+        "contexts": result.available_contexts,
+        "count": len(result.available_contexts) if result.available_contexts else 0
     }
 
 
@@ -341,13 +342,33 @@ async def calculate(tool_id: str, input_data: CalculatorInput):
         return CalculatorResponse(
             success=False,
             calculator=tool_id,
-            error=result.error_message
+            error=result.error
         )
+    
+    # Convert dataclass to dict, excluding success and error fields
+    result_dict = {
+        "tool_id": result.tool_id,
+        "score_name": result.score_name,
+        "value": result.result,
+        "unit": result.unit,
+    }
+    
+    if result.interpretation:
+        result_dict["interpretation"] = {
+            "summary": result.interpretation.summary,
+        }
+        if result.interpretation.severity:
+            result_dict["interpretation"]["severity"] = result.interpretation.severity
+        if result.interpretation.recommendation:
+            result_dict["interpretation"]["recommendation"] = result.interpretation.recommendation
+    
+    if result.component_scores:
+        result_dict["component_scores"] = result.component_scores
     
     return CalculatorResponse(
         success=True,
         calculator=tool_id,
-        result=result.model_dump(exclude={"success", "error_message"})
+        result=result_dict
     )
 
 
