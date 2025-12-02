@@ -109,6 +109,12 @@ from .pediatric_sofa import PediatricSOFACalculator
 from .pim3 import PIM3Calculator
 from .pediatric_gcs import PediatricGCSCalculator
 
+# Phase 16: Infectious Disease (Guideline-Recommended)
+from .mascc_score import MasccScoreCalculator
+from .pitt_bacteremia import PittBacteremiaCalculator
+from .centor_score import CentorScoreCalculator
+from .cpis import CpisCalculator
+
 
 __all__ = [
     # Nephrology
@@ -216,6 +222,12 @@ __all__ = [
     "PediatricSOFACalculator",
     "PIM3Calculator",
     "PediatricGCSCalculator",
+    
+    # Phase 16: Infectious Disease (Guideline-Recommended)
+    "MasccScoreCalculator",
+    "PittBacteremiaCalculator",
+    "CentorScoreCalculator",
+    "CpisCalculator",
 ]
 
 
@@ -303,4 +315,9 @@ CALCULATORS = [
     PediatricSOFACalculator,
     PIM3Calculator,
     PediatricGCSCalculator,
+    # Phase 16: Infectious Disease (Guideline-Recommended)
+    MasccScoreCalculator,
+    PittBacteremiaCalculator,
+    CentorScoreCalculator,
+    CpisCalculator,
 ]

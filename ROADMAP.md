@@ -275,13 +275,14 @@ mkdocs serve  # http://localhost:8000
 ├── Docker + REST API + SSE + HTTPS complete
 ├── GitHub Actions CI + Pre-commit hooks ✅
 ├── Phase 15: Pediatric Scores ✅ (APGAR, PEWS, pSOFA, PIM3, pGCS)
-└── 641 tests, 81% coverage
+├── Phase 16: Infectious Disease ✅ (MASCC, Pitt Bacteremia, Centor, CPIS)
+└── 666 tests, 81% coverage, 68 calculators
 
-2026 Q1 (Planned)
-├── Phase 16: Infectious Disease (4 calculators)
+2026 Q1 (In Progress)
+├── Phase 16: Infectious Disease ✅ COMPLETED
 ├── Rate Limiting + API Auth
 ├── Test coverage 85%+
-└── Target: 68 calculators
+└── Target: 68 calculators ✅ ACHIEVED
 
 2026 Q2 (Planned)
 ├── Phase 14: Common Utilities (4 calculators)

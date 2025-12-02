@@ -2,13 +2,8 @@
 
 ## Done
 
-- Phase 15 Pediatric Scores: APGAR Score (Apgar 1953)
-- Phase 15 Pediatric Scores: PEWS (Parshuram 2009)
-- Phase 15 Pediatric Scores: pSOFA (Matics 2017)
-- Phase 15 Pediatric Scores: PIM3 (Straney 2013)
-- Phase 15 Pediatric Scores: Pediatric GCS (Reilly 1988)
-- All 641 tests passing
-- README.md updated: 64 calculators, Pediatrics 9 tools
+- Phase 16: Infectious Disease Calculators - MASCC Score, Pitt Bacteremia, Centor Score, CPIS
+- All 666 tests passing, 68 calculators total
 
 ## Doing
 
@@ -16,6 +11,5 @@
 
 ## Next
 
-- Git commit Phase 15
-- Update ROADMAP.md
-- Consider Phase 16 if needed
+- Task 2: Improve test coverage for low-coverage modules (main.py, handlers, resources)
+- Rate Limiting + API Authentication
