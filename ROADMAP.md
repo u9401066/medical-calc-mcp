@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
-> **Last Updated**: 2025-12-01
-> **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 51 Calculators | 546 Tests | 79% Coverage
+> **Last Updated**: 2025-12-02
+> **Current Version**: v1.1.0 (Production Ready)
+> **Status**: 55 Calculators | 587 Tests | 79% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -68,18 +68,18 @@
 
 ## 🧮 New Calculators | 新計算器
 
-### Phase 12: Neurology Extended (神經科擴充)
+### Phase 12: Neurology Extended (神經科擴充) ✅ COMPLETED
 
-> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+> **Status**: ✅ DONE | **Completed**: 2025-12-02
 
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_hunt_hess` | Hunt & Hess Scale | SAH 分級預後 | Hunt & Hess 1968 |
-| `calculate_fisher_grade` | Fisher Grade | SAH CT 分級 | Fisher 1980 |
-| `calculate_four_score` | FOUR Score | 優於 GCS 的昏迷評估 | Wijdicks 2005 |
-| `calculate_ich_score` | ICH Score | 腦出血預後 | Hemphill 2001 |
+| Tool ID | Name | Purpose | Reference | Status |
+|---------|------|---------|-----------|--------|
+| `calculate_hunt_hess` | Hunt & Hess Scale | SAH 分級預後 | Hunt 1968 | ✅ Done |
+| `calculate_fisher_grade` | Fisher Grade | SAH CT 分級 (Original + Modified) | Fisher 1980, Frontera 2006 | ✅ Done |
+| `calculate_four_score` | FOUR Score | 優於 GCS 的昏迷評估 (E/M/B/R) | Wijdicks 2005 | ✅ Done |
+| `calculate_ich_score` | ICH Score | 腦出血 30 天死亡率預測 | Hemphill 2001 | ✅ Done |
 
-**已完成**: NIHSS ✅, ABCD2 ✅, mRS ✅
+**全部完成**: NIHSS ✅, ABCD2 ✅, mRS ✅, Hunt & Hess ✅, Fisher ✅, FOUR ✅, ICH ✅ (7 tools)
 
 ### Phase 13: Infectious Disease (感染症)
 
@@ -254,16 +254,17 @@ mkdocs serve  # http://localhost:8000
 
 ```
 2025 Q4 (Current - DONE ✅)
-├── 51 Calculators complete
+├── 55 Calculators complete (Phase 12 done!)
 ├── Security audit complete  
-├── Docker + REST API + SSE complete
-└── 546 tests, 79% coverage
+├── Docker + REST API + SSE + HTTPS complete
+├── Phase 12: Neurology Extended ✅ (Hunt & Hess, Fisher, FOUR, ICH)
+└── 587 tests, 79% coverage
 
 2026 Q1 (Planned)
-├── Phase 12: Neurology Extended (4 calculators)
 ├── Phase 13: Infectious Disease (4 calculators)
 ├── Rate Limiting + API Auth
-└── Target: 59 calculators
+├── Phase 14: Common Utilities (4 calculators)
+└── Target: 63 calculators
 
 2026 Q2 (Planned)
 ├── Phase 14: Common Utilities (4 calculators)
@@ -286,23 +287,23 @@ mkdocs serve  # http://localhost:8000
 
 ### Immediate (Next Sprint) - Security First
 
-| Rank | Item | Category | Effort |
-|------|------|----------|--------|
-| 1 | Rate Limiting | Security | S |
-| 2 | API Key Authentication | Security | M |
-| 3 | Structured Logging | Observability | S |
-| 4 | Hunt & Hess Calculator | Neurology | S |
-| 5 | Fisher Grade Calculator | Neurology | S |
+| Rank | Item | Category | Effort | Status |
+|------|------|----------|--------|--------|
+| 1 | Rate Limiting | Security | S | 📋 TODO |
+| 2 | API Key Authentication | Security | M | 📋 TODO |
+| 3 | Structured Logging | Observability | S | 📋 TODO |
+| 4 | Hunt & Hess Calculator | Neurology | S | ✅ Done |
+| 5 | Fisher Grade Calculator | Neurology | S | ✅ Done |
 
 ### Short-term (Next Month)
 
-| Rank | Item | Category | Effort |
-|------|------|----------|--------|
-| 6 | FOUR Score Calculator | Neurology | M |
-| 7 | ICH Score Calculator | Neurology | S |
-| 8 | MASCC Score Calculator | Infectious | M |
-| 9 | i18n Framework | DX | L |
-| 10 | MkDocs Site | DX | M |
+| Rank | Item | Category | Effort | Status |
+|------|------|----------|--------|--------|
+| 6 | FOUR Score Calculator | Neurology | M | ✅ Done |
+| 7 | ICH Score Calculator | Neurology | S | ✅ Done |
+| 8 | MASCC Score Calculator | Infectious | M | 📋 TODO |
+| 9 | i18n Framework | DX | L | 📋 TODO |
+| 10 | MkDocs Site | DX | M | 📋 TODO |
 
 ### Long-term (Next Quarter)
 
@@ -322,13 +323,13 @@ mkdocs serve  # http://localhost:8000
 
 | Metric | Current | Target (2026 Q2) |
 |--------|---------|------------------|
-| Calculators | 51 | 63+ |
+| Calculators | **55** | 63+ |
 | Test Coverage | 79% | 90%+ |
 | API Response Time (p95) | ~50ms | <100ms |
 | Documentation | README only | Full MkDocs site |
 | i18n Languages | 1 (EN) | 3 (EN, zh-TW, zh-CN) |
 | Production Deployments | 0 | 3+ (examples) |
-| Security Features | CORS only | Rate limit + Auth |
+| Security Features | CORS + HTTPS | Rate limit + Auth |
 
 ---
 
