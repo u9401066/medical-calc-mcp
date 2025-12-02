@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2025-12-02
 > **Current Version**: v1.1.0 (Production Ready)
-> **Status**: 55 Calculators | 587 Tests | 79% Coverage
+> **Status**: 59 Calculators | 613 Tests | 79% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -92,16 +92,18 @@
 | `calculate_centor` | Centor/McIsaac | 咽炎抗生素決策 | Centor 1981 |
 | `calculate_quick_cpis` | Clinical Pulmonary Infection Score | VAP 診斷輔助 | Pugin 1991 |
 
-### Phase 14: Common Utilities (通用工具)
+### ~~Phase 14: Common Utilities (通用工具)~~ ✅ COMPLETED
 
-> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q2
+> **Completed**: 2025-12-02 | **4/4 tools**
 
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_bsa` | Body Surface Area | 化療/燒傷計算 | Du Bois 1916, Mosteller |
-| `calculate_cockcroft_gault` | Creatinine Clearance | 藥物劑量調整 | Cockcroft-Gault 1976 |
-| `calculate_corrected_calcium` | Albumin-Corrected Ca | 真實血鈣評估 | Payne 1973 |
-| `calculate_parkland` | Parkland Formula | 燒傷輸液計劃 | Baxter 1968 |
+| Tool ID | Name | Purpose | Reference | Status |
+|---------|------|---------|-----------|--------|
+| `calculate_bsa` | Body Surface Area | 化療/燒傷計算 | Du Bois 1916, Mosteller | ✅ Done |
+| `calculate_cockcroft_gault` | Creatinine Clearance | 藥物劑量調整 | Cockcroft-Gault 1976 | ✅ Done |
+| `calculate_corrected_calcium` | Albumin-Corrected Ca | 真實血鈣評估 | Payne 1973 | ✅ Done |
+| `calculate_parkland_formula` | Parkland Formula | 燒傷輸液計劃 | Baxter 1968 | ✅ Done |
+
+**全部完成**: BSA ✅, Cockcroft-Gault ✅, Corrected Calcium ✅, Parkland ✅ (4 tools)
 
 ### Phase 15: Obstetrics & Pediatrics (婦產兒科)
 

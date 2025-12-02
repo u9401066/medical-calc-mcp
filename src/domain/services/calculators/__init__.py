@@ -96,6 +96,12 @@ from .fisher_grade import FisherGradeCalculator
 from .four_score import FourScoreCalculator
 from .ich_score import IchScoreCalculator
 
+# Phase 14: General Tools
+from .body_surface_area import BodySurfaceAreaCalculator
+from .cockcroft_gault import CockcroftGaultCalculator
+from .corrected_calcium import CorrectedCalciumCalculator
+from .parkland_formula import ParklandFormulaCalculator
+
 
 __all__ = [
     # Nephrology
@@ -190,6 +196,12 @@ __all__ = [
     "FisherGradeCalculator",
     "FourScoreCalculator",
     "IchScoreCalculator",
+    
+    # Phase 14: General Tools
+    "BodySurfaceAreaCalculator",
+    "CockcroftGaultCalculator",
+    "CorrectedCalciumCalculator",
+    "ParklandFormulaCalculator",
 ]
 
 
@@ -266,4 +278,9 @@ CALCULATORS = [
     FisherGradeCalculator,
     FourScoreCalculator,
     IchScoreCalculator,
+    # Phase 14: General Tools
+    BodySurfaceAreaCalculator,
+    CockcroftGaultCalculator,
+    CorrectedCalciumCalculator,
+    ParklandFormulaCalculator,
 ]

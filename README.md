@@ -1033,12 +1033,13 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🩸 Hematology | 1 | [→ Jump](#-hematology--血液科) |
 | 🧠 Neurology | 7 | [→ Jump](#-neurology--神經科) |
+| 🔬 General Tools | 4 | [→ Jump](#-general-tools--通用工具) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (55 tools)
+### Calculators | 計算器 (59 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -1136,6 +1137,17 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_fisher_grade` | Fisher Grade 🆕 | SAH CT grading for vasospasm prediction | Fisher 1980, Frontera 2006 |
 | `calculate_four_score` | FOUR Score 🆕 | Coma evaluation (E/M/B/R, 0-16) | Wijdicks 2005 |
 | `calculate_ich_score` | ICH Score 🆕 | Intracerebral hemorrhage 30-day mortality | Hemphill 2001 |
+
+[↑ Back to Navigation](#-quick-navigation--快速導覽)
+
+#### 🔬 General Tools | 通用工具
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_body_surface_area` | Body Surface Area 🆕 | BSA for chemo/burn/cardiac dosing | Du Bois 1916, Mosteller 1987 |
+| `calculate_cockcroft_gault` | Cockcroft-Gault CrCl 🆕 | Creatinine clearance for drug dosing | Cockcroft-Gault 1976 |
+| `calculate_corrected_calcium` | Corrected Calcium 🆕 | Albumin-corrected calcium | Payne 1973 |
+| `calculate_parkland_formula` | Parkland Formula 🆕 | Burn fluid resuscitation | Baxter 1968 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

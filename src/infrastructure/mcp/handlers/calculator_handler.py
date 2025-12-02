@@ -26,6 +26,7 @@ from .calculators import (
     register_acid_base_tools,
     register_hematology_tools,
     register_neurology_tools,
+    register_general_tools,
 )
 
 
@@ -96,3 +97,6 @@ class CalculatorHandler:
         
         # Neurology calculators
         register_neurology_tools(self._mcp, self._use_case)
+        
+        # General calculators (BSA, Cockcroft-Gault, Corrected Ca, Parkland)
+        register_general_tools(self._mcp, self._use_case)

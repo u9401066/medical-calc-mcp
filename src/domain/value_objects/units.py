@@ -34,6 +34,8 @@ class Unit(Enum):
     
     # Volume (for transfusion, MABL)
     ML = "mL"  # Milliliters
+    ML_24H = "mL/24h"  # Fluid volume over 24 hours
+    ML_H = "mL/h"  # Infusion rate
     
     # Mass (for drug dosing)
     MG = "mg"  # Milligrams
@@ -60,6 +62,7 @@ class Unit(Enum):
     # Other
     KG = "kg"
     KG_M2 = "kg/m²"  # BMI
+    M2 = "m²"  # Body surface area
     CM = "cm"
     M = "m"
     
