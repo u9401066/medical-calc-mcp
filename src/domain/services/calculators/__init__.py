@@ -90,6 +90,12 @@ from .timi_stemi import TimiStemiCalculator
 from .rockall_score import RockallScoreCalculator
 from .fib4_index import Fib4IndexCalculator
 
+# Phase 14: Extended Neurology (SAH & ICH)
+from .hunt_hess import HuntHessCalculator
+from .fisher_grade import FisherGradeCalculator
+from .four_score import FourScoreCalculator
+from .ich_score import IchScoreCalculator
+
 
 __all__ = [
     # Nephrology
@@ -178,6 +184,12 @@ __all__ = [
     "TimiStemiCalculator",
     "RockallScoreCalculator",
     "Fib4IndexCalculator",
+    
+    # Phase 14: Extended Neurology (SAH & ICH)
+    "HuntHessCalculator",
+    "FisherGradeCalculator",
+    "FourScoreCalculator",
+    "IchScoreCalculator",
 ]
 
 
@@ -249,4 +261,9 @@ CALCULATORS = [
     TimiStemiCalculator,
     RockallScoreCalculator,
     Fib4IndexCalculator,
+    # Phase 14: Extended Neurology (SAH & ICH)
+    HuntHessCalculator,
+    FisherGradeCalculator,
+    FourScoreCalculator,
+    IchScoreCalculator,
 ]

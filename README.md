@@ -1032,13 +1032,13 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 🟤 Hepatology | 4 | [→ Jump](#-hepatology--肝膽科) |
 | 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🩸 Hematology | 1 | [→ Jump](#-hematology--血液科) |
-| 🧠 Neurology | 4 | [→ Jump](#-neurology--神經科) |
+| 🧠 Neurology | 7 | [→ Jump](#-neurology--神經科) |
 | 🔍 Discovery Tools | 7 | [→ Jump](#-discovery-tools--探索工具) |
 | 📝 Prompts | 5 | [→ Jump](#-prompts--提示詞工作流程) |
 
 ---
 
-### Calculators | 計算器 (51 tools)
+### Calculators | 計算器 (55 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -1130,8 +1130,12 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_nihss` | NIHSS | NIH Stroke Scale - stroke severity | Brott 1989 |
-| `calculate_abcd2` | ABCD2 Score 🆕 | TIA 7-day stroke risk prediction | Johnston 2007 |
-| `calculate_modified_rankin_scale` | Modified Rankin Scale 🆕 | Post-stroke disability assessment | van Swieten 1988 |
+| `calculate_abcd2` | ABCD2 Score | TIA 7-day stroke risk prediction | Johnston 2007 |
+| `calculate_modified_rankin_scale` | Modified Rankin Scale | Post-stroke disability assessment | van Swieten 1988 |
+| `calculate_hunt_hess` | Hunt & Hess Scale 🆕 | SAH clinical grading for prognosis & surgical timing | Hunt & Hess 1968 |
+| `calculate_fisher_grade` | Fisher Grade 🆕 | SAH CT grading for vasospasm prediction | Fisher 1980, Frontera 2006 |
+| `calculate_four_score` | FOUR Score 🆕 | Coma evaluation (E/M/B/R, 0-16) | Wijdicks 2005 |
+| `calculate_ich_score` | ICH Score 🆕 | Intracerebral hemorrhage 30-day mortality | Hemphill 2001 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

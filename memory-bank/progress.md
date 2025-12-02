@@ -2,24 +2,18 @@
 
 ## Done
 
-- Security audit completed (CORS, dependencies, API fixes)
-- ROADMAP rewritten to focus on future improvements (2025-12)
-- MCP worker/scaling concepts researched and documented
-- HTTPS deployment implemented with Nginx reverse proxy
-- SSL certificate generation script created
-- Docker HTTPS deployment configured
-- Local HTTPS startup scripts created
-- README updated with detailed HTTPS documentation
-- DEPLOYMENT.md updated with HTTPS section and security features
+- HTTPS deployment with nginx + docker-compose
+- Phase 14 Neurology Calculators: Hunt & Hess, Fisher Grade, FOUR Score, ICH Score
+- Extended Specialty/ClinicalContext enums (NEUROSURGERY, RADIOLOGY, SURGICAL_PLANNING, etc.)
+- Added Unit.GRADE for clinical grading scales
+- 587 tests passing
 
 ## Doing
 
-
+- Git commit and push Phase 14 changes
 
 ## Next
 
-- Phase 12: Neurology expansion (mRS improvement, Hunt-Hess, Fisher scale)
-- Rate Limiting with Redis backend
-- API Authentication (API Key / OAuth2)
-- i18n support for multi-language
-- MkDocs documentation site
+- Implement prompts/workflows for neurology assessment
+- Consider adding more stroke assessment tools
+- Update pyproject.toml version if needed

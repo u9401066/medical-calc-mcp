@@ -20,6 +20,7 @@ class Unit(Enum):
     PERCENT = "%"
     SCORE = "points"
     RATIO = "ratio"
+    GRADE = "grade"  # Clinical grading (Hunt & Hess, Fisher, etc.)
     
     # Cardiovascular
     PERCENT_PER_YEAR = "%/year"  # Annual risk

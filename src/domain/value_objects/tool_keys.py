@@ -30,12 +30,14 @@ class Specialty(Enum):
     INTERNAL_MEDICINE = "internal_medicine"
     NEPHROLOGY = "nephrology"
     NEUROLOGY = "neurology"
+    NEUROSURGERY = "neurosurgery"  # 神經外科
     OBSTETRICS = "obstetrics"
     ONCOLOGY = "oncology"
     ORTHOPEDICS = "orthopedics"
     PEDIATRICS = "pediatrics"
     PSYCHIATRY = "psychiatry"
     PULMONOLOGY = "pulmonology"
+    RADIOLOGY = "radiology"  # 放射科
     RHEUMATOLOGY = "rheumatology"
     SURGERY = "surgery"
     TOXICOLOGY = "toxicology"
@@ -83,6 +85,11 @@ class ClinicalContext(Enum):
     NUTRITION_ASSESSMENT = "nutrition_assessment"  # 營養評估
     CARDIAC_ASSESSMENT = "cardiac_assessment"  # 心臟評估
     ICU_MANAGEMENT = "icu_management"  # ICU 管理
+    
+    # Neurosurgery / Stroke specific
+    SURGICAL_PLANNING = "surgical_planning"  # 手術規劃
+    HEMORRHAGE_ASSESSMENT = "hemorrhage_assessment"  # 出血評估
+    VASOSPASM_PREDICTION = "vasospasm_prediction"  # 血管痙攣預測
 
 
 @dataclass(frozen=True)
