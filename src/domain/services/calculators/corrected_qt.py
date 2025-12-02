@@ -281,7 +281,7 @@ class CorrectedQtCalculator(BaseCalculator):
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
             summary = f"Markedly prolonged QTc ({qtc:.0f} ms) - HIGH RISK"
-            detail = f"QTc >500 ms is associated with significantly increased risk of Torsades de Pointes and sudden cardiac death."
+            detail = "QTc >500 ms is associated with significantly increased risk of Torsades de Pointes and sudden cardiac death."
             recommendations = (
                 "STOP all QT-prolonging medications immediately",
                 "Continuous telemetry monitoring",

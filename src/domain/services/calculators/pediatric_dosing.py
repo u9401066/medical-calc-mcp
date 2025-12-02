@@ -205,7 +205,7 @@ class PediatricDosingCalculator(BaseCalculator):
             severity = Severity.NORMAL
         
         # Build interpretation
-        detail_info = {
+        {
             "drug_name": drug_display_name,
             "dose_per_kg": dose_per_kg,
             "weight_kg": weight_kg,

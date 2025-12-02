@@ -526,7 +526,7 @@ class ApacheIiCalculator(BaseCalculator):
                 "Consider palliative care consultation",
                 "Intensive monitoring and support",
             ])
-            warnings.append(f"Estimated mortality >50%")
+            warnings.append("Estimated mortality >50%")
         elif score >= 15:
             recommendations.extend([
                 "Aggressive treatment optimization",

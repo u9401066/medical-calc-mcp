@@ -228,7 +228,6 @@ class PfRatioCalculator(BaseCalculator):
             risk_level = RiskLevel.LOW
         
         # Check if ARDS criteria met
-        can_diagnose_ards = peep_adequate and pf_ratio <= 300
         
         if pf_ratio <= 300:
             if peep_adequate:

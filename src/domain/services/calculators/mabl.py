@@ -181,7 +181,6 @@ class MablCalculator(BaseCalculator):
         # Calculate or use provided EBV
         if estimated_blood_volume_ml is not None:
             ebv = estimated_blood_volume_ml
-            ebv_source = "provided"
         else:
             ebv_per_kg = get_ebv_per_kg(patient_type)
             if ebv_per_kg == 70 and patient_type.lower() not in EBV_ML_PER_KG:
@@ -190,7 +189,6 @@ class MablCalculator(BaseCalculator):
                     f"Available types: {list(EBV_ML_PER_KG.keys())}"
                 )
             ebv = weight_kg * ebv_per_kg
-            ebv_source = f"{ebv_per_kg} mL/kg × {weight_kg} kg"
         
         # Calculate MABL
         hi = initial_hematocrit

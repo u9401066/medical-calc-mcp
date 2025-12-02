@@ -228,7 +228,7 @@ Environment Variables:
         else:
             args.port = int(os.environ.get("MCP_PORT", "8000"))
     
-    logger.info(f"Medical Calculator Server starting...")
+    logger.info("Medical Calculator Server starting...")
     logger.info(f"Mode: {args.mode}")
     
     if args.mode == "stdio":

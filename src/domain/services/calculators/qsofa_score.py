@@ -283,9 +283,9 @@ class QsofaScoreCalculator(BaseCalculator):
         else:  # score == 0
             return Interpretation(
                 summary=f"qSOFA {score}/3: Negative - Low risk by this score",
-                detail=f"No qSOFA criteria met. Low risk for poor outcome by this score. "
-                       f"However, qSOFA has LOW SENSITIVITY and should not be used to rule "
-                       f"out sepsis. Clinical judgment and other assessment tools remain essential.",
+                detail="No qSOFA criteria met. Low risk for poor outcome by this score. "
+                       "However, qSOFA has LOW SENSITIVITY and should not be used to rule "
+                       "out sepsis. Clinical judgment and other assessment tools remain essential.",
                 severity=Severity.NORMAL,
                 stage=f"qSOFA {score}",
                 stage_description="No criteria met",

@@ -243,7 +243,7 @@ class PEWSCalculator(BaseCalculator):
             detail=(
                 f"Component scores: Behavior={behavior_score}, CV={cardiovascular_score}, "
                 f"Resp={respiratory_score}" +
-                (f", +2 for O2" if supplemental_oxygen else "") +
+                (", +2 for O2" if supplemental_oxygen else "") +
                 (f"\nVital sign concerns: {'; '.join(vs_context)}" if vs_context else "")
             ),
             recommendations=(f"{escalation}. {action}",)

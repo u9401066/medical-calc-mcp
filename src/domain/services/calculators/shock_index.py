@@ -285,7 +285,7 @@ class ShockIndexCalculator(BaseCalculator):
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
             summary = f"Borderline Shock Index ({si:.2f})"
-            detail = f"SI is at the upper limit of normal. May indicate early compensated shock."
+            detail = "SI is at the upper limit of normal. May indicate early compensated shock."
             recommendations = (
                 "Increase monitoring frequency",
                 "Assess for signs of hypoperfusion",

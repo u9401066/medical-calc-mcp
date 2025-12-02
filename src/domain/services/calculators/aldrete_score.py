@@ -313,7 +313,7 @@ class AldreteScoreCalculator(BaseCalculator):
             limiting_str = ", ".join(limiting_factors) if limiting_factors else "Unknown"
             return Interpretation(
                 summary=f"Continued Recovery Needed (Aldrete {score}/10)",
-                detail=f"Patient requires continued PACU monitoring. Multiple factors below optimal.",
+                detail="Patient requires continued PACU monitoring. Multiple factors below optimal.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Active Recovery",

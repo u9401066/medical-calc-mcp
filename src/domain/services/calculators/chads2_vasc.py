@@ -239,7 +239,6 @@ class Chads2VascCalculator(BaseCalculator):
                 "Lifestyle modifications for cardiovascular health",
                 "Annual reassessment of CHA₂DS₂-VASc score",
             ]
-            anticoagulation = "Not indicated"
             
         elif adjusted_score == 1:
             # Intermediate risk - consider anticoagulation
@@ -262,7 +261,6 @@ class Chads2VascCalculator(BaseCalculator):
                 "If anticoagulation chosen, DOAC is first-line",
                 "Address modifiable bleeding risk factors",
             ]
-            anticoagulation = "Consider (individualized decision)"
             
         else:
             # High risk - anticoagulation recommended
@@ -288,7 +286,6 @@ class Chads2VascCalculator(BaseCalculator):
             if score >= 6:
                 recommendations.append("Very high stroke risk - ensure compliance with anticoagulation")
             
-            anticoagulation = "Recommended"
         
         return Interpretation(
             summary=summary,

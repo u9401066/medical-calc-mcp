@@ -246,8 +246,8 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         if total <= 8:
             return Interpretation(
                 summary=f"GCS {total}: Severe brain injury / Coma",
-                detail=f"GCS ≤ 8 indicates coma. Patient cannot follow commands and has "
-                       f"severely impaired consciousness. Airway protection is typically required.",
+                detail="GCS ≤ 8 indicates coma. Patient cannot follow commands and has "
+                       "severely impaired consciousness. Airway protection is typically required.",
                 severity=Severity.CRITICAL,
                 stage="Severe",
                 stage_description="Severe brain injury / Coma",
@@ -274,8 +274,8 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         elif total <= 12:
             return Interpretation(
                 summary=f"GCS {total}: Moderate brain injury",
-                detail=f"GCS 9-12 indicates moderate brain injury. Patient may follow simple "
-                       f"commands but has impaired consciousness.",
+                detail="GCS 9-12 indicates moderate brain injury. Patient may follow simple "
+                       "commands but has impaired consciousness.",
                 severity=Severity.SEVERE,
                 stage="Moderate",
                 stage_description="Moderate brain injury",
@@ -300,8 +300,8 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         elif total <= 14:
             return Interpretation(
                 summary=f"GCS {total}: Mild brain injury",
-                detail=f"GCS 13-14 indicates mild brain injury. Patient is conscious but may "
-                       f"be confused or have minor neurological deficits.",
+                detail="GCS 13-14 indicates mild brain injury. Patient is conscious but may "
+                       "be confused or have minor neurological deficits.",
                 severity=Severity.MILD,
                 stage="Mild",
                 stage_description="Mild brain injury",
@@ -324,8 +324,8 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         else:  # GCS 15
             return Interpretation(
                 summary=f"GCS {total}: Normal consciousness",
-                detail=f"GCS 15 indicates normal level of consciousness. Patient is fully alert "
-                       f"and oriented with normal responses.",
+                detail="GCS 15 indicates normal level of consciousness. Patient is fully alert "
+                       "and oriented with normal responses.",
                 severity=Severity.NORMAL,
                 stage="Normal",
                 stage_description="Normal consciousness",

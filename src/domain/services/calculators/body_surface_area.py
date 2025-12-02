@@ -231,9 +231,9 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                     "boyd": "0.0003207 × H^0.3 × W^(0.7285-0.0188×logW) - Historical",
                 },
                 "typical_applications": {
-                    "chemotherapy_dosing": f"Most drugs dosed as mg/m²",
+                    "chemotherapy_dosing": "Most drugs dosed as mg/m²",
                     "cardiac_index": f"CI = CO / {round(primary_bsa, 2)} m²",
-                    "gfr_normalization": f"eGFR standardized to 1.73 m²",
+                    "gfr_normalization": "eGFR standardized to 1.73 m²",
                 },
             },
         )

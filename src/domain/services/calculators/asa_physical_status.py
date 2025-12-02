@@ -167,14 +167,6 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
         """Get clinical interpretation for ASA class"""
         
         # Approximate perioperative mortality rates
-        mortality_rates = {
-            1: 0.1,   # ~0.1%
-            2: 0.2,   # ~0.2%
-            3: 1.8,   # ~1.8%
-            4: 7.8,   # ~7.8%
-            5: 9.4,   # ~9.4%
-            6: 100.0  # Brain dead - organ donor
-        }
         
         if asa_class == 1:
             return Interpretation(

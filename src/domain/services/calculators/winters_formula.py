@@ -232,7 +232,7 @@ class WintersFormulaCalculator(BaseCalculator):
                 severity = Severity.MODERATE
                 risk_level = RiskLevel.INTERMEDIATE
                 summary = f"Concurrent RESPIRATORY ACIDOSIS (PaCO₂ {actual_paco2} > expected {expected_upper:.0f} mmHg)"
-                detail = f"PaCO₂ is higher than expected, indicating inadequate respiratory compensation. This represents a MIXED metabolic acidosis + respiratory acidosis."
+                detail = "PaCO₂ is higher than expected, indicating inadequate respiratory compensation. This represents a MIXED metabolic acidosis + respiratory acidosis."
                 recommendations = (
                     "Evaluate for cause of respiratory acidosis:",
                     "- Respiratory depression (opioids, sedatives)",
@@ -247,7 +247,7 @@ class WintersFormulaCalculator(BaseCalculator):
                 severity = Severity.MILD
                 risk_level = RiskLevel.LOW
                 summary = f"Concurrent RESPIRATORY ALKALOSIS (PaCO₂ {actual_paco2} < expected {expected_lower:.0f} mmHg)"
-                detail = f"PaCO₂ is lower than expected, indicating more hyperventilation than needed for compensation. This represents a MIXED metabolic acidosis + respiratory alkalosis."
+                detail = "PaCO₂ is lower than expected, indicating more hyperventilation than needed for compensation. This represents a MIXED metabolic acidosis + respiratory alkalosis."
                 recommendations = (
                     "Evaluate for cause of respiratory alkalosis:",
                     "- Pain or anxiety",

@@ -159,7 +159,7 @@ class RoxIndexCalculator(BaseCalculator):
         # ROX = (SpO2 / FiO2) / RR
         # SpO2 is in %, FiO2 as decimal would give SpO2/FiO2 in range 21-476
         # We use SpO2 as % and FiO2 as decimal (original formula)
-        spo2_fio2_ratio = spo2 / (fio2 * 100)  # Normalize to ratio
+        spo2 / (fio2 * 100)  # Normalize to ratio
         rox_index = (spo2 / fio2) / respiratory_rate
         rox_index = round(rox_index, 2)
         
@@ -210,19 +210,16 @@ class RoxIndexCalculator(BaseCalculator):
             risk_category = "Low risk"
             severity = Severity.NORMAL
             risk_level = RiskLevel.LOW
-            intubation_risk = "Low risk of HFNC failure"
             detail = "ROX ≥4.88 suggests HFNC is likely to succeed. Continue current therapy and monitor."
         elif rox_index >= 3.85:
             risk_category = "Intermediate risk"
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
-            intubation_risk = "Intermediate risk of HFNC failure"
             detail = "ROX 3.85-4.87 is indeterminate. Reassess frequently (every 1-2 hours). Consider escalation if not improving."
         else:
             risk_category = "High risk"
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
-            intubation_risk = "High risk of HFNC failure"
             detail = "ROX <3.85 suggests high risk of HFNC failure. Strongly consider intubation to avoid delayed intubation which worsens outcomes."
         
         summary = f"ROX Index {rox_index}: {risk_category} of HFNC failure"

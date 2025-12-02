@@ -262,7 +262,6 @@ class Chads2VaCalculator(BaseCalculator):
                 "定期重新評估CHA₂DS₂-VA分數",
                 "生活型態調整以降低心血管風險",
             ]
-            anticoagulation = "Not indicated (不需要)"
             
         elif score == 1:
             # Low risk - consider anticoagulation
@@ -290,7 +289,6 @@ class Chads2VaCalculator(BaseCalculator):
                 "若決定抗凝血，DOAC為首選",
                 "處理可改變的出血風險因子",
             ]
-            anticoagulation = "Consider (應考慮)"
             
         else:
             # Score ≥2: Anticoagulation recommended
@@ -331,7 +329,6 @@ class Chads2VaCalculator(BaseCalculator):
             if score >= 6:
                 recommendations.append("Very high risk - consider cardiology consultation")
             
-            anticoagulation = "Recommended (建議)"
         
         return Interpretation(
             summary=summary,

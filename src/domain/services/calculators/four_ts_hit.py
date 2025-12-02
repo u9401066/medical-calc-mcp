@@ -235,7 +235,6 @@ class FourTsHitCalculator(BaseCalculator):
         
         if score <= 3:
             probability = "Low (≤5%)"
-            hit_risk = "HIT unlikely"
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
             detail = "Low pretest probability. Negative predictive value ~99.8%. HIT testing generally not needed."
@@ -247,7 +246,6 @@ class FourTsHitCalculator(BaseCalculator):
             )
         elif score <= 5:
             probability = "Intermediate (10-30%)"
-            hit_risk = "HIT possible"
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
             detail = "Intermediate pretest probability. Send confirmatory HIT testing."
@@ -260,7 +258,6 @@ class FourTsHitCalculator(BaseCalculator):
             )
         else:  # 6-8
             probability = "High (40-80%)"
-            hit_risk = "HIT likely"
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
             detail = "High pretest probability. Treat as HIT until proven otherwise."

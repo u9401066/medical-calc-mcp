@@ -260,7 +260,7 @@ class TransfusionCalculator(BaseCalculator):
         units_needed = volume_needed / volume_per_unit
         
         # Pediatric rule of thumb check: 10-15 mL/kg raises Hgb ~2-3 g/dL
-        expected_hgb_rise = (volume_needed / weight_kg) / 5  # ~5 mL/kg per 1 g/dL
+        (volume_needed / weight_kg) / 5  # ~5 mL/kg per 1 g/dL
         
         warnings = []
         if volume_needed > 2000:
@@ -269,8 +269,8 @@ class TransfusionCalculator(BaseCalculator):
             warnings.append("Volume >20 mL/kg in small infant: transfuse slowly, monitor for overload")
         
         # Convert Hct to Hgb for display
-        current_hgb = current_hematocrit / 3
-        target_hgb = target_hematocrit / 3
+        current_hematocrit / 3
+        target_hematocrit / 3
         
         interpretation = Interpretation(
             summary=f"Transfuse {volume_needed:.0f} mL {product['name']} (~{units_needed:.1f} units)",
@@ -327,7 +327,7 @@ class TransfusionCalculator(BaseCalculator):
         
         # Get EBV using helper function
         ebv_per_kg = get_ebv_per_kg(patient_type, default=70)
-        ebv = weight_kg * ebv_per_kg
+        weight_kg * ebv_per_kg
         
         # Calculate platelet increment needed
         plt_deficit = target_platelet - current_platelet

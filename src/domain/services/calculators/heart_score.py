@@ -216,7 +216,6 @@ class HeartScoreCalculator(BaseCalculator):
                 "Assess ability to follow up reliably",
                 "Provide nitroglycerin if indicated",
             ]
-            disposition = "Consider early discharge"
             
         elif score <= 6:
             # Moderate risk
@@ -241,7 +240,6 @@ class HeartScoreCalculator(BaseCalculator):
                 "Echocardiogram if not recently performed",
                 "Risk factor modification counseling",
             ]
-            disposition = "Admit for observation"
             
         else:
             # High risk (score 7-10)
@@ -265,7 +263,6 @@ class HeartScoreCalculator(BaseCalculator):
                 "Continuous telemetry monitoring",
                 "Assess for hemodynamic instability",
             ]
-            disposition = "Admit - Early invasive strategy"
         
         return Interpretation(
             summary=summary,
