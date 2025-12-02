@@ -27,6 +27,7 @@ from .calculators import (
     register_hematology_tools,
     register_neurology_tools,
     register_general_tools,
+    register_pediatric_score_tools,
 )
 
 
@@ -100,3 +101,6 @@ class CalculatorHandler:
         
         # General calculators (BSA, Cockcroft-Gault, Corrected Ca, Parkland)
         register_general_tools(self._mcp, self._use_case)
+        
+        # Pediatric Score calculators (APGAR, PEWS, pSOFA, PIM3, Pediatric GCS)
+        register_pediatric_score_tools(self._mcp)

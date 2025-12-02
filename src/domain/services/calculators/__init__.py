@@ -102,6 +102,13 @@ from .cockcroft_gault import CockcroftGaultCalculator
 from .corrected_calcium import CorrectedCalciumCalculator
 from .parkland_formula import ParklandFormulaCalculator
 
+# Phase 15: Pediatric Scores (Guideline-Recommended)
+from .apgar_score import APGARScoreCalculator
+from .pews import PEWSCalculator
+from .pediatric_sofa import PediatricSOFACalculator
+from .pim3 import PIM3Calculator
+from .pediatric_gcs import PediatricGCSCalculator
+
 
 __all__ = [
     # Nephrology
@@ -202,6 +209,13 @@ __all__ = [
     "CockcroftGaultCalculator",
     "CorrectedCalciumCalculator",
     "ParklandFormulaCalculator",
+    
+    # Phase 15: Pediatric Scores (Guideline-Recommended)
+    "APGARScoreCalculator",
+    "PEWSCalculator",
+    "PediatricSOFACalculator",
+    "PIM3Calculator",
+    "PediatricGCSCalculator",
 ]
 
 
@@ -283,4 +297,10 @@ CALCULATORS = [
     CockcroftGaultCalculator,
     CorrectedCalciumCalculator,
     ParklandFormulaCalculator,
+    # Phase 15: Pediatric Scores (Guideline-Recommended)
+    APGARScoreCalculator,
+    PEWSCalculator,
+    PediatricSOFACalculator,
+    PIM3Calculator,
+    PediatricGCSCalculator,
 ]

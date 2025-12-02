@@ -28,9 +28,11 @@ class Specialty(Enum):
     HEPATOLOGY = "hepatology"
     INFECTIOUS_DISEASE = "infectious_disease"
     INTERNAL_MEDICINE = "internal_medicine"
+    NEONATOLOGY = "neonatology"  # 新生兒科
     NEPHROLOGY = "nephrology"
     NEUROLOGY = "neurology"
     NEUROSURGERY = "neurosurgery"  # 神經外科
+    NURSING = "nursing"  # 護理
     OBSTETRICS = "obstetrics"
     ONCOLOGY = "oncology"
     ORTHOPEDICS = "orthopedics"
@@ -41,12 +43,14 @@ class Specialty(Enum):
     RHEUMATOLOGY = "rheumatology"
     SURGERY = "surgery"
     TOXICOLOGY = "toxicology"
+    TRAUMA = "trauma"  # 創傷科
     
     # Subspecialties
     PAIN_MEDICINE = "pain_medicine"  # 疼痛醫學
     CARDIAC_ANESTHESIA = "cardiac_anesthesia"  # 心臟麻醉
     NEUROANESTHESIA = "neuroanesthesia"  # 神經麻醉
     PEDIATRIC_ANESTHESIA = "pediatric_anesthesia"  # 小兒麻醉
+    PEDIATRIC_CRITICAL_CARE = "pediatric_critical_care"  # 兒童重症
     OBSTETRIC_ANESTHESIA = "obstetric_anesthesia"  # 產科麻醉
     REGIONAL_ANESTHESIA = "regional_anesthesia"  # 區域麻醉
     
@@ -90,6 +94,14 @@ class ClinicalContext(Enum):
     SURGICAL_PLANNING = "surgical_planning"  # 手術規劃
     HEMORRHAGE_ASSESSMENT = "hemorrhage_assessment"  # 出血評估
     VASOSPASM_PREDICTION = "vasospasm_prediction"  # 血管痙攣預測
+    
+    # Pediatric specific
+    RESUSCITATION = "resuscitation"  # 復甦
+    NEUROLOGICAL_ASSESSMENT = "neurological_assessment"  # 神經評估
+    TRAUMA_ASSESSMENT = "trauma_assessment"  # 創傷評估
+    ICU_ASSESSMENT = "icu_assessment"  # ICU 評估
+    SEPSIS_EVALUATION = "sepsis_evaluation"  # 敗血症評估
+    QUALITY_IMPROVEMENT = "quality_improvement"  # 品質改善
 
 
 @dataclass(frozen=True)

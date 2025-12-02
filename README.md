@@ -1012,9 +1012,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 58 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 63 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 51 Calculators | 518 Tests | 80% Coverage | Phase 13 Complete ✅
+> **Current Stats**: 64 Calculators | 641 Tests | 80% Coverage | Phase 15 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -1024,7 +1024,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 |-----------|-------|---------|
 | 🏥 Anesthesiology / Preoperative | 9 | [→ Jump](#-anesthesiology--preoperative--麻醉科--術前評估) |
 | 🩺 Critical Care / ICU | 8 | [→ Jump](#-critical-care--icu--重症加護) |
-| 👶 Pediatrics | 1 | [→ Jump](#-pediatrics--小兒科) |
+| 👶 Pediatrics | 9 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
 | 🫁 Pulmonology | 5 | [→ Jump](#-pulmonology--胸腔科) |
 | ❤️ Cardiology | 9 | [→ Jump](#-cardiology--心臟科) |
@@ -1078,7 +1078,15 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
+| `calculate_apgar_score` | APGAR Score 🆕 | Newborn assessment (1, 5, 10 min) | Apgar 1953, AAP 2015 |
+| `calculate_pews` | PEWS 🆕 | Pediatric Early Warning Score | Parshuram 2009 |
+| `calculate_pediatric_sofa` | pSOFA 🆕 | Pediatric organ dysfunction (sepsis) | Matics 2017 |
+| `calculate_pim3` | PIM3 🆕 | PICU mortality prediction | Straney 2013 |
+| `calculate_pediatric_gcs` | Pediatric GCS 🆕 | Age-adapted consciousness scale | Reilly 1988 |
 | `calculate_pediatric_drug_dose` | Pediatric Dosing | Weight-based drug dosing | Lexicomp, Anderson 2017 |
+| `calculate_mabl` | MABL | Maximum allowable blood loss | Miller's Anesthesia |
+| `calculate_transfusion_volume` | Transfusion Volume | Blood product volume calculation | AABB |
+| `calculate_body_surface_area` | BSA | Body Surface Area (Mosteller) | Mosteller 1987 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

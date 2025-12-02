@@ -2,18 +2,20 @@
 
 ## Done
 
-- HTTPS deployment with nginx + docker-compose
-- Phase 14 Neurology Calculators: Hunt & Hess, Fisher Grade, FOUR Score, ICH Score
-- Extended Specialty/ClinicalContext enums (NEUROSURGERY, RADIOLOGY, SURGICAL_PLANNING, etc.)
-- Added Unit.GRADE for clinical grading scales
-- 587 tests passing
+- Phase 15 Pediatric Scores: APGAR Score (Apgar 1953)
+- Phase 15 Pediatric Scores: PEWS (Parshuram 2009)
+- Phase 15 Pediatric Scores: pSOFA (Matics 2017)
+- Phase 15 Pediatric Scores: PIM3 (Straney 2013)
+- Phase 15 Pediatric Scores: Pediatric GCS (Reilly 1988)
+- All 641 tests passing
+- README.md updated: 64 calculators, Pediatrics 9 tools
 
 ## Doing
 
-- Git commit and push Phase 14 changes
+
 
 ## Next
 
-- Implement prompts/workflows for neurology assessment
-- Consider adding more stroke assessment tools
-- Update pyproject.toml version if needed
+- Git commit Phase 15
+- Update ROADMAP.md
+- Consider Phase 16 if needed

@@ -18,6 +18,7 @@ from .acid_base import register_acid_base_tools
 from .hematology import register_hematology_tools
 from .neurology import register_neurology_tools
 from .general import register_general_tools
+from .pediatric_scores import register_pediatric_score_tools
 
 __all__ = [
     "register_nephrology_tools",
@@ -33,4 +34,5 @@ __all__ = [
     "register_hematology_tools",
     "register_neurology_tools",
     "register_general_tools",
+    "register_pediatric_score_tools",
 ]
