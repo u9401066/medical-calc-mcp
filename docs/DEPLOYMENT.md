@@ -13,6 +13,7 @@ This guide explains how to deploy the Medical Calculator MCP Server as a standal
 - [Mode 2: MCP SSE (Remote MCP Server)](#-mode-2-mcp-sse-remote-mcp-server)
 - [Mode 3: MCP stdio (Local Integration)](#-mode-3-mcp-stdio-local-integration)
 - [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署)
+- [HTTPS Deployment | HTTPS 部署](#-https-deployment--https-部署) 🔒 NEW
 - [Cloud Deployment | 雲端部署](#-cloud-deployment--雲端部署)
 - [Agent Integration Examples | Agent 整合範例](#-agent-integration-examples--agent-整合範例)
 - [Security Considerations | 安全考量](#-security-considerations--安全考量)
@@ -23,18 +24,18 @@ This guide explains how to deploy the Medical Calculator MCP Server as a standal
 ## 🎯 Deployment Modes Overview | 部署模式總覽
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        Deployment Options                            │
-├─────────────────┬─────────────────┬─────────────────────────────────┤
-│   REST API      │   MCP SSE       │   MCP stdio                     │
-│   (Port 8080)   │   (Port 8000)   │   (Local)                       │
-├─────────────────┼─────────────────┼─────────────────────────────────┤
-│ ✅ Any HTTP     │ ✅ MCP Clients  │ ✅ Claude Desktop               │
-│    client       │    (remote)     │ ✅ VS Code Copilot              │
-│ ✅ Custom Agent │ ✅ Docker/Cloud │ ✅ MCP Inspector                │
-│ ✅ Web Apps     │                 │                                 │
-│ ✅ Scripts      │                 │                                 │
-└─────────────────┴─────────────────┴─────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           Deployment Options                                  │
+├─────────────────┬─────────────────┬─────────────────┬────────────────────────┤
+│   REST API      │   MCP SSE       │   MCP stdio     │   HTTPS (Production)   │
+│   (Port 8080)   │   (Port 8000)   │   (Local)       │   (Nginx + TLS)        │
+├─────────────────┼─────────────────┼─────────────────┼────────────────────────┤
+│ ✅ Any HTTP     │ ✅ MCP Clients  │ ✅ Claude       │ ✅ Production deploy   │
+│    client       │    (remote)     │    Desktop      │ ✅ Secure connections  │
+│ ✅ Custom Agent │ ✅ Docker/Cloud │ ✅ VS Code      │ ✅ Rate limiting       │
+│ ✅ Web Apps     │                 │    Copilot      │ ✅ TLS 1.2/1.3         │
+│ ✅ Scripts      │                 │                 │                        │
+└─────────────────┴─────────────────┴─────────────────┴────────────────────────┘
 ```
 
 | Mode | Protocol | Port | Best For |
@@ -42,6 +43,7 @@ This guide explains how to deploy the Medical Calculator MCP Server as a standal
 | **api** | HTTP REST | 8080 | Custom agents, web apps, any HTTP client |
 | **sse** | MCP over SSE | 8000 | Remote MCP clients, Docker deployment |
 | **stdio** | MCP stdio | - | Local Claude Desktop, VS Code Copilot |
+| **https** | HTTPS (Nginx) | 443/8443 | Production with TLS encryption 🔒 |
 
 ---
 
@@ -253,6 +255,119 @@ docker run -d -p 8080:8080 --name mcp-api \
 | `API_PORT` | `8080` | REST API 埠號 |
 | `LOG_LEVEL` | `INFO` | 日誌級別 |
 | `DEBUG` | `false` | 除錯模式 |
+
+---
+
+## 🔒 HTTPS Deployment | HTTPS 部署
+
+為生產環境提供安全的 HTTPS 連線，使用 Nginx 反向代理處理 TLS 終止。
+
+Secure HTTPS connections for production using Nginx reverse proxy for TLS termination.
+
+### Architecture | 架構
+
+```
+                    HTTPS (TLS 1.2/1.3)
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────┐
+│              Nginx Reverse Proxy                     │
+│  ┌────────────────────────────────────────────────┐ │
+│  │ • TLS Termination (SSL Certificates)           │ │
+│  │ • Rate Limiting (30/60 req/s)                  │ │
+│  │ • Security Headers (XSS, CSRF protection)      │ │
+│  │ • SSE Optimization (24h timeout, no buffer)    │ │
+│  └────────────────────────────────────────────────┘ │
+└───────────────────┬─────────────────┬───────────────┘
+                    │ HTTP            │ HTTP
+                    ▼                 ▼
+         ┌──────────────────┐ ┌──────────────────┐
+         │  MCP SSE Server  │ │  REST API Server │
+         │   (Port 8000)    │ │   (Port 8080)    │
+         └──────────────────┘ └──────────────────┘
+```
+
+### Quick Start | 快速開始
+
+```bash
+# 1. 生成 SSL 憑證 (自簽，供開發使用)
+./scripts/generate-ssl-certs.sh
+
+# 2. 啟動 HTTPS 服務 (Docker)
+./scripts/start-https-docker.sh up
+
+# 或本地啟動 (不使用 Docker)
+./scripts/start-https-local.sh
+```
+
+### HTTPS Endpoints | HTTPS 端點
+
+**Docker Deployment:**
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| MCP SSE | `https://localhost/` | MCP Server-Sent Events |
+| MCP SSE | `https://localhost/sse` | SSE connection |
+| REST API | `https://localhost:8443/` | REST API root |
+| Swagger UI | `https://localhost:8443/docs` | API documentation |
+
+**Local Development:**
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| MCP SSE | `https://localhost:8443/` | MCP Server |
+| REST API | `https://localhost:9443/` | REST API |
+
+### Claude Desktop Configuration (HTTPS)
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "url": "https://localhost/sse"
+    }
+  }
+}
+```
+
+### Production with Let's Encrypt
+
+```bash
+# 1. 編輯 nginx/nginx.conf，取消註解：
+ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+
+# 2. 使用 certbot 獲取憑證
+sudo certbot certonly --webroot -w /var/www/certbot \
+  -d your-domain.com -d api.your-domain.com
+
+# 3. 啟動服務
+docker-compose -f docker-compose.https.yml up -d
+```
+
+### Trust Self-Signed Certificates | 信任自簽憑證
+
+```bash
+# Linux (Ubuntu/Debian)
+sudo cp nginx/ssl/ca.crt /usr/local/share/ca-certificates/medical-calc-dev.crt
+sudo update-ca-certificates
+
+# macOS
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain nginx/ssl/ca.crt
+```
+
+### Files | 相關檔案
+
+| File | Description |
+|------|-------------|
+| `nginx/nginx.conf` | Nginx HTTPS 配置 |
+| `docker-compose.https.yml` | Docker HTTPS 編排 |
+| `scripts/generate-ssl-certs.sh` | SSL 憑證生成 |
+| `scripts/start-https-docker.sh` | Docker HTTPS 啟動 |
+| `scripts/start-https-local.sh` | 本地 HTTPS 啟動 |
+
+> 📖 更多詳細說明請參考 [README.md HTTPS Deployment](../README.md#-https-deployment--https-部署--new)
 
 ---
 
@@ -495,32 +610,61 @@ response = openai.ChatCompletion.create(
 
 ## 🔐 Security Considerations | 安全考量
 
+### Security Features | 安全特性
+
+本專案已實施多層安全機制：
+
+| Layer | Feature | Status |
+|-------|---------|--------|
+| **HTTPS** | TLS 1.2/1.3 encryption | ✅ Implemented |
+| **Rate Limiting** | Nginx: 30 req/s API, 60 req/s MCP | ✅ Implemented |
+| **Security Headers** | X-Frame-Options, X-Content-Type-Options, X-XSS-Protection | ✅ Implemented |
+| **Input Validation** | 3-layer: Pydantic → ParameterValidator → Domain | ✅ Implemented |
+| **CORS** | Configurable origins via environment variable | ✅ Implemented |
+| **No Database** | Stateless, in-memory only | ✅ No SQL injection |
+
 ### Production Recommendations
 
-1. **使用 HTTPS**: 在生產環境中使用 TLS/SSL
-2. **API 認證**: 考慮加入 API Key 或 OAuth2
-3. **速率限制**: 防止濫用
-4. **輸入驗證**: 伺服器已包含三層驗證
-5. **日誌審計**: 記錄所有計算請求
+| Item | Recommendation | How |
+|------|----------------|-----|
+| **HTTPS** | ✅ Use provided Nginx + SSL | `./scripts/start-https-docker.sh up` |
+| **Certificates** | Use Let's Encrypt for production | See HTTPS Deployment section |
+| **CORS** | Restrict origins | `CORS_ORIGINS="https://your-app.com"` |
+| **Authentication** | Add API Key or OAuth2 if needed | Nginx or application layer |
+| **Network** | Run in private VPC | Cloud provider configuration |
+| **Monitoring** | Enable access logging | Already configured in Nginx |
+
+### Example: Adding API Key Authentication
+
+```nginx
+# In nginx/nginx.conf, add to location blocks:
+location /api/ {
+    # Check for API key header
+    if ($http_x_api_key != "your-secret-key") {
+        return 401;
+    }
+    
+    proxy_pass http://api_backend/;
+    # ... other settings
+}
+```
 
 ### Example: Adding Basic Auth with Nginx
 
+```bash
+# Create password file
+sudo htpasswd -c /etc/nginx/.htpasswd admin
+```
+
 ```nginx
-server {
-    listen 443 ssl;
-    server_name your-domain.com;
+# In nginx/nginx.conf:
+location / {
+    auth_basic "Medical Calculator API";
+    auth_basic_user_file /etc/nginx/.htpasswd;
     
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-    
-    location / {
-        auth_basic "Medical Calculator API";
-        auth_basic_user_file /etc/nginx/.htpasswd;
-        
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+    proxy_pass http://localhost:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
 }
 ```
 

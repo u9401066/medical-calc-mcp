@@ -10,6 +10,7 @@
 - Docker HTTPS deployment configured
 - Local HTTPS startup scripts created
 - README updated with detailed HTTPS documentation
+- DEPLOYMENT.md updated with HTTPS section and security features
 
 ## Doing
 
