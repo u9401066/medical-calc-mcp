@@ -541,11 +541,76 @@ This project implements multiple security layers:
 
 | Layer | Feature | Description |
 |-------|---------|-------------|
+| **HTTPS** | TLS encryption | All traffic encrypted (see below) |
 | **Input Validation** | 3-layer validation | Pydantic → ParameterValidator → Domain rules |
 | **CORS** | Configurable origins | Environment variable controlled |
+| **Rate Limiting** | Nginx rate limits | 30 req/s API, 60 req/s MCP |
 | **Dependencies** | Vulnerability scanning | pip-audit integrated |
 | **No Database** | In-memory only | No SQL injection risk |
 | **No Secrets** | Stateless | No credentials stored |
+
+### 🔒 HTTPS Deployment | HTTPS 部署
+
+All services support HTTPS for secure communication:
+
+所有服務都支援 HTTPS 以確保安全通訊：
+
+#### Option 1: Docker with Nginx (Recommended for Production)
+
+```bash
+# 1. Generate SSL certificates | 生成 SSL 憑證
+chmod +x scripts/generate-ssl-certs.sh
+./scripts/generate-ssl-certs.sh
+
+# 2. Start HTTPS services | 啟動 HTTPS 服務
+./scripts/start-https-docker.sh up
+
+# Endpoints:
+#   MCP SSE:  https://localhost/
+#   REST API: https://localhost:8443/
+#   API Docs: https://localhost:8443/docs
+```
+
+#### Option 2: Local Development (No Docker)
+
+```bash
+# 1. Generate SSL certificates | 生成 SSL 憑證
+./scripts/generate-ssl-certs.sh
+
+# 2. Start HTTPS services directly | 直接啟動 HTTPS 服務
+./scripts/start-https-local.sh
+
+# Endpoints:
+#   MCP SSE:  https://localhost:8443/
+#   REST API: https://localhost:9443/
+```
+
+#### Option 3: Production with Let's Encrypt
+
+Edit `nginx/nginx.conf` to use Let's Encrypt certificates:
+
+```nginx
+# In nginx/nginx.conf, uncomment these lines:
+ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+```
+
+#### Trust Self-Signed Certificates | 信任自簽憑證
+
+To avoid browser warnings during development:
+
+```bash
+# Linux (Ubuntu/Debian)
+sudo cp nginx/ssl/ca.crt /usr/local/share/ca-certificates/medical-calc-dev.crt
+sudo update-ca-certificates
+
+# macOS
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain nginx/ssl/ca.crt
+
+# Windows
+# Double-click ca.crt → Install Certificate → Local Machine → Trusted Root CAs
+```
 
 ### Configuration | 設定
 
@@ -577,11 +642,12 @@ MCP_PORT=8000
 
 | Item | Recommendation | 建議 |
 |------|----------------|------|
+| **HTTPS** | ✅ Use provided Nginx + SSL config | 使用提供的 Nginx + SSL 配置 |
 | **CORS** | Set specific `CORS_ORIGINS` | 設定特定 `CORS_ORIGINS` |
-| **HTTPS** | Use reverse proxy (nginx/Caddy) with TLS | 使用反向代理搭配 TLS |
-| **Rate Limiting** | Add rate limiting at proxy level | 在代理層添加速率限制 |
+| **Rate Limiting** | ✅ Nginx configured (30/60 req/s) | Nginx 已配置 |
 | **Authentication** | Add API key or OAuth2 if needed | 如需要可加入 API key 或 OAuth2 |
 | **Network** | Run in private network/VPC | 在私有網路/VPC 中執行 |
+| **Certificates** | Use Let's Encrypt for production | 生產環境使用 Let's Encrypt |
 | **Monitoring** | Enable access logging | 啟用存取日誌 |
 
 ### Dependency Security | 依賴安全

@@ -57,3 +57,8 @@ Thumbs.db
 # Project specific
 references/*.pdf
 *.log
+
+# SSL certificates (sensitive!)
+nginx/ssl/*.key
+nginx/ssl/*.crt
+nginx/ssl/ca.*

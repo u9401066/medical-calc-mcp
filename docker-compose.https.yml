@@ -1,0 +1,117 @@
+# docker-compose.https.yml
+# =============================================================================
+# HTTPS deployment with Nginx reverse proxy
+# =============================================================================
+#
+# 使用方式：
+#   1. 生成 SSL 憑證：./scripts/generate-ssl-certs.sh
+#   2. 啟動服務：docker-compose -f docker-compose.https.yml up -d
+#
+# 端口：
+#   - https://localhost/      → MCP SSE (443)
+#   - https://localhost:8443/ → REST API (8443)
+#
+# 生產環境請修改 nginx/nginx.conf 使用 Let's Encrypt 憑證
+# =============================================================================
+
+services:
+  # Nginx Reverse Proxy with SSL
+  nginx:
+    image: nginx:alpine
+    container_name: medical-calc-nginx
+    ports:
+      - "80:80"       # HTTP (redirect to HTTPS)
+      - "443:443"     # HTTPS - MCP SSE
+      - "8443:8443"   # HTTPS - REST API
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      medical-calc-mcp:
+        condition: service_healthy
+      medical-calc-api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - medical-calc-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # MCP Server (SSE mode) - Internal only
+  medical-calc-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medical-calc-mcp
+    expose:
+      - "8000"
+    environment:
+      - MCP_MODE=sse
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8000
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - medical-calc-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REST API Server - Internal only
+  medical-calc-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medical-calc-api
+    expose:
+      - "8080"
+    environment:
+      - MCP_MODE=api
+      - MCP_HOST=0.0.0.0
+      - API_PORT=8080
+      - LOG_LEVEL=INFO
+    command: ["python", "src/main.py", "--mode", "api", "--host", "0.0.0.0", "--port", "8080"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - medical-calc-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  medical-calc-network:
+    driver: bridge
