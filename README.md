@@ -7,7 +7,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
+[![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-architecture--架構)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
@@ -1014,7 +1015,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 63 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 64 Calculators | 641 Tests | 80% Coverage | Phase 15 Complete ✅
+> **Current Stats**: 64 Calculators | 641 Tests | 81% Coverage | Phase 15 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 

@@ -622,6 +622,138 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 ---
 
+### Hunt and Hess Scale (SAH Grading) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Hunt WE, Hess RM. Surgical risk as related to time of intervention in the repair of intracranial aneurysms. *J Neurosurg*. 1968;28(1):14-20. |
+| **DOI** | [10.3171/jns.1968.28.1.0014](https://doi.org/10.3171/jns.1968.28.1.0014) |
+| **PMID** | [5635959](https://pubmed.ncbi.nlm.nih.gov/5635959/) |
+| **Year** | 1968 |
+| **Key Points** | SAH clinical grading; Grade I-V; correlates with surgical outcome; Grade I-III favorable prognosis |
+
+---
+
+### Fisher Grade (SAH CT Classification) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Original Citation** | Fisher CM, Kistler JP, Davis JM. Relation of cerebral vasospasm to subarachnoid hemorrhage visualized by computerized tomographic scanning. *Neurosurgery*. 1980;6(1):1-9. |
+| **DOI** | [10.1227/00006123-198001000-00001](https://doi.org/10.1227/00006123-198001000-00001) |
+| **PMID** | [7354892](https://pubmed.ncbi.nlm.nih.gov/7354892/) |
+| **Year** | 1980 |
+| **Key Points** | CT-based SAH grading; predicts vasospasm risk; Grade 1-4 |
+
+| Field | Value |
+|-------|-------|
+| **Modified Citation** | Frontera JA, Claassen J, Schmidt JM, et al. Prediction of symptomatic vasospasm after subarachnoid hemorrhage: the modified fisher scale. *Neurosurgery*. 2006;59(1):21-27. |
+| **DOI** | [10.1227/01.NEU.0000218821.34014.1B](https://doi.org/10.1227/01.NEU.0000218821.34014.1B) |
+| **PMID** | [16823296](https://pubmed.ncbi.nlm.nih.gov/16823296/) |
+| **Year** | 2006 |
+| **Key Points** | Modified Fisher Scale; better vasospasm prediction; includes IVH assessment |
+
+---
+
+### FOUR Score (Full Outline of UnResponsiveness) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Wijdicks EF, Bamlet WR, Maramattom BV, et al. Validation of a new coma scale: The FOUR score. *Ann Neurol*. 2005;58(4):585-593. |
+| **DOI** | [10.1002/ana.20611](https://doi.org/10.1002/ana.20611) |
+| **PMID** | [16178024](https://pubmed.ncbi.nlm.nih.gov/16178024/) |
+| **Year** | 2005 |
+| **Key Points** | Alternative to GCS; Eye + Motor + Brainstem + Respiration; score 0-16; detects locked-in syndrome |
+
+---
+
+### ICH Score (Intracerebral Hemorrhage) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Hemphill JC 3rd, Bonovich DC, Besmertis L, et al. The ICH score: a simple, reliable grading scale for intracerebral hemorrhage. *Stroke*. 2001;32(4):891-897. |
+| **DOI** | [10.1161/01.str.32.4.891](https://doi.org/10.1161/01.str.32.4.891) |
+| **PMID** | [11283388](https://pubmed.ncbi.nlm.nih.gov/11283388/) |
+| **Year** | 2001 |
+| **Key Points** | ICH 30-day mortality prediction; 5 components (GCS, age, volume, IVH, location); score 0-6 |
+
+---
+
+### APGAR Score (Newborn Assessment) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Original Citation** | Apgar V. A proposal for a new method of evaluation of the newborn infant. *Curr Res Anesth Analg*. 1953;32(4):260-267. |
+| **DOI** | N/A |
+| **PMID** | [13083014](https://pubmed.ncbi.nlm.nih.gov/13083014/) |
+| **Year** | 1953 |
+| **Key Points** | Newborn assessment at 1 and 5 minutes; 5 components (Appearance, Pulse, Grimace, Activity, Respiration); score 0-10 |
+
+| Field | Value |
+|-------|-------|
+| **AAP Guideline** | American Academy of Pediatrics Committee on Fetus and Newborn. The Apgar Score. *Pediatrics*. 2015;136(4):819-822. |
+| **DOI** | [10.1542/peds.2015-2651](https://doi.org/10.1542/peds.2015-2651) |
+| **PMID** | [26416932](https://pubmed.ncbi.nlm.nih.gov/26416932/) |
+| **Year** | 2015 |
+| **Key Points** | Official AAP guidelines; proper use and limitations of APGAR |
+
+---
+
+### PEWS (Pediatric Early Warning Score) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Parshuram CS, Hutchison J, Middaugh K. Development and initial validation of the Bedside Paediatric Early Warning System score. *Crit Care*. 2009;13(4):R135. |
+| **DOI** | [10.1186/cc7998](https://doi.org/10.1186/cc7998) |
+| **PMID** | [19678924](https://pubmed.ncbi.nlm.nih.gov/19678924/) |
+| **Year** | 2009 |
+| **Key Points** | Pediatric clinical deterioration; 3 domains (behavior, cardiovascular, respiratory); score 0-13 |
+
+---
+
+### Pediatric SOFA / pSOFA ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Matics TJ, Sanchez-Pinto LN. Adaptation and Validation of a Pediatric Sequential Organ Failure Assessment Score and Evaluation of the Sepsis-3 Definitions in Critically Ill Children. *JAMA Pediatr*. 2017;171(10):e172352. |
+| **DOI** | [10.1001/jamapediatrics.2017.2352](https://doi.org/10.1001/jamapediatrics.2017.2352) |
+| **PMID** | [28783810](https://pubmed.ncbi.nlm.nih.gov/28783810/) |
+| **Year** | 2017 |
+| **Key Points** | Age-adjusted SOFA for pediatrics; validated against adult SOFA; Sepsis-3 compatible |
+
+| Field | Value |
+|-------|-------|
+| **Phoenix Criteria** | Schlapbach LJ, Watson RS, Sorce LR, et al. International Consensus Criteria for Pediatric Sepsis and Septic Shock. *JAMA*. 2024;331(8):665-674. |
+| **DOI** | [10.1001/jama.2024.0179](https://doi.org/10.1001/jama.2024.0179) |
+| **PMID** | [38245889](https://pubmed.ncbi.nlm.nih.gov/38245889/) |
+| **Year** | 2024 |
+| **Key Points** | Phoenix Sepsis criteria; new international pediatric sepsis definition |
+
+---
+
+### PIM3 (Pediatric Index of Mortality 3) ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Straney L, Clements A, Parslow RC, et al. Paediatric index of mortality 3: an updated model for predicting mortality in pediatric intensive care. *Pediatr Crit Care Med*. 2013;14(7):673-681. |
+| **DOI** | [10.1097/PCC.0b013e31829760cf](https://doi.org/10.1097/PCC.0b013e31829760cf) |
+| **PMID** | [23863821](https://pubmed.ncbi.nlm.nih.gov/23863821/) |
+| **Year** | 2013 |
+| **Key Points** | PICU mortality prediction; 10 variables at admission; probability formula |
+
+---
+
+### Pediatric GCS ⭐ NEW
+
+| Field | Value |
+|-------|-------|
+| **Citation** | Reilly PL, Simpson DA, Sprod R, Thomas L. Assessing the conscious level in infants and young children: a paediatric version of the Glasgow Coma Scale. *Childs Nerv Syst*. 1988;4(1):30-33. |
+| **DOI** | [10.1007/BF00274080](https://doi.org/10.1007/BF00274080) |
+| **PMID** | [3401866](https://pubmed.ncbi.nlm.nih.gov/3401866/) |
+| **Year** | 1988 |
+| **Key Points** | Age-adapted GCS for preverbal children; modified verbal responses; score 3-15 |
+
+---
+
 ### PSI/PORT Score (Pneumonia Severity Index) ⭐ NEW
 
 | Field | Value |
