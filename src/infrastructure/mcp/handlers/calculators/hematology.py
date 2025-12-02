@@ -73,12 +73,12 @@ def register_hematology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
             4Ts 分數 (0-8)、HIT 機率、處置建議
         """
         request = CalculateRequest(
-            tool_id="four_ts_hit",
+            tool_id="4ts_hit",
             params={
-                "thrombocytopenia_score": thrombocytopenia_score,
-                "timing_score": timing_score,
-                "thrombosis_score": thrombosis_score,
-                "other_causes_score": other_causes_score,
+                "thrombocytopenia": thrombocytopenia_score,
+                "timing": timing_score,
+                "thrombosis": thrombosis_score,
+                "other_causes": other_causes_score,
             }
         )
         response = use_case.execute(request)

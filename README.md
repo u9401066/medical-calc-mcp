@@ -1015,7 +1015,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 63 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 64 Calculators | 641 Tests | 81% Coverage | Phase 15 Complete ✅
+> **Current Stats**: 68 Calculators | 774 Tests | 85% Coverage | Phase 16 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
