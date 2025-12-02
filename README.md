@@ -22,6 +22,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Deployment Modes | 部署模式](#-deployment-modes--部署模式) 🚀 NEW
 - [Agent Integration | Agent 整合](#-agent-integration--agent-整合) 🤖 NEW
 - [Docker Deployment | Docker 部署](#-docker-deployment--docker-部署--new) 🐳
+- [HTTPS Deployment | HTTPS 部署](#-https-deployment--https-部署--new) 🔒 NEW
 - [REST API | REST API 接口](#-rest-api--rest-api-接口--new) 🌐 NEW
 - [Security | 安全性](#-security--安全性--new) 🔐 NEW
 - [Tool Discovery | 工具探索](#-tool-discovery--工具探索)
@@ -454,6 +455,239 @@ services:
 
 ---
 
+## 🔒 HTTPS Deployment | HTTPS 部署 ⭐ NEW
+
+Enable HTTPS for secure communication in production environments.
+
+為生產環境啟用 HTTPS 安全通訊。
+
+### Architecture | 架構
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        HTTPS Deployment                             │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   ┌─────────────┐                                                   │
+│   │   Client    │                                                   │
+│   │ (Browser/   │                                                   │
+│   │  AI Agent)  │                                                   │
+│   └──────┬──────┘                                                   │
+│          │ HTTPS (TLS 1.2/1.3)                                      │
+│          ▼                                                          │
+│   ┌──────────────────────────────────────────────────────────┐      │
+│   │                    Nginx Reverse Proxy                    │      │
+│   │  ┌─────────────────────────────────────────────────────┐ │      │
+│   │  │ • TLS Termination (SSL Certificates)                │ │      │
+│   │  │ • Rate Limiting (30/60 req/s)                       │ │      │
+│   │  │ • Security Headers (XSS, CSRF protection)           │ │      │
+│   │  │ • SSE Optimization (long-lived connections)         │ │      │
+│   │  └─────────────────────────────────────────────────────┘ │      │
+│   └──────────────┬───────────────────────┬───────────────────┘      │
+│                  │ HTTP (internal)        │ HTTP (internal)         │
+│                  ▼                        ▼                         │
+│   ┌──────────────────────┐    ┌──────────────────────┐              │
+│   │   MCP SSE Server     │    │   REST API Server    │              │
+│   │   (Port 8000)        │    │   (Port 8080)        │              │
+│   │                      │    │                      │              │
+│   │ • /sse               │    │ • /api/v1/*          │              │
+│   │ • /messages          │    │ • /docs (Swagger)    │              │
+│   │ • /health            │    │ • /health            │              │
+│   └──────────────────────┘    └──────────────────────┘              │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+External Endpoints (HTTPS):
+├── https://localhost/        → MCP SSE (via Nginx :443)
+├── https://localhost/sse     → SSE Connection
+├── https://localhost:8443/   → REST API (via Nginx :8443)
+└── https://localhost:8443/docs → Swagger UI
+
+Internal (HTTP, Docker network only):
+├── http://medical-calc-mcp:8000  → MCP Server
+└── http://medical-calc-api:8080  → API Server
+```
+
+### Option 1: Docker Deployment (Recommended) | Docker 部署（推薦）
+
+Best for production and team environments.
+
+適用於生產環境和團隊環境。
+
+```bash
+# Step 1: Generate SSL certificates | 步驟一：生成 SSL 憑證
+chmod +x scripts/generate-ssl-certs.sh
+./scripts/generate-ssl-certs.sh
+
+# Step 2: Start HTTPS services | 步驟二：啟動 HTTPS 服務
+./scripts/start-https-docker.sh up
+
+# Other commands | 其他命令
+./scripts/start-https-docker.sh down     # Stop services
+./scripts/start-https-docker.sh logs     # View logs
+./scripts/start-https-docker.sh restart  # Restart
+./scripts/start-https-docker.sh status   # Check status
+```
+
+**Endpoints | 端點：**
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| MCP SSE | `https://localhost/` | MCP Server-Sent Events |
+| MCP SSE | `https://localhost/sse` | SSE connection |
+| REST API | `https://localhost:8443/` | REST API root |
+| Swagger UI | `https://localhost:8443/docs` | API documentation |
+| Health | `https://localhost/health` | MCP health check |
+| Health | `https://localhost:8443/health` | API health check |
+
+### Option 2: Local Development (No Docker) | 本地開發（無 Docker）
+
+Uses Uvicorn's native SSL support for quick local testing.
+
+使用 Uvicorn 原生 SSL 支援進行快速本地測試。
+
+```bash
+# Step 1: Generate SSL certificates | 步驟一：生成 SSL 憑證
+./scripts/generate-ssl-certs.sh
+
+# Step 2: Start HTTPS services | 步驟二：啟動 HTTPS 服務
+./scripts/start-https-local.sh          # Start both MCP and API
+./scripts/start-https-local.sh sse      # Start MCP SSE only
+./scripts/start-https-local.sh api      # Start REST API only
+```
+
+**Endpoints | 端點：**
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| MCP SSE | `https://localhost:8443/` | MCP Server-Sent Events |
+| REST API | `https://localhost:9443/` | REST API |
+| Swagger UI | `https://localhost:9443/docs` | API documentation |
+
+### Option 3: Production with Let's Encrypt | 生產環境使用 Let's Encrypt
+
+For real domain names with free trusted certificates.
+
+使用真實網域名稱和免費受信任憑證。
+
+```bash
+# 1. Edit nginx/nginx.conf, uncomment these lines:
+# 編輯 nginx/nginx.conf，取消註解這些行：
+
+ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+
+# 2. Use certbot to obtain certificates:
+# 使用 certbot 獲取憑證：
+
+sudo certbot certonly --webroot -w /var/www/certbot \
+  -d your-domain.com -d api.your-domain.com
+
+# 3. Start services
+# 啟動服務
+docker-compose -f docker-compose.https.yml up -d
+```
+
+### Trust Self-Signed Certificates | 信任自簽憑證
+
+To avoid browser warnings during development:
+
+消除開發時的瀏覽器警告：
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo cp nginx/ssl/ca.crt /usr/local/share/ca-certificates/medical-calc-dev.crt
+sudo update-ca-certificates
+```
+
+**macOS:**
+```bash
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain nginx/ssl/ca.crt
+```
+
+**Windows:**
+```
+1. Double-click nginx/ssl/ca.crt
+2. Install Certificate → Local Machine
+3. Place in "Trusted Root Certification Authorities"
+```
+
+### Claude Desktop Configuration (HTTPS) | Claude Desktop 設定
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "url": "https://localhost/sse"
+    }
+  }
+}
+```
+
+For production with a real domain:
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "url": "https://mcp.your-domain.com/sse"
+    }
+  }
+}
+```
+
+### Files Overview | 檔案說明
+
+| File | Description |
+|------|-------------|
+| `nginx/nginx.conf` | Nginx configuration with TLS, rate limiting, SSE optimization |
+| `docker-compose.https.yml` | Docker Compose for HTTPS deployment |
+| `scripts/generate-ssl-certs.sh` | Generate self-signed SSL certificates |
+| `scripts/start-https-docker.sh` | Start/stop Docker HTTPS services |
+| `scripts/start-https-local.sh` | Start local HTTPS (Uvicorn SSL) |
+
+### Troubleshooting | 故障排除
+
+**Certificate not trusted:**
+```bash
+# Regenerate certificates
+rm -rf nginx/ssl/*
+./scripts/generate-ssl-certs.sh
+
+# Then re-add to system trust store (see above)
+```
+
+**Port already in use:**
+```bash
+# Check what's using the port
+sudo lsof -i :443
+sudo lsof -i :8443
+
+# Kill the process or use different ports
+```
+
+**Docker container not starting:**
+```bash
+# Check logs
+docker-compose -f docker-compose.https.yml logs nginx
+docker-compose -f docker-compose.https.yml logs medical-calc-mcp
+
+# Rebuild
+docker-compose -f docker-compose.https.yml up -d --build
+```
+
+**SSE connection timeout:**
+```bash
+# Nginx is configured for 24h timeout, but if issues persist:
+# Check nginx/nginx.conf has these settings:
+proxy_read_timeout 24h;
+proxy_send_timeout 24h;
+proxy_buffering off;
+```
+
+---
+
 ## 🌐 REST API | REST API 接口 ⭐ NEW
 
 Besides MCP protocol, the server also provides a **standalone REST API** for direct HTTP access.
@@ -541,76 +775,18 @@ This project implements multiple security layers:
 
 | Layer | Feature | Description |
 |-------|---------|-------------|
-| **HTTPS** | TLS encryption | All traffic encrypted (see below) |
+| **HTTPS** | TLS 1.2/1.3 encryption | All traffic encrypted via Nginx |
 | **Input Validation** | 3-layer validation | Pydantic → ParameterValidator → Domain rules |
 | **CORS** | Configurable origins | Environment variable controlled |
 | **Rate Limiting** | Nginx rate limits | 30 req/s API, 60 req/s MCP |
+| **Security Headers** | XSS/CSRF protection | X-Frame-Options, X-Content-Type-Options |
 | **Dependencies** | Vulnerability scanning | pip-audit integrated |
 | **No Database** | In-memory only | No SQL injection risk |
 | **No Secrets** | Stateless | No credentials stored |
 
-### 🔒 HTTPS Deployment | HTTPS 部署
-
-All services support HTTPS for secure communication:
-
-所有服務都支援 HTTPS 以確保安全通訊：
-
-#### Option 1: Docker with Nginx (Recommended for Production)
-
-```bash
-# 1. Generate SSL certificates | 生成 SSL 憑證
-chmod +x scripts/generate-ssl-certs.sh
-./scripts/generate-ssl-certs.sh
-
-# 2. Start HTTPS services | 啟動 HTTPS 服務
-./scripts/start-https-docker.sh up
-
-# Endpoints:
-#   MCP SSE:  https://localhost/
-#   REST API: https://localhost:8443/
-#   API Docs: https://localhost:8443/docs
-```
-
-#### Option 2: Local Development (No Docker)
-
-```bash
-# 1. Generate SSL certificates | 生成 SSL 憑證
-./scripts/generate-ssl-certs.sh
-
-# 2. Start HTTPS services directly | 直接啟動 HTTPS 服務
-./scripts/start-https-local.sh
-
-# Endpoints:
-#   MCP SSE:  https://localhost:8443/
-#   REST API: https://localhost:9443/
-```
-
-#### Option 3: Production with Let's Encrypt
-
-Edit `nginx/nginx.conf` to use Let's Encrypt certificates:
-
-```nginx
-# In nginx/nginx.conf, uncomment these lines:
-ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
-```
-
-#### Trust Self-Signed Certificates | 信任自簽憑證
-
-To avoid browser warnings during development:
-
-```bash
-# Linux (Ubuntu/Debian)
-sudo cp nginx/ssl/ca.crt /usr/local/share/ca-certificates/medical-calc-dev.crt
-sudo update-ca-certificates
-
-# macOS
-sudo security add-trusted-cert -d -r trustRoot \
-  -k /Library/Keychains/System.keychain nginx/ssl/ca.crt
-
-# Windows
-# Double-click ca.crt → Install Certificate → Local Machine → Trusted Root CAs
-```
+> 📖 **For detailed HTTPS deployment instructions, see [HTTPS Deployment](#-https-deployment--https-部署--new).**
+>
+> **詳細 HTTPS 部署說明請參考 [HTTPS 部署](#-https-deployment--https-部署--new)。**
 
 ### Configuration | 設定
 
