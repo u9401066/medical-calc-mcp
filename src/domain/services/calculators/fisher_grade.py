@@ -27,7 +27,6 @@ Clinical Notes:
 - Grade 3-4: Consider aggressive vasospasm monitoring/prophylaxis
 """
 
-from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

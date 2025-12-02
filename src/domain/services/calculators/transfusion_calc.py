@@ -21,7 +21,7 @@ References:
     PMID: 34932836
 """
 
-from typing import Optional, Literal
+from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
@@ -30,10 +30,8 @@ from ...value_objects.units import Unit
 from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
 from ...value_objects.clinical_constants import (
-    EBV_ML_PER_KG, 
     BLOOD_PRODUCTS, 
     get_ebv_per_kg,
-    get_blood_product,
 )
 from ...value_objects.tool_keys import (
     LowLevelKey,

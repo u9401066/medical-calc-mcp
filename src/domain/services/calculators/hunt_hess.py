@@ -18,7 +18,6 @@ Clinical Notes:
 - Modified versions exist but original scale remains widely used
 """
 
-from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

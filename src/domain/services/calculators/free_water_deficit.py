@@ -19,7 +19,7 @@ Reference:
     PMID: 22762930
 """
 
-from typing import Literal, Optional
+from typing import Literal
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

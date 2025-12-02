@@ -11,7 +11,6 @@ Reference:
     PMID: 34554658
 """
 
-import math
 from typing import Literal
 
 from ..base import BaseCalculator

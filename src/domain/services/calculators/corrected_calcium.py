@@ -23,7 +23,6 @@ References:
     PMID: 19059239
 """
 
-from typing import Literal
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

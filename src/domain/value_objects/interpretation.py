@@ -5,7 +5,7 @@ Represents clinical interpretation of calculation results.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import Optional
 from enum import Enum
 
 

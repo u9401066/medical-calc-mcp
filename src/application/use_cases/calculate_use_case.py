@@ -6,7 +6,7 @@ Provides clear error messages with valid input ranges.
 Uses Domain validation for consistent parameter validation.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from ..dto import (
     CalculateRequest,

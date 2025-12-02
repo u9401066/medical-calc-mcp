@@ -18,7 +18,6 @@ Reference (40-year update):
     PMID: 25030516
 """
 
-from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

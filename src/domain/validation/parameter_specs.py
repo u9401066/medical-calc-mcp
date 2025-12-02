@@ -8,7 +8,7 @@ This is domain knowledge about valid ranges for clinical measurements.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
-from .rules import ValidationRule, RangeRule, EnumRule, RequiredRule, TypeRule, CompositeRule
+from .rules import ValidationRule, RangeRule, EnumRule
 
 
 @dataclass

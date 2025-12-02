@@ -15,7 +15,6 @@ Reference:
     PMID: 22797452
 """
 
-from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

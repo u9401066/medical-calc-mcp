@@ -29,7 +29,6 @@ Guideline:
     PMID: 30113379
 """
 
-from typing import Optional, Literal
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

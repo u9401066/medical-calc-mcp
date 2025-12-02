@@ -36,7 +36,7 @@ References:
     Intensive Care Med. 2003;29(2):278-285. PMID: 12541154
 """
 
-from typing import Optional, List
+from typing import Optional
 import math
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

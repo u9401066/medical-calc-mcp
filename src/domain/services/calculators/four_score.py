@@ -20,7 +20,6 @@ Clinical Notes:
 - Components: Eye, Motor, Brainstem, Respiration
 """
 
-from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

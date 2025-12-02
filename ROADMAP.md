@@ -1,10 +1,22 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
 > **Last Updated**: 2025-12-02
-> **Current Version**: v1.1.0 (Production Ready)
-> **Status**: 59 Calculators | 613 Tests | 79% Coverage
+> **Current Version**: v1.0.0 (Production Ready)
+> **Status**: 64 Calculators | 641 Tests | 81% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
+
+---
+
+## ✅ Recently Completed | 最近完成 (2025-12-02)
+
+| Item | Description | Status |
+|------|-------------|--------|
+| **Unused Imports Cleanup** | 移除 38 處未使用的導入 | ✅ Done |
+| **Version Unification** | 統一版本號為 v1.0.0 | ✅ Done |
+| **GitHub Actions CI** | 自動測試 + ruff 檢查 + 覆蓋率 | ✅ Done |
+| **Pre-commit Hooks** | 提交前自動檢查程式碼品質 | ✅ Done |
+| **Production Status** | Development Status 升級為 Stable | ✅ Done |
 
 ---
 
@@ -58,11 +70,13 @@
 
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
-| **Test Coverage** | 79% | 90%+ | 🟡 MEDIUM |
+| **Test Coverage** | 81% | 90%+ | 🟡 MEDIUM |
 | **E2E Tests** | ❌ None | Docker-based E2E | 🟡 MEDIUM |
 | **Load Testing** | ❌ None | Locust / k6 scripts | 🟢 LOW |
 | **Mutation Testing** | ❌ None | mutmut | 🟢 LOW |
 | **Type Checking** | Partial | mypy --strict | 🟡 MEDIUM |
+| **CI/CD Pipeline** | ✅ Done | GitHub Actions | ✅ DONE |
+| **Pre-commit Hooks** | ✅ Done | ruff + bandit | ✅ DONE |
 
 ---
 
@@ -256,17 +270,18 @@ mkdocs serve  # http://localhost:8000
 
 ```
 2025 Q4 (Current - DONE ✅)
-├── 55 Calculators complete (Phase 12 done!)
+├── 64 Calculators complete (Phase 15 done!)
 ├── Security audit complete  
 ├── Docker + REST API + SSE + HTTPS complete
-├── Phase 12: Neurology Extended ✅ (Hunt & Hess, Fisher, FOUR, ICH)
-└── 587 tests, 79% coverage
+├── GitHub Actions CI + Pre-commit hooks ✅
+├── Phase 15: Pediatric Scores ✅ (APGAR, PEWS, pSOFA, PIM3, pGCS)
+└── 641 tests, 81% coverage
 
 2026 Q1 (Planned)
-├── Phase 13: Infectious Disease (4 calculators)
+├── Phase 16: Infectious Disease (4 calculators)
 ├── Rate Limiting + API Auth
-├── Phase 14: Common Utilities (4 calculators)
-└── Target: 63 calculators
+├── Test coverage 85%+
+└── Target: 68 calculators
 
 2026 Q2 (Planned)
 ├── Phase 14: Common Utilities (4 calculators)
@@ -325,13 +340,14 @@ mkdocs serve  # http://localhost:8000
 
 | Metric | Current | Target (2026 Q2) |
 |--------|---------|------------------|
-| Calculators | **55** | 63+ |
-| Test Coverage | 79% | 90%+ |
+| Calculators | **64** | 70+ |
+| Test Coverage | 81% | 90%+ |
 | API Response Time (p95) | ~50ms | <100ms |
 | Documentation | README only | Full MkDocs site |
 | i18n Languages | 1 (EN) | 3 (EN, zh-TW, zh-CN) |
 | Production Deployments | 0 | 3+ (examples) |
 | Security Features | CORS + HTTPS | Rate limit + Auth |
+| CI/CD | ✅ GitHub Actions | Full pipeline |
 
 ---
 

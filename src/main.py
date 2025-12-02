@@ -30,7 +30,6 @@ import os
 import sys
 import logging
 from pathlib import Path
-from typing import Optional
 
 # Ensure the project root is in the path for proper imports
 project_root = Path(__file__).parent.parent

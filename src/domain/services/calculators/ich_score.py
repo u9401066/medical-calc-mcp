@@ -21,7 +21,6 @@ Clinical Notes:
 - Higher scores correlate with higher 30-day mortality
 """
 
-from typing import Optional
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

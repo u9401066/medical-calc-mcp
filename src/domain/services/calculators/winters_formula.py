@@ -14,7 +14,6 @@ Reference:
     PMID: 6774200
 """
 
-from typing import Tuple
 
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult

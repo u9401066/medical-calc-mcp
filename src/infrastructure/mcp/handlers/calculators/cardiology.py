@@ -4,7 +4,7 @@ Cardiology Calculator Handlers
 MCP tool handlers for cardiology calculators.
 """
 
-from typing import Annotated, Any, Literal, Optional
+from typing import Annotated, Any, Literal
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field

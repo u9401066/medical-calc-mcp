@@ -6,7 +6,6 @@ Used for tool registration and discovery.
 """
 
 from dataclasses import dataclass, field
-from typing import List
 
 from ..value_objects.reference import Reference
 from ..value_objects.tool_keys import LowLevelKey, HighLevelKey

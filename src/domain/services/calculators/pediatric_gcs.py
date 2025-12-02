@@ -41,7 +41,6 @@ References:
     Childs Nerv Syst. 1988;4(1):30-33. PMID: 3401866
 """
 
-from typing import Optional
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata

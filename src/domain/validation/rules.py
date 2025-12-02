@@ -7,7 +7,7 @@ These rules encode domain knowledge about valid input ranges.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple
 
 
 class ValidationRule(ABC):

@@ -5,7 +5,6 @@ Configuration for the Medical Calculator MCP Server.
 """
 
 from dataclasses import dataclass
-from typing import Literal
 
 
 @dataclass

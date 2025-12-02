@@ -29,7 +29,6 @@ if str(project_root) not in sys.path:
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ConfigDict
 
 from src.domain.registry.tool_registry import get_registry

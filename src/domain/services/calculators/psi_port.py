@@ -18,7 +18,6 @@ Validation Reference:
     doi:10.1016/j.amjmed.2005.01.006. PMID: 15808136.
 """
 
-from typing import Optional
 from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
