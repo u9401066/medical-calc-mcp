@@ -375,8 +375,8 @@ docker-compose up -d
 docker build -t medical-calc-mcp .
 docker run -p 8000:8000 medical-calc-mcp
 
-# Check health | 檢查健康狀態
-curl http://localhost:8000/health
+# Check service is running | 檢查服務是否運行
+curl -sf http://localhost:8000/sse -o /dev/null && echo "OK"
 ```
 
 ### Transport Modes | 傳輸模式
@@ -431,10 +431,10 @@ python -m src.main --mode http
 
 ### API Endpoints | API 端點
 
+> ⚠️ FastMCP SSE mode only provides these endpoints:
+
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/` | GET | Server info and configuration |
-| `/health` | GET | Health check for Docker/K8s |
 | `/sse` | GET | SSE connection endpoint |
 | `/messages/` | POST | MCP message endpoint |
 

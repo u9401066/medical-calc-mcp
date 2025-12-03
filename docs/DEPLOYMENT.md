@@ -140,10 +140,10 @@ python src/main.py --mode sse --host 0.0.0.0 --port 8000
 
 ### SSE Endpoints | SSE 端點
 
+> ⚠️ FastMCP SSE 模式只提供以下端點：
+
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/` | GET | 伺服器資訊 |
-| `/health` | GET | 健康檢查 |
 | `/sse` | GET | SSE 連接端點 |
 | `/messages/` | POST | MCP 訊息端點 |
 
