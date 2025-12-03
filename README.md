@@ -794,7 +794,8 @@ This project implements multiple security layers:
 | **HTTPS** | TLS 1.2/1.3 encryption | All traffic encrypted via Nginx |
 | **Input Validation** | 3-layer validation | Pydantic → ParameterValidator → Domain rules |
 | **CORS** | Configurable origins | Environment variable controlled |
-| **Rate Limiting** | Nginx rate limits | 30 req/s API, 60 req/s MCP |
+| **Rate Limiting** | Nginx + Application level | Dual-layer protection (optional) |
+| **API Authentication** | Optional API Key | Disabled by default, enable via env |
 | **Security Headers** | XSS/CSRF protection | X-Frame-Options, X-Content-Type-Options |
 | **Dependencies** | Vulnerability scanning | pip-audit integrated |
 | **No Database** | In-memory only | No SQL injection risk |
@@ -803,6 +804,53 @@ This project implements multiple security layers:
 > 📖 **For detailed HTTPS deployment instructions, see [HTTPS Deployment](#-https-deployment--https-部署--new).**
 >
 > **詳細 HTTPS 部署說明請參考 [HTTPS 部署](#-https-deployment--https-部署--new)。**
+
+### 🔑 Optional Security Features | 可選安全功能
+
+All optional security features are **DISABLED by default**. Enable via environment variables:
+
+所有可選安全功能預設都是**關閉**的。透過環境變數啟用：
+
+#### Rate Limiting (Application Level) | 速率限制（應用層）
+
+```bash
+# Enable rate limiting | 啟用速率限制
+SECURITY_RATE_LIMIT_ENABLED=true   # Default: false
+SECURITY_RATE_LIMIT_RPM=60         # Requests per minute (default: 60)
+SECURITY_RATE_LIMIT_BURST=10       # Burst size (default: 10)
+SECURITY_RATE_LIMIT_BY_IP=true     # Per-IP rate limiting (default: true)
+```
+
+#### API Key Authentication | API Key 認證
+
+```bash
+# Enable API authentication | 啟用 API 認證
+SECURITY_AUTH_ENABLED=true         # Default: false
+SECURITY_API_KEYS=key1,key2,key3   # Comma-separated API keys (min 8 chars each)
+SECURITY_AUTH_HEADER=X-API-Key     # Header name (default: X-API-Key)
+SECURITY_AUTH_PARAM=api_key        # Query param name (default: api_key)
+```
+
+**Usage Example | 使用範例:**
+
+```bash
+# With header | 使用 Header
+curl -H "X-API-Key: your-api-key" http://localhost:8000/sse
+
+# With query parameter | 使用查詢參數
+curl "http://localhost:8000/sse?api_key=your-api-key"
+
+# With Bearer token | 使用 Bearer Token
+curl -H "Authorization: Bearer your-api-key" http://localhost:8000/sse
+```
+
+#### Security Scenarios | 安全情境
+
+| Scenario | Rate Limit | Auth | Configuration |
+|----------|------------|------|---------------|
+| **Local Development** | ❌ Off | ❌ Off | Default (no env vars) |
+| **Internal Network** | ✅ On | ❌ Off | `SECURITY_RATE_LIMIT_ENABLED=true` |
+| **Public API** | ✅ On | ✅ On | Both enabled + API keys |
 
 ### Configuration | 設定
 
@@ -836,8 +884,8 @@ MCP_PORT=8000
 |------|----------------|------|
 | **HTTPS** | ✅ Use provided Nginx + SSL config | 使用提供的 Nginx + SSL 配置 |
 | **CORS** | Set specific `CORS_ORIGINS` | 設定特定 `CORS_ORIGINS` |
-| **Rate Limiting** | ✅ Nginx configured (30/60 req/s) | Nginx 已配置 |
-| **Authentication** | Add API key or OAuth2 if needed | 如需要可加入 API key 或 OAuth2 |
+| **Rate Limiting** | ✅ Enable application-level rate limiting | 啟用應用層速率限制 |
+| **Authentication** | ✅ Enable API key authentication | 啟用 API key 認證 |
 | **Network** | Run in private network/VPC | 在私有網路/VPC 中執行 |
 | **Certificates** | Use Let's Encrypt for production | 生產環境使用 Let's Encrypt |
 | **Monitoring** | Enable access logging | 啟用存取日誌 |

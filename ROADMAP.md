@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2025-12-03
 > **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 70 Calculators | 884 Tests | 88% Coverage
+> **Status**: 70 Calculators | 919 Tests | 88% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -28,10 +28,15 @@
 
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
-| **Rate Limiting** | ❌ None | ✅ Request throttling | 🔴 HIGH |
-| **API Authentication** | ❌ None | ✅ API Key / OAuth2 | 🔴 HIGH |
+| **Rate Limiting** | ✅ Optional | ✅ Request throttling | ✅ DONE |
+| **API Authentication** | ✅ Optional | ✅ API Key | ✅ DONE |
 | **Request Logging** | ❌ Basic | ✅ Structured logging | 🟡 MEDIUM |
 | **Health Metrics** | ❌ Basic | ✅ Prometheus metrics | 🟡 MEDIUM |
+
+> **Security Update** (2025-12-03):
+> - Rate Limiting: Token bucket algorithm, per-IP, configurable via env vars
+> - API Authentication: API Key based, constant-time comparison, disabled by default
+> - All security features optional - enable via `SECURITY_*` environment variables
 
 ### 2. 🌐 Internationalization (i18n) | 國際化
 

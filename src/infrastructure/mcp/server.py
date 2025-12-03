@@ -8,7 +8,17 @@ Architecture:
     This server follows DDD principles with clear separation:
     - Domain Layer: Calculators, Registry, Value Objects
     - Application Layer: Use Cases, DTOs
-    - Infrastructure Layer: MCP Handlers, Resources
+    - Infrastructure Layer: MCP Handlers, Resources, Security
+
+Security Features (Optional):
+    - Rate Limiting: Throttle requests to prevent abuse
+    - API Authentication: API Key based authentication
+    
+    All security features are DISABLED by default.
+    Enable via environment variables:
+        SECURITY_RATE_LIMIT_ENABLED=true
+        SECURITY_AUTH_ENABLED=true
+        SECURITY_API_KEYS=your-key
 
 Usage:
     # Development mode with MCP inspector
@@ -26,6 +36,8 @@ Tool Discovery Flow:
     3. Agent calls calculate_*(params) for calculation
 """
 
+import logging
+
 from mcp.server.fastmcp import FastMCP
 
 from ...domain.registry.tool_registry import ToolRegistry, get_registry
@@ -34,6 +46,10 @@ from ...domain.services.calculators import CALCULATORS
 from .config import default_config
 from .handlers import DiscoveryHandler, CalculatorHandler, PromptHandler
 from .resources import CalculatorResourceHandler
+from ..security import SecurityMiddleware, SecurityConfig
+
+
+logger = logging.getLogger(__name__)
 
 
 class MedicalCalculatorServer:
@@ -45,21 +61,37 @@ class MedicalCalculatorServer:
     - Calculator registration
     - Handler registration (Discovery, Calculator)
     - Resource registration
+    - Security middleware (optional)
     
     Design Principles:
     - Single Responsibility: Each handler manages its own domain
     - Open/Closed: Easy to add new handlers without modifying existing code
     - Dependency Injection: Registry injected into handlers
+    
+    Security (Optional):
+    - Rate Limiting: Enable with SECURITY_RATE_LIMIT_ENABLED=true
+    - Authentication: Enable with SECURITY_AUTH_ENABLED=true
     """
     
-    def __init__(self, config=None):
+    def __init__(self, config=None, security_config=None):
         """
         Initialize the MCP server.
         
         Args:
             config: Server configuration (uses default if not provided)
+            security_config: Security configuration (loads from env if not provided)
         """
         self._config = config or default_config
+        
+        # Initialize security middleware (optional, disabled by default)
+        self._security_config = security_config or SecurityConfig.from_env()
+        self._security = SecurityMiddleware(self._security_config)
+        
+        # Log security status
+        if self._security.is_enabled():
+            logger.info(f"Security features enabled:\n{self._security_config}")
+        else:
+            logger.info("Security features: DISABLED (default)")
         
         # Create FastMCP server with network settings
         self._mcp = FastMCP(
@@ -110,6 +142,11 @@ class MedicalCalculatorServer:
     def registry(self) -> ToolRegistry:
         """Get the tool registry"""
         return self._registry
+    
+    @property
+    def security(self) -> SecurityMiddleware:
+        """Get the security middleware"""
+        return self._security
     
     def run(self, transport: str = "stdio") -> None:
         """
