@@ -1,22 +1,10 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
-> **Last Updated**: 2025-12-02
+> **Last Updated**: 2025-12-03
 > **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 64 Calculators | 641 Tests | 81% Coverage
+> **Status**: 68 Calculators | 774 Tests | 85% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
-
----
-
-## ✅ Recently Completed | 最近完成 (2025-12-02)
-
-| Item | Description | Status |
-|------|-------------|--------|
-| **Unused Imports Cleanup** | 移除 38 處未使用的導入 | ✅ Done |
-| **Version Unification** | 統一版本號為 v1.0.0 | ✅ Done |
-| **GitHub Actions CI** | 自動測試 + ruff 檢查 + 覆蓋率 | ✅ Done |
-| **Pre-commit Hooks** | 提交前自動檢查程式碼品質 | ✅ Done |
-| **Production Status** | Development Status 升級為 Stable | ✅ Done |
 
 ---
 
@@ -34,8 +22,6 @@
 
 ## 🎯 Improvement Areas | 改進方向
 
-根據專案現況分析，以下是主要改進方向：
-
 ### 1. 🔐 Security & Production Readiness | 安全與生產就緒
 
 | Item | Current | Target | Priority |
@@ -44,8 +30,6 @@
 | **API Authentication** | ❌ None | ✅ API Key / OAuth2 | 🔴 HIGH |
 | **Request Logging** | ❌ Basic | ✅ Structured logging | 🟡 MEDIUM |
 | **Health Metrics** | ❌ Basic | ✅ Prometheus metrics | 🟡 MEDIUM |
-| **CORS Configuration** | ✅ Done | ✅ Complete | ✅ DONE |
-| **Input Validation** | ✅ Done | ✅ Complete | ✅ DONE |
 
 ### 2. 🌐 Internationalization (i18n) | 國際化
 
@@ -55,7 +39,6 @@
 | **簡體中文 (zh-CN)** | ❌ None | ✅ Full support | 🟢 LOW |
 | **日本語 (ja)** | ❌ None | ✅ Full support | 🟢 LOW |
 | **Tool Descriptions** | EN only | Multi-language | 🟡 MEDIUM |
-| **Error Messages** | EN only | Multi-language | 🟡 MEDIUM |
 
 ### 3. 📊 Observability | 可觀測性
 
@@ -70,65 +53,45 @@
 
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
-| **Test Coverage** | 81% | 90%+ | 🟡 MEDIUM |
+| **Test Coverage** | 85% | 90%+ | 🟡 MEDIUM |
 | **E2E Tests** | ❌ None | Docker-based E2E | 🟡 MEDIUM |
 | **Load Testing** | ❌ None | Locust / k6 scripts | 🟢 LOW |
-| **Mutation Testing** | ❌ None | mutmut | 🟢 LOW |
 | **Type Checking** | Partial | mypy --strict | 🟡 MEDIUM |
-| **CI/CD Pipeline** | ✅ Done | GitHub Actions | ✅ DONE |
-| **Pre-commit Hooks** | ✅ Done | ruff + bandit | ✅ DONE |
 
 ---
 
 ## 🧮 New Calculators | 新計算器
 
-### Phase 12: Neurology Extended (神經科擴充) ✅ COMPLETED
-
-> **Status**: ✅ DONE | **Completed**: 2025-12-02
-
-| Tool ID | Name | Purpose | Reference | Status |
-|---------|------|---------|-----------|--------|
-| `calculate_hunt_hess` | Hunt & Hess Scale | SAH 分級預後 | Hunt 1968 | ✅ Done |
-| `calculate_fisher_grade` | Fisher Grade | SAH CT 分級 (Original + Modified) | Fisher 1980, Frontera 2006 | ✅ Done |
-| `calculate_four_score` | FOUR Score | 優於 GCS 的昏迷評估 (E/M/B/R) | Wijdicks 2005 | ✅ Done |
-| `calculate_ich_score` | ICH Score | 腦出血 30 天死亡率預測 | Hemphill 2001 | ✅ Done |
-
-**全部完成**: NIHSS ✅, ABCD2 ✅, mRS ✅, Hunt & Hess ✅, Fisher ✅, FOUR ✅, ICH ✅ (7 tools)
-
-### Phase 13: Infectious Disease (感染症)
+### Phase 17: Trauma & Burns (創傷與燒傷)
 
 > **Priority**: 🟡 MEDIUM | **Target**: 2026 Q1
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
-| `calculate_mascc` | MASCC Score | 嗜中性白血球低下發燒風險 | Klastersky 2000 |
-| `calculate_pitt_bacteremia` | Pitt Bacteremia | 菌血症預後 | Paterson 2004 |
-| `calculate_centor` | Centor/McIsaac | 咽炎抗生素決策 | Centor 1981 |
-| `calculate_quick_cpis` | Clinical Pulmonary Infection Score | VAP 診斷輔助 | Pugin 1991 |
+| \`calculate_iss\` | Injury Severity Score | 創傷嚴重度評估 | Baker 1974 |
+| \`calculate_rts\` | Revised Trauma Score | 創傷生理評估 | Champion 1989 |
+| \`calculate_triss\` | TRISS | 創傷存活機率 | Boyd 1987 |
+| \`calculate_tbsa\` | TBSA (Rule of Nines) | 燒傷面積計算 | Wallace 1951 |
 
-### ~~Phase 14: Common Utilities (通用工具)~~ ✅ COMPLETED
+### Phase 18: Gastroenterology Extended (消化科擴充)
 
-> **Completed**: 2025-12-02 | **4/4 tools**
+> **Priority**: 🟢 LOW | **Target**: 2026 Q2
 
-| Tool ID | Name | Purpose | Reference | Status |
-|---------|------|---------|-----------|--------|
-| `calculate_bsa` | Body Surface Area | 化療/燒傷計算 | Du Bois 1916, Mosteller | ✅ Done |
-| `calculate_cockcroft_gault` | Creatinine Clearance | 藥物劑量調整 | Cockcroft-Gault 1976 | ✅ Done |
-| `calculate_corrected_calcium` | Albumin-Corrected Ca | 真實血鈣評估 | Payne 1973 | ✅ Done |
-| `calculate_parkland_formula` | Parkland Formula | 燒傷輸液計劃 | Baxter 1968 | ✅ Done |
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| \`calculate_blatchford\` | Blatchford Score | 上消化道出血風險 | Blatchford 2000 |
+| \`calculate_aims65\` | AIMS65 Score | 上消化道出血死亡率 | Saltzman 2011 |
+| \`calculate_lille\` | Lille Model | 酒精性肝炎類固醇反應 | Louvet 2007 |
+| \`calculate_maddrey\` | Maddrey's DF | 酒精性肝炎嚴重度 | Maddrey 1978 |
 
-**全部完成**: BSA ✅, Cockcroft-Gault ✅, Corrected Calcium ✅, Parkland ✅ (4 tools)
-
-### Phase 15: Obstetrics & Pediatrics (婦產兒科)
+### Phase 19: Obstetrics (產科)
 
 > **Priority**: 🟢 LOW | **Target**: 2026 Q3
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
-| `calculate_bishop_score` | Bishop Score | 子宮頸成熟度/引產評估 | Bishop 1964 |
-| `calculate_apgar` | APGAR Score | 新生兒評估 | Apgar 1953 |
-| `calculate_pews` | Pediatric Early Warning | 兒童病情惡化 | Parshuram 2009 |
-| `calculate_ballard` | Ballard Score | 新生兒胎齡評估 | Ballard 1991 |
+| \`calculate_bishop_score\` | Bishop Score | 子宮頸成熟度/引產評估 | Bishop 1964 |
+| \`calculate_ballard\` | Ballard Score | 新生兒胎齡評估 | Ballard 1991 |
 
 ---
 
@@ -144,21 +107,6 @@
 | **API Key Auth** | API 金鑰認證 | Header-based X-API-Key |
 | **OAuth2 (Optional)** | 企業級認證 | FastAPI OAuth2 |
 | **Request Validation** | 請求大小限制 | Middleware |
-| **IP Allowlist** | 白名單機制 | Middleware |
-
-**Implementation Example:**
-```python
-# Rate limiting with slowapi
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-
-limiter = Limiter(key_func=get_remote_address)
-
-@app.get("/api/v1/calculate/{tool_id}")
-@limiter.limit("100/minute")
-async def calculate(...):
-    ...
-```
 
 ### Cloud Deployment Templates (雲端部署模板)
 
@@ -166,24 +114,10 @@ async def calculate(...):
 
 | Platform | Status | Template |
 |----------|--------|----------|
-| **Docker Compose** | ✅ Done | `docker-compose.yml` |
-| **Kubernetes** | 📋 Planned | `k8s/` manifests |
+| **Docker Compose** | ✅ Done | \`docker-compose.yml\` |
+| **Kubernetes** | 📋 Planned | \`k8s/\` manifests |
 | **AWS ECS/Fargate** | 📋 Planned | CloudFormation / Terraform |
-| **GCP Cloud Run** | 📋 Planned | `cloudbuild.yaml` |
-| **Azure Container Apps** | 📋 Planned | ARM template |
-
-### Streamable HTTP Transport (MCP 串流傳輸)
-
-> **Priority**: 🟢 LOW
-
-MCP SDK 支援的新傳輸方式，適合長時間連線場景：
-
-```python
-# Future: Streamable HTTP
-from mcp.server.fastmcp import FastMCP
-mcp = FastMCP("medical-calc")
-mcp.run(transport="streamable-http")
-```
+| **GCP Cloud Run** | 📋 Planned | \`cloudbuild.yaml\` |
 
 ---
 
@@ -193,33 +127,13 @@ mcp.run(transport="streamable-http")
 
 > **Priority**: 🟡 MEDIUM
 
-自動產生新計算器的腳手架工具：
-
-```bash
+\`\`\`bash
 # Future CLI usage
-python -m medical_calc.cli new calculator \
-    --name "Bishop Score" \
-    --specialty obstetrics \
+python -m medical_calc.cli new calculator \\
+    --name "Bishop Score" \\
+    --specialty obstetrics \\
     --reference "Bishop 1964"
-
-# Generates:
-# - src/domain/services/calculators/bishop_score.py
-# - tests/test_bishop_score.py
-# - Updates __init__.py
-```
-
-### VS Code Extension (VS Code 擴充)
-
-> **Priority**: 🟢 LOW
-
-提供開發者更好的編輯體驗：
-
-| Feature | Description |
-|---------|-------------|
-| **Calculator Snippets** | 快速插入計算器模板 |
-| **Reference Lookup** | 快速查詢論文 PMID |
-| **Test Runner** | 一鍵執行單一計算器測試 |
-| **Validation Preview** | 即時預覽參數驗證 |
+\`\`\`
 
 ### Documentation Site (文件網站)
 
@@ -233,105 +147,69 @@ python -m medical_calc.cli new calculator \
 | **Calculator Reference** | 所有計算器 API 文件 |
 | **Clinical Workflows** | 臨床工作流程範例 |
 | **API Reference** | REST API 完整文件 |
-| **Contributing** | 貢獻者指南 |
-
-```bash
-# Future docs build
-pip install mkdocs-material
-mkdocs build
-mkdocs serve  # http://localhost:8000
-```
-
----
-
-## 🔧 Technical Debt | 技術債
-
-### Code Quality Issues (程式碼品質)
-
-| Issue | Location | Status |
-|-------|----------|--------|
-| **Pydantic deprecation** | `api/server.py` | ✅ Fixed |
-| **Type hints incomplete** | Various | 📋 Add mypy --strict |
-| **Docstring inconsistency** | Some calculators | 📋 Standardize format |
-| **Test duplication** | test_*.py | 📋 Extract fixtures |
-
-### Architecture Improvements (架構改進)
-
-| Item | Current | Improved |
-|------|---------|----------|
-| **Result serialization** | Manual `asdict()` | Dedicated serializer |
-| **Error handling** | String messages | Error codes + i18n |
-| **Configuration** | Environment vars | Pydantic Settings |
-| **Dependency injection** | Manual | FastAPI Depends |
 
 ---
 
 ## 📅 Timeline | 時程規劃
 
-```
-2025 Q4 (Current - DONE ✅)
-├── 64 Calculators complete (Phase 15 done!)
-├── Security audit complete  
-├── Docker + REST API + SSE + HTTPS complete
-├── GitHub Actions CI + Pre-commit hooks ✅
-├── Phase 15: Pediatric Scores ✅ (APGAR, PEWS, pSOFA, PIM3, pGCS)
-├── Phase 16: Infectious Disease ✅ (MASCC, Pitt Bacteremia, Centor, CPIS)
-└── 666 tests, 81% coverage, 68 calculators
+\`\`\`
+2025 Q4 ✅ COMPLETED
+├── 68 Calculators (Phase 16 done!)
+├── Docker + REST API + SSE + HTTPS
+├── GitHub Actions CI + Pre-commit hooks
+├── 774 tests, 85% coverage
+└── Ruff lint errors fixed
 
-2026 Q1 (In Progress)
-├── Phase 16: Infectious Disease ✅ COMPLETED
+2026 Q1 (Current Focus)
 ├── Rate Limiting + API Auth
-├── Test coverage 85%+
-└── Target: 68 calculators ✅ ACHIEVED
+├── Test coverage 90%+
+├── Phase 17: Trauma & Burns (4 calculators)
+└── Target: 72 calculators
 
 2026 Q2 (Planned)
-├── Phase 14: Common Utilities (4 calculators)
+├── Phase 18: Gastroenterology Extended
 ├── i18n Framework (zh-TW, zh-CN)
 ├── Kubernetes templates
 ├── Documentation site (MkDocs)
-└── Target: 63 calculators
+└── Target: 76 calculators
 
 2026 Q3 (Planned)
-├── Phase 15: Obstetrics & Pediatrics (4 calculators)
+├── Phase 19: Obstetrics (2 calculators)
 ├── Calculator CLI generator
 ├── Cloud deployment templates
-├── Test coverage 90%+
-└── Target: 67+ calculators
-```
+└── Target: 78+ calculators
+\`\`\`
 
 ---
 
 ## 📋 Priority Queue | 優先佇列
 
-### Immediate (Next Sprint) - Security First
+### Immediate (Next Sprint)
 
-| Rank | Item | Category | Effort | Status |
-|------|------|----------|--------|--------|
-| 1 | Rate Limiting | Security | S | 📋 TODO |
-| 2 | API Key Authentication | Security | M | 📋 TODO |
-| 3 | Structured Logging | Observability | S | 📋 TODO |
-| 4 | Hunt & Hess Calculator | Neurology | S | ✅ Done |
-| 5 | Fisher Grade Calculator | Neurology | S | ✅ Done |
+| Rank | Item | Category | Effort |
+|------|------|----------|--------|
+| 1 | Rate Limiting | Security | S |
+| 2 | API Key Authentication | Security | M |
+| 3 | Structured Logging | Observability | S |
+| 4 | Test Coverage 90% | Testing | M |
 
 ### Short-term (Next Month)
 
-| Rank | Item | Category | Effort | Status |
-|------|------|----------|--------|--------|
-| 6 | FOUR Score Calculator | Neurology | M | ✅ Done |
-| 7 | ICH Score Calculator | Neurology | S | ✅ Done |
-| 8 | MASCC Score Calculator | Infectious | M | 📋 TODO |
-| 9 | i18n Framework | DX | L | 📋 TODO |
-| 10 | MkDocs Site | DX | M | 📋 TODO |
+| Rank | Item | Category | Effort |
+|------|------|----------|--------|
+| 5 | ISS Calculator | Trauma | S |
+| 6 | RTS Calculator | Trauma | S |
+| 7 | TRISS Calculator | Trauma | M |
+| 8 | i18n Framework | DX | L |
 
 ### Long-term (Next Quarter)
 
 | Rank | Item | Category | Effort |
 |------|------|----------|--------|
-| 11 | Kubernetes templates | Infra | M |
-| 12 | Calculator CLI generator | DX | L |
-| 13 | Prometheus metrics | Observability | M |
-| 14 | Load testing suite | Testing | M |
-| 15 | OpenTelemetry tracing | Observability | M |
+| 9 | Kubernetes templates | Infra | M |
+| 10 | MkDocs Site | DX | M |
+| 11 | Calculator CLI generator | DX | L |
+| 12 | Prometheus metrics | Observability | M |
 
 **Effort Legend**: S = Small (1-2 days), M = Medium (3-5 days), L = Large (1-2 weeks)
 
@@ -341,14 +219,12 @@ mkdocs serve  # http://localhost:8000
 
 | Metric | Current | Target (2026 Q2) |
 |--------|---------|------------------|
-| Calculators | **64** | 70+ |
-| Test Coverage | 81% | 90%+ |
+| Calculators | **68** | 76+ |
+| Test Coverage | 85% | 90%+ |
 | API Response Time (p95) | ~50ms | <100ms |
 | Documentation | README only | Full MkDocs site |
 | i18n Languages | 1 (EN) | 3 (EN, zh-TW, zh-CN) |
-| Production Deployments | 0 | 3+ (examples) |
 | Security Features | CORS + HTTPS | Rate limit + Auth |
-| CI/CD | ✅ GitHub Actions | Full pipeline |
 
 ---
 
@@ -363,7 +239,6 @@ mkdocs serve  # http://localhost:8000
 3. **📝 文件** - 改善 README 或新增範例
 4. **🧪 測試** - 提高測試覆蓋率
 5. **🌐 翻譯** - 協助翻譯工具描述為中文
-6. **🐛 Bug 修復** - 查看 Issues 清單
 
 ---
 
