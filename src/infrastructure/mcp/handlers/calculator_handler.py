@@ -28,6 +28,8 @@ from .calculators import (
     register_neurology_tools,
     register_general_tools,
     register_pediatric_score_tools,
+    register_infectious_disease_tools,
+    register_obstetrics_tools,
 )
 
 
@@ -104,3 +106,9 @@ class CalculatorHandler:
         
         # Pediatric Score calculators (APGAR, PEWS, pSOFA, PIM3, Pediatric GCS)
         register_pediatric_score_tools(self._mcp)
+        
+        # Infectious Disease calculators (MASCC, Pitt Bacteremia, Centor, CPIS)
+        register_infectious_disease_tools(self._mcp, self._use_case)
+        
+        # Obstetrics calculators (Bishop Score, Ballard Score)
+        register_obstetrics_tools(self._mcp, self._use_case)

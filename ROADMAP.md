@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2025-12-03
 > **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 71 Calculator Files | 51 MCP Tools | 919 Tests | 88% Coverage
+> **Status**: 70 Calculators | 70 MCP Tools | 919 Tests | 88% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -209,9 +209,9 @@ python -m medical_calc.cli new calculator \\
 
 ## 📅 Timeline | 時程規劃
 
-\`\`\`
+```
 2025 Q4 ✅ COMPLETED
-├── 71 Calculator Files (51 registered as MCP tools)
+├── 70 Calculators = 70 MCP Tools (all registered!)
 ├── Docker + REST API + SSE + HTTPS
 ├── GitHub Actions CI + Pre-commit hooks
 ├── 919 tests, 88% coverage
@@ -222,7 +222,8 @@ python -m medical_calc.cli new calculator \\
 ├── ✅ Parkland Formula (Phase 18 Burns)
 ├── ✅ PEWS (Phase 20 Pediatrics)
 ├── ✅ Hunt & Hess + Fisher Grade (Phase 22 Neurology)
-└── ✅ Security Module (Optional Rate Limiting + API Auth)
+├── ✅ Security Module (Optional Rate Limiting + API Auth)
+└── ✅ Infectious Disease + Obstetrics MCP handlers added
 
 2026 Q1 (Current Focus)
 ├── ✅ Rate Limiting + API Auth (DONE)

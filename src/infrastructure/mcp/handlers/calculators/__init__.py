@@ -19,6 +19,8 @@ from .hematology import register_hematology_tools
 from .neurology import register_neurology_tools
 from .general import register_general_tools
 from .pediatric_scores import register_pediatric_score_tools
+from .infectious_disease import register_infectious_disease_tools
+from .obstetrics import register_obstetrics_tools
 
 __all__ = [
     "register_nephrology_tools",
@@ -35,4 +37,6 @@ __all__ = [
     "register_neurology_tools",
     "register_general_tools",
     "register_pediatric_score_tools",
+    "register_infectious_disease_tools",
+    "register_obstetrics_tools",
 ]
