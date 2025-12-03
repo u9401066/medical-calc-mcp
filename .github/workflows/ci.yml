@@ -69,6 +69,7 @@ jobs:
         run: |
           docker run -d --name test-server -p 8000:8000 medical-calc-mcp:latest
           sleep 5
-          curl -f http://localhost:8000/health || exit 1
+          # FastMCP SSE mode uses /sse endpoint (no /health)
+          curl -sf http://localhost:8000/sse -o /dev/null -m 5 || exit 1
           docker stop test-server
           docker rm test-server
