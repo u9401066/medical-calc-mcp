@@ -23,8 +23,18 @@ class Reference:
                      "N Engl J Med. 2021;385(19):1737-1749.",
             doi="10.1056/NEJMoa2102953",
             pmid="34554658",
-            year=2021
+            year=2021,
+            level_of_evidence="Class I"
         )
+    
+    Level of Evidence (Oxford CEBM):
+        - Class I / Level A: High-quality RCT, systematic review
+        - Class II / Level B: Lower-quality RCT, prospective cohort
+        - Class III / Level C: Case-control, retrospective cohort
+        - Class IV / Level D: Case series, case reports
+        - Class V / Level E: Expert opinion, consensus
+        - "Validation study": Original validation cohort
+        - "Clinical guideline": Society guidelines (e.g., AHA, ESC, ACOG)
     """
     
     citation: str  # Full Vancouver-style citation
@@ -33,6 +43,7 @@ class Reference:
     pmcid: Optional[str] = None  # PubMed Central ID
     year: Optional[int] = None  # Publication year
     url: Optional[str] = None  # Direct URL (if no DOI)
+    level_of_evidence: Optional[str] = None  # Evidence level (Oxford CEBM or custom)
     
     def __post_init__(self):
         if not self.citation:
@@ -60,5 +71,6 @@ class Reference:
             "pmid": self.pmid,
             "pmcid": self.pmcid,
             "year": self.year,
-            "url": self.url or self.doi_url or self.pubmed_url
+            "url": self.url or self.doi_url or self.pubmed_url,
+            "level_of_evidence": self.level_of_evidence
         }

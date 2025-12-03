@@ -115,6 +115,10 @@ from .pitt_bacteremia import PittBacteremiaCalculator
 from .centor_score import CentorScoreCalculator
 from .cpis import CpisCalculator
 
+# Phase 17: Obstetrics & Neonatology (Classic Tools)
+from .bishop_score import BishopScoreCalculator
+from .ballard_score import BallardScoreCalculator
+
 
 __all__ = [
     # Nephrology
@@ -228,6 +232,10 @@ __all__ = [
     "PittBacteremiaCalculator",
     "CentorScoreCalculator",
     "CpisCalculator",
+    
+    # Phase 17: Obstetrics & Neonatology (Classic Tools)
+    "BishopScoreCalculator",
+    "BallardScoreCalculator",
 ]
 
 
@@ -320,4 +328,7 @@ CALCULATORS = [
     PittBacteremiaCalculator,
     CentorScoreCalculator,
     CpisCalculator,
+    # Phase 17: Obstetrics & Neonatology (Classic Tools)
+    BishopScoreCalculator,
+    BallardScoreCalculator,
 ]
