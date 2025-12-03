@@ -383,10 +383,25 @@ curl http://localhost:8000/health
 
 | Mode | Use Case | Port | Command |
 |------|----------|------|---------|
-| `stdio` | Local Claude Desktop | - | `python src/main.py --mode stdio` |
-| `sse` | Remote MCP (Docker/Cloud) | 8000 | `python src/main.py --mode sse --port 8000` |
-| `api` | REST API (FastAPI) | 8080 | `python src/main.py --mode api --port 8080` |
-| `http` | Streamable HTTP transport | - | `python src/main.py --mode http` |
+| `stdio` | Local Claude Desktop | - | `python -m src.main` |
+| `sse` | Remote MCP (Docker/Cloud) | 8000 | `python -m src.main --mode sse` |
+| `http` | Streamable HTTP transport | 8000 | `python -m src.main --mode http` |
+
+> ⚠️ **Important**: SSE/HTTP modes bind to `0.0.0.0` by default for remote access.
+
+### Quick Start Commands | 快速啟動指令
+
+```bash
+# 1. STDIO Mode - For Claude Desktop (local)
+python -m src.main
+
+# 2. SSE Mode - For remote agents (Docker/Cloud)
+python -m src.main --mode sse
+python -m src.main --mode sse --host 0.0.0.0 --port 9000  # Custom port
+
+# 3. HTTP Mode - Streamable HTTP transport
+python -m src.main --mode http
+```
 
 ### Remote MCP Client Configuration | 遠端 MCP 客戶端設定
 

@@ -1,19 +1,23 @@
-# Progress (Updated: 2025-12-02)
+# Progress (Updated: 2025-12-03)
 
 ## Done
 
-- Phase 16 完成: 4 個感染科計算器 + 25 測試
-- 補充低覆蓋率測試: test_main.py (18 tests), test_mcp_resources.py (20 tests), test_mcp_discovery.py (22 tests)
-- 總測試 726 → 覆蓋率 85%
-- MCP Handler 測試: test_mcp_calculator_handlers.py 新增 48 個測試
-- 修復 hematology.py 4ts_hit 參數映射 bug
-- 總測試: 774 passed, 總覆蓋率: 85%
+- Phase 16: Added 48 MCP handler tests
+- Fixed hematology.py 4ts_hit parameter mapping bug
+- Fixed 35 Ruff lint errors (F541/F841)
+- Streamlined ROADMAP.md
+- Fixed SSE/remote deployment support - major bug fix
+- Simplified main.py to use FastMCP built-in SSE
+- Updated config.py with host/port settings (0.0.0.0:8000)
+- Fixed server.py run() to properly pass transport parameter
+- Updated test_main.py for new main.py structure
+- 768 tests passing
 
 ## Doing
 
-
+- Committing and pushing deployment fix
 
 ## Next
 
-- 可選: 繼續添加更多 handler 邊界測試
-- Rate Limiting + API Authentication
+- Monitor GitHub CI
+- Add more calculator tests if needed

@@ -15,6 +15,10 @@ class McpServerConfig:
     version: str = "1.0.0"
     json_response: bool = True
     
+    # Server network settings (for SSE/HTTP transport)
+    host: str = "0.0.0.0"  # Bind to all interfaces for remote access
+    port: int = 8000
+    
     # Instructions shown to AI agents
     instructions: str = """
 Medical Calculator MCP Server - 醫學計算工具 MCP 伺服器

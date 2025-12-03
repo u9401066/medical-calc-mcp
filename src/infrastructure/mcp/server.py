@@ -61,11 +61,13 @@ class MedicalCalculatorServer:
         """
         self._config = config or default_config
         
-        # Create FastMCP server
+        # Create FastMCP server with network settings
         self._mcp = FastMCP(
             name=self._config.name,
             json_response=self._config.json_response,
-            instructions=self._config.instructions
+            instructions=self._config.instructions,
+            host=self._config.host,  # For SSE/HTTP transport
+            port=self._config.port,  # For SSE/HTTP transport
         )
         
         # Use singleton registry for consistency
@@ -114,12 +116,14 @@ class MedicalCalculatorServer:
         Run the MCP server.
         
         Args:
-            transport: Transport type ("stdio" or "streamable-http")
+            transport: Transport type ("stdio", "sse", or "http")
         """
         if transport == "http":
             self._mcp.run(transport="streamable-http")
+        elif transport == "sse":
+            self._mcp.run(transport="sse")
         else:
-            self._mcp.run()
+            self._mcp.run(transport="stdio")
 
 
 # =============================================================================
