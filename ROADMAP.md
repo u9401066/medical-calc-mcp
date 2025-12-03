@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2025-12-03
 > **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 68 Calculators | 768 Tests | 85% Coverage
+> **Status**: 70 Calculators | 799 Tests | 85% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -62,7 +62,16 @@
 
 ## 🧮 New Calculators | 新計算器
 
-### Phase 17: Trauma & Burns (創傷與燒傷)
+### Phase 17: Obstetrics (產科) ✅ COMPLETED
+
+> **Status**: ✅ DONE | **Completed**: 2025-12-03
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| \`calculate_bishop_score\` | Bishop Score | 子宮頸成熟度/引產評估 | Bishop 1964 |
+| \`calculate_ballard_score\` | Ballard Score (New Ballard) | 新生兒胎齡評估 | Ballard 1991 |
+
+### Phase 18: Trauma & Burns (創傷與燒傷)
 
 > **Priority**: 🟡 MEDIUM | **Target**: 2026 Q1
 
@@ -73,7 +82,7 @@
 | \`calculate_triss\` | TRISS | 創傷存活機率 | Boyd 1987 |
 | \`calculate_tbsa\` | TBSA (Rule of Nines) | 燒傷面積計算 | Wallace 1951 |
 
-### Phase 18: Gastroenterology Extended (消化科擴充)
+### Phase 19: Gastroenterology Extended (消化科擴充)
 
 > **Priority**: 🟢 LOW | **Target**: 2026 Q2
 
@@ -83,15 +92,6 @@
 | \`calculate_aims65\` | AIMS65 Score | 上消化道出血死亡率 | Saltzman 2011 |
 | \`calculate_lille\` | Lille Model | 酒精性肝炎類固醇反應 | Louvet 2007 |
 | \`calculate_maddrey\` | Maddrey's DF | 酒精性肝炎嚴重度 | Maddrey 1978 |
-
-### Phase 19: Obstetrics (產科)
-
-> **Priority**: 🟢 LOW | **Target**: 2026 Q3
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| \`calculate_bishop_score\` | Bishop Score | 子宮頸成熟度/引產評估 | Bishop 1964 |
-| \`calculate_ballard\` | Ballard Score | 新生兒胎齡評估 | Ballard 1991 |
 
 ---
 
@@ -164,33 +164,34 @@ python -m medical_calc.cli new calculator \\
 
 \`\`\`
 2025 Q4 ✅ COMPLETED
-├── 68 Calculators (Phase 16 done!)
+├── 70 Calculators (Phase 17 Obstetrics done!)
 ├── Docker + REST API + SSE + HTTPS
 ├── GitHub Actions CI + Pre-commit hooks
-├── 768 tests, 85% coverage
+├── 799 tests, 85% coverage
 ├── Ruff lint errors fixed
-└── ✅ SSE remote deployment fix (FastMCP built-in transport)
+├── ✅ SSE remote deployment fix (FastMCP built-in transport)
+├── ✅ Reference class: level_of_evidence field added
+└── ✅ Bishop Score + Ballard Score (Obstetrics)
 
 2026 Q1 (Current Focus)
 ├── Rate Limiting + API Auth
 ├── Test coverage 90%+
-├── Phase 17: Trauma & Burns (4 calculators)
+├── Phase 18: Trauma & Burns (4 calculators)
 ├── 📦 PyPI package release (pip install medical-calc-mcp)
 ├── 🏷️ GitHub Release workflow (automated versioning)
-└── Target: 72 calculators
+└── Target: 74 calculators
 
 2026 Q2 (Planned)
-├── Phase 18: Gastroenterology Extended
+├── Phase 19: Gastroenterology Extended
 ├── i18n Framework (zh-TW, zh-CN)
 ├── Kubernetes templates
 ├── Documentation site (MkDocs)
-└── Target: 76 calculators
+└── Target: 78 calculators
 
 2026 Q3 (Planned)
-├── Phase 19: Obstetrics (2 calculators)
 ├── Calculator CLI generator
 ├── Cloud deployment templates
-└── Target: 78+ calculators
+└── Target: 80+ calculators
 \`\`\`
 
 ---
@@ -232,7 +233,7 @@ python -m medical_calc.cli new calculator \\
 
 | Metric | Current | Target (2026 Q2) |
 |--------|---------|------------------|
-| Calculators | **68** | 76+ |
+| Calculators | **70** | 78+ |
 | Test Coverage | 85% | 90%+ |
 | API Response Time (p95) | ~50ms | <100ms |
 | Documentation | README only | Full MkDocs site |
