@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2025-12-03
 > **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 68 Calculators | 774 Tests | 85% Coverage
+> **Status**: 68 Calculators | 768 Tests | 85% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -114,10 +114,20 @@
 
 | Platform | Status | Template |
 |----------|--------|----------|
-| **Docker Compose** | ✅ Done | \`docker-compose.yml\` |
-| **Kubernetes** | 📋 Planned | \`k8s/\` manifests |
+| **Docker Compose** | ✅ Done | `docker-compose.yml` |
+| **Kubernetes** | 📋 Planned | `k8s/` manifests |
 | **AWS ECS/Fargate** | 📋 Planned | CloudFormation / Terraform |
-| **GCP Cloud Run** | 📋 Planned | \`cloudbuild.yaml\` |
+| **GCP Cloud Run** | 📋 Planned | `cloudbuild.yaml` |
+
+### Package Distribution (套件發布)
+
+> **Priority**: 🟡 MEDIUM
+
+| Item | Status | Description |
+|------|--------|-------------|
+| **PyPI Package** | 📋 Planned | `pip install medical-calc-mcp` |
+| **GitHub Releases** | 📋 Planned | Automated versioning with tags |
+| **Docker Hub** | 📋 Planned | `docker pull medical-calc-mcp` |
 
 ---
 
@@ -157,13 +167,16 @@ python -m medical_calc.cli new calculator \\
 ├── 68 Calculators (Phase 16 done!)
 ├── Docker + REST API + SSE + HTTPS
 ├── GitHub Actions CI + Pre-commit hooks
-├── 774 tests, 85% coverage
-└── Ruff lint errors fixed
+├── 768 tests, 85% coverage
+├── Ruff lint errors fixed
+└── ✅ SSE remote deployment fix (FastMCP built-in transport)
 
 2026 Q1 (Current Focus)
 ├── Rate Limiting + API Auth
 ├── Test coverage 90%+
 ├── Phase 17: Trauma & Burns (4 calculators)
+├── 📦 PyPI package release (pip install medical-calc-mcp)
+├── 🏷️ GitHub Release workflow (automated versioning)
 └── Target: 72 calculators
 
 2026 Q2 (Planned)
