@@ -2,9 +2,11 @@
 
 > **Last Updated**: 2025-12-03
 > **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 70 Calculators | 799 Tests | 85% Coverage
+> **Status**: 70 Calculators | 884 Tests | 88% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
+
+> 📋 **2020-2025 指引缺口分析**: 參閱 [docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md](docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)
 
 ---
 
@@ -78,25 +80,61 @@
 
 ### Phase 18: Trauma & Burns (創傷與燒傷)
 
-> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q1
+> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+> **Rationale**: 創傷評分為國際標準，燒傷輸液為急救基礎
+
+| Tool ID | Name | Purpose | Reference | Guideline |
+|---------|------|---------|-----------|-----------|
+| `calculate_iss` | Injury Severity Score | 創傷嚴重度評估 | Baker 1974 | ACS-COT |
+| `calculate_rts` | Revised Trauma Score | 創傷生理評估 | Champion 1989 | ATLS |
+| `calculate_triss` | TRISS | 創傷存活機率 | Boyd 1987 | TARN |
+| `calculate_tbsa` | TBSA (Rule of Nines) | 燒傷面積計算 | Wallace 1951 | ABA |
+| `calculate_parkland` | Parkland Formula | 燒傷輸液計算 | Baxter 1968 | ABA Guidelines |
+
+### Phase 19: GI Bleeding Extended (消化道出血擴充)
+
+> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+> **Rationale**: Glasgow-Blatchford 和 AIMS65 為國際指引推薦 (PMID: 39400553)
+
+| Tool ID | Name | Purpose | Reference | Guideline |
+|---------|------|---------|-----------|-----------|
+| `calculate_blatchford` | Glasgow-Blatchford Score | 上消化道出血需干預風險 | Blatchford 2000 | **ESGE 推薦** |
+| `calculate_aims65` | AIMS65 Score | 上消化道出血死亡率 | Saltzman 2011 | **多指引推薦** |
+
+### Phase 20: Pediatric Safety (小兒安全)
+
+> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+> **Rationale**: PEWS 為兒科住院安全核心工具
+
+| Tool ID | Name | Purpose | Reference | Guideline |
+|---------|------|---------|-----------|-----------|
+| `calculate_pews` | Brighton PEWS | 小兒早期預警 | Monaghan 2005 | RCPCH |
+
+### Phase 21: Gastroenterology Extended (消化科擴充)
+
+> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q2
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
-| \`calculate_iss\` | Injury Severity Score | 創傷嚴重度評估 | Baker 1974 |
-| \`calculate_rts\` | Revised Trauma Score | 創傷生理評估 | Champion 1989 |
-| \`calculate_triss\` | TRISS | 創傷存活機率 | Boyd 1987 |
-| \`calculate_tbsa\` | TBSA (Rule of Nines) | 燒傷面積計算 | Wallace 1951 |
+| `calculate_lille` | Lille Model | 酒精性肝炎類固醇反應 | Louvet 2007 |
+| `calculate_maddrey` | Maddrey's DF | 酒精性肝炎嚴重度 | Maddrey 1978 |
 
-### Phase 19: Gastroenterology Extended (消化科擴充)
+### Phase 22: Neurology Extended (神經科擴充)
 
-> **Priority**: 🟢 LOW | **Target**: 2026 Q2
+> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q2
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
-| \`calculate_blatchford\` | Blatchford Score | 上消化道出血風險 | Blatchford 2000 |
-| \`calculate_aims65\` | AIMS65 Score | 上消化道出血死亡率 | Saltzman 2011 |
-| \`calculate_lille\` | Lille Model | 酒精性肝炎類固醇反應 | Louvet 2007 |
-| \`calculate_maddrey\` | Maddrey's DF | 酒精性肝炎嚴重度 | Maddrey 1978 |
+| `calculate_hunt_hess` | Hunt & Hess Grade | SAH 臨床嚴重度 | Hunt 1968 |
+| `calculate_fisher_grade` | Fisher Grade | SAH CT 分級 | Fisher 1980 |
+
+### Phase 23: Cardiac Surgery (心臟手術擴充)
+
+> **Priority**: 🟡 MEDIUM | **Target**: 2026 Q3
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|-----------|
+| `calculate_euroscore2` | EuroSCORE II | 心臟手術死亡率 | Nashef 2012 |
 
 ---
 
@@ -172,7 +210,7 @@ python -m medical_calc.cli new calculator \\
 ├── 70 Calculators (Phase 17 Obstetrics done!)
 ├── Docker + REST API + SSE + HTTPS
 ├── GitHub Actions CI + Pre-commit hooks
-├── 799 tests, 85% coverage
+├── 884 tests, 88% coverage
 ├── Ruff lint errors fixed
 ├── ✅ SSE remote deployment fix (FastMCP built-in transport)
 ├── ✅ Reference class: level_of_evidence field added
@@ -181,10 +219,10 @@ python -m medical_calc.cli new calculator \\
 2026 Q1 (Current Focus)
 ├── Rate Limiting + API Auth
 ├── Test coverage 90%+
-├── Phase 18: Trauma & Burns (4 calculators)
+├── Phase 18: Trauma & Burns (5 calculators) - ISS, RTS, TRISS, TBSA, Parkland
 ├── 📦 PyPI package release (pip install medical-calc-mcp)
 ├── 🏷️ GitHub Release workflow (automated versioning)
-└── Target: 74 calculators
+└── Target: 78 calculators
 
 2026 Q2 (Planned)
 ├── Phase 19: Gastroenterology Extended
