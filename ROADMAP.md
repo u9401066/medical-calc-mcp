@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
-> **Last Updated**: 2025-12-03
-> **Current Version**: v1.0.0 (Production Ready)
-> **Status**: 70 Calculators | 70 MCP Tools | 919 Tests | 88% Coverage
+> **Last Updated**: 2025-12-09
+> **Current Version**: v1.1.0 (Production Ready)
+> **Status**: 75 Calculators | 75 MCP Tools | 1639 Tests | 88% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -61,14 +61,15 @@
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
 | **Test Coverage** | ✅ 88% | 90%+ | 🟡 MEDIUM |
-| **E2E Tests** | ✅ 27 tests | Docker-based E2E | ✅ DONE |
+| **E2E Tests** | ✅ 697 tests (77 files) | Full Calculator Coverage | ✅ DONE |
 | **Load Testing** | ❌ None | Locust / k6 scripts | 🟢 LOW |
 | **Type Checking** | Partial | mypy --strict | 🟡 MEDIUM |
 
-> **Testing Progress** (2025-12-03):
-> - Total tests: 884 (was 799)
-> - E2E tests: 27 tests (REST API, Clinical Workflows, Performance, Integration)
-> - Coverage enhancement tests: 60 tests (Validation, Handlers, Edge cases)
+> **Testing Progress** (2025-12-09):
+> - Total tests: 1639 (was 940)
+> - E2E tests: 697 tests across 77 test files (one per calculator)
+> - Full REST API endpoint coverage for all 75 calculators
+> - Tests include clinical scenarios, edge cases, and error handling
 
 ---
 
@@ -90,21 +91,22 @@
 
 | Tool ID | Name | Purpose | Reference | Guideline | Status |
 |---------|------|---------|-----------|-----------|--------|
-| `calculate_iss` | Injury Severity Score | 創傷嚴重度評估 | Baker 1974 | ACS-COT | ❌ TODO |
+| `calculate_iss` | Injury Severity Score | 創傷嚴重度評估 | Baker 1974 | ACS-COT | ✅ DONE |
 | `calculate_rts` | Revised Trauma Score | 創傷生理評估 | Champion 1989 | ATLS | ❌ TODO |
 | `calculate_triss` | TRISS | 創傷存活機率 | Boyd 1987 | TARN | ❌ TODO |
-| `calculate_tbsa` | TBSA (Rule of Nines) | 燒傷面積計算 | Wallace 1951 | ABA | ❌ TODO |
+| `calculate_tbsa` | TBSA (Rule of Nines) | 燒傷面積計算 | Wallace 1951 | ABA | ✅ DONE |
 | ~~`calculate_parkland`~~ | ~~Parkland Formula~~ | 燒傷輸液計算 | Baxter 1968 | ABA Guidelines | ✅ DONE |
 
-### Phase 19: GI Bleeding Extended (消化道出血擴充)
+### Phase 19: GI Bleeding Extended (消化道出血擴充) ✅ COMPLETED
 
-> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+> **Status**: ✅ DONE | **Completed**: 2025-12-03
 > **Rationale**: Glasgow-Blatchford 和 AIMS65 為國際指引推薦 (PMID: 39400553)
 
-| Tool ID | Name | Purpose | Reference | Guideline |
-|---------|------|---------|-----------|-----------|
-| `calculate_blatchford` | Glasgow-Blatchford Score | 上消化道出血需干預風險 | Blatchford 2000 | **ESGE 推薦** |
-| `calculate_aims65` | AIMS65 Score | 上消化道出血死亡率 | Saltzman 2011 | **多指引推薦** |
+| Tool ID | Name | Purpose | Reference | Guideline | Status |
+|---------|------|---------|-----------|-----------|--------|
+| `calculate_glasgow_blatchford` | Glasgow-Blatchford Score | 上消化道出血需干預風險 | Blatchford 2000 | **ESGE 推薦** | ✅ DONE |
+| `calculate_aims65` | AIMS65 Score | 上消化道出血死亡率 | Saltzman 2011 | **多指引推薦** | ✅ DONE |
+| `calculate_spesi` | Simplified PESI | PE 30天死亡率 | Jiménez 2010 | **ESC 2019 Class I** | ✅ DONE (Bonus) |
 
 ### Phase 20: Pediatric Safety (小兒安全) ✅ COMPLETED
 
@@ -289,8 +291,10 @@ python -m medical_calc.cli new calculator \\
 
 | Metric | Current | Target (2026 Q2) |
 |--------|---------|------------------|
-| Calculator Files | **71** | 80+ |
-| MCP Tools | **51** | 60+ |
+| Calculator Files | **75** | 80+ |
+| MCP Tools | **75** | 80+ |
+| Total Tests | **1639** | 1800+ |
+| E2E Tests | **697** | 750+ |
 | Test Coverage | 88% | 90%+ |
 | API Response Time (p95) | ~50ms | <100ms |
 | Documentation | README only | Full MkDocs site |

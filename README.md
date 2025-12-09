@@ -8,6 +8,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-1639%20passed-brightgreen.svg)](#-development--開發指南)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-architecture--架構)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
@@ -1076,9 +1077,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools | 可用工具
 
-> **MCP Primitives**: 63 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 75 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 68 Calculators | 774 Tests | 85% Coverage | Phase 16 Complete ✅
+> **Current Stats**: 75 Calculators | 940 Tests | 88% Coverage | Phase 19 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -1090,10 +1091,10 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | 🩺 Critical Care / ICU | 8 | [→ Jump](#-critical-care--icu--重症加護) |
 | 👶 Pediatrics | 9 | [→ Jump](#-pediatrics--小兒科) |
 | 🫘 Nephrology | 2 | [→ Jump](#-nephrology--腎臟科) |
-| 🫁 Pulmonology | 5 | [→ Jump](#-pulmonology--胸腔科) |
+| 🫁 Pulmonology | 6 | [→ Jump](#-pulmonology--胸腔科) |
 | ❤️ Cardiology | 9 | [→ Jump](#-cardiology--心臟科) |
-| 🚑 Emergency Medicine | 3 | [→ Jump](#-emergency-medicine--急診醫學) |
-| 🟤 Hepatology | 4 | [→ Jump](#-hepatology--肝膽科) |
+| 🚑 Emergency Medicine / Trauma | 5 | [→ Jump](#-emergency-medicine--trauma--急診醫學--創傷) |
+| 🟤 Hepatology / GI | 6 | [→ Jump](#-hepatology--gi--肝膽消化科) |
 | 🧪 Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic--酸鹼代謝) |
 | 🩸 Hematology | 1 | [→ Jump](#-hematology--血液科) |
 | 🧠 Neurology | 7 | [→ Jump](#-neurology--神經科) |
@@ -1103,7 +1104,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ---
 
-### Calculators | 計算器 (59 tools)
+### Calculators | 計算器 (75 tools)
 
 #### 🏥 Anesthesiology / Preoperative | 麻醉科 / 術前評估
 
@@ -1172,6 +1173,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_ideal_body_weight` | IBW (Devine) | Ventilator tidal volume (ARDSNet) | Devine 1974, ARDSNet 2000 |
 | `calculate_pf_ratio` | P/F Ratio | ARDS Berlin classification | ARDS Task Force 2012 |
 | `calculate_rox_index` | ROX Index | HFNC failure prediction | Roca 2016 |
+| `calculate_spesi` | sPESI 🆕 | Simplified PESI for PE 30-day mortality (ESC Class I) | Jiménez 2010 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
@@ -1223,17 +1225,19 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
-#### 🚑 Emergency Medicine | 急診醫學
+#### 🚑 Emergency Medicine / Trauma | 急診醫學 / 創傷
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
 | `calculate_wells_dvt` | Wells DVT | DVT probability assessment | Wells 2003 |
 | `calculate_wells_pe` | Wells PE | PE probability assessment | Wells 2000 |
 | `calculate_shock_index` | Shock Index (SI) | Rapid hemodynamic assessment | Allgöwer 1967 |
+| `calculate_iss` | ISS 🆕 | Injury Severity Score - trauma mortality prediction | Baker 1974 |
+| `calculate_tbsa` | TBSA 🆕 | Burns surface area (Rule of Nines / Lund-Browder) | Wallace 1951, Lund 1944 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 
-#### 🟤 Hepatology | 肝膽科
+#### 🟤 Hepatology / GI | 肝膽消化科
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
@@ -1241,6 +1245,8 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | `calculate_child_pugh` | Child-Pugh | Cirrhosis severity staging | Pugh 1973 |
 | `calculate_rockall_score` | Rockall Score 🆕 | Upper GI bleeding risk (mortality/rebleeding) | Rockall 1996 |
 | `calculate_fib4_index` | FIB-4 Index 🆕 | Liver fibrosis non-invasive assessment | Sterling 2006 |
+| `calculate_glasgow_blatchford` | Glasgow-Blatchford 🆕 | UGIB pre-endoscopy risk (ESGE Class I) | Blatchford 2000 |
+| `calculate_aims65` | AIMS65 🆕 | UGIB in-hospital mortality prediction | Saltzman 2011 |
 
 [↑ Back to Navigation](#-quick-navigation--快速導覽)
 

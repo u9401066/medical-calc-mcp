@@ -73,6 +73,8 @@ class ClinicalContext(Enum):
     DISPOSITION = "disposition"  # Admission/discharge decisions
     ELIGIBILITY = "eligibility"  # Trial/treatment eligibility
     PHYSIOLOGIC = "physiologic"  # Normal physiology calculations
+    EMERGENCY = "emergency"  # Emergency medicine triage/assessment
+    TRIAGE = "triage"  # Initial patient categorization
     
     # Anesthesia / ICU specific
     PREOPERATIVE_ASSESSMENT = "preoperative_assessment"  # 術前評估

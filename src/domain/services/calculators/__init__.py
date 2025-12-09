@@ -119,6 +119,13 @@ from .cpis import CpisCalculator
 from .bishop_score import BishopScoreCalculator
 from .ballard_score import BallardScoreCalculator
 
+# Phase 18: High-Priority GI Bleeding & Trauma Tools (Guideline-Recommended)
+from .glasgow_blatchford import GlasgowBlatchfordCalculator
+from .aims65 import AIMS65Calculator
+from .tbsa import TbsaCalculator
+from .iss import InjurySeverityScoreCalculator
+from .spesi import SimplifiedPESICalculator
+
 
 __all__ = [
     # Nephrology
@@ -236,6 +243,13 @@ __all__ = [
     # Phase 17: Obstetrics & Neonatology (Classic Tools)
     "BishopScoreCalculator",
     "BallardScoreCalculator",
+    
+    # Phase 18: High-Priority GI Bleeding & Trauma Tools
+    "GlasgowBlatchfordCalculator",
+    "AIMS65Calculator",
+    "TbsaCalculator",
+    "InjurySeverityScoreCalculator",
+    "SimplifiedPESICalculator",
 ]
 
 
@@ -331,4 +345,10 @@ CALCULATORS = [
     # Phase 17: Obstetrics & Neonatology (Classic Tools)
     BishopScoreCalculator,
     BallardScoreCalculator,
+    # Phase 18: High-Priority GI Bleeding & Trauma Tools
+    GlasgowBlatchfordCalculator,
+    AIMS65Calculator,
+    TbsaCalculator,
+    InjurySeverityScoreCalculator,
+    SimplifiedPESICalculator,
 ]

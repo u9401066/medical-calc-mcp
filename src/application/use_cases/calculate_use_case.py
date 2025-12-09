@@ -116,12 +116,37 @@ class CalculateUseCase:
             )
     
     def _validate_params(self, params: Dict[str, Any]) -> ValidationResult:
-        """Pre-validate parameters using Domain validation"""
-        # Get parameter names from the request
-        param_names = list(params.keys())
+        """Pre-validate parameters using Domain validation
         
-        # Validate all provided parameters
-        return self._validator.validate(params, optional=param_names)
+        Only validates parameters that are defined in COMMON_PARAMETERS.
+        Calculator-specific parameters with the same name but different
+        types (e.g., consciousness in Aldrete vs NEWS2) are handled by
+        the calculator's own type checking.
+        """
+        from ...domain.validation.parameter_specs import COMMON_PARAMETERS
+        
+        # Only validate parameters that are in COMMON_PARAMETERS
+        # and have matching expected types/rules
+        known_params = [p for p in params.keys() if p in COMMON_PARAMETERS]
+        
+        # For parameters with potential type conflicts (like 'consciousness'),
+        # check if the value matches the expected type before validating
+        safe_params = []
+        for param in known_params:
+            spec = COMMON_PARAMETERS[param]
+            value = params[param]
+            # Skip validation if the value type doesn't match the spec type
+            # This allows calculator-specific overrides
+            if spec.param_type == str and not isinstance(value, str):
+                continue
+            if spec.param_type == int and not isinstance(value, (int, bool)):
+                continue
+            if spec.param_type == float and not isinstance(value, (int, float)):
+                continue
+            safe_params.append(param)
+        
+        # Validate only safe parameters
+        return self._validator.validate(params, optional=safe_params)
     
     def _get_parameter_hint_from_error(
         self, 

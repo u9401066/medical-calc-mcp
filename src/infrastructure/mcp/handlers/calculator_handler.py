@@ -30,6 +30,8 @@ from .calculators import (
     register_pediatric_score_tools,
     register_infectious_disease_tools,
     register_obstetrics_tools,
+    register_gi_bleeding_tools,
+    register_trauma_tools,
 )
 
 
@@ -112,3 +114,9 @@ class CalculatorHandler:
         
         # Obstetrics calculators (Bishop Score, Ballard Score)
         register_obstetrics_tools(self._mcp, self._use_case)
+        
+        # GI Bleeding calculators (Glasgow-Blatchford, AIMS65)
+        register_gi_bleeding_tools(self._mcp)
+        
+        # Trauma calculators (TBSA, ISS, sPESI)
+        register_trauma_tools(self._mcp)
