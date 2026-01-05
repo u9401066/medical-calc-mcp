@@ -15,7 +15,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all cardiology calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_chads2_vasc(
         chf_or_lvef_lte_40: Annotated[bool, Field(
@@ -45,9 +45,9 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫀 CHA₂DS₂-VASc: 心房顫動中風風險評估
-        
+
         評估非瓣膜性心房顫動患者的年中風風險，指導抗凝治療決策。
-        
+
         **計分項目:**
         - **C**HF/LVEF ≤40%: +1
         - **H**ypertension: +1
@@ -57,15 +57,15 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - **V**ascular disease: +1
         - **A**ge 65-74: +1
         - **S**ex category (female): +1
-        
+
         **抗凝建議 (ESC 2020):**
         - 0分 (男) / 1分 (女): 不需抗凝
         - 1分 (男): 考慮抗凝
         - ≥2分: 建議抗凝 (DOAC 優先於 Warfarin)
-        
+
         **參考文獻:** Lip GY, et al. Chest. 2010;137(2):263-272.
         PMID: 19762550
-        
+
         Returns:
             CHA₂DS₂-VASc 分數 (0-9)、年中風風險、抗凝建議
         """
@@ -84,7 +84,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_chads2_va(
         chf_or_lvef_lte_40: Annotated[bool, Field(
@@ -111,16 +111,16 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫀 CHA₂DS₂-VA: 心房顫動中風風險評估 (2024 ESC 新版)
-        
+
         **2024 ESC 指引更新: 移除性別因素**
-        
+
         評估非瓣膜性心房顫動患者的年中風風險，使用 2024 ESC 性別中性標準。
-        
+
         **與舊版 CHA₂DS₂-VASc 差異:**
         - 移除 "Sc" (Sex category - female) 作為風險修飾因子
         - 最高分從 9 分降為 8 分
         - 性別中性的抗凝閾值
-        
+
         **計分項目:**
         - **C**HF/LVEF ≤40%: +1
         - **H**ypertension: +1
@@ -129,15 +129,15 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - **S₂**troke/TIA/TE: +2
         - **V**ascular disease: +1
         - **A**ge 65-74: +1
-        
+
         **抗凝建議 (2024 ESC):**
         - 0分: 不需抗凝
         - 1分: 應考慮抗凝
         - ≥2分: 建議抗凝 (DOAC 優先)
-        
+
         **參考文獻:** Van Gelder IC, et al. Eur Heart J. 2024;45(36):3314-3414.
         PMID: 39217497
-        
+
         Returns:
             CHA₂DS₂-VA 分數 (0-8)、年中風風險、抗凝建議
         """
@@ -155,7 +155,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_heart_score(
         history_score: Annotated[
@@ -181,28 +181,28 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫀 HEART Score: 急診胸痛 MACE 風險分層
-        
+
         評估急診胸痛患者發生主要心臟不良事件 (MACE) 的風險，
         協助決定出院或住院。
-        
+
         **HEART 組成要素 (每項 0-2 分):**
         - **H**istory: 病史可疑程度
         - **E**CG: 心電圖變化
         - **A**ge: 年齡
         - **R**isk factors: 危險因子
         - **T**roponin: 肌鈣蛋白
-        
+
         **風險分層 (6週 MACE):**
         - 0-3 分: 低風險 (0.9-1.7%) → 考慮早期出院
         - 4-6 分: 中度風險 (12-16.6%) → 住院觀察
         - 7-10 分: 高風險 (50-65%) → 住院介入
-        
-        **危險因子包括:** HTN, DM, hyperlipidemia, 
+
+        **危險因子包括:** HTN, DM, hyperlipidemia,
         current smoking, family history of CAD, obesity (BMI>30)
-        
+
         **參考文獻:** Six AJ, et al. Neth Heart J. 2008;16(6):191-196.
         PMID: 18665203
-        
+
         Returns:
             HEART Score (0-10)、6 週 MACE 風險、處置建議
         """
@@ -218,7 +218,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_has_bled(
         hypertension_uncontrolled: Annotated[bool, Field(
@@ -251,10 +251,10 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🩸 HAS-BLED: 心房顫動出血風險評估 (2024 ESC 推薦)
-        
+
         評估心房顫動患者使用抗凝劑時的主要出血風險。
         2024 ESC 指引建議與 CHA₂DS₂-VA 合併使用以平衡中風/出血風險。
-        
+
         **計分項目 (各 1 分):**
         - **H**ypertension: 未控制高血壓 (SBP >160)
         - **A**bnormal renal/liver function: 腎/肝功能異常 (各 1 分，最多 2 分)
@@ -263,17 +263,17 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - **L**abile INR: 不穩定 INR (TTR <60%，僅限 warfarin)
         - **E**lderly: 年齡 >65 歲
         - **D**rugs/alcohol: 抗血小板/NSAID 或酒精過量 (各 1 分，最多 2 分)
-        
+
         **風險分層:**
         - 0-2 分: 低出血風險
         - ≥3 分: 高出血風險 - 需處理可修正因子
-        
+
         **重要:** 高 HAS-BLED 分數不是抗凝禁忌症，而是提醒需要
         更密切監測並處理可修正的出血風險因子。
-        
+
         **參考文獻:** Pisters R, et al. Chest. 2010;138(5):1093-1100. PMID: 20299623
         2024 ESC: Van Gelder IC, et al. Eur Heart J. 2024. PMID: 39217497
-        
+
         Returns:
             HAS-BLED 分數 (0-9)、年主要出血風險、管理建議
         """
@@ -293,7 +293,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_corrected_qt(
         qt_interval: Annotated[float, Field(
@@ -315,32 +315,32 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         💓 Corrected QT (QTc): 校正 QT 間期計算
-        
+
         計算心率校正的 QT 間期，用於藥物安全監測與心律不整風險評估。
-        
+
         **公式:**
         - **Bazett** (最常用): QTc = QT / √RR
-        - **Fridericia** (心搏過速/過緩較準): QTc = QT / ∛RR  
+        - **Fridericia** (心搏過速/過緩較準): QTc = QT / ∛RR
         - **Framingham** (線性校正): QTc = QT + 154 × (1 - RR)
-        
+
         **正常值:**
         - 男性: ≤450 ms
         - 女性: ≤460 ms
-        
+
         **QTc 延長分級:**
         - 邊緣: 450-470 ms (男), 460-480 ms (女)
         - 延長: >470 ms (男), >480 ms (女)
         - 顯著延長: >500 ms (TdP 高風險)
-        
+
         **常見 QT 延長藥物:**
         - 抗心律不整: amiodarone, sotalol, dofetilide
         - 抗生素: fluoroquinolones, macrolides, azoles
         - 抗精神病: haloperidol, droperidol, ziprasidone
         - 止吐劑: ondansetron (高劑量)
         - 其他: methadone, TCAs, citalopram
-        
+
         **參考文獻:** Bazett 1920, ESC Guidelines 2015. PMID: 26320108
-        
+
         Returns:
             QTc 值 (ms)、風險分級、藥物安全建議
         """
@@ -355,7 +355,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_grace_score(
         age: Annotated[int, Field(
@@ -390,10 +390,10 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫀 GRACE Score: 急性冠心症風險分層
-        
+
         評估急性冠心症 (ACS) 病人的住院和 6 個月死亡風險，
         用於指導治療策略和轉院決策。
-        
+
         **GRACE 模型參數:**
         - 年齡
         - 心率
@@ -403,25 +403,25 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - 心跳停止
         - ST 段偏移
         - 心肌酵素升高
-        
+
         **GRACE Score 風險分類 (6 個月死亡):**
         - **低風險**: <109 分 (<3% 死亡率)
         - **中風險**: 109-140 分 (3-8% 死亡率)
         - **高風險**: >140 分 (>8% 死亡率)
-        
+
         **臨床應用:**
         - 高風險 → 早期侵入性策略 (24-72h 內心導管)
         - 中風險 → 可考慮早期侵入性或保守策略
         - 低風險 → 可考慮保守策略
-        
+
         **Killip 分級:**
         - I: 無心衰竭
         - II: 肺囉音/JVD
         - III: 急性肺水腫
         - IV: 心因性休克
-        
+
         **參考文獻:** Fox KA, et al. BMJ. 2006;333(7578):1091. PMID: 17032691
-        
+
         Returns:
             GRACE Score、6 個月死亡風險、治療策略建議
         """
@@ -440,7 +440,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_acef_ii(
         age: Annotated[int, Field(
@@ -461,31 +461,31 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫀 ACEF II Score: 心臟手術死亡風險預測
-        
+
         簡約型心臟手術死亡風險模型，僅用 3 個變數達到與複雜評分相當的預測力。
-        
+
         **ACEF II 公式:**
         ACEF II = (年齡 / LVEF) + 2 (若 Cr >2.0 mg/dL)
         緊急手術時，分數加倍
-        
+
         **風險分類:**
         - ACEF II <1.0: 低風險 (~1% 死亡率)
         - ACEF II 1.0-2.0: 中風險 (2-5% 死亡率)
         - ACEF II 2.0-3.0: 高風險 (5-10% 死亡率)
         - ACEF II >3.0: 極高風險 (>10% 死亡率)
-        
+
         **優點:**
         - 僅需 3 個變數 (vs EuroSCORE II 的 18+)
         - 床邊即可計算
         - 多個世代驗證
-        
+
         **臨床應用:**
         - 術前風險評估
         - 心臟團隊討論
         - 與 EuroSCORE II, STS Score 互補使用
-        
+
         **參考文獻:** Ranucci M, et al. Eur Heart J. 2018;39(23):2183-2189. PMID: 28498904
-        
+
         Returns:
             ACEF II 分數、預估死亡率、手術風險建議
         """
@@ -532,12 +532,12 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         ❤️ TIMI Risk Score for STEMI: ST 上升心肌梗塞死亡風險
-        
+
         預測 STEMI 病患 30 天死亡率的床邊評分工具，
         由 InTIME-II 試驗資料發展並驗證。
-        
+
         **TIMI STEMI 計分項目 (總分 0-14 分):**
-        
+
         - **年齡**: 65-74歲 +2分, ≥75歲 +3分
         - **DM/HTN/心絞痛史**: +1分
         - **收縮壓 <100 mmHg**: +3分
@@ -546,7 +546,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - **體重 <67 kg**: +1分
         - **前壁 STE 或 LBBB**: +1分
         - **治療延遲 >4 小時**: +1分
-        
+
         **30 天死亡率 (依分數):**
         - 0 分: 0.8%
         - 1 分: 1.6%
@@ -558,21 +558,21 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - 7 分: 23.4%
         - 8 分: 26.8%
         - >8 分: 35.9%
-        
+
         **風險分層:**
         - 0-2: 低風險 (<3%)
         - 3-4: 中風險 (4-7%)
         - 5-6: 高風險 (12-16%)
         - ≥7: 極高風險 (>23%)
-        
+
         **臨床意義:**
         - 高分患者考慮 CCU/ICU 收治
         - Killip III-IV 考慮機械循環支持
         - Door-to-balloon <90 分鐘仍為關鍵
-        
+
         **參考文獻:** Morrow DA, et al. Circulation. 2000;102(17):2031-2037.
         PMID: 11044416
-        
+
         Returns:
             TIMI STEMI 分數 (0-14)、30 天死亡率、風險分層與處置建議
         """

@@ -19,26 +19,26 @@ Clinical utility references:
     2005;22(11-12):1079-1089. doi:10.1111/j.1365-2036.2005.02691.x. PMID: 16305721.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class ChildPughCalculator(BaseCalculator):
     """
     Child-Pugh Score for Chronic Liver Disease Severity
-    
+
     Scoring criteria (5 clinical measures, each 1-3 points):
-    
+
     | Parameter          | 1 point      | 2 points       | 3 points        |
     |--------------------|--------------|----------------|-----------------|
     | Bilirubin (mg/dL)  | <2           | 2-3            | >3              |
@@ -46,23 +46,23 @@ class ChildPughCalculator(BaseCalculator):
     | INR                | <1.7         | 1.7-2.2        | >2.2            |
     | Ascites            | None         | Mild/Controlled| Moderate-Severe |
     | Encephalopathy     | None         | Grade I-II     | Grade III-IV    |
-    
+
     Classification:
     - Class A: 5-6 points (well-compensated disease)
     - Class B: 7-9 points (significant functional compromise)
     - Class C: 10-15 points (decompensated disease)
-    
+
     Prognostic implications:
     - 1-year survival: Class A ~100%, Class B ~80%, Class C ~45%
     - 2-year survival: Class A ~85%, Class B ~60%, Class C ~35%
-    
+
     Clinical applications:
     - Prognosis assessment in cirrhosis
     - Surgical risk stratification (perioperative mortality)
     - Liver transplant evaluation (often complemented by MELD)
     - Drug dosing adjustments in hepatic impairment
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -161,7 +161,7 @@ class ChildPughCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         bilirubin: float,
@@ -172,7 +172,7 @@ class ChildPughCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Child-Pugh score.
-        
+
         Args:
             bilirubin: Total bilirubin in mg/dL (typical range: 0.1-20+)
             albumin: Serum albumin in g/dL (typical range: 1.5-5.0)
@@ -184,35 +184,35 @@ class ChildPughCalculator(BaseCalculator):
                 2 = Grade II (drowsy, inappropriate behavior)
                 3 = Grade III (somnolent but arousable, marked confusion)
                 4 = Grade IV (coma, unresponsive)
-            
+
         Returns:
             ScoreResult with score, Child-Pugh class, and clinical implications
         """
         # Validate inputs
         ascites_normalized = self._normalize_ascites(ascites)
         encephalopathy_normalized = self._normalize_encephalopathy(encephalopathy_grade)
-        
+
         # Calculate component scores
         bilirubin_score = self._score_bilirubin(bilirubin)
         albumin_score = self._score_albumin(albumin)
         inr_score = self._score_inr(inr)
         ascites_score = self._score_ascites(ascites_normalized)
         encephalopathy_score = self._score_encephalopathy(encephalopathy_normalized)
-        
+
         # Total score
         total_score = (
-            bilirubin_score + albumin_score + inr_score + 
+            bilirubin_score + albumin_score + inr_score +
             ascites_score + encephalopathy_score
         )
-        
+
         # Determine class
         child_class = self._determine_class(total_score)
-        
+
         # Generate interpretation
         interpretation = self._interpret_score(
             total_score, child_class, ascites_normalized, encephalopathy_normalized
         )
-        
+
         # Component details
         components = {
             "Bilirubin": {
@@ -241,7 +241,7 @@ class ChildPughCalculator(BaseCalculator):
             "Total Score": total_score,
             "Child-Pugh Class": child_class,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -251,22 +251,22 @@ class ChildPughCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _normalize_ascites(self, ascites: str) -> str:
         """Normalize ascites input to standard categories"""
         ascites_lower = ascites.lower().strip()
-        
+
         if ascites_lower in ("none", "absent", "no", "0"):
             return "none"
         elif ascites_lower in ("mild", "slight", "controlled", "diuretic-controlled", "1"):
             return "mild"
-        elif ascites_lower in ("moderate", "moderate_severe", "moderate-severe", 
+        elif ascites_lower in ("moderate", "moderate_severe", "moderate-severe",
                                "severe", "refractory", "tense", "2", "3"):
             return "moderate_severe"
         else:
             # Default to none if unrecognized
             return "none"
-    
+
     def _normalize_encephalopathy(self, grade: int) -> int:
         """Normalize encephalopathy grade to 0-4"""
         if grade < 0:
@@ -274,7 +274,7 @@ class ChildPughCalculator(BaseCalculator):
         elif grade > 4:
             return 4
         return grade
-    
+
     def _score_bilirubin(self, bilirubin: float) -> int:
         """Score bilirubin component"""
         if bilirubin < 2:
@@ -283,7 +283,7 @@ class ChildPughCalculator(BaseCalculator):
             return 2
         else:
             return 3
-    
+
     def _score_albumin(self, albumin: float) -> int:
         """Score albumin component (inverse relationship)"""
         if albumin > 3.5:
@@ -292,7 +292,7 @@ class ChildPughCalculator(BaseCalculator):
             return 2
         else:
             return 3
-    
+
     def _score_inr(self, inr: float) -> int:
         """Score INR component"""
         if inr < 1.7:
@@ -301,7 +301,7 @@ class ChildPughCalculator(BaseCalculator):
             return 2
         else:
             return 3
-    
+
     def _score_ascites(self, ascites: str) -> int:
         """Score ascites component"""
         if ascites == "none":
@@ -310,7 +310,7 @@ class ChildPughCalculator(BaseCalculator):
             return 2
         else:  # moderate_severe
             return 3
-    
+
     def _score_encephalopathy(self, grade: int) -> int:
         """Score encephalopathy component"""
         if grade == 0:
@@ -319,7 +319,7 @@ class ChildPughCalculator(BaseCalculator):
             return 2
         else:  # Grade III-IV
             return 3
-    
+
     def _bilirubin_criteria(self, score: int) -> str:
         if score == 1:
             return "<2 mg/dL"
@@ -327,7 +327,7 @@ class ChildPughCalculator(BaseCalculator):
             return "2-3 mg/dL"
         else:
             return ">3 mg/dL"
-    
+
     def _albumin_criteria(self, score: int) -> str:
         if score == 1:
             return ">3.5 g/dL"
@@ -335,7 +335,7 @@ class ChildPughCalculator(BaseCalculator):
             return "2.8-3.5 g/dL"
         else:
             return "<2.8 g/dL"
-    
+
     def _inr_criteria(self, score: int) -> str:
         if score == 1:
             return "<1.7"
@@ -343,7 +343,7 @@ class ChildPughCalculator(BaseCalculator):
             return "1.7-2.2"
         else:
             return ">2.2"
-    
+
     def _determine_class(self, score: int) -> str:
         """Determine Child-Pugh class from total score"""
         if score <= 6:
@@ -352,7 +352,7 @@ class ChildPughCalculator(BaseCalculator):
             return "B"
         else:
             return "C"
-    
+
     def _interpret_score(
         self,
         score: int,
@@ -361,16 +361,16 @@ class ChildPughCalculator(BaseCalculator):
         encephalopathy: int,
     ) -> Interpretation:
         """Generate interpretation based on Child-Pugh class"""
-        
+
         # Survival data from multiple studies
         survival_data = {
             "A": {"1y": "100%", "2y": "85%", "operative_mortality": "10%"},
             "B": {"1y": "80%", "2y": "60%", "operative_mortality": "30%"},
             "C": {"1y": "45%", "2y": "35%", "operative_mortality": "82%"},
         }
-        
+
         survival = survival_data[child_class]
-        
+
         if child_class == "A":
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -394,7 +394,7 @@ class ChildPughCalculator(BaseCalculator):
                 "Variceal screening endoscopy if not recently done",
                 "Address underlying etiology if treatable",
             ]
-            
+
         elif child_class == "B":
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
@@ -419,7 +419,7 @@ class ChildPughCalculator(BaseCalculator):
                 "Beta-blocker for variceal prophylaxis if indicated",
                 "Diuretic management if ascites present",
             ]
-            
+
         else:  # Class C
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
@@ -444,7 +444,7 @@ class ChildPughCalculator(BaseCalculator):
                 "Goals of care discussion with patient and family",
                 "Avoid nephrotoxic drugs - high hepatorenal syndrome risk",
             ]
-        
+
         # Add warnings for specific complications
         warnings = []
         if ascites == "moderate_severe":
@@ -465,7 +465,7 @@ class ChildPughCalculator(BaseCalculator):
                 "Consider transplant urgently if candidate. "
                 "Ensure goals of care are documented."
             )
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

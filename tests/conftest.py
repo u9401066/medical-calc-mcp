@@ -1,3 +1,4 @@
+from typing import Any
 """
 Pytest Configuration for Medical Calculator MCP Tests
 
@@ -17,11 +18,11 @@ if str(src_path) not in sys.path:
 
 
 @pytest.fixture
-def registry():
+def registry() -> Any:
     """Provide a configured ToolRegistry with all calculators."""
     from src.domain.registry import ToolRegistry
     from src.domain.services.calculators import CALCULATORS
-    
+
     reg = ToolRegistry()
     for calc_class in CALCULATORS:
         calc = calc_class()
@@ -30,14 +31,14 @@ def registry():
 
 
 @pytest.fixture
-def calculator_classes():
+def calculator_classes() -> Any:
     """Provide list of all calculator classes."""
     from src.domain.services.calculators import CALCULATORS
     return CALCULATORS
 
 
 @pytest.fixture
-def sample_params():
+def sample_params() -> Any:
     """Provide sample valid parameters for each calculator."""
     return {
         # Nephrology

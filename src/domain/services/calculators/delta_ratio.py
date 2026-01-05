@@ -9,49 +9,44 @@ Reference:
     Ann Emerg Med. 1990;19(11):1310-1313.
     DOI: 10.1016/s0196-0644(05)82292-9
     PMID: 2240729
-    
-    Rastegar A. Use of the DeltaAG/DeltaHCO3- ratio in the diagnosis of 
+
+    Rastegar A. Use of the DeltaAG/DeltaHCO3- ratio in the diagnosis of
     mixed acid-base disorders. J Am Soc Nephrol. 2007;18(9):2429-2431.
     DOI: 10.1681/ASN.2006121408
     PMID: 17656478
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class DeltaRatioCalculator(BaseCalculator):
     """
     Delta Ratio (Delta Gap) Calculator
-    
-    The delta ratio compares the change in anion gap to the change in 
+
+    The delta ratio compares the change in anion gap to the change in
     bicarbonate to detect mixed acid-base disorders.
-    
+
     Formula:
         Delta AG (ΔAG) = Measured AG - Normal AG (typically 12)
         Delta HCO₃⁻ (ΔHCO₃⁻) = Normal HCO₃⁻ (24) - Measured HCO₃⁻
         Delta Ratio = ΔAG / ΔHCO₃⁻
-    
+
     Interpretation:
         - <1: Concurrent NAGMA (HCO₃⁻ loss > AG gain)
         - 1-2: Pure HAGMA (AG gain = HCO₃⁻ loss)
         - >2: Concurrent metabolic alkalosis (AG gain > HCO₃⁻ loss)
-    
+
     Clinical Use:
         Only valid when anion gap is elevated (HAGMA present)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -117,7 +112,7 @@ class DeltaRatioCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         anion_gap: float,
@@ -127,13 +122,13 @@ class DeltaRatioCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate the delta ratio (delta gap).
-        
+
         Args:
             anion_gap: Measured anion gap in mEq/L (use corrected AG if available)
             bicarbonate: Measured serum bicarbonate (HCO₃⁻) in mEq/L
             normal_ag: Normal anion gap baseline (default 12 mEq/L)
             normal_hco3: Normal bicarbonate baseline (default 24 mEq/L)
-            
+
         Returns:
             ScoreResult with delta ratio and interpretation
         """
@@ -146,11 +141,11 @@ class DeltaRatioCalculator(BaseCalculator):
             raise ValueError("Normal AG should be between 6 and 14 mEq/L")
         if not 22 <= normal_hco3 <= 26:
             raise ValueError("Normal HCO₃⁻ should be between 22 and 26 mEq/L")
-        
+
         # Calculate delta values
         delta_ag = anion_gap - normal_ag
         delta_hco3 = normal_hco3 - bicarbonate
-        
+
         # Check if HAGMA is present
         if delta_ag <= 0:
             # No elevated anion gap - delta ratio not applicable
@@ -191,7 +186,7 @@ class DeltaRatioCalculator(BaseCalculator):
                 },
                 formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ (not applicable - AG not elevated)"
             )
-        
+
         # Check for division issues
         if delta_hco3 <= 0:
             # Bicarbonate not decreased - unusual scenario
@@ -232,14 +227,14 @@ class DeltaRatioCalculator(BaseCalculator):
                 },
                 formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ (not applicable - HCO₃⁻ not decreased)"
             )
-        
+
         # Calculate delta ratio
         delta_ratio = delta_ag / delta_hco3
         delta_ratio = round(delta_ratio, 2)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(delta_ratio, delta_ag, delta_hco3)
-        
+
         return ScoreResult(
             value=delta_ratio,
             unit=Unit.RATIO,
@@ -260,15 +255,15 @@ class DeltaRatioCalculator(BaseCalculator):
             },
             formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ = (AG - 12) / (24 - HCO₃⁻)"
         )
-    
+
     def _get_interpretation(
-        self, 
-        delta_ratio: float, 
-        delta_ag: float, 
+        self,
+        delta_ratio: float,
+        delta_ag: float,
         delta_hco3: float
     ) -> Interpretation:
         """Get clinical interpretation based on delta ratio value"""
-        
+
         if delta_ratio < 1:
             # Concurrent NAGMA
             return Interpretation(

@@ -1,9 +1,9 @@
+from typing import Any
 """Tests for Emergency Medicine Calculators"""
-import pytest
 
 
 class TestWellsDvtCalculator:
-    def test_wells_dvt_low(self):
+    def test_wells_dvt_low(self) -> None:
         from src.domain.services.calculators import WellsDvtCalculator
         calc = WellsDvtCalculator()
         result = calc.calculate(
@@ -13,15 +13,16 @@ class TestWellsDvtCalculator:
             pitting_edema=False, collateral_superficial_veins=False,
             previous_dvt=False, alternative_diagnosis_likely=True
         )
+        assert result.value is not None
         assert result.value <= 0
 
-    def test_tool_id(self):
+    def test_tool_id(self) -> None:
         from src.domain.services.calculators import WellsDvtCalculator
         assert WellsDvtCalculator().tool_id == "wells_dvt"
 
 
 class TestWellsPeCalculator:
-    def test_wells_pe_low(self):
+    def test_wells_pe_low(self) -> None:
         from src.domain.services.calculators import WellsPeCalculator
         calc = WellsPeCalculator()
         result = calc.calculate(
@@ -29,8 +30,9 @@ class TestWellsPeCalculator:
             heart_rate_gt_100=False, immobilization_or_surgery=False,
             previous_dvt_pe=False, hemoptysis=False, malignancy=False
         )
+        assert result.value is not None
         assert result.value == 0
 
-    def test_tool_id(self):
+    def test_tool_id(self) -> None:
         from src.domain.services.calculators import WellsPeCalculator
         assert WellsPeCalculator().tool_id == "wells_pe"

@@ -5,34 +5,29 @@ The RCRI (Lee Index) estimates the risk of major cardiac complications
 after non-cardiac surgery.
 
 Reference:
-    Lee TH, Marcantonio ER, Mangione CM, et al. Derivation and prospective 
-    validation of a simple index for prediction of cardiac risk of major 
+    Lee TH, Marcantonio ER, Mangione CM, et al. Derivation and prospective
+    validation of a simple index for prediction of cardiac risk of major
     noncardiac surgery. Circulation. 1999;100(10):1043-1049.
     DOI: 10.1161/01.cir.100.10.1043
     PMID: 10477528
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey, 
-    HighLevelKey, 
-    Specialty, 
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class RcriCalculator(BaseCalculator):
     """
     Revised Cardiac Risk Index (Lee Index)
-    
-    A validated index for predicting major cardiac complications after 
+
+    A validated index for predicting major cardiac complications after
     non-cardiac surgery. Uses 6 independent predictors.
-    
+
     Risk Factors (1 point each):
         1. High-risk surgery (intraperitoneal, intrathoracic, suprainguinal vascular)
         2. History of ischemic heart disease
@@ -40,14 +35,14 @@ class RcriCalculator(BaseCalculator):
         4. History of cerebrovascular disease
         5. Preoperative insulin therapy for diabetes
         6. Preoperative creatinine >2 mg/dL (177 µmol/L)
-        
+
     Major Cardiac Complications include:
         - Myocardial infarction
         - Pulmonary edema
         - Ventricular fibrillation or primary cardiac arrest
         - Complete heart block
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -57,7 +52,7 @@ class RcriCalculator(BaseCalculator):
                 purpose="Estimate risk of major cardiac complications after non-cardiac surgery",
                 input_params=[
                     "high_risk_surgery",
-                    "ischemic_heart_disease", 
+                    "ischemic_heart_disease",
                     "heart_failure",
                     "cerebrovascular_disease",
                     "insulin_diabetes",
@@ -128,7 +123,7 @@ class RcriCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         high_risk_surgery: bool = False,
@@ -140,17 +135,17 @@ class RcriCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Revised Cardiac Risk Index.
-        
+
         Args:
             high_risk_surgery: Intraperitoneal, intrathoracic, or suprainguinal vascular surgery
-            ischemic_heart_disease: History of MI, positive stress test, angina, nitrate use, 
+            ischemic_heart_disease: History of MI, positive stress test, angina, nitrate use,
                                    or ECG with Q waves
-            heart_failure: History of CHF, pulmonary edema, PND, bilateral rales, S3, 
+            heart_failure: History of CHF, pulmonary edema, PND, bilateral rales, S3,
                           or CXR with pulmonary vascular redistribution
             cerebrovascular_disease: History of TIA or stroke
             insulin_diabetes: Diabetes requiring preoperative insulin therapy
             creatinine_above_2: Preoperative creatinine >2.0 mg/dL (177 µmol/L)
-            
+
         Returns:
             ScoreResult with RCRI score and cardiac complication risk
         """
@@ -163,13 +158,13 @@ class RcriCalculator(BaseCalculator):
             insulin_diabetes,
             creatinine_above_2
         ])
-        
+
         # Get risk percentage
         risk_percentage = self._get_risk_percentage(score)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score)
-        
+
         # Risk factors present
         risk_factors = []
         if high_risk_surgery:
@@ -184,7 +179,7 @@ class RcriCalculator(BaseCalculator):
             risk_factors.append("Insulin-dependent diabetes")
         if creatinine_above_2:
             risk_factors.append("Creatinine >2 mg/dL")
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -212,7 +207,7 @@ class RcriCalculator(BaseCalculator):
                 "Consider functional capacity (METs) in addition to RCRI",
             ]
         )
-    
+
     def _get_risk_percentage(self, score: int) -> float:
         """Get estimated risk of major cardiac complications"""
         # From original Lee et al. derivation cohort
@@ -223,12 +218,12 @@ class RcriCalculator(BaseCalculator):
         }
         # 3 or more: Class IV: 11%
         return risk_map.get(score, 11.0)
-    
+
     def _get_interpretation(self, score: int) -> Interpretation:
         """Get clinical interpretation for RCRI score"""
-        
+
         risk_percentage = self._get_risk_percentage(score)
-        
+
         if score == 0:
             return Interpretation(
                 summary=f"RCRI Class I: Very low cardiac risk ({risk_percentage}%)",

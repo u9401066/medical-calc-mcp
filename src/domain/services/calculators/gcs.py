@@ -6,50 +6,45 @@ consciousness in patients with acute brain injury. It is one of the most
 widely used coma scales.
 
 Reference (Original):
-    Teasdale G, Jennett B. Assessment of coma and impaired consciousness. 
+    Teasdale G, Jennett B. Assessment of coma and impaired consciousness.
     A practical scale. Lancet. 1974;2(7872):81-84.
     DOI: 10.1016/s0140-6736(74)91639-0
     PMID: 4136544
 
 Reference (40-year update):
-    Teasdale G, Maas A, Lecky F, et al. The Glasgow Coma Scale at 40 years: 
+    Teasdale G, Maas A, Lecky F, et al. The Glasgow Coma Scale at 40 years:
     standing the test of time. Lancet Neurol. 2014;13(8):844-854.
     DOI: 10.1016/S1474-4422(14)70120-6
     PMID: 25030516
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class GlasgowComaScaleCalculator(BaseCalculator):
     """
     Glasgow Coma Scale (GCS) Calculator
-    
+
     The GCS assesses three aspects of responsiveness:
     1. Eye Opening (E): 1-4
     2. Verbal Response (V): 1-5
     3. Motor Response (M): 1-6
-    
+
     Total score range: 3-15
-    
+
     Classification:
     - Severe (GCS ≤ 8): Coma
     - Moderate (GCS 9-12): Moderate brain injury
     - Mild (GCS 13-15): Mild brain injury or normal
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -116,7 +111,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         eye_response: int,
@@ -126,7 +121,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Glasgow Coma Scale score.
-        
+
         Args:
             eye_response: Eye opening response (1-4)
                 1 = None
@@ -147,7 +142,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                 5 = Localizes pain
                 6 = Obeys commands
             is_intubated: If patient is intubated, verbal score cannot be assessed
-                
+
         Returns:
             ScoreResult with GCS score and injury classification
         """
@@ -158,18 +153,18 @@ class GlasgowComaScaleCalculator(BaseCalculator):
             raise ValueError("Verbal response must be between 1 and 5")
         if not 1 <= motor_response <= 6:
             raise ValueError("Motor response must be between 1 and 6")
-        
+
         # Calculate total score
         total_score = eye_response + verbal_response + motor_response
-        
+
         # Format GCS notation (e.g., "E4V5M6 = 15")
         gcs_notation = f"E{eye_response}V{'T' if is_intubated else verbal_response}M{motor_response}"
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(
             total_score, eye_response, verbal_response, motor_response, is_intubated
         )
-        
+
         return ScoreResult(
             value=total_score,
             unit=Unit.SCORE,
@@ -202,7 +197,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
             },
             formula_used="GCS = Eye (1-4) + Verbal (1-5) + Motor (1-6)"
         )
-    
+
     def _get_eye_description(self, score: int) -> str:
         descriptions = {
             1: "None - no eye opening",
@@ -211,7 +206,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
             4: "Spontaneous - eyes open spontaneously",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_verbal_description(self, score: int) -> str:
         descriptions = {
             1: "None - no verbal response",
@@ -221,7 +216,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
             5: "Oriented - oriented, appropriate responses",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_motor_description(self, score: int) -> str:
         descriptions = {
             1: "None - no motor response",
@@ -232,7 +227,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
             6: "Obeys - obeys commands",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_interpretation(
         self,
         total: int,
@@ -242,7 +237,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         intubated: bool
     ) -> Interpretation:
         """Get interpretation based on GCS score"""
-        
+
         if total <= 8:
             return Interpretation(
                 summary=f"GCS {total}: Severe brain injury / Coma",

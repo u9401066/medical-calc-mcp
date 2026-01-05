@@ -5,31 +5,31 @@ Estimates stroke risk in patients with atrial fibrillation (AF) to guide
 anticoagulation therapy decisions.
 
 Original Reference:
-    Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk 
-    stratification for predicting stroke and thromboembolism in atrial 
-    fibrillation using a novel risk factor-based approach: the euro 
+    Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk
+    stratification for predicting stroke and thromboembolism in atrial
+    fibrillation using a novel risk factor-based approach: the euro
     heart survey on atrial fibrillation. Chest. 2010;137(2):263-272.
     doi:10.1378/chest.09-1584. PMID: 19762550.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class Chads2VascCalculator(BaseCalculator):
     """
     CHA₂DS₂-VASc Score for Atrial Fibrillation Stroke Risk
-    
+
     Scoring criteria:
     - Congestive Heart Failure: +1
     - Hypertension: +1
@@ -39,15 +39,15 @@ class Chads2VascCalculator(BaseCalculator):
     - Vascular disease: +1
     - Age 65-74 years: +1
     - Sex category (female): +1
-    
+
     Maximum score: 9 (male) or 9 (female includes sex modifier)
-    
+
     Anticoagulation recommendations (ESC 2020 guidelines):
     - 0 (male) / 1 (female): No anticoagulation needed
     - 1 (male): Consider anticoagulation (OAC preferred)
     - ≥2: Anticoagulation recommended (OAC)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -134,7 +134,7 @@ class Chads2VascCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         chf_or_lvef_lte_40: bool,
@@ -148,7 +148,7 @@ class Chads2VascCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate CHA₂DS₂-VASc score.
-        
+
         Args:
             chf_or_lvef_lte_40: CHF or LVEF ≤40%
             hypertension: History of hypertension
@@ -158,7 +158,7 @@ class Chads2VascCalculator(BaseCalculator):
             vascular_disease: Prior MI, PAD, or aortic plaque
             age_65_to_74: Age 65-74 years (1 point; mutually exclusive with age ≥75)
             female_sex: Female sex
-            
+
         Returns:
             ScoreResult with score, stroke risk, and anticoagulation recommendation
         """
@@ -172,10 +172,10 @@ class Chads2VascCalculator(BaseCalculator):
         score += 1 if vascular_disease else 0
         score += 1 if age_65_to_74 and not age_gte_75 else 0  # Only if not ≥75
         score += 1 if female_sex else 0
-        
+
         # Determine interpretation
         interpretation = self._interpret_score(score, female_sex)
-        
+
         # Component details
         components = {
             "C - CHF/LVEF ≤40%": 1 if chf_or_lvef_lte_40 else 0,
@@ -187,7 +187,7 @@ class Chads2VascCalculator(BaseCalculator):
             "A - Age 65-74": 1 if (age_65_to_74 and not age_gte_75) else 0,
             "Sc - Sex category (female)": 1 if female_sex else 0,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -197,10 +197,10 @@ class Chads2VascCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int, female_sex: bool) -> Interpretation:
         """Generate interpretation based on CHA₂DS₂-VASc score"""
-        
+
         # Annual stroke risk rates (adjusted from Lip et al. 2010 and meta-analyses)
         stroke_rates = {
             0: "0%",
@@ -214,12 +214,12 @@ class Chads2VascCalculator(BaseCalculator):
             8: "12.5%",
             9: "15.2%",
         }
-        
+
         annual_risk = stroke_rates.get(score, ">15%")
-        
+
         # For females, score of 1 = no increased risk (sex modifier alone)
         adjusted_score = score - 1 if female_sex else score
-        
+
         if adjusted_score <= 0:
             # Low risk - no anticoagulation needed
             severity = Severity.NORMAL
@@ -239,7 +239,7 @@ class Chads2VascCalculator(BaseCalculator):
                 "Lifestyle modifications for cardiovascular health",
                 "Annual reassessment of CHA₂DS₂-VASc score",
             ]
-            
+
         elif adjusted_score == 1:
             # Intermediate risk - consider anticoagulation
             severity = Severity.MILD
@@ -261,7 +261,7 @@ class Chads2VascCalculator(BaseCalculator):
                 "If anticoagulation chosen, DOAC is first-line",
                 "Address modifiable bleeding risk factors",
             ]
-            
+
         else:
             # High risk - anticoagulation recommended
             severity = Severity.MODERATE if score <= 4 else Severity.SEVERE
@@ -282,11 +282,11 @@ class Chads2VascCalculator(BaseCalculator):
                 "Choose appropriate DOAC based on patient factors",
                 "Ensure patient education on anticoagulation",
             ]
-            
+
             if score >= 6:
                 recommendations.append("Very high stroke risk - ensure compliance with anticoagulation")
-            
-        
+
+
         return Interpretation(
             summary=summary,
             severity=severity,

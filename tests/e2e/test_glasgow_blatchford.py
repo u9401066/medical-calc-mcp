@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Glasgow-Blatchford Score Calculator
 
 Tests the Glasgow-Blatchford Score for Upper GI Bleeding through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestGlasgowBlatchfordE2E:
     """E2E tests for Glasgow-Blatchford Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/glasgow_blatchford"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk patient (score 0) - can be discharged"""
         payload = {
             "params": {
@@ -31,8 +31,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # Score 0 = safe for outpatient management
         assert data["result"]["value"] <= 1
-    
-    def test_intermediate_risk(self, test_client):
+
+    def test_intermediate_risk(self, test_client: Any) -> None:
         """Test intermediate risk patient (score 3-5)"""
         payload = {
             "params": {
@@ -50,8 +50,8 @@ class TestGlasgowBlatchfordE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 3
-    
-    def test_high_risk(self, test_client):
+
+    def test_high_risk(self, test_client: Any) -> None:
         """Test high risk patient (score >6)"""
         payload = {
             "params": {
@@ -70,8 +70,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # High risk - needs intervention
         assert data["result"]["value"] >= 8
-    
-    def test_female_with_anemia(self, test_client):
+
+    def test_female_with_anemia(self, test_client: Any) -> None:
         """Test female patient with significant anemia"""
         payload = {
             "params": {
@@ -90,8 +90,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # Female hemoglobin cutoffs differ
         assert data["result"]["value"] >= 3
-    
-    def test_elevated_bun(self, test_client):
+
+    def test_elevated_bun(self, test_client: Any) -> None:
         """Test patient with elevated BUN"""
         payload = {
             "params": {
@@ -110,8 +110,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # High BUN adds points
         assert data["result"]["value"] >= 4
-    
-    def test_hypotensive_tachycardic(self, test_client):
+
+    def test_hypotensive_tachycardic(self, test_client: Any) -> None:
         """Test hypotensive and tachycardic patient"""
         payload = {
             "params": {
@@ -130,8 +130,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # Hemodynamic instability adds significant points
         assert data["result"]["value"] >= 6
-    
-    def test_with_syncope(self, test_client):
+
+    def test_with_syncope(self, test_client: Any) -> None:
         """Test patient with syncope"""
         payload = {
             "params": {
@@ -150,8 +150,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # Syncope adds 2 points
         assert data["result"]["value"] >= 4
-    
-    def test_with_comorbidities(self, test_client):
+
+    def test_with_comorbidities(self, test_client: Any) -> None:
         """Test patient with hepatic disease and heart failure"""
         payload = {
             "params": {
@@ -170,8 +170,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # Comorbidities add points
         assert data["result"]["value"] >= 6
-    
-    def test_maximum_score(self, test_client):
+
+    def test_maximum_score(self, test_client: Any) -> None:
         """Test maximum possible score (23)"""
         payload = {
             "params": {
@@ -190,8 +190,8 @@ class TestGlasgowBlatchfordE2E:
         data = assert_successful_calculation(response)
         # Maximum or near maximum score
         assert data["result"]["value"] >= 15
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

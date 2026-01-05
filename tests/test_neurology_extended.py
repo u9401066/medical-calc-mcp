@@ -1,3 +1,4 @@
+from typing import Any
 """
 Tests for Extended Neurology Calculators (Phase 14)
 
@@ -9,10 +10,11 @@ Tests for:
 """
 
 import pytest
+
 from src.domain.services.calculators import (
-    HuntHessCalculator,
     FisherGradeCalculator,
     FourScoreCalculator,
+    HuntHessCalculator,
     IchScoreCalculator,
 )
 
@@ -21,10 +23,10 @@ class TestHuntHessCalculator:
     """Tests for Hunt & Hess Scale"""
 
     @pytest.fixture
-    def calculator(self):
+    def calculator(self) -> Any:
         return HuntHessCalculator()
 
-    def test_metadata(self, calculator):
+    def test_metadata(self, calculator: Any) -> None:
         """Test calculator metadata"""
         assert calculator.tool_id == "hunt_hess"
         assert "Hunt" in calculator.name
@@ -40,38 +42,52 @@ class TestHuntHessCalculator:
         (4, "SEVERE"),
         (5, "CRITICAL"),
     ])
-    def test_grade_severity_mapping(self, calculator, grade, expected_severity):
+    def test_grade_severity_mapping(self, calculator: Any, grade: Any, expected_severity: Any) -> None:
         """Test grade to severity mapping"""
         result = calculator.calculate(grade=grade)
+        assert result.value is not None
         assert result.value == grade
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name == expected_severity
 
-    def test_grade_1_excellent_prognosis(self, calculator):
+    def test_grade_1_excellent_prognosis(self, calculator: Any) -> None:
         """Test Grade I - minimal symptoms"""
         result = calculator.calculate(grade=1)
+        assert result.value is not None
         assert result.value == 1
+        assert result.calculation_details is not None
         assert "I" in result.calculation_details["grade_roman"]
+        assert result.calculation_details is not None
         assert "Asymptomatic" in result.calculation_details["description"]
         # Check recommendations tuple instead of single recommendation
+        assert result.interpretation.recommendations is not None
         assert any("surgery" in rec.lower() for rec in result.interpretation.recommendations)
 
-    def test_grade_3_moderate(self, calculator):
+    def test_grade_3_moderate(self, calculator: Any) -> None:
         """Test Grade III - drowsiness/confusion"""
         result = calculator.calculate(grade=3)
+        assert result.value is not None
         assert result.value == 3
+        assert result.calculation_details is not None
         assert result.calculation_details["grade_roman"] == "III"
+        assert result.calculation_details is not None
         assert "Drowsiness" in result.calculation_details["description"]
 
-    def test_grade_5_critical(self, calculator):
+    def test_grade_5_critical(self, calculator: Any) -> None:
         """Test Grade V - moribund"""
         result = calculator.calculate(grade=5)
+        assert result.value is not None
         assert result.value == 5
+        assert result.calculation_details is not None
         assert result.calculation_details["grade_roman"] == "V"
+        assert result.calculation_details is not None
         assert "coma" in result.calculation_details["description"].lower()
         # Check recommendations tuple
+        assert result.interpretation.recommendations is not None
         assert any("delay" in rec.lower() or "defer" in rec.lower() for rec in result.interpretation.recommendations)
 
-    def test_invalid_grade(self, calculator):
+    def test_invalid_grade(self, calculator: Any) -> None:
         """Test invalid grade raises error"""
         with pytest.raises(ValueError):
             calculator.calculate(grade=0)
@@ -83,10 +99,10 @@ class TestFisherGradeCalculator:
     """Tests for Fisher Grade / Modified Fisher Scale"""
 
     @pytest.fixture
-    def calculator(self):
+    def calculator(self) -> Any:
         return FisherGradeCalculator()
 
-    def test_metadata(self, calculator):
+    def test_metadata(self, calculator: Any) -> None:
         """Test calculator metadata"""
         assert calculator.tool_id == "fisher_grade"
         assert "Fisher" in calculator.name
@@ -96,59 +112,76 @@ class TestFisherGradeCalculator:
         # Modified Fisher 2006
         assert any(r.pmid == "16823296" for r in calculator.references)
 
-    def test_modified_fisher_grade_0_no_blood(self, calculator):
+    def test_modified_fisher_grade_0_no_blood(self, calculator: Any) -> None:
         """Test Modified Fisher Grade 0 - no SAH"""
         result = calculator.calculate(thick_sah=False, no_blood=True, use_modified=True)
+        assert result.value is not None
         assert result.value == 0
+        assert result.calculation_details is not None
         assert result.calculation_details["scale"] == "Modified Fisher Scale"
+        assert result.calculation_details is not None
         assert "No" in result.calculation_details["ct_findings"]
 
-    def test_modified_fisher_grade_1_thin_no_ivh(self, calculator):
+    def test_modified_fisher_grade_1_thin_no_ivh(self, calculator: Any) -> None:
         """Test Modified Fisher Grade 1 - thin SAH, no IVH"""
         result = calculator.calculate(thick_sah=False, ivh_present=False, use_modified=True)
+        assert result.value is not None
         assert result.value == 1
 
-    def test_modified_fisher_grade_2_thin_with_ivh(self, calculator):
+    def test_modified_fisher_grade_2_thin_with_ivh(self, calculator: Any) -> None:
         """Test Modified Fisher Grade 2 - thin SAH with IVH"""
         result = calculator.calculate(thick_sah=False, ivh_present=True, use_modified=True)
+        assert result.value is not None
         assert result.value == 2
         # IVH noted in CT findings or interpretation
+        assert result.interpretation.summary is not None
         assert "IVH" in str(result.calculation_details) or "IVH" in result.interpretation.summary
 
-    def test_modified_fisher_grade_3_thick_no_ivh(self, calculator):
+    def test_modified_fisher_grade_3_thick_no_ivh(self, calculator: Any) -> None:
         """Test Modified Fisher Grade 3 - thick SAH, no IVH"""
         result = calculator.calculate(thick_sah=True, ivh_present=False, use_modified=True)
+        assert result.value is not None
         assert result.value == 3
+        assert result.calculation_details is not None
         assert "Thick" in result.calculation_details["ct_findings"]
 
-    def test_modified_fisher_grade_4_thick_with_ivh(self, calculator):
+    def test_modified_fisher_grade_4_thick_with_ivh(self, calculator: Any) -> None:
         """Test Modified Fisher Grade 4 - thick SAH with IVH"""
         result = calculator.calculate(thick_sah=True, ivh_present=True, use_modified=True)
+        assert result.value is not None
         assert result.value == 4
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name == "CRITICAL"
 
-    def test_original_fisher_scale(self, calculator):
+    def test_original_fisher_scale(self, calculator: Any) -> None:
         """Test Original Fisher Scale grading"""
         # Grade 1 - no blood
         result = calculator.calculate(thick_sah=False, no_blood=True, use_modified=False)
+        assert result.value is not None
         assert result.value == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["scale"] == "Original Fisher Scale"
 
         # Grade 2 - thin SAH
         result = calculator.calculate(thick_sah=False, ivh_present=False, use_modified=False)
+        assert result.value is not None
         assert result.value == 2
 
         # Grade 3 - thick SAH
         result = calculator.calculate(thick_sah=True, ivh_present=False, use_modified=False)
+        assert result.value is not None
         assert result.value == 3
 
-    def test_vasospasm_risk_increases_with_grade(self, calculator):
+    def test_vasospasm_risk_increases_with_grade(self, calculator: Any) -> None:
         """Test vasospasm risk increases with higher grades"""
         grade_1 = calculator.calculate(thick_sah=False, ivh_present=False, use_modified=True)
         grade_4 = calculator.calculate(thick_sah=True, ivh_present=True, use_modified=True)
-        
+
         # Grade 4 should have higher vasospasm risk
+        assert grade_4.value is not None
         assert grade_4.value > grade_1.value
+        assert grade_4.calculation_details is not None
         assert "symptomatic_vasospasm" in grade_4.calculation_details["vasospasm_risk"]
 
 
@@ -156,10 +189,10 @@ class TestFourScoreCalculator:
     """Tests for FOUR Score (Full Outline of UnResponsiveness)"""
 
     @pytest.fixture
-    def calculator(self):
+    def calculator(self) -> Any:
         return FourScoreCalculator()
 
-    def test_metadata(self, calculator):
+    def test_metadata(self, calculator: Any) -> None:
         """Test calculator metadata"""
         assert calculator.tool_id == "four_score"
         assert "FOUR" in calculator.name
@@ -167,7 +200,7 @@ class TestFourScoreCalculator:
         assert calculator.references[0].pmid == "16178024"
         assert calculator.references[0].year == 2005
 
-    def test_maximum_score_16(self, calculator):
+    def test_maximum_score_16(self, calculator: Any) -> None:
         """Test maximum FOUR Score = 16 (fully responsive)"""
         result = calculator.calculate(
             eye_response=4,
@@ -175,12 +208,16 @@ class TestFourScoreCalculator:
             brainstem_reflexes=4,
             respiration=4
         )
+        assert result.value is not None
         assert result.value == 16
+        assert result.calculation_details is not None
         assert result.calculation_details["notation"] == "E4M4B4R4"
         # Normal severity for fully responsive
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name in ["NORMAL", "MILD"]
 
-    def test_minimum_score_0_brain_death(self, calculator):
+    def test_minimum_score_0_brain_death(self, calculator: Any) -> None:
         """Test FOUR Score = 0 (possible brain death)"""
         result = calculator.calculate(
             eye_response=0,
@@ -188,13 +225,19 @@ class TestFourScoreCalculator:
             brainstem_reflexes=0,
             respiration=0
         )
+        assert result.value is not None
         assert result.value == 0
+        assert result.calculation_details is not None
         assert result.calculation_details["notation"] == "E0M0B0R0"
+        assert result.calculation_details is not None
         assert result.calculation_details["brain_death_screening"] is True
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name == "CRITICAL"
+        assert result.interpretation.summary is not None
         assert "brain death" in result.interpretation.summary.lower()
 
-    def test_severe_brainstem_dysfunction(self, calculator):
+    def test_severe_brainstem_dysfunction(self, calculator: Any) -> None:
         """Test severe brainstem dysfunction"""
         result = calculator.calculate(
             eye_response=2,
@@ -202,11 +245,13 @@ class TestFourScoreCalculator:
             brainstem_reflexes=1,  # Absent pupil AND corneal
             respiration=1
         )
+        assert result.value is not None
         assert result.value == 6
         # Brainstem dysfunction noted in summary or detail
+        assert result.interpretation.summary is not None
         assert "brainstem" in result.interpretation.summary.lower() or "brainstem" in result.interpretation.detail.lower()
 
-    def test_moderate_impairment(self, calculator):
+    def test_moderate_impairment(self, calculator: Any) -> None:
         """Test moderate impairment"""
         result = calculator.calculate(
             eye_response=3,
@@ -214,10 +259,13 @@ class TestFourScoreCalculator:
             brainstem_reflexes=4,
             respiration=2
         )
+        assert result.value is not None
         assert result.value == 12
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name in ["MODERATE", "HIGH"]
 
-    def test_component_descriptions(self, calculator):
+    def test_component_descriptions(self, calculator: Any) -> None:
         """Test component descriptions are provided"""
         result = calculator.calculate(
             eye_response=2,
@@ -225,6 +273,7 @@ class TestFourScoreCalculator:
             brainstem_reflexes=4,
             respiration=1
         )
+        assert result.calculation_details is not None
         details = result.calculation_details["components"]
         assert "description" in details["eye_response"]
         assert "description" in details["motor_response"]
@@ -237,7 +286,7 @@ class TestFourScoreCalculator:
         ("brainstem_reflexes", 6),
         ("respiration", 10),
     ])
-    def test_invalid_inputs(self, calculator, component, value):
+    def test_invalid_inputs(self, calculator: Any, component: Any, value: Any) -> None:
         """Test invalid input values raise errors"""
         valid_params = {
             "eye_response": 2,
@@ -254,10 +303,10 @@ class TestIchScoreCalculator:
     """Tests for ICH Score (Intracerebral Hemorrhage Score)"""
 
     @pytest.fixture
-    def calculator(self):
+    def calculator(self) -> Any:
         return IchScoreCalculator()
 
-    def test_metadata(self, calculator):
+    def test_metadata(self, calculator: Any) -> None:
         """Test calculator metadata"""
         assert calculator.tool_id == "ich_score"
         assert "ICH" in calculator.name
@@ -265,7 +314,7 @@ class TestIchScoreCalculator:
         assert calculator.references[0].pmid == "11283388"
         assert calculator.references[0].year == 2001
 
-    def test_score_0_excellent_prognosis(self, calculator):
+    def test_score_0_excellent_prognosis(self, calculator: Any) -> None:
         """Test ICH Score 0 - excellent prognosis (0% mortality)"""
         result = calculator.calculate(
             gcs_score=15,
@@ -274,12 +323,16 @@ class TestIchScoreCalculator:
             infratentorial=False,
             age=50
         )
+        assert result.value is not None
         assert result.value == 0
+        assert result.calculation_details is not None
         assert result.calculation_details["mortality_30_day"] == "0%"
         # Normal or Mild severity for excellent prognosis
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name in ["NORMAL", "MILD"]
 
-    def test_score_6_maximum(self, calculator):
+    def test_score_6_maximum(self, calculator: Any) -> None:
         """Test ICH Score 6 - maximum score"""
         result = calculator.calculate(
             gcs_score=3,      # 2 points
@@ -288,17 +341,22 @@ class TestIchScoreCalculator:
             infratentorial=True, # 1 point
             age=85            # 1 point (≥80)
         )
+        assert result.value is not None
         assert result.value == 6
+        assert result.calculation_details is not None
         assert "100%" in result.calculation_details["mortality_30_day"]
+        assert result.interpretation.severity is not None
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.name == "CRITICAL"
 
-    def test_gcs_scoring(self, calculator):
+    def test_gcs_scoring(self, calculator: Any) -> None:
         """Test GCS component scoring"""
         # GCS 3-4 = 2 points
         result = calculator.calculate(
             gcs_score=4, ich_volume_ml=10, ivh_present=False,
             infratentorial=False, age=50
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["gcs"]["points"] == 2
 
         # GCS 5-12 = 1 point
@@ -306,6 +364,7 @@ class TestIchScoreCalculator:
             gcs_score=10, ich_volume_ml=10, ivh_present=False,
             infratentorial=False, age=50
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["gcs"]["points"] == 1
 
         # GCS 13-15 = 0 points
@@ -313,15 +372,17 @@ class TestIchScoreCalculator:
             gcs_score=14, ich_volume_ml=10, ivh_present=False,
             infratentorial=False, age=50
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["gcs"]["points"] == 0
 
-    def test_volume_threshold(self, calculator):
+    def test_volume_threshold(self, calculator: Any) -> None:
         """Test ICH volume threshold at 30mL"""
         # Below threshold
         result = calculator.calculate(
             gcs_score=15, ich_volume_ml=29.9, ivh_present=False,
             infratentorial=False, age=50
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["ich_volume"]["points"] == 0
 
         # At threshold
@@ -329,15 +390,17 @@ class TestIchScoreCalculator:
             gcs_score=15, ich_volume_ml=30.0, ivh_present=False,
             infratentorial=False, age=50
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["ich_volume"]["points"] == 1
 
-    def test_age_threshold(self, calculator):
+    def test_age_threshold(self, calculator: Any) -> None:
         """Test age threshold at 80 years"""
         # Below threshold
         result = calculator.calculate(
             gcs_score=15, ich_volume_ml=10, ivh_present=False,
             infratentorial=False, age=79
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["age"]["points"] == 0
 
         # At/above threshold
@@ -345,16 +408,20 @@ class TestIchScoreCalculator:
             gcs_score=15, ich_volume_ml=10, ivh_present=False,
             infratentorial=False, age=80
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["age"]["points"] == 1
 
-    def test_ivh_and_infratentorial(self, calculator):
+    def test_ivh_and_infratentorial(self, calculator: Any) -> None:
         """Test IVH and infratentorial components"""
         result = calculator.calculate(
             gcs_score=15, ich_volume_ml=10, ivh_present=True,
             infratentorial=True, age=50
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["ivh"]["points"] == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["infratentorial"]["points"] == 1
+        assert result.value is not None
         assert result.value == 2
 
     @pytest.mark.parametrize("score,mortality", [
@@ -364,7 +431,7 @@ class TestIchScoreCalculator:
         (3, "72%"),
         (4, "97%"),
     ])
-    def test_mortality_by_score(self, calculator, score, mortality):
+    def test_mortality_by_score(self, calculator: Any, score: Any, mortality: Any) -> None:
         """Test 30-day mortality by ICH score"""
         # Create inputs to achieve specific score
         params = {
@@ -374,7 +441,7 @@ class TestIchScoreCalculator:
             "infratentorial": False,
             "age": 50
         }
-        
+
         # Adjust to get target score
         points_needed = score
         if points_needed >= 1:
@@ -389,11 +456,12 @@ class TestIchScoreCalculator:
         if points_needed >= 1:
             params["age"] = 85  # +1 point
             points_needed -= 1
-        
+
         result = calculator.calculate(**params)
+        assert result.calculation_details is not None
         assert result.calculation_details["mortality_30_day"] == mortality
 
-    def test_invalid_gcs(self, calculator):
+    def test_invalid_gcs(self, calculator: Any) -> None:
         """Test invalid GCS values"""
         with pytest.raises(ValueError):
             calculator.calculate(
@@ -410,26 +478,32 @@ class TestIchScoreCalculator:
 class TestNeurologyIntegration:
     """Integration tests for neurology calculator suite"""
 
-    def test_sah_complete_workup(self):
+    def test_sah_complete_workup(self) -> None:
         """Test complete SAH evaluation workflow"""
         hunt_hess = HuntHessCalculator()
         fisher = FisherGradeCalculator()
-        
+
         # Patient with Grade III SAH and Modified Fisher 4
         hh_result = hunt_hess.calculate(grade=3)
         fisher_result = fisher.calculate(thick_sah=True, ivh_present=True)
-        
+
+        assert hh_result.value is not None
         assert hh_result.value == 3
+        assert fisher_result.value is not None
         assert fisher_result.value == 4
-        
+
         # Both should indicate significant risk
+        assert hh_result.interpretation.severity is not None
+        assert hh_result.interpretation.severity is not None
         assert hh_result.interpretation.severity.name in ["MODERATE", "HIGH"]
+        assert fisher_result.interpretation.severity is not None
+        assert fisher_result.interpretation.severity is not None
         assert fisher_result.interpretation.severity.name == "CRITICAL"
 
-    def test_coma_evaluation_comparison(self):
+    def test_coma_evaluation_comparison(self) -> None:
         """Test FOUR Score for detailed coma evaluation"""
         four_calc = FourScoreCalculator()
-        
+
         # Moderate coma patient
         result = four_calc.calculate(
             eye_response=1,
@@ -437,16 +511,19 @@ class TestNeurologyIntegration:
             brainstem_reflexes=4,
             respiration=1
         )
-        
+
+        assert result.value is not None
         assert result.value == 8
+        assert result.calculation_details is not None
         assert result.calculation_details["brain_death_screening"] is False
         # Brainstem intact despite severe motor/eye findings
+        assert result.calculation_details is not None
         assert result.calculation_details["components"]["brainstem_reflexes"]["score"] == 4
 
-    def test_ich_prognosis_documentation(self):
+    def test_ich_prognosis_documentation(self) -> None:
         """Test ICH Score includes ethical documentation"""
         ich_calc = IchScoreCalculator()
-        
+
         # High score patient
         result = ich_calc.calculate(
             gcs_score=4,
@@ -455,10 +532,11 @@ class TestNeurologyIntegration:
             infratentorial=False,
             age=85
         )
-        
+
         # Score should be 5 (2+1+1+1)
+        assert result.value is not None
         assert result.value == 5
-        
+
         # Should include ethical guidance in recommendations or warnings
         all_guidance = " ".join(result.interpretation.recommendations + result.interpretation.warnings)
         assert "not" in all_guidance.lower() or "should" in all_guidance.lower()

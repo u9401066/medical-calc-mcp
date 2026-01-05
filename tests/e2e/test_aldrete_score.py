@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Aldrete Score Calculator
 
 Tests the Aldrete Score for Post-Anesthesia Recovery through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestAldreteScoreE2E:
     """E2E tests for Aldrete Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/aldrete_score"
-    
-    def test_fully_recovered_patient(self, test_client):
+
+    def test_fully_recovered_patient(self, test_client: Any) -> None:
         """Test fully recovered patient (score 10)"""
         payload = {
             "params": {
@@ -26,8 +26,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 10
-    
-    def test_discharge_ready_score_9(self, test_client):
+
+    def test_discharge_ready_score_9(self, test_client: Any) -> None:
         """Test patient ready for discharge (score ≥9)"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 9
-    
-    def test_intermediate_recovery(self, test_client):
+
+    def test_intermediate_recovery(self, test_client: Any) -> None:
         """Test intermediate recovery status"""
         payload = {
             "params": {
@@ -56,8 +56,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 8
-    
-    def test_poor_recovery(self, test_client):
+
+    def test_poor_recovery(self, test_client: Any) -> None:
         """Test poor recovery status"""
         payload = {
             "params": {
@@ -71,8 +71,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_minimum_score(self, test_client):
+
+    def test_minimum_score(self, test_client: Any) -> None:
         """Test minimum possible score (0)"""
         payload = {
             "params": {
@@ -86,8 +86,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_respiratory_depression(self, test_client):
+
+    def test_respiratory_depression(self, test_client: Any) -> None:
         """Test patient with respiratory depression"""
         payload = {
             "params": {
@@ -101,8 +101,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 6
-    
-    def test_hemodynamic_instability(self, test_client):
+
+    def test_hemodynamic_instability(self, test_client: Any) -> None:
         """Test patient with hemodynamic instability"""
         payload = {
             "params": {
@@ -116,8 +116,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 8
-    
-    def test_decreased_consciousness(self, test_client):
+
+    def test_decreased_consciousness(self, test_client: Any) -> None:
         """Test patient with decreased consciousness"""
         payload = {
             "params": {
@@ -131,8 +131,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 7
-    
-    def test_limited_mobility(self, test_client):
+
+    def test_limited_mobility(self, test_client: Any) -> None:
         """Test patient with limited mobility"""
         payload = {
             "params": {
@@ -146,8 +146,8 @@ class TestAldreteScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 8
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

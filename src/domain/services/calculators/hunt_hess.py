@@ -1,12 +1,12 @@
 """
 Hunt and Hess Scale
 
-The Hunt and Hess Scale is a clinical grading system for subarachnoid 
-hemorrhage (SAH) that predicts patient outcomes based on clinical 
+The Hunt and Hess Scale is a clinical grading system for subarachnoid
+hemorrhage (SAH) that predicts patient outcomes based on clinical
 presentation on admission.
 
 Reference (Original):
-    Hunt WE, Hess RM. Surgical risk as related to time of intervention 
+    Hunt WE, Hess RM. Surgical risk as related to time of intervention
     in the repair of intracranial aneurysms. J Neurosurg. 1968;28(1):14-20.
     DOI: 10.3171/jns.1968.28.1.0014
     PMID: 5635959
@@ -19,35 +19,32 @@ Clinical Notes:
 """
 
 
-from ..base import BaseCalculator
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class HuntHessCalculator(BaseCalculator):
     """
     Hunt and Hess Scale Calculator
-    
+
     Grades subarachnoid hemorrhage severity based on clinical presentation.
-    
+
     Grading:
     - Grade I: Asymptomatic or minimal headache, slight nuchal rigidity
-    - Grade II: Moderate to severe headache, nuchal rigidity, no deficit 
+    - Grade II: Moderate to severe headache, nuchal rigidity, no deficit
                 except cranial nerve palsy
     - Grade III: Drowsiness, confusion, or mild focal deficit
-    - Grade IV: Stupor, moderate to severe hemiparesis, possible early 
+    - Grade IV: Stupor, moderate to severe hemiparesis, possible early
                 decerebrate rigidity, vegetative disturbances
     - Grade V: Deep coma, decerebrate rigidity, moribund appearance
-    
+
     Mortality by Grade (approximate):
     - Grade I: 1-2%
     - Grade II: 5%
@@ -55,7 +52,7 @@ class HuntHessCalculator(BaseCalculator):
     - Grade IV: 30-40%
     - Grade V: 50-80%
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -112,14 +109,14 @@ class HuntHessCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         grade: int,
     ) -> ScoreResult:
         """
         Calculate Hunt and Hess Score.
-        
+
         Args:
             grade: Hunt & Hess grade (1-5)
                 1 = Asymptomatic or minimal headache, slight nuchal rigidity
@@ -127,17 +124,17 @@ class HuntHessCalculator(BaseCalculator):
                 3 = Drowsiness, confusion, or mild focal deficit
                 4 = Stupor, moderate-severe hemiparesis, early decerebrate rigidity
                 5 = Deep coma, decerebrate rigidity, moribund appearance
-                
+
         Returns:
             ScoreResult with grade and mortality prediction
         """
         # Validate input
         if not 1 <= grade <= 5:
             raise ValueError("Hunt and Hess grade must be between 1 and 5")
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(grade)
-        
+
         return ScoreResult(
             value=grade,
             unit=Unit.GRADE,
@@ -154,12 +151,12 @@ class HuntHessCalculator(BaseCalculator):
                 "surgery_timing": self._get_surgery_timing(grade),
             },
         )
-    
+
     def _to_roman(self, grade: int) -> str:
         """Convert grade to Roman numeral"""
         roman_map = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}
         return roman_map.get(grade, str(grade))
-    
+
     def _get_grade_description(self, grade: int) -> str:
         """Get clinical description for each grade"""
         descriptions = {
@@ -172,10 +169,10 @@ class HuntHessCalculator(BaseCalculator):
             5: "Deep coma, decerebrate rigidity, moribund appearance",
         }
         return descriptions.get(grade, "Unknown grade")
-    
-    def _get_mortality(self, grade: int) -> dict:
+
+    def _get_mortality(self, grade: int) -> dict[str, str]:
         """Get mortality risk for each grade"""
-        mortality = {
+        mortality: dict[int, dict[str, str]] = {
             1: {"operative": "1-2%", "overall": "2-5%"},
             2: {"operative": "5%", "overall": "5-10%"},
             3: {"operative": "15-20%", "overall": "15-25%"},
@@ -183,7 +180,7 @@ class HuntHessCalculator(BaseCalculator):
             5: {"operative": "50-80%", "overall": "70-90%"},
         }
         return mortality.get(grade, {})
-    
+
     def _get_surgery_timing(self, grade: int) -> str:
         """Get recommended surgery timing"""
         if grade <= 3:
@@ -192,7 +189,7 @@ class HuntHessCalculator(BaseCalculator):
             return "Surgery timing controversial; may delay until improvement"
         else:  # grade 5
             return "Surgery typically delayed; medical stabilization first"
-    
+
     def _get_interpretation(self, grade: int) -> Interpretation:
         """Generate interpretation based on grade"""
         if grade == 1:

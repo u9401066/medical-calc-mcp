@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for SOFA-2 Score Calculator (JAMA 2025)
 
 Tests the updated SOFA-2 score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestSofa2ScoreE2E:
     """E2E tests for SOFA-2 Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/sofa2_score"
-    
-    def test_minimal_dysfunction(self, test_client):
+
+    def test_minimal_dysfunction(self, test_client: Any) -> None:
         """Test minimal organ dysfunction"""
         payload = {
             "params": {
@@ -27,8 +27,8 @@ class TestSofa2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
-    
-    def test_with_sedation(self, test_client):
+
+    def test_with_sedation(self, test_client: Any) -> None:
         """Test with sedation (affects GCS scoring)"""
         payload = {
             "params": {
@@ -44,8 +44,8 @@ class TestSofa2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_on_ecmo(self, test_client):
+
+    def test_on_ecmo(self, test_client: Any) -> None:
         """Test patient on ECMO support"""
         payload = {
             "params": {
@@ -62,8 +62,8 @@ class TestSofa2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 8
-    
-    def test_on_rrt(self, test_client):
+
+    def test_on_rrt(self, test_client: Any) -> None:
         """Test patient on renal replacement therapy"""
         payload = {
             "params": {
@@ -80,8 +80,8 @@ class TestSofa2ScoreE2E:
         data = assert_successful_calculation(response)
         # RRT = maximum renal points
         assert data["result"]["value"] >= 4
-    
-    def test_with_vasopressors(self, test_client):
+
+    def test_with_vasopressors(self, test_client: Any) -> None:
         """Test with vasopressor support"""
         payload = {
             "params": {
@@ -97,8 +97,8 @@ class TestSofa2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_with_urine_output(self, test_client):
+
+    def test_with_urine_output(self, test_client: Any) -> None:
         """Test with various urine output periods"""
         payload = {
             "params": {
@@ -114,8 +114,8 @@ class TestSofa2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_severe_multi_organ_failure(self, test_client):
+
+    def test_severe_multi_organ_failure(self, test_client: Any) -> None:
         """Test severe multi-organ failure"""
         payload = {
             "params": {
@@ -132,8 +132,8 @@ class TestSofa2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 15
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

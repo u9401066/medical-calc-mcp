@@ -8,25 +8,25 @@ References:
 - Saltzman JR, et al. Gastrointest Endosc. 2011;74(6):1215-1224. PMID: 21907980
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
 from ...value_objects.units import Unit
-from ...value_objects.tool_keys import LowLevelKey, HighLevelKey, Specialty, ClinicalContext
+from ..base import BaseCalculator
 
 
 class AIMS65Calculator(BaseCalculator):
     """
     AIMS65 Score for Upper GI Bleeding Mortality
-    
+
     簡便的上消化道出血死亡率預測工具，僅需 5 項臨床指標。
     命名來自五項指標的首字母: Albumin, INR, Mental status, SBP, age ≥65
-    
+
     評分範圍: 0-5 分
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -34,10 +34,10 @@ class AIMS65Calculator(BaseCalculator):
                 tool_id="aims65",
                 name="AIMS65 Score",
                 purpose="Predict in-hospital mortality for upper GI bleeding",
-                input_params=(
+                input_params=[
                     "albumin_lt_3", "inr_gt_1_5", "altered_mental_status",
                     "sbp_lte_90", "age_gte_65"
-                ),
+                ],
                 output_type="AIMS65 Score (0-5) with mortality risk"
             ),
             high_level=HighLevelKey(
@@ -90,55 +90,55 @@ class AIMS65Calculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate AIMS65 Score
-        
+
         Args:
             albumin_lt_3: Albumin <3.0 g/dL
             inr_gt_1_5: INR >1.5
             altered_mental_status: GCS <14 or disorientation/lethargy/stupor/coma
             sbp_lte_90: Systolic BP ≤90 mmHg
             age_gte_65: Age ≥65 years
-            
+
         Returns:
             ScoreResult with AIMS65 score and mortality risk
         """
         score = 0
         components = []
-        
+
         # A - Albumin <3.0 g/dL (+1)
         if albumin_lt_3:
             score += 1
             components.append("Albumin <3.0 g/dL: +1")
         else:
             components.append("Albumin ≥3.0 g/dL: +0")
-        
+
         # I - INR >1.5 (+1)
         if inr_gt_1_5:
             score += 1
             components.append("INR >1.5: +1")
         else:
             components.append("INR ≤1.5: +0")
-        
+
         # M - Altered Mental status (+1)
         if altered_mental_status:
             score += 1
             components.append("Altered mental status: +1")
         else:
             components.append("Normal mental status: +0")
-        
+
         # S - Systolic BP ≤90 mmHg (+1)
         if sbp_lte_90:
             score += 1
             components.append("SBP ≤90 mmHg: +1")
         else:
             components.append("SBP >90 mmHg: +0")
-        
+
         # 65 - Age ≥65 (+1)
         if age_gte_65:
             score += 1
             components.append("Age ≥65: +1")
         else:
             components.append("Age <65: +0")
-        
+
         # Mortality risk based on original study
         mortality_rates = {
             0: ("0.3%", "Very Low"),
@@ -148,9 +148,9 @@ class AIMS65Calculator(BaseCalculator):
             4: ("16.5%", "Very High"),
             5: ("24.5%", "Critical"),
         }
-        
+
         mortality_risk, risk_category = mortality_rates[score]
-        
+
         # Interpretation and recommendations
         if score == 0:
             interpretation = Interpretation(
@@ -287,7 +287,7 @@ class AIMS65Calculator(BaseCalculator):
                 ),
             )
             disposition = "Very high risk, ICU admission recommended"
-        
+
         return ScoreResult(
             value=score,
             unit=Unit.SCORE,

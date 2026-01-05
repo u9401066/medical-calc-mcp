@@ -10,13 +10,13 @@ Reference:
     Ann Emerg Med. 2001;38(6):653-659.
     DOI: 10.1067/mem.2001.119455
     PMID: 11719745
-    
+
     Kraut JA, Xing SX. Approach to the evaluation of a patient with an increased
     serum osmolal gap and high-anion-gap metabolic acidosis.
     Am J Kidney Dis. 2011;58(3):480-484.
     DOI: 10.1053/j.ajkd.2011.05.018
     PMID: 21794966
-    
+
     Lynd LD, Richardson KJ, Purssell RA, et al. An evaluation of the osmole
     gap as a screening test for toxic alcohol poisoning.
     BMC Emerg Med. 2008;8:5.
@@ -26,38 +26,40 @@ Reference:
 
 from typing import Optional
 
-from ..base import BaseCalculator
+from typing import Any, Optional
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class OsmolarGapCalculator(BaseCalculator):
     """
     Osmolar Gap (Osmolal Gap) Calculator
-    
+
     The osmolar gap is the difference between measured serum osmolality
     and calculated osmolality. An elevated gap suggests the presence of
     unmeasured osmotically active substances.
-    
+
     Formula:
         Calculated Osmolality = 2 × Na⁺ + (Glucose / 18) + (BUN / 2.8)
-        
+
         With ethanol adjustment:
         Calculated Osm = 2 × Na⁺ + (Glucose / 18) + (BUN / 2.8) + (Ethanol / 4.6)
-        
+
         Osmolar Gap = Measured Osmolality - Calculated Osmolality
-        
+
         Normal range: -10 to +10 mOsm/kg (some sources: <10)
-        
+
     Clinical Significance:
         Elevated osmolar gap (>10) suggests:
         - Toxic alcohols: methanol, ethylene glycol, isopropanol
@@ -68,7 +70,7 @@ class OsmolarGapCalculator(BaseCalculator):
         - Contrast media
         - Severe hypertriglyceridemia
         - Hyperproteinemia
-        
+
     Important Notes:
         - Methanol: 3.2 mg/dL per mOsm/kg
         - Ethylene glycol: 6.2 mg/dL per mOsm/kg
@@ -76,7 +78,7 @@ class OsmolarGapCalculator(BaseCalculator):
           (may have been metabolized already)
         - Use with anion gap for complete assessment
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -125,7 +127,7 @@ class OsmolarGapCalculator(BaseCalculator):
             ),
             references=self._get_references(),
         )
-    
+
     def _get_references(self) -> tuple[Reference, ...]:
         return (
             Reference(
@@ -147,7 +149,7 @@ class OsmolarGapCalculator(BaseCalculator):
                 year=2008,
             ),
         )
-    
+
     def calculate(
         self,
         measured_osm: float,
@@ -158,14 +160,14 @@ class OsmolarGapCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate osmolar gap.
-        
+
         Args:
             measured_osm: Measured serum osmolality (mOsm/kg)
             sodium: Serum sodium (mEq/L)
             glucose: Serum glucose (mg/dL)
             bun: Blood urea nitrogen (mg/dL)
             ethanol: Serum ethanol level (mg/dL), optional
-            
+
         Returns:
             ScoreResult with osmolar gap and interpretation
         """
@@ -180,25 +182,25 @@ class OsmolarGapCalculator(BaseCalculator):
             raise ValueError(f"BUN {bun} mg/dL is outside expected range (1-200)")
         if ethanol is not None and ethanol < 0:
             raise ValueError(f"Ethanol {ethanol} mg/dL cannot be negative")
-        
+
         # Calculate osmolality
         # Calculated Osm = 2 × Na + (Glucose / 18) + (BUN / 2.8)
         calculated_osm = (2 * sodium) + (glucose / 18) + (bun / 2.8)
-        
+
         # Add ethanol contribution if provided
         # Ethanol contribution = Ethanol / 4.6
-        ethanol_contribution = 0
+        ethanol_contribution: float = 0.0
         if ethanol is not None and ethanol > 0:
             ethanol_contribution = ethanol / 4.6
             calculated_osm += ethanol_contribution
-        
+
         # Calculate osmolar gap
         osmolar_gap = measured_osm - calculated_osm
         osmolar_gap = round(osmolar_gap, 1)
-        
+
         # Generate interpretation
         interpretation = self._interpret_osmolar_gap(osmolar_gap, ethanol)
-        
+
         # Build calculation details
         details = {
             "Measured_osmolality": f"{measured_osm} mOsm/kg",
@@ -208,22 +210,22 @@ class OsmolarGapCalculator(BaseCalculator):
             "Calculated_osmolality": f"{calculated_osm:.1f} mOsm/kg",
             "Osmolar_gap": f"{osmolar_gap:.1f} mOsm/kg",
         }
-        
+
         if ethanol is not None:
             details["Ethanol"] = f"{ethanol} mg/dL"
             details["Ethanol_contribution"] = f"{ethanol_contribution:.1f} mOsm/kg"
-        
+
         formula = "Osm gap = Measured - (2×Na + Glucose/18 + BUN/2.8"
         if ethanol is not None:
             formula += " + Ethanol/4.6)"
         else:
             formula += ")"
-        
+
         return ScoreResult(
             value=osmolar_gap,
             unit=Unit.NONE,  # mOsm/kg is dimensionless ratio
             interpretation=interpretation,
-            references=self._get_references(),
+            references=list(self._get_references()),
             tool_id=self.tool_id,
             tool_name=self.metadata.name,
             raw_inputs={
@@ -236,14 +238,21 @@ class OsmolarGapCalculator(BaseCalculator):
             calculation_details=details,
             formula_used=formula,
         )
-    
+
     def _interpret_osmolar_gap(
         self,
         osmolar_gap: float,
         ethanol: Optional[float],
     ) -> Interpretation:
         """Generate interpretation based on osmolar gap value."""
-        
+
+        severity: Severity
+        risk_level: RiskLevel
+        summary: str
+        detail: str
+        recommendations: tuple[str, ...]
+        warnings: tuple[str, ...]
+
         # Normal range is typically -10 to +10
         if osmolar_gap <= 10:
             if osmolar_gap >= -10:
@@ -326,14 +335,14 @@ class OsmolarGapCalculator(BaseCalculator):
                 "🚨 CRITICAL: Markedly elevated osmolar gap - likely toxic alcohol poisoning",
                 "Immediate treatment required - do not delay for lab confirmation",
             )
-        
+
         next_steps = [
             "Calculate anion gap - HAGMA + elevated osmolar gap is classic for methanol/ethylene glycol",
             "Methanol → formic acid → blindness, basal ganglia hemorrhage",
             "Ethylene glycol → glycolic/oxalic acid → renal failure, calcium oxalate crystals",
             "Isopropanol → acetone (ketosis without acidosis)",
         ]
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

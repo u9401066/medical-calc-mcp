@@ -9,11 +9,11 @@ References:
     serum creatinine. Nephron. 1976;16(1):31-41.
     DOI: 10.1159/000180580
     PMID: 1244564
-    
+
     FDA Guidance for Industry: Pharmacokinetics in Patients with
     Impaired Renal Function — Study Design, Data Analysis, and
     Impact on Dosing and Labeling. 2020.
-    
+
     Dowling TC, Matzke GR, Murphy JE, Burckart GJ. Evaluation of renal
     drug dosing: prescribing information and clinical pharmacist
     approaches. Pharmacotherapy. 2010;30(8):776-786.
@@ -21,54 +21,54 @@ References:
     PMID: 20653353
 """
 
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.reference import Reference
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CockcroftGaultCalculator(BaseCalculator):
     """
     Cockcroft-Gault Creatinine Clearance Calculator
-    
+
     Estimates creatinine clearance (CrCl) for drug dosing.
-    
+
     Formula:
         CrCl (mL/min) = [(140 - age) × weight (kg)] / [72 × SCr (mg/dL)]
         For females: × 0.85
-        
+
     Weight Considerations:
         - Actual body weight (ABW): Original formula
         - Ideal body weight (IBW): For obese patients (ABW > 130% IBW)
         - Adjusted body weight (AdjBW): IBW + 0.4 × (ABW - IBW)
-        
+
     Clinical Use:
         - Drug dosing adjustments (many drugs still use CG-CrCl)
         - Direct thrombin inhibitors (dabigatran)
         - Low-molecular-weight heparin
         - Aminoglycosides
         - Many antibiotics and antivirals
-        
+
     Note: FDA still recommends Cockcroft-Gault for drug dosing
     rather than CKD-EPI eGFR in many drug labels.
-    
+
     Limitations:
         - Less accurate at extremes of age, weight, or muscle mass
         - Not validated in AKI
         - Overestimates in obese patients using actual weight
         - Underestimates in elderly or malnourished
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -143,7 +143,7 @@ class CockcroftGaultCalculator(BaseCalculator):
                 ),
             ),
         )
-    
+
     def calculate(
         self,
         age: int,
@@ -154,17 +154,17 @@ class CockcroftGaultCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate creatinine clearance using Cockcroft-Gault equation.
-        
+
         Args:
             age: Age in years (18-120)
             weight_kg: Actual body weight in kg (30-300)
             creatinine_mg_dl: Serum creatinine in mg/dL (0.2-20.0)
             sex: Biological sex ("male" or "female")
             height_cm: Height in cm (optional, for IBW calculation)
-                
+
         Returns:
             ScoreResult with CrCl in mL/min
-            
+
         Raises:
             ValueError: If parameters are out of valid range
         """
@@ -177,17 +177,17 @@ class CockcroftGaultCalculator(BaseCalculator):
             raise ValueError(f"Creatinine must be 0.2-20.0 mg/dL, got {creatinine_mg_dl}")
         if height_cm is not None and not (100 <= height_cm <= 250):
             raise ValueError(f"Height must be 100-250 cm, got {height_cm}")
-        
+
         # Calculate with actual body weight (ABW)
         crcl_abw = self._calculate_crcl(age, weight_kg, creatinine_mg_dl, sex)
-        
+
         # Calculate IBW and adjusted weight if height provided
         ibw = None
         adjbw = None
         crcl_ibw = None
         crcl_adjbw = None
         weight_recommendation = "actual"
-        
+
         if height_cm is not None:
             # Devine formula for IBW
             height_inches = height_cm / 2.54
@@ -195,9 +195,9 @@ class CockcroftGaultCalculator(BaseCalculator):
                 ibw = 50 + 2.3 * (height_inches - 60)
             else:
                 ibw = 45.5 + 2.3 * (height_inches - 60)
-            
+
             ibw = max(ibw, 30)  # Minimum IBW
-            
+
             # Check if obese (ABW > 130% IBW)
             if weight_kg > 1.3 * ibw:
                 # Calculate adjusted body weight
@@ -207,20 +207,20 @@ class CockcroftGaultCalculator(BaseCalculator):
             elif weight_kg < ibw:
                 # Underweight - use actual weight
                 weight_recommendation = "actual"
-            
+
             crcl_ibw = self._calculate_crcl(age, ibw, creatinine_mg_dl, sex)
-        
+
         # Determine primary CrCl to report
         if weight_recommendation == "adjusted" and crcl_adjbw is not None:
             primary_crcl = crcl_adjbw
         else:
             primary_crcl = crcl_abw
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(primary_crcl, weight_recommendation)
-        
+
         # Build calculation details
-        calc_details = {
+        calc_details: dict[str, Any] = {
             "age": age,
             "weight_actual_kg": weight_kg,
             "creatinine_mg_dl": creatinine_mg_dl,
@@ -229,12 +229,12 @@ class CockcroftGaultCalculator(BaseCalculator):
             "weight_used": weight_recommendation,
             "formula": "(140 - age) × weight / (72 × SCr)" + (" × 0.85" if sex == "female" else ""),
         }
-        
+
         if height_cm is not None:
             calc_details["height_cm"] = height_cm
             calc_details["ibw_kg"] = round(ibw, 1) if ibw else None
             calc_details["crcl_ibw"] = round(crcl_ibw, 1) if crcl_ibw else None
-            
+
             if adjbw is not None:
                 calc_details["adjbw_kg"] = round(adjbw, 1)
                 calc_details["crcl_adjbw"] = round(crcl_adjbw, 1) if crcl_adjbw else None
@@ -242,24 +242,24 @@ class CockcroftGaultCalculator(BaseCalculator):
                     f"ABW ({weight_kg:.1f} kg) > 130% IBW ({ibw:.1f} kg). "
                     f"Using adjusted body weight for dosing."
                 )
-        
+
         calc_details["dosing_category"] = self._get_dosing_category(primary_crcl)
-        
+
         return ScoreResult(
             tool_id=self.tool_id,
             tool_name=self.name,
-            value=round(primary_crcl, 1),
+            value=float(round(primary_crcl, 1)),
             unit=Unit.ML_MIN,
             interpretation=interpretation,
-            references=self.references,
+            references=list(self.references),
             calculation_details=calc_details,
         )
-    
+
     def _calculate_crcl(
-        self, 
-        age: int, 
-        weight: float, 
-        creatinine: float, 
+        self,
+        age: int,
+        weight: float,
+        creatinine: float,
         sex: str
     ) -> float:
         """Calculate CrCl using Cockcroft-Gault formula"""
@@ -267,8 +267,8 @@ class CockcroftGaultCalculator(BaseCalculator):
         if sex == "female":
             crcl *= 0.85
         return crcl
-    
-    def _get_dosing_category(self, crcl: float) -> dict:
+
+    def _get_dosing_category(self, crcl: float) -> dict[str, str]:
         """Get dosing category based on CrCl"""
         if crcl >= 90:
             return {"category": "Normal", "adjustment": "No adjustment needed"}
@@ -280,10 +280,11 @@ class CockcroftGaultCalculator(BaseCalculator):
             return {"category": "Severe impairment", "adjustment": "Often requires 50-75% reduction"}
         else:
             return {"category": "Kidney failure", "adjustment": "Often contraindicated or dialysis dosing"}
-    
+
     def _get_interpretation(self, crcl: float, weight_used: str) -> Interpretation:
         """Generate interpretation based on CrCl value"""
-        
+        recommendations: tuple[str, ...]
+
         if crcl >= 90:
             stage = "Normal renal function"
             severity = Severity.NORMAL
@@ -331,13 +332,13 @@ class CockcroftGaultCalculator(BaseCalculator):
                 "Many drugs need post-dialysis supplemental dosing",
                 "Avoid nephrotoxins absolutely",
             )
-        
+
         weight_note = ""
         if weight_used == "adjusted":
             weight_note = " Using adjusted body weight for obese patient."
         elif weight_used == "ibw":
             weight_note = " Using ideal body weight."
-        
+
         return Interpretation(
             summary=f"CrCl: {crcl:.1f} mL/min - {stage}",
             detail=(

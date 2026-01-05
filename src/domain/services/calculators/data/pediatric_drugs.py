@@ -5,25 +5,24 @@ Reference drug dosing information for common pediatric medications.
 Used by the PediatricDosingCalculator.
 
 References:
-    Taketomo CK, Hodding JH, Kraus DM. Pediatric & Neonatal Dosage Handbook. 
+    Taketomo CK, Hodding JH, Kraus DM. Pediatric & Neonatal Dosage Handbook.
     29th ed. Hudson, OH: Lexicomp; 2022.
-    
-    Neofax: A Manual of Drugs Used in Neonatal Care. 24th ed. 
+
+    Neofax: A Manual of Drugs Used in Neonatal Care. 24th ed.
     Montvale, NJ: Thomson Reuters; 2011.
 
-    British National Formulary for Children (BNFC). London: BMJ Group and 
+    British National Formulary for Children (BNFC). London: BMJ Group and
     Pharmaceutical Press; 2023.
 """
 
 from dataclasses import dataclass
-from typing import Dict
 
 
 @dataclass(frozen=True)
 class PediatricDrugInfo:
     """
     Information for a pediatric drug.
-    
+
     Attributes:
         name: Full drug name with common alternatives
         dose_per_kg: Standard dose in mg/kg
@@ -44,7 +43,7 @@ class PediatricDrugInfo:
 # Pediatric Drug Database
 # =============================================================================
 
-PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
+PEDIATRIC_DRUGS: dict[str, PediatricDrugInfo] = {
     # =========================================================================
     # Analgesics / Antipyretics
     # =========================================================================
@@ -64,7 +63,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="PO",
         notes="Max 40 mg/kg/day or 2400 mg/day. Avoid in infants <6 months"
     ),
-    
+
     # =========================================================================
     # Antibiotics
     # =========================================================================
@@ -108,7 +107,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="IV",
         notes="Surgical prophylaxis: 30 mg/kg, max 2g"
     ),
-    
+
     # =========================================================================
     # Anesthesia Induction Agents
     # =========================================================================
@@ -128,7 +127,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="IV",
         notes="IV: 1-2 mg/kg, IM: 4-6 mg/kg"
     ),
-    
+
     # =========================================================================
     # Opioids
     # =========================================================================
@@ -148,7 +147,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="IV",
         notes="0.05-0.1 mg/kg IV; 0.2-0.5 mg/kg PO"
     ),
-    
+
     # =========================================================================
     # Neuromuscular Blocking Agents
     # =========================================================================
@@ -168,7 +167,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="IV",
         notes="Infants: 2-3 mg/kg; Children: 1-2 mg/kg. Contraindicated in hyperkalemia risk"
     ),
-    
+
     # =========================================================================
     # Anticholinergics
     # =========================================================================
@@ -188,7 +187,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="IV",
         notes="Antisialagogue: 0.004-0.01 mg/kg"
     ),
-    
+
     # =========================================================================
     # Antiemetics
     # =========================================================================
@@ -208,7 +207,7 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
         route="IV",
         notes="PONV: 0.1-0.15 mg/kg; Croup: 0.6 mg/kg"
     ),
-    
+
     # =========================================================================
     # Emergency / Resuscitation Drugs
     # =========================================================================
@@ -246,13 +245,13 @@ PEDIATRIC_DRUGS: Dict[str, PediatricDrugInfo] = {
 def get_drug_info(drug_name: str) -> PediatricDrugInfo:
     """
     Get drug information by name.
-    
+
     Args:
         drug_name: Drug name (case-insensitive)
-        
+
     Returns:
         PediatricDrugInfo for the drug
-        
+
     Raises:
         KeyError: If drug not found
     """
@@ -271,7 +270,7 @@ def list_drugs_by_category() -> dict[str, list[str]]:
     """Return drugs grouped by category"""
     return {
         "analgesics_antipyretics": ["acetaminophen", "ibuprofen"],
-        "antibiotics": ["amoxicillin", "amoxicillin_clavulanate", "azithromycin", 
+        "antibiotics": ["amoxicillin", "amoxicillin_clavulanate", "azithromycin",
                         "ceftriaxone", "cefazolin"],
         "anesthesia_induction": ["propofol", "ketamine"],
         "opioids": ["fentanyl", "morphine"],

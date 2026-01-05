@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for STOP-BANG Score Calculator
 
 Tests the STOP-BANG Score for Obstructive Sleep Apnea through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestStopBangE2E:
     """E2E tests for STOP-BANG Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/stop_bang"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk patient (score 0-2)"""
         payload = {
             "params": {
@@ -29,8 +29,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_intermediate_risk(self, test_client):
+
+    def test_intermediate_risk(self, test_client: Any) -> None:
         """Test intermediate risk (score 3-4)"""
         payload = {
             "params": {
@@ -47,8 +47,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_high_risk_score_5(self, test_client):
+
+    def test_high_risk_score_5(self, test_client: Any) -> None:
         """Test high risk patient (score ≥5)"""
         payload = {
             "params": {
@@ -65,8 +65,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 5
-    
-    def test_maximum_score_8(self, test_client):
+
+    def test_maximum_score_8(self, test_client: Any) -> None:
         """Test maximum risk (score 8)"""
         payload = {
             "params": {
@@ -83,8 +83,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 8
-    
-    def test_typical_male_patient(self, test_client):
+
+    def test_typical_male_patient(self, test_client: Any) -> None:
         """Test typical high-risk male patient"""
         payload = {
             "params": {
@@ -101,8 +101,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_obese_female_patient(self, test_client):
+
+    def test_obese_female_patient(self, test_client: Any) -> None:
         """Test obese female patient"""
         payload = {
             "params": {
@@ -119,8 +119,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_stop_only_positive(self, test_client):
+
+    def test_stop_only_positive(self, test_client: Any) -> None:
         """Test STOP criteria only positive"""
         payload = {
             "params": {
@@ -137,8 +137,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
-    
-    def test_bang_only_positive(self, test_client):
+
+    def test_bang_only_positive(self, test_client: Any) -> None:
         """Test BANG criteria only positive"""
         payload = {
             "params": {
@@ -155,8 +155,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
-    
-    def test_young_thin_female_no_symptoms(self, test_client):
+
+    def test_young_thin_female_no_symptoms(self, test_client: Any) -> None:
         """Test young thin female with no symptoms - low risk"""
         payload = {
             "params": {
@@ -173,8 +173,8 @@ class TestStopBangE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -1,9 +1,8 @@
 """Quick test for Phase 9b calculators"""
-import pytest
 from src.domain.services.calculators import (
-    WintersFormulaCalculator, 
-    OsmolarGapCalculator, 
-    FreeWaterDeficitCalculator
+    FreeWaterDeficitCalculator,
+    OsmolarGapCalculator,
+    WintersFormulaCalculator,
 )
 
 

@@ -15,33 +15,28 @@ Clinical Use:
     - Score ≤5: Unfavorable cervix, consider cervical ripening before induction
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class BishopScoreCalculator(BaseCalculator):
     """
     Bishop Score for Cervical Assessment
-    
+
     Evaluates five cervical parameters:
     1. Dilation (cm): 0-3 points
     2. Effacement (%): 0-3 points
     3. Station (-3 to +2): 0-3 points
     4. Consistency (firm to soft): 0-2 points
     5. Position (posterior to anterior): 0-2 points
-    
+
     Total Score: 0-13 points
-    
+
     Interpretation:
     - ≥8: Favorable cervix - proceed with induction
     - 6-7: Moderately favorable - consider ripening
@@ -54,7 +49,7 @@ class BishopScoreCalculator(BaseCalculator):
         "medium": 1,
         "soft": 2,
     }
-    
+
     POSITION_SCORES = {
         "posterior": 0,
         "mid": 1,
@@ -128,7 +123,7 @@ class BishopScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Bishop Score for cervical assessment.
-        
+
         Args:
             dilation: Cervical dilation score (0-3)
                 0 = Closed, 1 = 1-2 cm, 2 = 3-4 cm, 3 = ≥5 cm
@@ -140,7 +135,7 @@ class BishopScoreCalculator(BaseCalculator):
                 Options: "firm", "medium", "soft"
             position: Cervical position
                 Options: "posterior", "mid", "anterior"
-        
+
         Returns:
             ScoreResult with Bishop score and induction recommendations
         """
@@ -151,27 +146,27 @@ class BishopScoreCalculator(BaseCalculator):
             raise ValueError("effacement must be 0, 1, 2, or 3")
         if station not in [0, 1, 2, 3]:
             raise ValueError("station must be 0, 1, 2, or 3")
-        
+
         consistency_lower = consistency.lower()
         if consistency_lower not in self.CONSISTENCY_SCORES:
             raise ValueError("consistency must be 'firm', 'medium', or 'soft'")
-        
+
         position_lower = position.lower()
         if position_lower not in self.POSITION_SCORES:
             raise ValueError("position must be 'posterior', 'mid', or 'anterior'")
-        
+
         # Calculate score components
         consistency_score = self.CONSISTENCY_SCORES[consistency_lower]
         position_score = self.POSITION_SCORES[position_lower]
-        
+
         # Total Bishop Score
         total_score = dilation + effacement + station + consistency_score + position_score
-        
+
         # Interpretation descriptions
         dilation_desc = ["Closed", "1-2 cm", "3-4 cm", "≥5 cm"][dilation]
         effacement_desc = ["0-30%", "40-50%", "60-70%", "≥80%"][effacement]
         station_desc = ["-3", "-2", "-1/0", "+1/+2"][station]
-        
+
         # Interpretation based on score
         if total_score >= 8:
             severity = Severity.NORMAL
@@ -207,7 +202,7 @@ class BishopScoreCalculator(BaseCalculator):
                 "or Cook balloon."
             )
             ripening_needed = True
-        
+
         # Build interpretation
         interpretation = Interpretation(
             severity=severity,
@@ -224,7 +219,7 @@ class BishopScoreCalculator(BaseCalculator):
             ),
             recommendations=(recommendation,),
         )
-        
+
         # Calculation details
         details = {
             "score_breakdown": {
@@ -243,7 +238,7 @@ class BishopScoreCalculator(BaseCalculator):
                 else "Proceed with induction protocol"
             ),
         }
-        
+
         # Add ripening options if needed
         if ripening_needed:
             details["ripening_options"] = [

@@ -5,8 +5,8 @@ Data Transfer Objects for tool discovery operations.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 from enum import Enum
+from typing import Any, Optional
 
 
 class DiscoveryMode(Enum):
@@ -25,7 +25,7 @@ class DiscoveryMode(Enum):
 class DiscoveryRequest:
     """
     Request DTO for tool discovery.
-    
+
     This unified request supports multiple discovery modes:
     - search: Free text search across all metadata
     - by_specialty: Filter by medical specialty
@@ -70,7 +70,7 @@ class ToolDetailDTO:
     clinical_questions: list[str]
     keywords: list[str]
     icd10_codes: list[str]
-    references: list[dict]
+    references: list[dict[str, Any]]
     version: str
     validation_status: str
 
@@ -79,7 +79,7 @@ class ToolDetailDTO:
 class DiscoveryResponse:
     """
     Response DTO for tool discovery.
-    
+
     Contains either a list of tool summaries or a single detailed tool info.
     """
     mode: DiscoveryMode
@@ -91,22 +91,22 @@ class DiscoveryResponse:
     available_contexts: list[str] = field(default_factory=list)
     query: Optional[str] = None
     error: Optional[str] = None
-    
-    def to_dict(self) -> dict:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for MCP response"""
-        result = {
+        result: dict[str, Any] = {
             "mode": self.mode.value,
             "success": self.success,
             "count": self.count,
         }
-        
+
         if self.query:
             result["query"] = self.query
-        
+
         if self.error:
             result["error"] = self.error
             return result
-        
+
         if self.tools:
             result["tools"] = [
                 {
@@ -119,7 +119,7 @@ class DiscoveryResponse:
                 }
                 for t in self.tools
             ]
-        
+
         if self.tool_detail:
             result["tool"] = {
                 "tool_id": self.tool_detail.tool_id,
@@ -135,11 +135,11 @@ class DiscoveryResponse:
                 "references": self.tool_detail.references,
                 "version": self.tool_detail.version,
             }
-        
+
         if self.available_specialties:
             result["available_specialties"] = self.available_specialties
-        
+
         if self.available_contexts:
             result["available_contexts"] = self.available_contexts
-        
+
         return result

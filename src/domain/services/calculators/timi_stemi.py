@@ -13,26 +13,21 @@ Reference:
     PMID: 11044416
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class TimiStemiCalculator(BaseCalculator):
     """
     TIMI Risk Score for STEMI
-    
+
     Predicts 30-day mortality in ST-elevation myocardial infarction.
-    
+
     Risk Factors (each worth 1-3 points):
     - Age 65-74: 2 points; ≥75: 3 points
     - Diabetes, Hypertension, or Angina: 1 point
@@ -42,9 +37,9 @@ class TimiStemiCalculator(BaseCalculator):
     - Weight <67 kg: 1 point
     - Anterior ST elevation or LBBB: 1 point
     - Time to treatment >4 hours: 1 point
-    
+
     Total: 0-14 points
-    
+
     30-day mortality by score:
     - 0: 0.8%
     - 1: 1.6%
@@ -143,7 +138,7 @@ class TimiStemiCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate TIMI Risk Score for STEMI.
-        
+
         Args:
             age_years: Patient age in years
             has_dm_htn_or_angina: Diabetes, hypertension, or angina history
@@ -157,14 +152,14 @@ class TimiStemiCalculator(BaseCalculator):
             weight_lt_67kg: Body weight <67 kg
             anterior_ste_or_lbbb: Anterior STE or LBBB on ECG
             time_to_treatment_gt_4h: Time to treatment >4 hours
-            
+
         Returns:
             ScoreResult with TIMI STEMI score and 30-day mortality risk
         """
         # Validate inputs
         if killip_class < 1 or killip_class > 4:
             raise ValueError("Killip class must be 1-4")
-        
+
         # Calculate age points
         if age_years >= 75:
             age_points = 3
@@ -172,7 +167,7 @@ class TimiStemiCalculator(BaseCalculator):
             age_points = 2
         else:
             age_points = 0
-        
+
         # Calculate other component points
         dm_htn_angina_points = 1 if has_dm_htn_or_angina else 0
         sbp_points = 3 if systolic_bp_lt_100 else 0
@@ -181,20 +176,20 @@ class TimiStemiCalculator(BaseCalculator):
         weight_points = 1 if weight_lt_67kg else 0
         anterior_lbbb_points = 1 if anterior_ste_or_lbbb else 0
         time_points = 1 if time_to_treatment_gt_4h else 0
-        
+
         # Total score
         score = (
             age_points + dm_htn_angina_points + sbp_points +
             hr_points + killip_points + weight_points +
             anterior_lbbb_points + time_points
         )
-        
+
         # Get mortality risk
         mortality_30day = self._get_mortality_risk(score)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score, mortality_30day)
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -234,7 +229,7 @@ class TimiStemiCalculator(BaseCalculator):
     def _get_mortality_risk(self, score: int) -> float:
         """
         Get 30-day mortality risk based on score.
-        
+
         Data from InTIME-II trial substudy (Morrow 2000).
         """
         mortality_table = {
@@ -248,7 +243,7 @@ class TimiStemiCalculator(BaseCalculator):
             7: 23.4,
             8: 26.8
         }
-        
+
         if score > 8:
             return 35.9
         return mortality_table.get(score, 35.9)
@@ -259,7 +254,7 @@ class TimiStemiCalculator(BaseCalculator):
         mortality: float
     ) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score <= 2:
             return Interpretation(
                 summary=f"Low Risk STEMI (TIMI {score})",
@@ -366,20 +361,20 @@ class TimiStemiCalculator(BaseCalculator):
             "TIMI STEMI score validated in fibrinolytic-treated patients",
             "May underestimate risk in primary PCI era",
         ]
-        
+
         if killip_class >= 3:
             notes.append(
                 "Killip III-IV: Consider mechanical circulatory support"
             )
-        
+
         if score >= 5:
             notes.append(
                 "High-risk: Multidisciplinary approach recommended"
             )
-        
+
         notes.append(
             "Door-to-balloon time <90 min remains critical"
         )
-        
+
         return notes
 

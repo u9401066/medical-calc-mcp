@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for KDIGO AKI Calculator
 
 Tests the KDIGO AKI staging calculator through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestKdigoAkiE2E:
     """E2E tests for KDIGO AKI Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/kdigo_aki"
-    
-    def test_no_aki_normal_creatinine(self, test_client):
+
+    def test_no_aki_normal_creatinine(self, test_client: Any) -> None:
         """Test no AKI - normal creatinine"""
         payload = {
             "params": {
@@ -23,8 +23,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_stage_1_creatinine_rise(self, test_client):
+
+    def test_stage_1_creatinine_rise(self, test_client: Any) -> None:
         """Test Stage 1 - creatinine 1.5-1.9x baseline"""
         payload = {
             "params": {
@@ -35,8 +35,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_stage_1_absolute_increase(self, test_client):
+
+    def test_stage_1_absolute_increase(self, test_client: Any) -> None:
         """Test Stage 1 - absolute increase ≥0.3 mg/dL in 48h"""
         payload = {
             "params": {
@@ -48,8 +48,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 1
-    
-    def test_stage_2_creatinine_rise(self, test_client):
+
+    def test_stage_2_creatinine_rise(self, test_client: Any) -> None:
         """Test Stage 2 - creatinine 2.0-2.9x baseline"""
         payload = {
             "params": {
@@ -60,8 +60,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_stage_3_creatinine_rise(self, test_client):
+
+    def test_stage_3_creatinine_rise(self, test_client: Any) -> None:
         """Test Stage 3 - creatinine ≥3.0x baseline"""
         payload = {
             "params": {
@@ -72,8 +72,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_stage_3_creatinine_gt_4(self, test_client):
+
+    def test_stage_3_creatinine_gt_4(self, test_client: Any) -> None:
         """Test Stage 3 - creatinine ≥4.0 mg/dL"""
         payload = {
             "params": {
@@ -84,8 +84,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_stage_1_urine_output(self, test_client):
+
+    def test_stage_1_urine_output(self, test_client: Any) -> None:
         """Test Stage 1 - urine output <0.5 mL/kg/h for 6-12h"""
         payload = {
             "params": {
@@ -98,8 +98,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 1
-    
-    def test_stage_2_urine_output(self, test_client):
+
+    def test_stage_2_urine_output(self, test_client: Any) -> None:
         """Test Stage 2 - urine output <0.5 mL/kg/h for ≥12h"""
         payload = {
             "params": {
@@ -112,8 +112,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
-    
-    def test_on_rrt(self, test_client):
+
+    def test_on_rrt(self, test_client: Any) -> None:
         """Test Stage 3 - on renal replacement therapy"""
         payload = {
             "params": {
@@ -125,8 +125,8 @@ class TestKdigoAkiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

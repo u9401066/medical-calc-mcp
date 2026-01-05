@@ -5,43 +5,43 @@ Predicts 30-day mortality risk in community-acquired pneumonia (CAP).
 Used for disposition decisions: outpatient vs inpatient vs ICU.
 
 Original Reference:
-    Lim WS, van der Eerden MM, Laing R, et al. Defining community acquired 
-    pneumonia severity on presentation to hospital: an international 
+    Lim WS, van der Eerden MM, Laing R, et al. Defining community acquired
+    pneumonia severity on presentation to hospital: an international
     derivation and validation study. Thorax. 2003;58(5):377-382.
     doi:10.1136/thorax.58.5.377. PMID: 12728155.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class Curb65Calculator(BaseCalculator):
     """
     CURB-65 Score for Pneumonia Severity
-    
+
     Scoring criteria (1 point each):
     - Confusion (new disorientation in person, place, or time)
     - Urea >7 mmol/L (or BUN >19 mg/dL)
     - Respiratory rate ≥30/min
     - Blood pressure (SBP <90 mmHg or DBP ≤60 mmHg)
     - Age ≥65 years
-    
+
     Risk stratification:
     - 0-1: Low risk (0.6-2.7% mortality) → Outpatient
     - 2: Moderate risk (6.8% mortality) → Consider admission
     - 3-5: High risk (14-57% mortality) → Inpatient/ICU
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -125,7 +125,7 @@ class Curb65Calculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         confusion: bool,
@@ -136,14 +136,14 @@ class Curb65Calculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate CURB-65 score.
-        
+
         Args:
             confusion: New mental confusion (disorientation in person, place, or time)
             bun_gt_19_or_urea_gt_7: BUN >19 mg/dL or Urea >7 mmol/L
             respiratory_rate_gte_30: Respiratory rate ≥30/min
             sbp_lt_90_or_dbp_lte_60: Systolic BP <90 mmHg OR Diastolic BP ≤60 mmHg
             age_gte_65: Age ≥65 years
-            
+
         Returns:
             ScoreResult with score, mortality risk, and disposition recommendation
         """
@@ -155,10 +155,10 @@ class Curb65Calculator(BaseCalculator):
             1 if sbp_lt_90_or_dbp_lte_60 else 0,
             1 if age_gte_65 else 0,
         ])
-        
+
         # Determine risk level and recommendations
         interpretation = self._interpret_score(score)
-        
+
         # Component details
         components = {
             "C - Confusion": 1 if confusion else 0,
@@ -167,7 +167,7 @@ class Curb65Calculator(BaseCalculator):
             "B - Blood pressure (SBP <90 or DBP ≤60)": 1 if sbp_lt_90_or_dbp_lte_60 else 0,
             "65 - Age ≥65 years": 1 if age_gte_65 else 0,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -177,10 +177,10 @@ class Curb65Calculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int) -> Interpretation:
         """Generate interpretation based on CURB-65 score"""
-        
+
         # Mortality rates from original study (Lim et al. 2003)
         mortality_rates = {
             0: "0.7%",
@@ -190,9 +190,9 @@ class Curb65Calculator(BaseCalculator):
             4: "40%",
             5: "57%",
         }
-        
+
         mortality = mortality_rates.get(score, "N/A")
-        
+
         if score <= 1:
             # Low risk
             severity = Severity.MILD
@@ -214,7 +214,7 @@ class Curb65Calculator(BaseCalculator):
                 "Prescribe appropriate oral antibiotic (e.g., amoxicillin or doxycycline)",
             ]
             disposition = "Outpatient"
-            
+
         elif score == 2:
             # Moderate risk
             severity = Severity.MODERATE
@@ -235,7 +235,7 @@ class Curb65Calculator(BaseCalculator):
                 "Consider IV antibiotics initially, step-down to oral when improving",
             ]
             disposition = "Consider admission / Close outpatient follow-up"
-            
+
         else:
             # High risk (score 3-5)
             severity = Severity.SEVERE
@@ -245,7 +245,7 @@ class Curb65Calculator(BaseCalculator):
                 f"Severe pneumonia with high mortality risk ({mortality}). "
                 f"Hospital admission is strongly recommended."
             )
-            
+
             if score >= 4:
                 recommendations = [
                     "Urgent hospital admission required",
@@ -273,7 +273,7 @@ class Curb65Calculator(BaseCalculator):
                     "Reassess within 24-48 hours for clinical response",
                 ]
                 disposition = "Inpatient"
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

@@ -10,7 +10,7 @@ Reference:
     Stroke. 1989;20(7):864-870.
     DOI: 10.1161/01.str.20.7.864
     PMID: 2749846
-    
+
     Lyden P, Brott T, Tilley B, et al.
     Improved reliability of the NIH Stroke Scale using video training.
     Stroke. 1994;25(11):2220-2226.
@@ -19,26 +19,21 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class NihssCalculator(BaseCalculator):
     """
     NIH Stroke Scale (NIHSS)
-    
+
     A 15-item neurological examination for stroke severity:
-    
+
     1a. Level of Consciousness (LOC): 0-3
     1b. LOC Questions (month, age): 0-2
     1c. LOC Commands (open/close eyes, grip/release): 0-2
@@ -54,9 +49,9 @@ class NihssCalculator(BaseCalculator):
     9. Best Language: 0-3
     10. Dysarthria: 0-2
     11. Extinction/Inattention: 0-2
-    
+
     Total: 0-42 points
-    
+
     Severity:
     - 0: No stroke symptoms
     - 1-4: Minor stroke
@@ -163,7 +158,7 @@ class NihssCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate NIH Stroke Scale.
-        
+
         Args:
             loc: Level of Consciousness (0=Alert, 1=Drowsy, 2=Stuporous, 3=Coma)
             loc_questions: LOC Questions (0=Both correct, 1=One correct, 2=Neither)
@@ -180,7 +175,7 @@ class NihssCalculator(BaseCalculator):
             best_language: Best Language (0=No aphasia, 1=Mild-moderate, 2=Severe, 3=Mute/global)
             dysarthria: Dysarthria (0=Normal, 1=Mild-moderate, 2=Severe/mute)
             extinction_inattention: Extinction/Inattention (0=None, 1=One modality, 2=Profound)
-            
+
         Returns:
             ScoreResult with NIHSS score and severity classification
         """
@@ -193,7 +188,7 @@ class NihssCalculator(BaseCalculator):
             limb_ataxia + sensory + best_language +
             dysarthria + extinction_inattention
         )
-        
+
         # Component breakdown
         component_scores = {
             "1a_loc": loc,
@@ -212,7 +207,7 @@ class NihssCalculator(BaseCalculator):
             "10_dysarthria": dysarthria,
             "11_extinction_inattention": extinction_inattention
         }
-        
+
         # Identify lateralization
         left_motor = motor_arm_left + motor_leg_left
         right_motor = motor_arm_right + motor_leg_right
@@ -221,10 +216,10 @@ class NihssCalculator(BaseCalculator):
             lateralization = "Left hemiparesis (Right hemisphere stroke)"
         elif right_motor > left_motor:
             lateralization = "Right hemiparesis (Left hemisphere stroke)"
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score, best_language)
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -262,7 +257,7 @@ class NihssCalculator(BaseCalculator):
 
     def _get_interpretation(self, score: int, language_score: int) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score == 0:
             return Interpretation(
                 summary="No Stroke Symptoms (NIHSS 0)",
@@ -387,14 +382,14 @@ class NihssCalculator(BaseCalculator):
             "NIHSS should be performed serially to track progression",
             "Score can be artificially low in posterior circulation strokes",
         ]
-        
+
         if has_aphasia:
             notes.append("Aphasia present - consider left hemisphere involvement")
-        
+
         if score >= 6:
             notes.append("NIHSS ≥6: Strong consideration for thrombectomy if LVO present")
-        
+
         if score >= 25:
             notes.append("Very high NIHSS: Discuss prognosis and goals of care early")
-        
+
         return notes

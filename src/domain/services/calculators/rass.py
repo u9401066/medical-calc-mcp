@@ -5,34 +5,28 @@ The RASS is a 10-point scale used to assess the level of agitation or sedation
 in ICU patients.
 
 Reference:
-    Sessler CN, Gosnell MS, Grap MJ, et al. The Richmond Agitation-Sedation Scale: 
-    validity and reliability in adult intensive care unit patients. Am J Respir 
+    Sessler CN, Gosnell MS, Grap MJ, et al. The Richmond Agitation-Sedation Scale:
+    validity and reliability in adult intensive care unit patients. Am J Respir
     Crit Care Med. 2002;166(10):1338-1344.
     DOI: 10.1164/rccm.2107138
     PMID: 12421743
-    
-    Ely EW, Truman B, Shintani A, et al. Monitoring sedation status over time in 
-    ICU patients: reliability and validity of the Richmond Agitation-Sedation 
+
+    Ely EW, Truman B, Shintani A, et al. Monitoring sedation status over time in
+    ICU patients: reliability and validity of the Richmond Agitation-Sedation
     Scale (RASS). JAMA. 2003;289(22):2983-2991.
     DOI: 10.1001/jama.289.22.2983
     PMID: 12799407
 """
 
-from typing import Literal
+from typing import Any, Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey, 
-    HighLevelKey, 
-    Specialty, 
-    ClinicalContext
-)
-
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 # RASS ranges from -5 (unarousable) to +4 (combative)
 RASS_SCORE = Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]
@@ -41,10 +35,10 @@ RASS_SCORE = Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]
 class RassCalculator(BaseCalculator):
     """
     Richmond Agitation-Sedation Scale (RASS)
-    
+
     A validated scale for assessing sedation level and agitation in ICU patients.
     Used to guide sedation titration and assess for delirium.
-    
+
     Score Definitions:
         +4 Combative: Overtly combative, violent, immediate danger to staff
         +3 Very agitated: Pulls/removes tubes or catheters; aggressive
@@ -57,7 +51,7 @@ class RassCalculator(BaseCalculator):
         -4 Deep sedation: No response to voice, movement to physical stimulation
         -5 Unarousable: No response to voice or physical stimulation
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -129,14 +123,14 @@ class RassCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         rass_score: RASS_SCORE
     ) -> ScoreResult:
         """
         Document and interpret RASS score.
-        
+
         Args:
             rass_score: RASS score from -5 to +4 based on assessment:
                 +4: Combative
@@ -149,19 +143,19 @@ class RassCalculator(BaseCalculator):
                 -3: Moderate sedation
                 -4: Deep sedation
                 -5: Unarousable
-            
+
         Returns:
             ScoreResult with RASS interpretation and management recommendations
         """
         if rass_score < -5 or rass_score > 4:
             raise ValueError("RASS score must be between -5 and +4")
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(rass_score)
-        
+
         # Get category description
         category = self._get_category_description(rass_score)
-        
+
         return ScoreResult(
             value=float(rass_score),
             unit=Unit.SCORE,
@@ -184,8 +178,8 @@ class RassCalculator(BaseCalculator):
                 "Daily sedation interruption recommended for most patients",
             ]
         )
-    
-    def _get_category_description(self, rass_score: int) -> dict:
+
+    def _get_category_description(self, rass_score: int) -> dict[str, str]:
         """Get category name and description for RASS score"""
         categories = {
             4: {
@@ -232,12 +226,12 @@ class RassCalculator(BaseCalculator):
             }
         }
         return categories.get(rass_score, {"name": "Unknown", "description": ""})
-    
+
     def _get_interpretation(self, rass_score: int) -> Interpretation:
         """Get clinical interpretation for RASS score"""
-        
+
         category = self._get_category_description(rass_score)
-        
+
         if rass_score >= 3:
             # Combative or very agitated
             return Interpretation(

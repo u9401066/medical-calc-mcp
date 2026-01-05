@@ -12,7 +12,7 @@ from typing import Any, Optional
 class CalculateRequest:
     """
     Request DTO for calculation.
-    
+
     Attributes:
         tool_id: The calculator to use
         params: Dictionary of input parameters
@@ -53,8 +53,8 @@ class CalculateResponse:
     component_scores: dict[str, Any] = field(default_factory=dict)
     references: list[ReferenceDTO] = field(default_factory=list)
     error: Optional[str] = None
-    
-    def to_dict(self) -> dict:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for MCP response"""
         if not self.success:
             return {
@@ -62,15 +62,15 @@ class CalculateResponse:
                 "error": self.error,
                 "tool_id": self.tool_id,
             }
-        
-        result = {
+
+        result: dict[str, Any] = {
             "success": True,
             "tool_id": self.tool_id,
             "score_name": self.score_name,
             "result": self.result,
             "unit": self.unit,
         }
-        
+
         if self.interpretation:
             result["interpretation"] = {
                 "summary": self.interpretation.summary,
@@ -81,10 +81,10 @@ class CalculateResponse:
                 result["interpretation"]["recommendation"] = self.interpretation.recommendation
             if self.interpretation.details:
                 result["interpretation"]["details"] = self.interpretation.details
-        
+
         if self.component_scores:
             result["component_scores"] = self.component_scores
-        
+
         if self.references:
             result["references"] = [
                 {
@@ -95,5 +95,5 @@ class CalculateResponse:
                 }
                 for r in self.references
             ]
-        
+
         return result

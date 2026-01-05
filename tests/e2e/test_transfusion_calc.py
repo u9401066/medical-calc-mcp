@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Transfusion Calculator
 
 Tests the transfusion calculator through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestTransfusionCalcE2E:
     """E2E tests for Transfusion Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/transfusion_calc"
-    
-    def test_prbc_adult_hematocrit(self, test_client):
+
+    def test_prbc_adult_hematocrit(self, test_client: Any) -> None:
         """Test PRBC transfusion calculation for adult using hematocrit"""
         payload = {
             "params": {
@@ -26,8 +26,8 @@ class TestTransfusionCalcE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_prbc_adult_hemoglobin(self, test_client):
+
+    def test_prbc_adult_hemoglobin(self, test_client: Any) -> None:
         """Test PRBC transfusion calculation using hemoglobin"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestTransfusionCalcE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_pediatric_transfusion(self, test_client):
+
+    def test_pediatric_transfusion(self, test_client: Any) -> None:
         """Test transfusion calculation for pediatric patient"""
         payload = {
             "params": {
@@ -56,8 +56,8 @@ class TestTransfusionCalcE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_neonate_transfusion(self, test_client):
+
+    def test_neonate_transfusion(self, test_client: Any) -> None:
         """Test transfusion calculation for neonate"""
         payload = {
             "params": {
@@ -71,8 +71,8 @@ class TestTransfusionCalcE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_platelet_transfusion(self, test_client):
+
+    def test_platelet_transfusion(self, test_client: Any) -> None:
         """Test platelet transfusion calculation"""
         payload = {
             "params": {
@@ -86,8 +86,8 @@ class TestTransfusionCalcE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_severe_anemia(self, test_client):
+
+    def test_severe_anemia(self, test_client: Any) -> None:
         """Test severe anemia requiring significant transfusion"""
         payload = {
             "params": {
@@ -102,8 +102,8 @@ class TestTransfusionCalcE2E:
         data = assert_successful_calculation(response)
         # Severe anemia needs more units
         assert data["result"]["value"] >= 3
-    
-    def test_mild_anemia(self, test_client):
+
+    def test_mild_anemia(self, test_client: Any) -> None:
         """Test mild anemia requiring minimal transfusion"""
         payload = {
             "params": {
@@ -119,8 +119,8 @@ class TestTransfusionCalcE2E:
         # Mild anemia needs less volume than severe anemia (result is in mL)
         assert data["result"]["value"] > 0
         assert data["result"]["value"] < 500  # Less than severe anemia
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

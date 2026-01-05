@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for CHA₂DS₂-VASc Score Calculator
 
 Tests the CHA₂DS₂-VASc stroke risk score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestChads2VascE2E:
     """E2E tests for CHA₂DS₂-VASc Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/chads2_vasc"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk - score 0 (male, no risk factors)"""
         payload = {
             "params": {
@@ -29,8 +29,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_female_only(self, test_client):
+
+    def test_female_only(self, test_client: Any) -> None:
         """Test female sex alone (score 1)"""
         payload = {
             "params": {
@@ -47,8 +47,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_hypertension_and_diabetes(self, test_client):
+
+    def test_hypertension_and_diabetes(self, test_client: Any) -> None:
         """Test hypertension and diabetes (score 2)"""
         payload = {
             "params": {
@@ -65,8 +65,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_prior_stroke(self, test_client):
+
+    def test_prior_stroke(self, test_client: Any) -> None:
         """Test prior stroke/TIA (2 points)"""
         payload = {
             "params": {
@@ -83,8 +83,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_elderly_over_75(self, test_client):
+
+    def test_elderly_over_75(self, test_client: Any) -> None:
         """Test age ≥75 (2 points)"""
         payload = {
             "params": {
@@ -101,8 +101,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_moderate_risk(self, test_client):
+
+    def test_moderate_risk(self, test_client: Any) -> None:
         """Test moderate risk (score 3-4)"""
         payload = {
             "params": {
@@ -119,8 +119,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_high_risk_multiple_factors(self, test_client):
+
+    def test_high_risk_multiple_factors(self, test_client: Any) -> None:
         """Test high risk with multiple factors"""
         payload = {
             "params": {
@@ -138,8 +138,8 @@ class TestChads2VascE2E:
         data = assert_successful_calculation(response)
         # Maximum score is 9
         assert data["result"]["value"] == 9
-    
-    def test_typical_afib_patient(self, test_client):
+
+    def test_typical_afib_patient(self, test_client: Any) -> None:
         """Test typical AF patient (elderly, HTN, vascular disease)"""
         payload = {
             "params": {
@@ -156,8 +156,8 @@ class TestChads2VascE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

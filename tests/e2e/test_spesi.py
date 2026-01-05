@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for sPESI (Simplified Pulmonary Embolism Severity Index) Calculator
 
 Tests the sPESI Score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestSpesiE2E:
     """E2E tests for sPESI Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/spesi"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk patient (score 0)"""
         payload = {
             "params": {
@@ -28,8 +28,8 @@ class TestSpesiE2E:
         data = assert_successful_calculation(response)
         # Score 0 = low risk, can consider outpatient treatment
         assert data["result"]["value"] == 0
-    
-    def test_high_risk_age_over_80(self, test_client):
+
+    def test_high_risk_age_over_80(self, test_client: Any) -> None:
         """Test high risk patient (age >80)"""
         payload = {
             "params": {
@@ -45,8 +45,8 @@ class TestSpesiE2E:
         data = assert_successful_calculation(response)
         # Score ≥1 = high risk
         assert data["result"]["value"] >= 1
-    
-    def test_multiple_risk_factors(self, test_client):
+
+    def test_multiple_risk_factors(self, test_client: Any) -> None:
         """Test patient with multiple risk factors"""
         payload = {
             "params": {
@@ -61,8 +61,8 @@ class TestSpesiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 3
-    
-    def test_hemodynamically_unstable(self, test_client):
+
+    def test_hemodynamically_unstable(self, test_client: Any) -> None:
         """Test hemodynamically unstable patient"""
         payload = {
             "params": {
@@ -78,8 +78,8 @@ class TestSpesiE2E:
         data = assert_successful_calculation(response)
         # Multiple hemodynamic criteria met
         assert data["result"]["value"] >= 3
-    
-    def test_maximum_score_6(self, test_client):
+
+    def test_maximum_score_6(self, test_client: Any) -> None:
         """Test maximum score scenario"""
         payload = {
             "params": {
@@ -95,8 +95,8 @@ class TestSpesiE2E:
         data = assert_successful_calculation(response)
         # All 6 criteria met
         assert data["result"]["value"] == 6
-    
-    def test_cancer_patient(self, test_client):
+
+    def test_cancer_patient(self, test_client: Any) -> None:
         """Test patient with active cancer"""
         payload = {
             "params": {
@@ -111,8 +111,8 @@ class TestSpesiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 1
-    
-    def test_copd_patient(self, test_client):
+
+    def test_copd_patient(self, test_client: Any) -> None:
         """Test patient with COPD"""
         payload = {
             "params": {
@@ -127,8 +127,8 @@ class TestSpesiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 1
-    
-    def test_hypoxic_patient(self, test_client):
+
+    def test_hypoxic_patient(self, test_client: Any) -> None:
         """Test hypoxic patient (SpO2 <90%)"""
         payload = {
             "params": {
@@ -143,8 +143,8 @@ class TestSpesiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 1
-    
-    def test_elderly_stable(self, test_client):
+
+    def test_elderly_stable(self, test_client: Any) -> None:
         """Test elderly but hemodynamically stable"""
         payload = {
             "params": {
@@ -160,8 +160,8 @@ class TestSpesiE2E:
         data = assert_successful_calculation(response)
         # Only borderline age, no other risk factors
         assert data["result"]["value"] == 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

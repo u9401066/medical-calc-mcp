@@ -5,53 +5,54 @@ Estimates probability of Group A Streptococcal pharyngitis in patients with sore
 Guides decision for rapid strep testing and empiric antibiotic therapy.
 
 Original Reference:
-    Centor RM, Witherspoon JM, Dalton HP, Brody CE, Link K. 
-    The diagnosis of strep throat in adults in the emergency room. 
+    Centor RM, Witherspoon JM, Dalton HP, Brody CE, Link K.
+    The diagnosis of strep throat in adults in the emergency room.
     Med Decis Making. 1981;1(3):239-246.
     doi:10.1177/0272989X8100100304. PMID: 6763125.
 
 McIsaac Modification (age adjustment):
-    McIsaac WJ, White D, Tannenbaum D, Low DE. 
+    McIsaac WJ, White D, Tannenbaum D, Low DE.
     A clinical score to reduce unnecessary antibiotic use in patients with sore throat.
     CMAJ. 1998;158(1):75-83. PMID: 9475915.
 """
 
 from typing import Optional
-from ..base import BaseCalculator
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CentorScoreCalculator(BaseCalculator):
     """
     Centor Score (Modified/McIsaac) for Strep Pharyngitis
-    
+
     Original Centor Criteria (1 point each):
     - Tonsillar exudates
     - Tender anterior cervical lymphadenopathy
     - Fever (history or measured >38°C)
     - Absence of cough
-    
+
     McIsaac Modification (age adjustment):
     - Age 3-14 years: +1
     - Age 15-44 years: 0
     - Age ≥45 years: -1
-    
+
     Management recommendations:
     - 0-1: No testing or antibiotics needed (1-10% probability)
     - 2-3: Rapid strep test, treat if positive (11-35% probability)
     - 4-5: Consider empiric treatment or test-and-treat (52% probability)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -90,7 +91,7 @@ class CentorScoreCalculator(BaseCalculator):
                     ClinicalContext.RISK_STRATIFICATION,
                 ),
             ),
-            references=[
+            references=(
                 Reference(
                     citation="Centor RM, et al. Med Decis Making. 1981;1(3):239-246.",
                     pmid="6763125",
@@ -105,9 +106,9 @@ class CentorScoreCalculator(BaseCalculator):
                     pmid="22965026",
                     doi="10.1093/cid/cis629",
                 ),
-            ],
+            ),
         )
-    
+
     def calculate(
         self,
         tonsillar_exudates: bool,
@@ -118,7 +119,7 @@ class CentorScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Centor/McIsaac Score.
-        
+
         Args:
             tonsillar_exudates: Tonsillar exudates present
             tender_anterior_cervical_nodes: Tender anterior cervical lymphadenopathy
@@ -129,38 +130,38 @@ class CentorScoreCalculator(BaseCalculator):
                 - "adult": 15-44 years (0)
                 - "older_adult": ≥45 years (-1)
                 - None: Use original Centor score (no age adjustment)
-            
+
         Returns:
             ScoreResult with Centor/McIsaac score and management recommendation
         """
         score = 0
         components = {}
-        
+
         # Original Centor criteria
         if tonsillar_exudates:
             score += 1
             components["exudates"] = "Tonsillar exudates (+1)"
         else:
             components["exudates"] = "No tonsillar exudates (+0)"
-        
+
         if tender_anterior_cervical_nodes:
             score += 1
             components["lymphadenopathy"] = "Tender anterior cervical nodes (+1)"
         else:
             components["lymphadenopathy"] = "No tender lymphadenopathy (+0)"
-        
+
         if fever:
             score += 1
             components["fever"] = "Fever history or >38°C (+1)"
         else:
             components["fever"] = "No fever (+0)"
-        
+
         if absence_of_cough:
             score += 1
             components["cough"] = "Absence of cough (+1)"
         else:
             components["cough"] = "Cough present (+0)"
-        
+
         # McIsaac age modification
         score_type = "Original Centor"
         if age_group:
@@ -173,10 +174,10 @@ class CentorScoreCalculator(BaseCalculator):
             elif age_group == "older_adult":
                 score -= 1
                 components["age"] = "Age ≥45 years (-1)"
-        
+
         # Generate interpretation
         interpretation = self._interpret_score(score, score_type)
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -186,10 +187,10 @@ class CentorScoreCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int, score_type: str) -> Interpretation:
         """Generate interpretation based on Centor/McIsaac score"""
-        
+
         if score <= 0:
             severity = Severity.NORMAL
             risk_level = RiskLevel.VERY_LOW
@@ -289,7 +290,7 @@ class CentorScoreCalculator(BaseCalculator):
                 "If treating: Penicillin V 500mg BID or Amoxicillin 500mg BID x10 days",
                 "Penicillin allergic: Cephalexin, Azithromycin, or Clindamycin",
             ]
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

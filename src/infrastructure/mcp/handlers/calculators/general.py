@@ -11,10 +11,10 @@ Calculators:
 - Parkland Formula - Burn fluid resuscitation
 """
 
-from typing import Any, Annotated, Optional, Literal
+from typing import Annotated, Any, Literal, Optional
 
-from pydantic import Field
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from .....application.dto import CalculateRequest
 from .....application.use_cases import CalculateUseCase
@@ -22,7 +22,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all general calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_bsa(
         weight_kg: Annotated[float, Field(
@@ -42,7 +42,7 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         📐 Body Surface Area (BSA): 體表面積計算
 
         計算體表面積，用於化療藥物劑量、燒傷面積估算、及腎功能校正。
-        
+
         **公式選項:**
         - **Mosteller** (1987): BSA = √(W × H / 3600) ➜ 最常用、簡便
         - **Du Bois** (1916): BSA = 0.007184 × W^0.425 × H^0.725 ➜ 經典

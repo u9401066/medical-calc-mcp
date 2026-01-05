@@ -4,6 +4,24 @@
 
 本文件定義了新增醫學計算工具的開發標準，確保所有工具符合一致的品質標準。
 
+## 開發環境設定
+
+本專案使用 `uv` 進行套件管理。
+
+```bash
+# 安裝依賴
+uv sync
+
+# 執行測試
+uv run pytest
+
+# 執行型別檢查 (必須通過 --strict)
+uv run mypy --strict src tests
+
+# 執行 Lint 檢查
+uv run ruff check .
+```
+
 ## 開發流程
 
 ### 1. 建立 Calculator (Domain Layer)

@@ -10,12 +10,12 @@ References:
     Br Med J. 1973;4(5893):643-646.
     DOI: 10.1136/bmj.4.5893.643
     PMID: 4758544
-    
+
     Bushinsky DA, Monk RD. Electrolyte quintet: Calcium.
     Lancet. 1998;352(9124):306-311.
     DOI: 10.1016/S0140-6736(97)12331-5
     PMID: 9690425
-    
+
     James MT, Zhang J, Lyon AW, Bhatta S, Bhattarai B, Chen G, Hemmelgarn
     BR. Derivation and internal validation of an equation for albumin-
     adjusted calcium. BMC Clin Pathol. 2008;8:12.
@@ -24,51 +24,51 @@ References:
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.reference import Reference
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CorrectedCalciumCalculator(BaseCalculator):
     """
     Albumin-Corrected Calcium Calculator
-    
+
     Corrects total calcium for hypoalbuminemia to estimate true calcium status.
-    
+
     Formula (Payne 1973):
         Corrected Ca = Measured Ca + 0.8 × (4.0 - Albumin)
-        
+
     Alternative formulas:
         - Original Payne (g/L): Ca + 0.02 × (40 - Albumin g/L)
         - Some institutions use 0.025 instead of 0.02
-        
+
     Physiology:
         - ~40% calcium is protein-bound (mainly albumin)
         - ~50% is ionized (physiologically active)
         - ~10% is complexed with anions
         - Low albumin → artificially low total calcium
-        
+
     Clinical Use:
         - Hypoalbuminemia (malnutrition, liver disease, nephrotic syndrome)
         - Critically ill patients
         - When ionized calcium not available
-        
+
     Limitations:
         - Less accurate in acid-base disturbances
         - Less accurate in critically ill patients
         - Ionized calcium preferred if available
         - Formula validated at albumin 2.5-4.5 g/dL
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -151,7 +151,7 @@ class CorrectedCalciumCalculator(BaseCalculator):
                 ),
             ),
         )
-    
+
     def calculate(
         self,
         calcium_mg_dl: float,
@@ -160,15 +160,15 @@ class CorrectedCalciumCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate albumin-corrected calcium.
-        
+
         Args:
             calcium_mg_dl: Total serum calcium in mg/dL (4.0-16.0)
             albumin_g_dl: Serum albumin in g/dL (1.0-6.0)
             normal_albumin: Reference normal albumin (default 4.0 g/dL)
-                
+
         Returns:
             ScoreResult with corrected calcium in mg/dL
-            
+
         Raises:
             ValueError: If parameters are out of valid range
         """
@@ -179,24 +179,24 @@ class CorrectedCalciumCalculator(BaseCalculator):
             raise ValueError(f"Albumin must be 1.0-6.0 g/dL, got {albumin_g_dl}")
         if not 3.5 <= normal_albumin <= 5.0:
             raise ValueError(f"Normal albumin must be 3.5-5.0 g/dL, got {normal_albumin}")
-        
+
         # Calculate corrected calcium
         # Payne formula: for each 1 g/dL albumin below 4.0, add 0.8 mg/dL to calcium
         correction = 0.8 * (normal_albumin - albumin_g_dl)
         corrected_ca = calcium_mg_dl + correction
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(
             calcium_mg_dl, albumin_g_dl, corrected_ca
         )
-        
+
         return ScoreResult(
             tool_id=self.tool_id,
             tool_name=self.name,
-            value=round(corrected_ca, 1),
+            value=float(round(corrected_ca, 1)),
             unit=Unit.MG_DL,
             interpretation=interpretation,
-            references=self.references,
+            references=list(self.references),
             calculation_details={
                 "measured_calcium_mg_dl": calcium_mg_dl,
                 "albumin_g_dl": albumin_g_dl,
@@ -214,18 +214,20 @@ class CorrectedCalciumCalculator(BaseCalculator):
                 "hypoalbuminemia_present": albumin_g_dl < 3.5,
             },
         )
-    
+
     def _get_interpretation(
-        self, 
-        measured_ca: float, 
-        albumin: float, 
+        self,
+        measured_ca: float,
+        albumin: float,
         corrected_ca: float
     ) -> Interpretation:
         """Generate interpretation based on corrected calcium value"""
-        
+        recommendations: tuple[str, ...]
+        warnings: tuple[str, ...]
+
         hypoalb = albumin < 3.5
         correction_direction = "up" if corrected_ca > measured_ca else "down"
-        
+
         # Classify corrected calcium
         if corrected_ca < 7.0:
             level = "Severe hypocalcemia"
@@ -311,14 +313,14 @@ class CorrectedCalciumCalculator(BaseCalculator):
                 "Often malignancy-related at this level",
                 "Requires ICU-level care",
             )
-        
+
         hypoalb_note = ""
         if hypoalb and correction_direction == "up":
             hypoalb_note = (
                 f" Measured calcium ({measured_ca} mg/dL) was falsely low due to "
                 f"hypoalbuminemia (albumin {albumin} g/dL)."
             )
-        
+
         return Interpretation(
             summary=f"Corrected Ca: {corrected_ca:.1f} mg/dL - {level}",
             detail=(

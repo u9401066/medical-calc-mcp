@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Pediatric SOFA Score Calculator
 
 Tests the Pediatric SOFA Score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestPediatricSofaE2E:
     """E2E tests for Pediatric SOFA Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/pediatric_sofa"
-    
-    def test_normal_child_score_0(self, test_client):
+
+    def test_normal_child_score_0(self, test_client: Any) -> None:
         """Test healthy child (score 0)"""
         payload = {
             "params": {
@@ -28,8 +28,8 @@ class TestPediatricSofaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
-    
-    def test_mild_organ_dysfunction(self, test_client):
+
+    def test_mild_organ_dysfunction(self, test_client: Any) -> None:
         """Test mild organ dysfunction (score 1-5)"""
         payload = {
             "params": {
@@ -45,8 +45,8 @@ class TestPediatricSofaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_moderate_organ_dysfunction(self, test_client):
+
+    def test_moderate_organ_dysfunction(self, test_client: Any) -> None:
         """Test moderate organ dysfunction (score 6-9)"""
         payload = {
             "params": {
@@ -62,8 +62,8 @@ class TestPediatricSofaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 3
-    
-    def test_severe_organ_dysfunction(self, test_client):
+
+    def test_severe_organ_dysfunction(self, test_client: Any) -> None:
         """Test severe organ dysfunction (score ≥10)"""
         payload = {
             "params": {
@@ -79,8 +79,8 @@ class TestPediatricSofaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 8
-    
-    def test_maximum_score(self, test_client):
+
+    def test_maximum_score(self, test_client: Any) -> None:
         """Test maximum possible score (24)"""
         payload = {
             "params": {
@@ -97,8 +97,8 @@ class TestPediatricSofaE2E:
         data = assert_successful_calculation(response)
         # Maximum possible score
         assert data["result"]["value"] >= 15
-    
-    def test_respiratory_failure(self, test_client):
+
+    def test_respiratory_failure(self, test_client: Any) -> None:
         """Test isolated respiratory failure"""
         payload = {
             "params": {
@@ -115,8 +115,8 @@ class TestPediatricSofaE2E:
         data = assert_successful_calculation(response)
         # High respiratory component
         assert data["result"]["value"] >= 2
-    
-    def test_septic_shock(self, test_client):
+
+    def test_septic_shock(self, test_client: Any) -> None:
         """Test septic shock presentation"""
         payload = {
             "params": {
@@ -133,8 +133,8 @@ class TestPediatricSofaE2E:
         data = assert_successful_calculation(response)
         # Multi-organ dysfunction
         assert data["result"]["value"] >= 10
-    
-    def test_ards_patient(self, test_client):
+
+    def test_ards_patient(self, test_client: Any) -> None:
         """Test ARDS patient"""
         payload = {
             "params": {
@@ -151,8 +151,8 @@ class TestPediatricSofaE2E:
         data = assert_successful_calculation(response)
         # Respiratory predominant
         assert data["result"]["value"] >= 2
-    
-    def test_liver_failure(self, test_client):
+
+    def test_liver_failure(self, test_client: Any) -> None:
         """Test hepatic failure"""
         payload = {
             "params": {
@@ -169,8 +169,8 @@ class TestPediatricSofaE2E:
         data = assert_successful_calculation(response)
         # Liver predominant
         assert data["result"]["value"] >= 5
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for PSI/PORT Score Calculator
 
 Tests the PSI/PORT pneumonia severity index through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestPsiPortE2E:
     """E2E tests for PSI/PORT Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/psi_port"
-    
-    def test_class_i_young_healthy(self, test_client):
+
+    def test_class_i_young_healthy(self, test_client: Any) -> None:
         """Test Class I - young healthy patient"""
         payload = {
             "params": {
@@ -35,8 +35,8 @@ class TestPsiPortE2E:
         data = assert_successful_calculation(response)
         # Class I has low score
         assert data["result"]["value"] < 70
-    
-    def test_class_ii_low_risk(self, test_client):
+
+    def test_class_ii_low_risk(self, test_client: Any) -> None:
         """Test Class II - low risk (≤70)"""
         payload = {
             "params": {
@@ -58,8 +58,8 @@ class TestPsiPortE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 70
-    
-    def test_class_iii_moderate_risk(self, test_client):
+
+    def test_class_iii_moderate_risk(self, test_client: Any) -> None:
         """Test Class III - moderate risk (71-90)"""
         payload = {
             "params": {
@@ -81,8 +81,8 @@ class TestPsiPortE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 70 < data["result"]["value"] <= 130
-    
-    def test_class_iv_high_risk(self, test_client):
+
+    def test_class_iv_high_risk(self, test_client: Any) -> None:
         """Test Class IV - high risk (91-130)"""
         payload = {
             "params": {
@@ -104,8 +104,8 @@ class TestPsiPortE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 90
-    
-    def test_class_v_highest_risk(self, test_client):
+
+    def test_class_v_highest_risk(self, test_client: Any) -> None:
         """Test Class V - highest risk (>130)"""
         payload = {
             "params": {
@@ -134,8 +134,8 @@ class TestPsiPortE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 130
-    
-    def test_female_age_adjustment(self, test_client):
+
+    def test_female_age_adjustment(self, test_client: Any) -> None:
         """Test female age adjustment (-10 points)"""
         payload = {
             "params": {
@@ -158,8 +158,8 @@ class TestPsiPortE2E:
         data = assert_successful_calculation(response)
         # 70 - 10 = 60
         assert data["result"]["value"] == 60
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

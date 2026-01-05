@@ -9,19 +9,19 @@ NEWS is recommended by the SSC 2021 guidelines alongside other tools for
 sepsis screening, though NOT as a single standalone tool.
 
 Reference (NEWS):
-    Royal College of Physicians. National Early Warning Score (NEWS): 
-    Standardising the assessment of acute-illness severity in the NHS. 
+    Royal College of Physicians. National Early Warning Score (NEWS):
+    Standardising the assessment of acute-illness severity in the NHS.
     Report of a working party. London: RCP, 2012.
 
 Reference (NEWS2):
-    Royal College of Physicians. National Early Warning Score (NEWS) 2: 
-    Standardising the assessment of acute-illness severity in the NHS. 
+    Royal College of Physicians. National Early Warning Score (NEWS) 2:
+    Standardising the assessment of acute-illness severity in the NHS.
     Updated report of a working party. London: RCP, 2017.
 
 Validation Study:
-    Smith GB, Prytherch DR, Meredith P, et al. The ability of the National 
-    Early Warning Score (NEWS) to discriminate patients at risk of early 
-    cardiac arrest, unanticipated intensive care unit admission, and death. 
+    Smith GB, Prytherch DR, Meredith P, et al. The ability of the National
+    Early Warning Score (NEWS) to discriminate patients at risk of early
+    cardiac arrest, unanticipated intensive care unit admission, and death.
     Resuscitation. 2013;84(4):465-470.
     DOI: 10.1016/j.resuscitation.2012.12.016
     PMID: 23295778
@@ -29,28 +29,23 @@ Validation Study:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class NewsScoreCalculator(BaseCalculator):
     """
     NEWS2 (National Early Warning Score 2) Calculator
-    
-    NEWS2 is a scoring system used to assess clinical deterioration in 
+
+    NEWS2 is a scoring system used to assess clinical deterioration in
     adult patients. It uses 7 physiological parameters plus an adjustment
     for supplemental oxygen.
-    
+
     Parameters (each scored 0-3):
     - Respiratory rate
     - Oxygen saturation (Scale 1 or Scale 2)
@@ -59,11 +54,11 @@ class NewsScoreCalculator(BaseCalculator):
     - Systolic blood pressure
     - Heart rate
     - Level of consciousness (AVPU)
-    
+
     Scale 2 (SpO2 Scale 2) is used for patients with hypercapnic respiratory
     failure who have a prescribed oxygen saturation target of 88-92%.
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -134,7 +129,7 @@ class NewsScoreCalculator(BaseCalculator):
             version="2.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         respiratory_rate: int,
@@ -148,7 +143,7 @@ class NewsScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate NEWS2 score.
-        
+
         Args:
             respiratory_rate: Respiratory rate (breaths/min)
             spo2: Oxygen saturation (%)
@@ -162,9 +157,9 @@ class NewsScoreCalculator(BaseCalculator):
                 - "P": Responds to Pain
                 - "U": Unresponsive
                 - "C": Confusion (new in NEWS2)
-            use_scale_2: Use SpO2 Scale 2 for patients with hypercapnic 
+            use_scale_2: Use SpO2 Scale 2 for patients with hypercapnic
                         respiratory failure (target SpO2 88-92%)
-            
+
         Returns:
             ScoreResult with NEWS2 score and clinical response recommendations
         """
@@ -181,7 +176,7 @@ class NewsScoreCalculator(BaseCalculator):
             raise ValueError("Heart rate must be between 0 and 300 bpm")
         if consciousness not in ("A", "V", "P", "U", "C"):
             raise ValueError("Consciousness must be one of: A, V, P, U, C")
-        
+
         # Calculate individual scores
         rr_score = self._respiratory_rate_score(respiratory_rate)
         spo2_score = self._spo2_score(spo2, use_scale_2)
@@ -190,16 +185,16 @@ class NewsScoreCalculator(BaseCalculator):
         sbp_score = self._systolic_bp_score(systolic_bp)
         hr_score = self._heart_rate_score(heart_rate)
         avpu_score = self._consciousness_score(consciousness)
-        
+
         # Total score
         total_score = rr_score + spo2_score + air_score + temp_score + sbp_score + hr_score + avpu_score
-        
+
         # Check for "3 in one" parameter (any single parameter with score of 3)
         extreme_single_parameter = max(rr_score, spo2_score, temp_score, sbp_score, hr_score, avpu_score) >= 3
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(total_score, extreme_single_parameter)
-        
+
         return ScoreResult(
             value=total_score,
             unit=Unit.SCORE,
@@ -230,7 +225,7 @@ class NewsScoreCalculator(BaseCalculator):
             },
             formula_used="NEWS2 = RR + SpO2 + Air + Temp + SBP + HR + AVPU"
         )
-    
+
     def _respiratory_rate_score(self, rr: int) -> int:
         if rr <= 8:
             return 3
@@ -242,7 +237,7 @@ class NewsScoreCalculator(BaseCalculator):
             return 2
         else:  # >= 25
             return 3
-    
+
     def _spo2_score(self, spo2: int, use_scale_2: bool) -> int:
         if use_scale_2:
             # Scale 2 for hypercapnic respiratory failure
@@ -270,7 +265,7 @@ class NewsScoreCalculator(BaseCalculator):
                 return 1
             else:  # >= 96
                 return 0
-    
+
     def _temperature_score(self, temp: float) -> int:
         if temp <= 35.0:
             return 3
@@ -282,7 +277,7 @@ class NewsScoreCalculator(BaseCalculator):
             return 1
         else:  # >= 39.1
             return 2
-    
+
     def _systolic_bp_score(self, sbp: int) -> int:
         if sbp <= 90:
             return 3
@@ -294,7 +289,7 @@ class NewsScoreCalculator(BaseCalculator):
             return 0
         else:  # >= 220
             return 3
-    
+
     def _heart_rate_score(self, hr: int) -> int:
         if hr <= 40:
             return 3
@@ -308,16 +303,16 @@ class NewsScoreCalculator(BaseCalculator):
             return 2
         else:  # >= 131
             return 3
-    
+
     def _consciousness_score(self, avpu: str) -> int:
         if avpu == "A":
             return 0
         else:  # V, P, U, or C (Confusion)
             return 3
-    
+
     def _get_interpretation(self, score: int, extreme_single: bool) -> Interpretation:
         """Get interpretation based on NEWS2 score"""
-        
+
         if score == 0:
             return Interpretation(
                 summary="NEWS2 0: Low clinical risk",
@@ -349,8 +344,8 @@ class NewsScoreCalculator(BaseCalculator):
                     "Urgent review if single extreme parameter" if extreme_single else "Consider if escalation needed",
                 ),
                 warnings=(
-                    "Single extreme parameter detected - requires urgent review" if extreme_single else None,
-                ),
+                    "Single extreme parameter detected - requires urgent review",
+                ) if extreme_single else (),
                 next_steps=(
                     "Registered nurse to decide if escalation of care needed",
                     "Consider ward-based urgent response if extreme single parameter",

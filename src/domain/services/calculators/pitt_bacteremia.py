@@ -5,61 +5,63 @@ Predicts mortality in patients with gram-negative bacteremia.
 Higher scores associated with increased mortality risk.
 
 Original Reference:
-    Paterson DL, Ko WC, Von Gottberg A, et al. International prospective 
-    study of Klebsiella pneumoniae bacteremia: implications of extended-spectrum 
-    beta-lactamase production in nosocomial Infections. Ann Intern Med. 
+    Paterson DL, Ko WC, Von Gottberg A, et al. International prospective
+    study of Klebsiella pneumoniae bacteremia: implications of extended-spectrum
+    beta-lactamase production in nosocomial Infections. Ann Intern Med.
     2004;140(1):26-32. doi:10.7326/0003-4819-140-1-200401060-00008. PMID: 14706969.
 
 Earlier version reference:
-    Chow JW, Fine MJ, Shlaes DM, et al. Enterobacter bacteremia: clinical 
-    features and emergence of antibiotic resistance during therapy. 
+    Chow JW, Fine MJ, Shlaes DM, et al. Enterobacter bacteremia: clinical
+    features and emergence of antibiotic resistance during therapy.
     Ann Intern Med. 1991;115(8):585-590. PMID: 1892329.
 """
 
-from ..base import BaseCalculator
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class PittBacteremiaCalculator(BaseCalculator):
     """
     Pitt Bacteremia Score
-    
+
     Scoring criteria (within 48h before or on day of positive culture):
-    
+
     Temperature:
     - ≤35.0°C or ≥40.0°C: +2
     - 35.1-36.0°C or 39.0-39.9°C: +1
     - 36.1-38.9°C: +0
-    
+
     Blood Pressure:
-    - Acute hypotension with SBP drop ≥30 mmHg and SBP <90 mmHg, 
+    - Acute hypotension with SBP drop ≥30 mmHg and SBP <90 mmHg,
       OR vasopressors required, OR MAP <60 mmHg: +2
-    
+
     Mechanical Ventilation: +2
-    
+
     Cardiac Arrest: +4
-    
+
     Mental Status:
     - Disoriented: +1
     - Stuporous: +2
     - Comatose: +4
-    
+
     Risk stratification:
     - 0-3: Low risk (~5-10% mortality)
     - 4-7: Moderate risk (~30-50% mortality)
     - ≥8: High risk (>50% mortality)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -99,7 +101,7 @@ class PittBacteremiaCalculator(BaseCalculator):
                     ClinicalContext.RISK_STRATIFICATION,
                 ),
             ),
-            references=[
+            references=(
                 Reference(
                     citation="Paterson DL, et al. Ann Intern Med. 2004;140(1):26-32.",
                     pmid="14706969",
@@ -109,9 +111,9 @@ class PittBacteremiaCalculator(BaseCalculator):
                     citation="Chow JW, et al. Ann Intern Med. 1991;115(8):585-590. (Original derivation)",
                     pmid="1892329",
                 ),
-            ],
+            ),
         )
-    
+
     def calculate(
         self,
         temperature_category: str,  # "normal", "low_mild", "extreme"
@@ -122,7 +124,7 @@ class PittBacteremiaCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Pitt Bacteremia Score.
-        
+
         Args:
             temperature_category: Temperature range
                 - "normal": 36.1-38.9°C (0 points)
@@ -137,13 +139,13 @@ class PittBacteremiaCalculator(BaseCalculator):
                 - "disoriented": Disoriented (1 point)
                 - "stuporous": Stuporous (2 points)
                 - "comatose": Comatose (4 points)
-            
+
         Returns:
             ScoreResult with Pitt score and mortality risk
         """
         score = 0
-        components = {}
-        
+        components: dict[str, Any] = {}
+
         # Temperature
         if temperature_category == "extreme":
             score += 2
@@ -153,28 +155,28 @@ class PittBacteremiaCalculator(BaseCalculator):
             components["temperature"] = "35.1-36.0°C or 39.0-39.9°C (+1)"
         else:  # normal
             components["temperature"] = "36.1-38.9°C (+0)"
-        
+
         # Hypotension
         if hypotension:
             score += 2
             components["hypotension"] = "Acute hypotension/vasopressors (+2)"
         else:
             components["hypotension"] = "Normotensive (+0)"
-        
+
         # Mechanical ventilation
         if mechanical_ventilation:
             score += 2
             components["ventilation"] = "Mechanical ventilation (+2)"
         else:
             components["ventilation"] = "No mechanical ventilation (+0)"
-        
+
         # Cardiac arrest
         if cardiac_arrest:
             score += 4
             components["cardiac_arrest"] = "Cardiac arrest (+4)"
         else:
             components["cardiac_arrest"] = "No cardiac arrest (+0)"
-        
+
         # Mental status
         mental_scores = {
             "alert": (0, "Alert (+0)"),
@@ -185,10 +187,10 @@ class PittBacteremiaCalculator(BaseCalculator):
         ms_score, ms_desc = mental_scores.get(mental_status, (0, "Alert (+0)"))
         score += ms_score
         components["mental_status"] = ms_desc
-        
+
         # Generate interpretation
         interpretation = self._interpret_score(score)
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -198,10 +200,10 @@ class PittBacteremiaCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int) -> Interpretation:
         """Generate interpretation based on Pitt Bacteremia Score"""
-        
+
         if score <= 3:
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -260,7 +262,7 @@ class PittBacteremiaCalculator(BaseCalculator):
                 "Urgent source control procedures if indicated",
                 "Goals of care discussion may be appropriate",
             ]
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

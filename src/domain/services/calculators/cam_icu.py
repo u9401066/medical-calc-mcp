@@ -1,67 +1,62 @@
 """
 CAM-ICU (Confusion Assessment Method for ICU)
 
-The CAM-ICU is a delirium screening instrument for ICU patients that 
-can be administered by non-psychiatric physicians and ICU nurses. It 
+The CAM-ICU is a delirium screening instrument for ICU patients that
+can be administered by non-psychiatric physicians and ICU nurses. It
 is the most widely used delirium screening tool in critical care.
 
 Reference (Original CAM):
-    Inouye SK, van Dyck CH, Alessi CA, et al. Clarifying confusion: the 
-    confusion assessment method. A new method for detection of delirium. 
+    Inouye SK, van Dyck CH, Alessi CA, et al. Clarifying confusion: the
+    confusion assessment method. A new method for detection of delirium.
     Ann Intern Med. 1990;113(12):941-948.
     DOI: 10.7326/0003-4819-113-12-941
     PMID: 2240918
 
 Reference (CAM-ICU):
-    Ely EW, Inouye SK, Bernard GR, et al. Delirium in mechanically 
-    ventilated patients: validity and reliability of the confusion 
-    assessment method for the intensive care unit (CAM-ICU). 
+    Ely EW, Inouye SK, Bernard GR, et al. Delirium in mechanically
+    ventilated patients: validity and reliability of the confusion
+    assessment method for the intensive care unit (CAM-ICU).
     JAMA. 2001;286(21):2703-2710.
     DOI: 10.1001/jama.286.21.2703
     PMID: 11730446
 
 Guideline:
-    Devlin JW, Skrobik Y, Gélinas C, et al. Clinical Practice Guidelines 
-    for the Prevention and Management of Pain, Agitation/Sedation, 
-    Delirium, Immobility, and Sleep Disruption in Adult Patients in the 
+    Devlin JW, Skrobik Y, Gélinas C, et al. Clinical Practice Guidelines
+    for the Prevention and Management of Pain, Agitation/Sedation,
+    Delirium, Immobility, and Sleep Disruption in Adult Patients in the
     ICU. Crit Care Med. 2018;46(9):e825-e873.
     DOI: 10.1097/CCM.0000000000003299
     PMID: 30113379
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CamIcuCalculator(BaseCalculator):
     """
     CAM-ICU (Confusion Assessment Method for ICU) Calculator
-    
+
     The CAM-ICU assesses four features:
     1. Feature 1: Acute onset or fluctuating course
     2. Feature 2: Inattention
     3. Feature 3: Altered level of consciousness
     4. Feature 4: Disorganized thinking
-    
+
     CAM-ICU Positive (Delirium Present):
     - Feature 1 AND Feature 2 AND (Feature 3 OR Feature 4)
-    
+
     Prerequisites:
     - Patient must be arousable (RASS ≥ -3)
     - If RASS is -4 or -5, patient is comatose and CAM-ICU cannot be assessed
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -70,7 +65,7 @@ class CamIcuCalculator(BaseCalculator):
                 name="CAM-ICU (Confusion Assessment Method for ICU)",
                 purpose="Screen for delirium in ICU patients",
                 input_params=[
-                    "rass_score", "acute_onset_fluctuation", 
+                    "rass_score", "acute_onset_fluctuation",
                     "inattention", "altered_loc", "disorganized_thinking"
                 ],
                 output_type="Delirium status (Positive/Negative/Unable to Assess)"
@@ -144,7 +139,7 @@ class CamIcuCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         rass_score: int,
@@ -155,19 +150,19 @@ class CamIcuCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate CAM-ICU delirium assessment.
-        
+
         Args:
             rass_score: RASS score (-5 to +4)
                 If RASS is -4 or -5, patient is comatose and CAM-ICU cannot be assessed
             acute_onset_fluctuation: Feature 1 - Acute change in mental status or
                 fluctuating course over past 24 hours
-            inattention_score: Feature 2 - Number of errors in Attention Screening 
+            inattention_score: Feature 2 - Number of errors in Attention Screening
                 Examination (ASE). ≥3 errors = inattention positive
             altered_loc: Feature 3 - Current RASS is not 0 (any RASS ≠ 0)
                 If not provided, will be calculated from rass_score
             disorganized_thinking_errors: Feature 4 - Number of errors on 4 simple
                 yes/no questions + command following. ≥2 errors = positive
-            
+
         Returns:
             ScoreResult with delirium status
         """
@@ -178,26 +173,26 @@ class CamIcuCalculator(BaseCalculator):
             raise ValueError("Inattention score (ASE errors) must be between 0 and 10")
         if not 0 <= disorganized_thinking_errors <= 5:
             raise ValueError("Disorganized thinking errors must be between 0 and 5")
-        
+
         # Check if patient is arousable
         if rass_score <= -4:
             return self._comatose_result(rass_score)
-        
+
         # Evaluate features
         feature_1 = acute_onset_fluctuation
         feature_2 = inattention_score >= 3  # ≥3 errors on ASE = inattention
         feature_3 = rass_score != 0 or altered_loc  # RASS ≠ 0 = altered LOC
         feature_4 = disorganized_thinking_errors >= 2  # ≥2 errors
-        
+
         # CAM-ICU algorithm
         # Positive if: Feature 1 AND Feature 2 AND (Feature 3 OR Feature 4)
         cam_icu_positive = feature_1 and feature_2 and (feature_3 or feature_4)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(
             cam_icu_positive, feature_1, feature_2, feature_3, feature_4, rass_score
         )
-        
+
         return ScoreResult(
             value=1 if cam_icu_positive else 0,
             unit=Unit.BINARY,
@@ -237,7 +232,7 @@ class CamIcuCalculator(BaseCalculator):
             },
             formula_used="CAM-ICU+ = (Acute onset/Fluctuation) AND (Inattention) AND (Altered LOC OR Disorganized Thinking)"
         )
-    
+
     def _comatose_result(self, rass_score: int) -> ScoreResult:
         """Return result for comatose patient (RASS -4 or -5)"""
         return ScoreResult(
@@ -277,7 +272,7 @@ class CamIcuCalculator(BaseCalculator):
             },
             formula_used="CAM-ICU requires RASS ≥ -3"
         )
-    
+
     def _get_interpretation(
         self,
         positive: bool,
@@ -288,7 +283,7 @@ class CamIcuCalculator(BaseCalculator):
         rass: int
     ) -> Interpretation:
         """Get interpretation based on CAM-ICU result"""
-        
+
         features_present = []
         if f1:
             features_present.append("Acute onset/fluctuation")
@@ -298,9 +293,9 @@ class CamIcuCalculator(BaseCalculator):
             features_present.append("Altered LOC")
         if f4:
             features_present.append("Disorganized thinking")
-        
+
         features_text = ", ".join(features_present) if features_present else "None"
-        
+
         if positive:
             # Determine delirium subtype
             if rass > 0:
@@ -309,7 +304,7 @@ class CamIcuCalculator(BaseCalculator):
                 subtype = "Hypoactive delirium (quiet/withdrawn)"
             else:
                 subtype = "Mixed delirium"
-            
+
             return Interpretation(
                 summary=f"CAM-ICU POSITIVE: Delirium Present ({subtype})",
                 detail=f"Patient meets criteria for delirium. Features present: {features_text}. "

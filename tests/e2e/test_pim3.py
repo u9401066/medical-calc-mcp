@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for PIM3 (Pediatric Index of Mortality 3) Calculator
 
 Tests the PIM3 Score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestPim3E2E:
     """E2E tests for PIM3 Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/pim3"
-    
-    def test_low_risk_patient(self, test_client):
+
+    def test_low_risk_patient(self, test_client: Any) -> None:
         """Test low risk pediatric patient"""
         payload = {
             "params": {
@@ -30,8 +30,8 @@ class TestPim3E2E:
         data = assert_successful_calculation(response)
         # Low predicted mortality
         assert data["result"]["value"] >= 0
-    
-    def test_high_risk_patient(self, test_client):
+
+    def test_high_risk_patient(self, test_client: Any) -> None:
         """Test high risk pediatric patient"""
         payload = {
             "params": {
@@ -49,8 +49,8 @@ class TestPim3E2E:
         data = assert_successful_calculation(response)
         # Higher predicted mortality
         assert data["result"]["value"] >= 0
-    
-    def test_cardiac_surgery_patient(self, test_client):
+
+    def test_cardiac_surgery_patient(self, test_client: Any) -> None:
         """Test post-cardiac surgery patient"""
         payload = {
             "params": {
@@ -66,8 +66,8 @@ class TestPim3E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_hypotensive_patient(self, test_client):
+
+    def test_hypotensive_patient(self, test_client: Any) -> None:
         """Test hypotensive patient"""
         payload = {
             "params": {
@@ -83,8 +83,8 @@ class TestPim3E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_severe_acidosis(self, test_client):
+
+    def test_severe_acidosis(self, test_client: Any) -> None:
         """Test patient with severe metabolic acidosis"""
         payload = {
             "params": {
@@ -100,8 +100,8 @@ class TestPim3E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_one_fixed_pupil(self, test_client):
+
+    def test_one_fixed_pupil(self, test_client: Any) -> None:
         """Test patient with one fixed pupil"""
         payload = {
             "params": {
@@ -117,8 +117,8 @@ class TestPim3E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_spontaneous_breathing(self, test_client):
+
+    def test_spontaneous_breathing(self, test_client: Any) -> None:
         """Test patient not mechanically ventilated"""
         payload = {
             "params": {
@@ -134,8 +134,8 @@ class TestPim3E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_very_high_risk_diagnosis(self, test_client):
+
+    def test_very_high_risk_diagnosis(self, test_client: Any) -> None:
         """Test patient with very high risk diagnosis"""
         payload = {
             "params": {
@@ -152,8 +152,8 @@ class TestPim3E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

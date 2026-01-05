@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-05
+
+### Added
+- **uv Package Management**: Migrated from `pip` to `uv` for faster and more reliable dependency management.
+- **Strict Type Safety**: Achieved 100% `mypy --strict` coverage across the entire codebase (src and tests).
+- **Modernized Tooling**: Integrated `ruff` for linting and formatting.
+
+### Changed
+- **Project Structure**: Updated `pyproject.toml` to use `hatchling` as build backend.
+- **MCP Entry Point**: Unified MCP server entry point to `src.main`.
+- **Docker Image**: Updated `Dockerfile` to use `uv` for multi-stage builds and faster deployment.
+- **VS Code Integration**: Updated `.vscode/mcp.json` to follow the latest Copilot MCP server configuration standards.
+
+### Fixed
+- Resolved hundreds of type-hinting issues and potential null-pointer exceptions.
+- Fixed regression in MCP calculator handlers where return keys were inconsistent.
+- Corrected Windows-specific paths in `.vscode/settings.json` for Linux compatibility.
+
 ## [1.1.0] - 2025-12-09
 
 ### Added

@@ -6,60 +6,60 @@ Essential for ventilator tidal volume settings (ARDSNet 6-8 mL/kg IBW).
 
 Reference:
     Devine BJ. Gentamicin therapy. Drug Intell Clin Pharm. 1974;8:650-655.
-    
-    ARDS Network. Ventilation with lower tidal volumes as compared with 
+
+    ARDS Network. Ventilation with lower tidal volumes as compared with
     traditional tidal volumes for acute lung injury and ARDS.
     N Engl J Med. 2000;342(18):1301-1308.
     DOI: 10.1056/NEJM200005043421801
     PMID: 10793162
-    
+
     Pai MP, Paloucek FP. The origin of the "ideal" body weight equations.
     Ann Pharmacother. 2000;34(9):1066-1069.
     DOI: 10.1345/aph.19381
     PMID: 10981254
 """
 
-from typing import Literal
+from typing import Literal, Optional
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class IdealBodyWeightCalculator(BaseCalculator):
     """
     Ideal Body Weight Calculator
-    
+
     Calculates IBW using the Devine formula (most common) or alternatives.
-    
+
     Formulas:
         Devine (1974) - Most commonly used:
             Male: IBW = 50 + 2.3 × (height_inches - 60)
             Female: IBW = 45.5 + 2.3 × (height_inches - 60)
-            
+
         Metric conversion:
             Male: IBW = 50 + 0.91 × (height_cm - 152.4)
             Female: IBW = 45.5 + 0.91 × (height_cm - 152.4)
-            
+
     Clinical Applications:
         - ARDSNet tidal volume: 6-8 mL/kg IBW
         - Drug dosing (aminoglycosides, chemotherapy)
         - Nutritional assessment
         - Obesity classification (Actual/IBW ratio)
-        
+
     Adjusted Body Weight (for obesity, when actual > 120% IBW):
         ABW = IBW + 0.4 × (Actual - IBW)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -106,7 +106,7 @@ class IdealBodyWeightCalculator(BaseCalculator):
             ),
             references=self._get_references(),
         )
-    
+
     def _get_references(self) -> tuple[Reference, ...]:
         return (
             Reference(
@@ -128,21 +128,21 @@ class IdealBodyWeightCalculator(BaseCalculator):
                 year=2000,
             ),
         )
-    
+
     def calculate(
         self,
         height_cm: float,
         sex: Literal["male", "female"],
-        actual_weight_kg: float = None,
+        actual_weight_kg: Optional[float] = None,
     ) -> ScoreResult:
         """
         Calculate ideal body weight.
-        
+
         Args:
             height_cm: Height in centimeters
             sex: Patient sex ('male' or 'female')
             actual_weight_kg: Actual body weight in kg (optional, for ABW calculation)
-            
+
         Returns:
             ScoreResult with IBW, ABW, and tidal volume recommendations
         """
@@ -153,22 +153,22 @@ class IdealBodyWeightCalculator(BaseCalculator):
             raise ValueError(f"Sex must be 'male' or 'female', got '{sex}'")
         if actual_weight_kg is not None and (actual_weight_kg < 20 or actual_weight_kg > 500):
             raise ValueError(f"Weight {actual_weight_kg} kg is outside expected range (20-500 kg)")
-        
+
         # Convert height to inches for Devine formula
         height_inches = height_cm / 2.54
-        
+
         # Calculate IBW using Devine formula
         if sex == "male":
             ibw = 50 + 2.3 * (height_inches - 60)
         else:  # female
             ibw = 45.5 + 2.3 * (height_inches - 60)
-        
+
         # Ensure IBW is positive (for very short patients)
         if ibw < 0:
             ibw = 0
-        
+
         ibw = round(ibw, 1)
-        
+
         # Calculate adjusted body weight if actual weight provided
         abw = None
         weight_ratio = None
@@ -178,16 +178,16 @@ class IdealBodyWeightCalculator(BaseCalculator):
             if weight_ratio > 1.2:
                 abw = ibw + 0.4 * (actual_weight_kg - ibw)
                 abw = round(abw, 1)
-        
+
         # Calculate tidal volume range (ARDSNet: 6-8 mL/kg IBW)
         tv_low = round(6 * ibw)
         tv_high = round(8 * ibw)
-        
+
         # Generate interpretation
         interpretation = self._interpret_ibw(
             ibw, actual_weight_kg, abw, weight_ratio, tv_low, tv_high, sex
         )
-        
+
         # Build calculation details
         details = {
             "Height": f"{height_cm} cm ({height_inches:.1f} inches)",
@@ -196,18 +196,18 @@ class IdealBodyWeightCalculator(BaseCalculator):
             "IBW": f"{ibw} kg",
             "Tidal_volume_range": f"{tv_low}-{tv_high} mL (6-8 mL/kg IBW)",
         }
-        
+
         if actual_weight_kg is not None:
             details["Actual_weight"] = f"{actual_weight_kg} kg"
             details["Actual/IBW_ratio"] = f"{weight_ratio:.1%}" if weight_ratio else "N/A"
             if abw is not None:
                 details["Adjusted_body_weight"] = f"{abw} kg (for drug dosing)"
-        
+
         return ScoreResult(
             value=ibw,
             unit=Unit.KG,
             interpretation=interpretation,
-            references=self._get_references(),
+            references=list(self._get_references()),
             tool_id=self.tool_id,
             tool_name=self.metadata.name,
             raw_inputs={
@@ -218,21 +218,21 @@ class IdealBodyWeightCalculator(BaseCalculator):
             calculation_details=details,
             formula_used=f"IBW ({'male' if sex == 'male' else 'female'}) = {50 if sex == 'male' else 45.5} + 2.3 × (height_inches - 60)",
         )
-    
+
     def _interpret_ibw(
         self,
         ibw: float,
-        actual_weight: float,
-        abw: float,
-        weight_ratio: float,
+        actual_weight: Optional[float],
+        abw: Optional[float],
+        weight_ratio: Optional[float],
         tv_low: int,
         tv_high: int,
         sex: str,
     ) -> Interpretation:
         """Generate interpretation and recommendations."""
-        
+
         summary = f"Ideal Body Weight: {ibw} kg"
-        
+
         if actual_weight is not None and weight_ratio is not None:
             if weight_ratio > 1.3:
                 severity = Severity.MODERATE
@@ -259,21 +259,21 @@ class IdealBodyWeightCalculator(BaseCalculator):
             severity = Severity.NORMAL
             risk_level = RiskLevel.LOW
             detail = f"IBW calculated using Devine formula for {sex}."
-        
+
         recommendations = [
             f"ARDSNet tidal volume: {tv_low}-{tv_high} mL (6-8 mL/kg IBW)",
             "Use IBW for ventilator settings, not actual body weight",
             "Initial tidal volume: 8 mL/kg IBW, reduce to 6 mL/kg if plateau pressure >30 cmH₂O",
         ]
-        
+
         if abw is not None:
             recommendations.append(f"Adjusted body weight for drug dosing: {abw} kg")
             recommendations.append("Use ABW for aminoglycosides, vancomycin loading")
-        
+
         warnings = []
         if ibw < 30:
             warnings.append("⚠️ Very low IBW - verify height measurement")
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

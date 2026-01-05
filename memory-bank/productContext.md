@@ -18,6 +18,10 @@ Provide a high-level overview of the project.
 
 ## Project Description
 
+A high-quality medical calculator MCP server providing 78+ clinical tools with intelligent discovery and strict type safety.
+
+
+
 A DDD-architected medical calculator MCP server providing 51 validated clinical scoring tools for AI Agent integration. Supports MCP SSE, REST API, and HTTPS deployment.
 
 
@@ -28,6 +32,10 @@ Medical Calculator MCP Server - 為 AI Agent 提供經驗證的醫學計算工�
 
 ## Architecture
 
+DDD Onion Architecture with clear separation of Domain, Application, and Infrastructure layers. Now modernized with uv and strict typing.
+
+
+
 DDD Onion Architecture with 4 layers: Domain (core business logic), Application (use cases), Infrastructure (MCP/API servers, Nginx), Shared (utilities). Deployment options: stdio (local), SSE (remote MCP), API (REST), HTTPS (production with Nginx reverse proxy).
 
 
@@ -37,6 +45,13 @@ DDD Onion Architecture with 4 layers:\n\n1. **Domain Layer** (Core): Calculators
 
 
 ## Technologies
+
+- Python 3.11+
+- uv
+- Docker
+- MCP (Model Context Protocol)
+
+
 
 - Python 3.11+
 - FastMCP SDK 1.22.0
@@ -62,6 +77,14 @@ DDD Onion Architecture with 4 layers:\n\n1. **Domain Layer** (Core): Calculators
 
 
 ## Libraries and Dependencies
+
+- FastMCP SDK
+- Pydantic v2
+- Pytest
+- Mypy (Strict)
+- Ruff
+
+
 
 - fastmcp
 - fastapi

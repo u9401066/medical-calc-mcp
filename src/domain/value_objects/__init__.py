@@ -1,9 +1,9 @@
 # Domain Value Objects
 
-from .units import Unit
+from .interpretation import Interpretation, RiskLevel, Severity
 from .reference import Reference
-from .tool_keys import LowLevelKey, HighLevelKey, Specialty, ClinicalContext
-from .interpretation import Interpretation, Severity, RiskLevel
+from .tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from .units import Unit
 
 __all__ = [
     "Unit",

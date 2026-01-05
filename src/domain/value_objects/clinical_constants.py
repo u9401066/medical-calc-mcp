@@ -5,17 +5,18 @@ Shared clinical constants and reference values used across multiple calculators.
 This ensures consistency and provides a single source of truth.
 """
 
-from typing import Dict
+
+from typing import Any
 
 
 # =============================================================================
 # Estimated Blood Volume (EBV) by Patient Type
 # =============================================================================
-# Reference: Cote CJ, Lerman J, Anderson BJ. A Practice of Anesthesia for 
+# Reference: Cote CJ, Lerman J, Anderson BJ. A Practice of Anesthesia for
 #            Infants and Children. 6th ed. Philadelphia: Elsevier; 2019.
 #            Miller RD, et al. Miller's Anesthesia. 9th ed. 2020.
 
-EBV_ML_PER_KG: Dict[str, int] = {
+EBV_ML_PER_KG: dict[str, int] = {
     "preterm_neonate": 90,      # Premature infant (<37 weeks)
     "term_neonate": 85,         # Full-term newborn (0-28 days)
     "infant": 80,               # 1-12 months
@@ -34,7 +35,7 @@ EBV_ML_PER_KG: Dict[str, int] = {
 # Reference: AABB Technical Manual, 20th Edition
 #            Roseff SD, et al. Transfusion 2002
 
-BLOOD_PRODUCTS: Dict[str, Dict] = {
+BLOOD_PRODUCTS: dict[str, dict[str, Any]] = {
     "prbc": {
         "name": "Packed Red Blood Cells (PRBC)",
         "hematocrit": 60,  # Typical Hct of PRBC is 55-65%
@@ -80,11 +81,11 @@ BLOOD_PRODUCTS: Dict[str, Dict] = {
 def get_ebv_per_kg(patient_type: str, default: int = 70) -> int:
     """
     Get estimated blood volume per kg for a patient type.
-    
+
     Args:
         patient_type: Patient category (e.g., 'adult_male', 'infant')
         default: Default value if patient type not found
-        
+
     Returns:
         EBV in mL/kg
     """
@@ -92,16 +93,16 @@ def get_ebv_per_kg(patient_type: str, default: int = 70) -> int:
     return EBV_ML_PER_KG.get(normalized, default)
 
 
-def get_blood_product(product_type: str) -> Dict:
+def get_blood_product(product_type: str) -> dict[str, Any]:
     """
     Get blood product specifications.
-    
+
     Args:
         product_type: Product type (e.g., 'prbc', 'ffp')
-        
+
     Returns:
         Product specifications dictionary
-        
+
     Raises:
         ValueError: If product type not found
     """

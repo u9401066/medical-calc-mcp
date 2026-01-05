@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for RCRI (Revised Cardiac Risk Index) Calculator
 
 Tests the RCRI cardiac risk calculator through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestRcriE2E:
     """E2E tests for RCRI Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/rcri"
-    
-    def test_low_risk_no_factors(self, test_client):
+
+    def test_low_risk_no_factors(self, test_client: Any) -> None:
         """Test low risk - no risk factors"""
         payload = {
             "params": {
@@ -27,8 +27,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_one_risk_factor(self, test_client):
+
+    def test_one_risk_factor(self, test_client: Any) -> None:
         """Test with one risk factor"""
         payload = {
             "params": {
@@ -43,8 +43,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_two_risk_factors(self, test_client):
+
+    def test_two_risk_factors(self, test_client: Any) -> None:
         """Test with two risk factors"""
         payload = {
             "params": {
@@ -59,8 +59,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_three_risk_factors(self, test_client):
+
+    def test_three_risk_factors(self, test_client: Any) -> None:
         """Test with three risk factors"""
         payload = {
             "params": {
@@ -75,8 +75,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_high_risk_all_factors(self, test_client):
+
+    def test_high_risk_all_factors(self, test_client: Any) -> None:
         """Test high risk - all risk factors present"""
         payload = {
             "params": {
@@ -91,8 +91,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 6
-    
-    def test_typical_diabetic_patient(self, test_client):
+
+    def test_typical_diabetic_patient(self, test_client: Any) -> None:
         """Test typical diabetic patient with renal impairment"""
         payload = {
             "params": {
@@ -107,8 +107,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_cardiac_history_patient(self, test_client):
+
+    def test_cardiac_history_patient(self, test_client: Any) -> None:
         """Test patient with cardiac history"""
         payload = {
             "params": {
@@ -123,8 +123,8 @@ class TestRcriE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

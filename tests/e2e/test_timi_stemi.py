@@ -1,3 +1,4 @@
+from typing import Any
 """
 E2E Tests for TIMI Score STEMI Calculator
 
@@ -24,16 +25,15 @@ Scoring:
 - Time >4h: 1 point
 Total: 0-14 points
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestTimiStemiE2E:
     """E2E tests for TIMI Score STEMI Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/timi_stemi"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test lowest risk patient (score 0) - young with no risk factors"""
         payload = {
             "params": {
@@ -50,8 +50,8 @@ class TestTimiStemiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_intermediate_risk(self, test_client):
+
+    def test_intermediate_risk(self, test_client: Any) -> None:
         """Test intermediate risk patient (score 4-6)"""
         payload = {
             "params": {
@@ -69,8 +69,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # 2+1+2+1 = 6 points
         assert data["result"]["value"] == 6
-    
-    def test_high_risk(self, test_client):
+
+    def test_high_risk(self, test_client: Any) -> None:
         """Test high risk patient (score ≥7)"""
         payload = {
             "params": {
@@ -88,8 +88,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # Maximum: 3+1+3+2+2+1+1+1 = 14 points
         assert data["result"]["value"] == 14
-    
-    def test_elderly_patient_75_plus(self, test_client):
+
+    def test_elderly_patient_75_plus(self, test_client: Any) -> None:
         """Test elderly patient (≥75 years old) - 3 age points"""
         payload = {
             "params": {
@@ -107,8 +107,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # 3+1 = 4 points
         assert data["result"]["value"] == 4
-    
-    def test_cardiogenic_shock(self, test_client):
+
+    def test_cardiogenic_shock(self, test_client: Any) -> None:
         """Test patient with cardiogenic shock features (Killip IV)"""
         payload = {
             "params": {
@@ -126,8 +126,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # 2+3+2+2+1 = 10 points
         assert data["result"]["value"] == 10
-    
-    def test_anterior_stemi(self, test_client):
+
+    def test_anterior_stemi(self, test_client: Any) -> None:
         """Test anterior STEMI patient"""
         payload = {
             "params": {
@@ -145,8 +145,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # Only 1 point for anterior STE
         assert data["result"]["value"] == 1
-    
-    def test_delayed_presentation(self, test_client):
+
+    def test_delayed_presentation(self, test_client: Any) -> None:
         """Test delayed presentation (>4 hours)"""
         payload = {
             "params": {
@@ -164,8 +164,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # Only 1 point for delayed treatment
         assert data["result"]["value"] == 1
-    
-    def test_low_body_weight_patient(self, test_client):
+
+    def test_low_body_weight_patient(self, test_client: Any) -> None:
         """Test patient with low body weight"""
         payload = {
             "params": {
@@ -182,8 +182,8 @@ class TestTimiStemiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_diabetic_hypertensive_patient(self, test_client):
+
+    def test_diabetic_hypertensive_patient(self, test_client: Any) -> None:
         """Test patient with diabetes/hypertension/angina history"""
         payload = {
             "params": {
@@ -201,8 +201,8 @@ class TestTimiStemiE2E:
         data = assert_successful_calculation(response)
         # 2+1 = 3 points
         assert data["result"]["value"] == 3
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

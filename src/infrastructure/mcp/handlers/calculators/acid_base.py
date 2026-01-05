@@ -5,10 +5,10 @@ MCP tool handlers for acid-base and electrolyte calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Annotated, Optional, Literal
+from typing import Annotated, Any, Literal, Optional
 
-from pydantic import Field
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from .....application.dto import CalculateRequest
 from .....application.use_cases import CalculateUseCase
@@ -16,7 +16,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all acid-base and electrolyte calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_anion_gap(
         sodium: Annotated[
@@ -46,15 +46,15 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🧪 Anion Gap: 陰離子間隙計算
-        
+
         計算血清陰離子間隙，用於代謝性酸中毒的鑑別診斷。
-        
+
         **公式:**
         - AG = Na⁺ - (Cl⁻ + HCO₃⁻)
         - 校正 AG = AG + 2.5 × (4.0 - Albumin)
-        
+
         **正常範圍:** 8-12 mEq/L (不含 K⁺)
-        
+
         **高陰離子間隙酸中毒 (HAGMA) 病因 - MUDPILES:**
         - **M**ethanol (甲醇)
         - **U**remia (尿毒症)
@@ -64,16 +64,16 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - **L**actic acidosis (乳酸酸中毒)
         - **E**thylene glycol (乙二醇)
         - **S**alicylates (水楊酸鹽)
-        
+
         **正常陰離子間隙酸中毒 (NAGMA):**
         - GI HCO₃⁻ loss (腹瀉)
         - Renal tubular acidosis (腎小管酸中毒)
         - Dilutional acidosis (稀釋性酸中毒)
-        
+
         **參考文獻:**
         - Kraut JA, Madias NE. Clin J Am Soc Nephrol. 2007;2(1):162-174. PMID: 17699401
         - Figge J, et al. Crit Care Med. 1998;26(11):1807-1810. PMID: 9824071
-        
+
         Returns:
             Anion Gap (mEq/L)、校正 AG (如提供白蛋白)、鑑別診斷建議
         """
@@ -112,30 +112,30 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🔬 Delta Ratio (Delta Gap): 混合型酸鹼障礙鑑別
-        
+
         用於識別高陰離子間隙代謝性酸中毒 (HAGMA) 患者是否合併其他酸鹼障礙。
-        
+
         **公式:**
         - ΔAG = 測量 AG - 正常 AG (12)
         - ΔHCO₃⁻ = 正常 HCO₃⁻ (24) - 測量 HCO₃⁻
         - Delta Ratio = ΔAG / ΔHCO₃⁻
-        
+
         **判讀:**
-        
+
         | Delta Ratio | 診斷 | 說明 |
         |-------------|------|------|
         | <1 | HAGMA + NAGMA | HCO₃⁻下降 > AG上升 |
         | 1-2 | 純粹 HAGMA | AG上升 ≈ HCO₃⁻下降 |
         | >2 | HAGMA + 代謝性鹼中毒 | AG上升 > HCO₃⁻下降 |
-        
+
         **臨床應用:**
         - 只有在 AG 升高 (HAGMA) 時才有意義
         - 幫助識別複雜的混合型酸鹼障礙
-        
+
         **參考文獻:**
         - Wrenn K. Ann Emerg Med. 1990;19(11):1310-1313. PMID: 2240729
         - Rastegar A. J Am Soc Nephrol. 2007;18(9):2429-2431. PMID: 17656478
-        
+
         Returns:
             Delta Ratio、混合型酸鹼障礙診斷、下一步建議
         """
@@ -172,32 +172,32 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🩸 Corrected Sodium: 高血糖校正血鈉
-        
+
         計算高血糖患者的真實血鈉水平。高血糖造成水分從細胞內移至細胞外，
         稀釋血鈉，產生「假性低血鈉」。
-        
+
         **公式:**
         - **Katz (1973)**: 校正 Na = 測量 Na + 1.6 × ((血糖 - 100) / 100)
         - **Hillier (1999)**: 校正 Na = 測量 Na + 2.4 × ((血糖 - 100) / 100)
-        
+
         **何時使用:**
         - 糖尿病酮酸中毒 (DKA)
         - 高血糖高滲狀態 (HHS)
         - 任何顯著高血糖 (>200 mg/dL)
-        
+
         **公式選擇:**
         - Katz: 標準公式，最常用
         - Hillier: 血糖極高時 (>400 mg/dL) 可能更準確
-        
+
         **臨床意義:**
         - 校正鈉正常: 低鈉主要由高血糖稀釋造成
         - 校正鈉仍低: 真正的低血鈉，需另外評估
         - 校正鈉高: 真正的高血鈉，嚴重脫水
-        
+
         **參考文獻:**
         - Katz MA. N Engl J Med. 1973;289(16):843-844. PMID: 4763428
         - Hillier TA, et al. Am J Med. 1999;106(4):399-403. PMID: 10225241
-        
+
         Returns:
             校正血鈉 (mEq/L)、校正量、臨床解釋
         """
@@ -226,33 +226,33 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫁 Winter's Formula: 代謝性酸中毒呼吸代償預測
-        
+
         預測代謝性酸中毒患者的適當呼吸代償 (預期 PaCO₂)。
-        
+
         **公式:**
         - 預期 PaCO₂ = (1.5 × HCO₃⁻) + 8 ± 2
-        
+
         **判讀:**
-        
+
         | 測量 PaCO₂ | 診斷 |
         |-----------|------|
         | 在預期範圍內 | 適當呼吸代償，純粹代謝性酸中毒 |
         | 低於預期下限 | 合併原發性呼吸性鹼中毒 |
         | 高於預期上限 | 合併原發性呼吸性酸中毒 |
-        
+
         **何時使用:**
         - 已確認代謝性酸中毒 (pH <7.35, HCO₃⁻ <22 mEq/L)
         - 評估是否有混合型酸鹼障礙
-        
+
         **限制:**
         - 僅適用於代謝性酸中毒
         - 需時間讓呼吸代償完成 (12-24 小時)
         - 肺部疾病可能影響代償能力
-        
+
         **參考文獻:**
         - Winter RB, et al. Arch Intern Med. 1967;120(2):209-213. PMID: 5660790
         - Narins RG, Emmett M. Medicine. 1980;59(3):161-187. PMID: 6247109
-        
+
         Returns:
             預期 PaCO₂ 範圍 (mmHg)、代償評估、混合障礙診斷
         """
@@ -291,24 +291,24 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🧪 Osmolar Gap: 滲透壓間隙 (毒性醇類篩檢)
-        
+
         計算測量與計算滲透壓之差，用於檢測未測量的滲透性物質，
         特別是**甲醇**和**乙二醇**中毒。
-        
+
         **公式:**
         - 計算滲透壓 = 2×Na + (Glucose/18) + (BUN/2.8) + (Ethanol/4.6)
         - 滲透壓間隙 = 測量滲透壓 - 計算滲透壓
-        
+
         **正常範圍:** -10 to +10 mOsm/kg
-        
+
         **判讀:**
-        
+
         | Osmolar Gap | 意義 |
         |-------------|------|
         | -10 to +10 | 正常 |
         | >10 | 升高，可能有未測量滲透物質 |
         | >20-25 | 顯著升高，高度懷疑毒性醇類 |
-        
+
         **升高原因:**
         - **毒性醇類:** 甲醇、乙二醇、異丙醇、丙二醇
         - 乙醇 (如未納入計算)
@@ -316,16 +316,16 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - 慢性腎病
         - 休克/低灌注
         - 甘露醇
-        
+
         **⚠️ 重要警告:**
         - 滲透壓間隙正常**不能排除**毒性醇類中毒
         - 隨著代謝，母體醇類減少，間隙可能正常化
         - 同時有高陰離子間隙酸中毒更具診斷價值
-        
+
         **參考文獻:**
         - Hoffman RS, et al. J Toxicol Clin Toxicol. 1993;31(1):81-93. PMID: 8433417
         - Lynd LD, et al. Clin Toxicol. 2008;46(4):309-323. PMID: 17852166
-        
+
         Returns:
             Osmolar Gap (mOsm/kg)、解釋、毒性醇類建議
         """
@@ -367,13 +367,13 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         💧 Free Water Deficit: 高血鈉自由水補充計算
-        
+
         計算高血鈉患者需要補充的自由水量。
-        
+
         **公式:**
         - 自由水缺失 = TBW × ((目前 Na / 目標 Na) - 1)
         - TBW = 體重 × 水分比例
-        
+
         **水分比例:**
         | 類型 | 比例 |
         |------|------|
@@ -382,26 +382,26 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         | 老年男性 | 50% |
         | 老年女性 | 45% |
         | 兒童 | 60% |
-        
+
         **⚠️ 安全校正速率:**
         - **最大: 10-12 mEq/L per 24 hours**
         - 建議: 0.5 mEq/L per hour
         - 校正過快可能導致腦水腫
-        
+
         **輸液選擇:**
         - D5W: 100% 自由水
         - 0.45% NaCl: ~50% 自由水
         - 0.225% NaCl: ~75% 自由水
-        
+
         **治療提醒:**
         - 需加上維持液和持續流失量
         - 每 4-6 小時複查血鈉
         - 找出並治療高血鈉原因
-        
+
         **參考文獻:**
         - Adrogue HJ, Madias NE. N Engl J Med. 2000;342(20):1493-1499. PMID: 10816188
         - Sterns RH. N Engl J Med. 2015;372(1):55-65. PMID: 25551526
-        
+
         Returns:
             自由水缺失 (L)、輸注速率、安全警示
         """

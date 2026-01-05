@@ -11,8 +11,8 @@ Architecture:
     - resources/: MCP resource handlers
 """
 
-from .server import mcp, main, MedicalCalculatorServer
 from .config import McpServerConfig, default_config
+from .server import MedicalCalculatorServer, main, mcp
 
 __all__ = [
     "mcp",

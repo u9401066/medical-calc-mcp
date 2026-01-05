@@ -1,20 +1,20 @@
 """
 Fisher Grade (Modified Fisher Scale)
 
-The Fisher Grade is a radiological grading system that quantifies the amount 
-and distribution of subarachnoid blood on CT scan. It is the most reliable 
+The Fisher Grade is a radiological grading system that quantifies the amount
+and distribution of subarachnoid blood on CT scan. It is the most reliable
 predictor of vasospasm following aneurysmal subarachnoid hemorrhage.
 
 Reference (Original Fisher Scale):
-    Fisher CM, Kistler JP, Davis JM. Relation of cerebral vasospasm to 
-    subarachnoid hemorrhage visualized by computerized tomographic scanning. 
+    Fisher CM, Kistler JP, Davis JM. Relation of cerebral vasospasm to
+    subarachnoid hemorrhage visualized by computerized tomographic scanning.
     Neurosurgery. 1980;6(1):1-9.
     DOI: 10.1227/00006123-198001000-00001
     PMID: 7354892
 
 Reference (Modified Fisher Scale):
-    Frontera JA, Claassen J, Schmidt JM, et al. Prediction of symptomatic 
-    vasospasm after subarachnoid hemorrhage: the modified Fisher scale. 
+    Frontera JA, Claassen J, Schmidt JM, et al. Prediction of symptomatic
+    vasospasm after subarachnoid hemorrhage: the modified Fisher scale.
     Neurosurgery. 2006;59(1):21-27.
     DOI: 10.1227/01.NEU.0000218821.34014.1B
     PMID: 16823296
@@ -28,48 +28,45 @@ Clinical Notes:
 """
 
 
-from ..base import BaseCalculator
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class FisherGradeCalculator(BaseCalculator):
     """
     Fisher Grade Calculator (Original and Modified)
-    
-    The Fisher Grade assesses subarachnoid hemorrhage severity on CT 
+
+    The Fisher Grade assesses subarachnoid hemorrhage severity on CT
     and predicts risk of cerebral vasospasm.
-    
+
     Original Fisher Scale (1980):
     - Grade 1: No blood detected
     - Grade 2: Diffuse or thin layer <1mm thick
     - Grade 3: Localized clot and/or thick layer ≥1mm
-    - Grade 4: Intracerebral or intraventricular clot with diffuse 
+    - Grade 4: Intracerebral or intraventricular clot with diffuse
                or no subarachnoid blood
-    
+
     Modified Fisher Scale (2006):
     - Grade 0: No blood on CT
     - Grade 1: Thin SAH, no IVH
     - Grade 2: Thin SAH with IVH
     - Grade 3: Thick SAH, no IVH
     - Grade 4: Thick SAH with IVH
-    
+
     Vasospasm Risk (Modified Fisher):
     - Grade 0-1: ~20% risk
     - Grade 2: ~30% risk
     - Grade 3: ~30-40% risk
     - Grade 4: ~40-50% risk
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -108,7 +105,7 @@ class FisherGradeCalculator(BaseCalculator):
                 ),
                 icd10_codes=("I60", "I60.9", "G45.8"),
                 keywords=(
-                    "Fisher", "Fisher Grade", "Modified Fisher", "SAH", 
+                    "Fisher", "Fisher Grade", "Modified Fisher", "SAH",
                     "subarachnoid", "vasospasm", "CT grading", "IVH",
                     "intraventricular hemorrhage", "delayed ischemia",
                 )
@@ -135,7 +132,7 @@ class FisherGradeCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         thick_sah: bool,
@@ -145,13 +142,13 @@ class FisherGradeCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Fisher Grade (Original or Modified).
-        
+
         Args:
             thick_sah: Thick subarachnoid hemorrhage (≥1mm layer) present
             ivh_present: Intraventricular hemorrhage (IVH) present
             no_blood: No blood visible on CT (Grade 0 or 1 depending on scale)
             use_modified: Use Modified Fisher Scale (default True, recommended)
-                
+
         Returns:
             ScoreResult with Fisher Grade and vasospasm risk
         """
@@ -161,9 +158,9 @@ class FisherGradeCalculator(BaseCalculator):
         else:
             grade = self._calculate_original_fisher(thick_sah, ivh_present, no_blood)
             scale_name = "Original Fisher Scale"
-        
+
         interpretation = self._get_interpretation(grade, use_modified)
-        
+
         return ScoreResult(
             value=grade,
             unit=Unit.GRADE,
@@ -184,57 +181,58 @@ class FisherGradeCalculator(BaseCalculator):
                 "vasospasm_risk": self._get_vasospasm_risk(grade, use_modified),
             },
         )
-    
+
     def _calculate_modified_fisher(
         self, thick_sah: bool, ivh_present: bool, no_blood: bool
     ) -> int:
         """Calculate Modified Fisher Grade (0-4)"""
         if no_blood:
             return 0
-        
+
         if thick_sah:
             return 4 if ivh_present else 3
         else:  # thin SAH
             return 2 if ivh_present else 1
-    
+
     def _calculate_original_fisher(
         self, thick_sah: bool, ivh_present: bool, no_blood: bool
     ) -> int:
         """Calculate Original Fisher Grade (1-4)"""
         if no_blood:
             return 1
-        
+
         # Original Fisher Grade 4: ICH or IVH with diffuse/no SAH
         if ivh_present and not thick_sah:
             return 4
-        
+
         # Grade 3: Thick SAH
         if thick_sah:
             return 3
-        
+
         # Grade 2: Thin SAH
         return 2
-    
+
     def _describe_ct_findings(
         self, thick_sah: bool, ivh_present: bool, no_blood: bool
     ) -> str:
         """Describe CT findings in plain text"""
         if no_blood:
             return "No subarachnoid blood detected on CT"
-        
+
         findings = []
         if thick_sah:
             findings.append("Thick subarachnoid hemorrhage (≥1mm layer)")
         else:
             findings.append("Thin subarachnoid hemorrhage (<1mm layer)")
-        
+
         if ivh_present:
             findings.append("Intraventricular hemorrhage present")
-        
+
         return "; ".join(findings)
-    
-    def _get_vasospasm_risk(self, grade: int, use_modified: bool) -> dict:
+
+    def _get_vasospasm_risk(self, grade: int, use_modified: bool) -> dict[str, str]:
         """Get vasospasm risk percentages"""
+        risks: dict[int, dict[str, str]]
         if use_modified:
             risks = {
                 0: {"symptomatic_vasospasm": "0%", "angiographic_vasospasm": "<10%"},
@@ -251,14 +249,14 @@ class FisherGradeCalculator(BaseCalculator):
                 4: {"symptomatic_vasospasm": "28-35%", "angiographic_vasospasm": "40-55%"},
             }
         return risks.get(grade, {})
-    
+
     def _get_interpretation(self, grade: int, use_modified: bool) -> Interpretation:
         """Generate interpretation based on grade"""
         if use_modified:
             return self._interpret_modified_fisher(grade)
         else:
             return self._interpret_original_fisher(grade)
-    
+
     def _interpret_modified_fisher(self, grade: int) -> Interpretation:
         """Interpret Modified Fisher Grade"""
         if grade == 0:
@@ -375,7 +373,7 @@ class FisherGradeCalculator(BaseCalculator):
                     "Consider continuous EEG",
                 ),
             )
-    
+
     def _interpret_original_fisher(self, grade: int) -> Interpretation:
         """Interpret Original Fisher Grade"""
         if grade == 1:

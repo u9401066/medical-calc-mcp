@@ -13,37 +13,32 @@ Reference:
     PMID: 10485781
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class ApfelPonvCalculator(BaseCalculator):
     """
     Apfel Simplified Score for PONV (Postoperative Nausea and Vomiting)
-    
+
     Four risk factors (each scores 1 point):
     1. Female gender
     2. History of motion sickness or PONV
     3. Non-smoking status
     4. Use of postoperative opioids
-    
+
     PONV Risk by Score:
     - 0 factors: ~10%
     - 1 factor:  ~21%
     - 2 factors: ~39%
     - 3 factors: ~61%
     - 4 factors: ~79%
-    
+
     Recommendation: For patients with ≥2 risk factors, consider prophylactic
     antiemetic therapy.
     """
@@ -132,13 +127,13 @@ class ApfelPonvCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Apfel PONV Risk Score.
-        
+
         Args:
             female_gender: Patient is female
             history_motion_sickness_or_ponv: History of motion sickness or previous PONV
             non_smoker: Patient is a non-smoker (does NOT currently smoke)
             postoperative_opioids: Postoperative opioids are planned/anticipated
-            
+
         Returns:
             ScoreResult with PONV risk score and prophylaxis recommendations
         """
@@ -149,13 +144,13 @@ class ApfelPonvCalculator(BaseCalculator):
             non_smoker,
             postoperative_opioids
         ])
-        
+
         # Get PONV risk percentage
         ponv_risk = self._get_ponv_risk(score)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score, ponv_risk)
-        
+
         # Build factor list
         present_factors = []
         if female_gender:
@@ -166,7 +161,7 @@ class ApfelPonvCalculator(BaseCalculator):
             present_factors.append("Non-smoker")
         if postoperative_opioids:
             present_factors.append("Postoperative opioids planned")
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -203,7 +198,7 @@ class ApfelPonvCalculator(BaseCalculator):
 
     def _get_interpretation(self, score: int, ponv_risk: float) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score == 0:
             return Interpretation(
                 summary=f"Very Low PONV Risk ({ponv_risk}%)",
@@ -325,7 +320,7 @@ class ApfelPonvCalculator(BaseCalculator):
             "Apfel score validated for adults undergoing general anesthesia",
             "Each risk factor adds ~20% absolute increase in PONV risk",
         ]
-        
+
         if score >= 2:
             notes.extend([
                 "Multi-modal prophylaxis reduces PONV by ~30-50%",
@@ -333,10 +328,10 @@ class ApfelPonvCalculator(BaseCalculator):
                 "5-HT3 antagonists are most effective as end-of-surgery prophylaxis",
                 "Dexamethasone should be given at induction for best effect",
             ])
-        
+
         if score >= 3:
             notes.append(
                 "Consider adding NK-1 receptor antagonist (aprepitant) for highest-risk patients"
             )
-        
+
         return notes

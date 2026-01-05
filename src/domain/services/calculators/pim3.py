@@ -30,32 +30,28 @@ References:
     Straney L, Clements A, Parslow RC, et al. Paediatric Index of Mortality 3:
     An Updated Model for Predicting Mortality in Pediatric Intensive Care.
     Pediatr Crit Care Med. 2013;14(7):673-681. PMID: 23863821
-    
+
     Slater A, Shann F, Pearson G; PIM Study Group. PIM2: a revised version
     of the Paediatric Index of Mortality.
     Intensive Care Med. 2003;29(2):278-285. PMID: 12541154
 """
 
-from typing import Optional
 import math
-from ..base import BaseCalculator
+from typing import Optional
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class PIM3Calculator(BaseCalculator):
     """
     Pediatric Index of Mortality 3 (PIM3) Calculator
-    
+
     Predicts PICU mortality using admission data.
     Variables collected at first face-to-face ICU contact.
     """
@@ -166,10 +162,10 @@ class PIM3Calculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate PIM3 predicted mortality.
-        
+
         Args:
             systolic_bp: Systolic blood pressure at admission (mmHg)
-                Use 0 if cardiac arrest, 30 if too low to measure, 
+                Use 0 if cardiac arrest, 30 if too low to measure,
                 120 if not measured
             pupillary_reaction: Pupil response to light
                 "both_react" = Both pupils react (>3mm, react to light)
@@ -182,17 +178,17 @@ class PIM3Calculator(BaseCalculator):
             recovery_post_procedure: Admitted for postoperative recovery
             cardiac_bypass: Cardiac bypass during surgery for principal procedure
             high_risk_diagnosis: Has PIM3 high-risk diagnosis
-            low_risk_diagnosis: Has PIM3 low-risk diagnosis  
+            low_risk_diagnosis: Has PIM3 low-risk diagnosis
             very_high_risk_diagnosis: Has PIM3 very high-risk diagnosis
             diagnosis_name: Optional specific diagnosis name
-        
+
         Returns:
             ScoreResult with predicted mortality probability
         """
         # Validate inputs
         if systolic_bp < 0 or systolic_bp > 300:
             raise ValueError("systolic_bp must be 0-300 mmHg")
-        
+
         valid_pupils = ["both_react", "one_fixed", "both_fixed"]
         if pupillary_reaction not in valid_pupils:
             raise ValueError(f"pupillary_reaction must be one of: {valid_pupils}")

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for CURB-65 Calculator
 
 Tests the CURB-65 pneumonia severity score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestCurb65E2E:
     """E2E tests for CURB-65 Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/curb65"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk - CURB-65 score 0"""
         payload = {
             "params": {
@@ -26,8 +26,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_low_risk_score_1(self, test_client):
+
+    def test_low_risk_score_1(self, test_client: Any) -> None:
         """Test low risk - CURB-65 score 1"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_moderate_risk_score_2(self, test_client):
+
+    def test_moderate_risk_score_2(self, test_client: Any) -> None:
         """Test moderate risk - CURB-65 score 2"""
         payload = {
             "params": {
@@ -56,8 +56,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_high_risk_score_3(self, test_client):
+
+    def test_high_risk_score_3(self, test_client: Any) -> None:
         """Test high risk - CURB-65 score 3"""
         payload = {
             "params": {
@@ -71,8 +71,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_very_high_risk_score_4(self, test_client):
+
+    def test_very_high_risk_score_4(self, test_client: Any) -> None:
         """Test very high risk - CURB-65 score 4"""
         payload = {
             "params": {
@@ -86,8 +86,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
-    
-    def test_maximum_risk_score_5(self, test_client):
+
+    def test_maximum_risk_score_5(self, test_client: Any) -> None:
         """Test maximum risk - CURB-65 score 5"""
         payload = {
             "params": {
@@ -101,8 +101,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 5
-    
-    def test_young_severe_pneumonia(self, test_client):
+
+    def test_young_severe_pneumonia(self, test_client: Any) -> None:
         """Test young patient with severe pneumonia"""
         payload = {
             "params": {
@@ -116,8 +116,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
-    
-    def test_elderly_mild_pneumonia(self, test_client):
+
+    def test_elderly_mild_pneumonia(self, test_client: Any) -> None:
         """Test elderly with mild pneumonia"""
         payload = {
             "params": {
@@ -131,8 +131,8 @@ class TestCurb65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -22,21 +22,21 @@ if str(project_root) not in sys.path:
 def workflow_sepsis_evaluation():
     """
     Complete sepsis workup following Sepsis-3 guidelines.
-    
+
     Flow: qSOFA → SOFA → RASS → CAM-ICU
     """
     from src.domain.services.calculators import (
-        QsofaScoreCalculator,
-        SofaScoreCalculator,
-        RassCalculator,
         CamIcuCalculator,
+        QsofaScoreCalculator,
+        RassCalculator,
+        SofaScoreCalculator,
     )
-    
+
     print("=" * 70)
     print("WORKFLOW: Sepsis Evaluation (Sepsis-3)")
     print("=" * 70)
     print("\nPatient: 68M with pneumonia, fever, altered mental status\n")
-    
+
     # Step 1: qSOFA (bedside screening)
     print("Step 1: qSOFA (Quick SOFA) - Bedside Screening")
     print("-" * 50)
@@ -48,10 +48,10 @@ def workflow_sepsis_evaluation():
     )
     print(f"  Score: {int(qsofa_result.value)}/3")
     print(f"  Result: {qsofa_result.interpretation.summary}")
-    
+
     if qsofa_result.value >= 2:
         print("  ⚠️  qSOFA ≥2: Proceed with full SOFA assessment\n")
-        
+
         # Step 2: Full SOFA
         print("Step 2: SOFA Score - Organ Dysfunction Assessment")
         print("-" * 50)
@@ -65,10 +65,10 @@ def workflow_sepsis_evaluation():
         )
         print(f"  Score: {int(sofa_result.value)}/24")
         print(f"  Result: {sofa_result.interpretation.summary}")
-        
+
         if sofa_result.value >= 2:
             print("  ⚠️  SOFA ≥2: If infection suspected, SEPSIS CONFIRMED\n")
-    
+
     # Step 3: RASS (sedation assessment)
     print("Step 3: RASS - Sedation/Agitation Assessment")
     print("-" * 50)
@@ -76,7 +76,7 @@ def workflow_sepsis_evaluation():
     rass_result = rass.calculate(rass_score=0)
     print(f"  Score: {int(rass_result.value)}")
     print(f"  Result: {rass_result.interpretation.summary}")
-    
+
     # Step 4: CAM-ICU (delirium screening)
     print("\nStep 4: CAM-ICU - Delirium Screening")
     print("-" * 50)
@@ -89,7 +89,7 @@ def workflow_sepsis_evaluation():
     )
     print(f"  Result: {'POSITIVE (Delirium)' if cam_result.value == 1 else 'NEGATIVE'}")
     print(f"  Summary: {cam_result.interpretation.summary}")
-    
+
     print("\n" + "=" * 70 + "\n")
 
 
@@ -100,21 +100,21 @@ def workflow_sepsis_evaluation():
 def workflow_preoperative_assessment():
     """
     Complete preoperative risk evaluation.
-    
+
     Flow: ASA → RCRI → Mallampati → MABL
     """
     from src.domain.services.calculators import (
         AsaPhysicalStatusCalculator,
-        RcriCalculator,
-        MallampatiScoreCalculator,
         MablCalculator,
+        MallampatiScoreCalculator,
+        RcriCalculator,
     )
-    
+
     print("=" * 70)
     print("WORKFLOW: Preoperative Risk Assessment")
     print("=" * 70)
     print("\nPatient: 72F with DM, HTN, scheduled for hip replacement\n")
-    
+
     # Step 1: ASA Physical Status
     print("Step 1: ASA Physical Status Classification")
     print("-" * 50)
@@ -122,7 +122,7 @@ def workflow_preoperative_assessment():
     asa_result = asa.calculate(asa_class=3, is_emergency=False)
     print(f"  Classification: ASA {int(asa_result.value)}")
     print(f"  Summary: {asa_result.interpretation.summary}")
-    
+
     # Step 2: RCRI
     print("\nStep 2: RCRI - Cardiac Risk Assessment")
     print("-" * 50)
@@ -137,7 +137,7 @@ def workflow_preoperative_assessment():
     )
     print(f"  Score: {int(rcri_result.value)}/6")
     print(f"  Summary: {rcri_result.interpretation.summary}")
-    
+
     # Step 3: Mallampati
     print("\nStep 3: Mallampati - Airway Assessment")
     print("-" * 50)
@@ -145,7 +145,7 @@ def workflow_preoperative_assessment():
     mallampati_result = mallampati.calculate(mallampati_class=2)
     print(f"  Classification: Mallampati {int(mallampati_result.value)}")
     print(f"  Summary: {mallampati_result.interpretation.summary}")
-    
+
     # Step 4: MABL
     print("\nStep 4: MABL - Maximum Allowable Blood Loss")
     print("-" * 50)
@@ -158,7 +158,7 @@ def workflow_preoperative_assessment():
     )
     print(f"  MABL: {int(mabl_result.value)} mL")
     print(f"  Summary: {mabl_result.interpretation.summary}")
-    
+
     print("\n" + "=" * 70 + "\n")
 
 
@@ -169,19 +169,19 @@ def workflow_preoperative_assessment():
 def workflow_chest_pain_ed():
     """
     Emergency department chest pain workup.
-    
+
     Flow: HEART Score → (if needed) Wells PE
     """
     from src.domain.services.calculators import (
         HeartScoreCalculator,
         WellsPeCalculator,
     )
-    
+
     print("=" * 70)
     print("WORKFLOW: ED Chest Pain Evaluation")
     print("=" * 70)
     print("\nPatient: 55M with acute chest pain, diaphoresis\n")
-    
+
     # Step 1: HEART Score
     print("Step 1: HEART Score - MACE Risk Stratification")
     print("-" * 50)
@@ -195,10 +195,10 @@ def workflow_chest_pain_ed():
     )
     print(f"  Score: {int(heart_result.value)}/10")
     print(f"  Summary: {heart_result.interpretation.summary}")
-    print(f"  Recommendations:")
+    print("  Recommendations:")
     for rec in heart_result.interpretation.recommendations[:2]:
         print(f"    • {rec}")
-    
+
     # Step 2: Consider PE if atypical presentation
     print("\nStep 2: Wells PE Score (if PE suspected)")
     print("-" * 50)
@@ -214,7 +214,7 @@ def workflow_chest_pain_ed():
     )
     print(f"  Score: {wells_result.value}")
     print(f"  Summary: {wells_result.interpretation.summary}")
-    
+
     print("\n" + "=" * 70 + "\n")
 
 
@@ -225,16 +225,16 @@ def workflow_chest_pain_ed():
 def workflow_af_anticoagulation():
     """
     Atrial fibrillation anticoagulation decision.
-    
+
     Uses: CHA₂DS₂-VASc (stroke risk)
     """
     from src.domain.services.calculators import Chads2VascCalculator
-    
+
     print("=" * 70)
     print("WORKFLOW: AF Anticoagulation Decision")
     print("=" * 70)
     print("\nPatient: 78F with new AF, HTN, prior stroke\n")
-    
+
     # CHA₂DS₂-VASc Score
     print("CHA₂DS₂-VASc Score - Stroke Risk")
     print("-" * 50)
@@ -251,10 +251,10 @@ def workflow_af_anticoagulation():
     )
     print(f"  Score: {int(result.value)}/9")
     print(f"  Summary: {result.interpretation.summary}")
-    print(f"  Recommendations:")
+    print("  Recommendations:")
     for rec in result.interpretation.recommendations:
         print(f"    • {rec}")
-    
+
     print("\n" + "=" * 70 + "\n")
 
 
@@ -266,12 +266,12 @@ if __name__ == "__main__":
     print("\n" + "=" * 70)
     print("Medical Calculator MCP Server - Clinical Workflow Examples")
     print("=" * 70 + "\n")
-    
+
     workflow_sepsis_evaluation()
     workflow_preoperative_assessment()
     workflow_chest_pain_ed()
     workflow_af_anticoagulation()
-    
+
     print("=" * 70)
     print("All workflows completed successfully!")
     print("=" * 70)

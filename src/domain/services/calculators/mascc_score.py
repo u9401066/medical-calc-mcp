@@ -1,35 +1,37 @@
 """
 MASCC Score Calculator (Multinational Association for Supportive Care in Cancer)
 
-Identifies low-risk febrile neutropenia patients who may be candidates for 
+Identifies low-risk febrile neutropenia patients who may be candidates for
 outpatient management with oral antibiotics.
 
 Original Reference:
-    Klastersky J, Paesmans M, Rubenstein EB, et al. The Multinational 
-    Association for Supportive Care in Cancer Risk Index: A Multinational 
+    Klastersky J, Paesmans M, Rubenstein EB, et al. The Multinational
+    Association for Supportive Care in Cancer Risk Index: A Multinational
     Scoring System for Identifying Low-Risk Febrile Neutropenic Cancer Patients.
     J Clin Oncol. 2000;18(16):3038-3051.
     doi:10.1200/JCO.2000.18.16.3038. PMID: 10944139.
 """
 
-from ..base import BaseCalculator
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class MasccScoreCalculator(BaseCalculator):
     """
     MASCC Risk Index for Febrile Neutropenia
-    
+
     Scoring criteria (maximum 26 points):
     - Burden of illness (choose one):
       - None or mild symptoms: +5
@@ -41,12 +43,12 @@ class MasccScoreCalculator(BaseCalculator):
     - No dehydration requiring IV fluids: +3
     - Outpatient status at onset of fever: +3
     - Age <60 years: +2
-    
+
     Risk stratification:
     - ≥21: Low risk (~5% serious complications) → Consider outpatient therapy
     - <21: High risk (~40% serious complications) → Inpatient therapy
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -85,7 +87,7 @@ class MasccScoreCalculator(BaseCalculator):
                     ClinicalContext.TREATMENT_DECISION,
                 ),
             ),
-            references=[
+            references=(
                 Reference(
                     citation="Klastersky J, et al. J Clin Oncol. 2000;18(16):3038-3051.",
                     pmid="10944139",
@@ -96,9 +98,9 @@ class MasccScoreCalculator(BaseCalculator):
                     pmid="29461916",
                     doi="10.1200/JCO.2017.77.6211",
                 ),
-            ],
+            ),
         )
-    
+
     def calculate(
         self,
         burden_of_illness: str,  # "none_mild", "moderate", "severe"
@@ -111,7 +113,7 @@ class MasccScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate MASCC Risk Index.
-        
+
         Args:
             burden_of_illness: Symptom severity ("none_mild", "moderate", "severe")
             no_hypotension: No hypotension (SBP ≥90 mmHg)
@@ -120,14 +122,14 @@ class MasccScoreCalculator(BaseCalculator):
             no_dehydration: No dehydration requiring IV fluids
             outpatient_status: Outpatient at fever onset
             age_lt_60: Age <60 years
-            
+
         Returns:
             ScoreResult with MASCC score and risk classification
         """
         # Calculate score
         score = 0
-        components = {}
-        
+        components: dict[str, Any] = {}
+
         # Burden of illness (mutually exclusive)
         if burden_of_illness == "none_mild":
             score += 5
@@ -137,52 +139,52 @@ class MasccScoreCalculator(BaseCalculator):
             components["burden_of_illness"] = "Moderate symptoms (+3)"
         else:  # severe
             components["burden_of_illness"] = "Severe symptoms (+0)"
-        
+
         # No hypotension
         if no_hypotension:
             score += 5
             components["blood_pressure"] = "No hypotension (+5)"
         else:
             components["blood_pressure"] = "Hypotension present (+0)"
-        
+
         # No COPD
         if no_copd:
             score += 4
             components["copd"] = "No COPD (+4)"
         else:
             components["copd"] = "COPD present (+0)"
-        
+
         # Tumor type
         if solid_tumor_or_no_fungal_hx:
             score += 4
             components["tumor_type"] = "Solid tumor or no fungal history (+4)"
         else:
             components["tumor_type"] = "Heme malignancy with fungal history (+0)"
-        
+
         # No dehydration
         if no_dehydration:
             score += 3
             components["hydration"] = "No dehydration (+3)"
         else:
             components["hydration"] = "Dehydration present (+0)"
-        
+
         # Outpatient status
         if outpatient_status:
             score += 3
             components["setting"] = "Outpatient at onset (+3)"
         else:
             components["setting"] = "Inpatient at onset (+0)"
-        
+
         # Age
         if age_lt_60:
             score += 2
             components["age"] = "Age <60 years (+2)"
         else:
             components["age"] = "Age ≥60 years (+0)"
-        
+
         # Generate interpretation
         interpretation = self._interpret_score(score)
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -192,10 +194,10 @@ class MasccScoreCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int) -> Interpretation:
         """Generate interpretation based on MASCC score"""
-        
+
         if score >= 21:
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -237,7 +239,7 @@ class MasccScoreCalculator(BaseCalculator):
                 "Assess for source of infection",
                 "Consider G-CSF if prolonged neutropenia expected",
             ]
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

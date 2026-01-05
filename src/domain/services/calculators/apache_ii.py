@@ -1,34 +1,28 @@
 """
 APACHE II Score Calculator
 
-The Acute Physiology and Chronic Health Evaluation II (APACHE II) is a 
+The Acute Physiology and Chronic Health Evaluation II (APACHE II) is a
 severity-of-disease classification system for ICU patients.
 
 Reference:
-    Knaus WA, Draper EA, Wagner DP, Zimmerman JE. APACHE II: a severity of 
+    Knaus WA, Draper EA, Wagner DP, Zimmerman JE. APACHE II: a severity of
     disease classification system. Crit Care Med. 1985;13(10):818-829.
     PMID: 3928249
-    
+
 Note:
-    APACHE II has limitations and has been superseded by APACHE III, IV, and 
+    APACHE II has limitations and has been superseded by APACHE III, IV, and
     other scoring systems (SOFA, SAPS, etc.) but remains widely used.
 """
 
-from typing import Optional, Literal
+from typing import Literal, Optional
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey, 
-    HighLevelKey, 
-    Specialty, 
-    ClinicalContext
-)
-
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 ADMISSION_TYPE = Literal["nonoperative", "emergency_postoperative", "elective_postoperative"]
 
@@ -36,16 +30,16 @@ ADMISSION_TYPE = Literal["nonoperative", "emergency_postoperative", "elective_po
 class ApacheIiCalculator(BaseCalculator):
     """
     APACHE II Score Calculator
-    
+
     Estimates ICU mortality based on:
     - Acute Physiology Score (APS): 12 physiologic variables (worst in first 24h)
     - Age points
     - Chronic Health Points
-    
+
     Score range: 0-71 (theoretical), 0-50+ in practice
     Higher scores indicate higher severity and mortality risk.
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -55,7 +49,7 @@ class ApacheIiCalculator(BaseCalculator):
                 purpose="Estimate ICU mortality risk based on acute physiology and chronic health",
                 input_params=[
                     "temperature", "mean_arterial_pressure", "heart_rate",
-                    "respiratory_rate", "pao2_or_aado2", "fio2", 
+                    "respiratory_rate", "pao2_or_aado2", "fio2",
                     "arterial_ph", "serum_sodium", "serum_potassium",
                     "serum_creatinine", "hematocrit", "wbc_count",
                     "gcs_score", "age", "chronic_health_conditions",
@@ -115,7 +109,7 @@ class ApacheIiCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         # Vital signs
@@ -139,13 +133,13 @@ class ApacheIiCalculator(BaseCalculator):
         # Demographics
         age: int = 50,  # years
         # Chronic health
-        chronic_health_conditions: tuple = (),  # liver, cardiovascular, respiratory, renal, immunocompromised
+        chronic_health_conditions: tuple[str, ...] = (),  # liver, cardiovascular, respiratory, renal, immunocompromised
         admission_type: ADMISSION_TYPE = "nonoperative",
         acute_renal_failure: bool = False
     ) -> ScoreResult:
         """
         Calculate APACHE II Score.
-        
+
         Args:
             temperature: Core temperature in °C
             mean_arterial_pressure: MAP in mmHg
@@ -162,11 +156,11 @@ class ApacheIiCalculator(BaseCalculator):
             wbc_count: WBC count in ×10³/µL
             gcs_score: Glasgow Coma Scale (3-15)
             age: Age in years
-            chronic_health_conditions: Tuple of conditions (liver, cardiovascular, 
+            chronic_health_conditions: Tuple of conditions (liver, cardiovascular,
                                        respiratory, renal, immunocompromised)
             admission_type: nonoperative, emergency_postoperative, or elective_postoperative
             acute_renal_failure: Whether patient has acute renal failure
-            
+
         Returns:
             ScoreResult with APACHE II score and mortality estimate
         """
@@ -175,78 +169,78 @@ class ApacheIiCalculator(BaseCalculator):
             raise ValueError("GCS must be between 3 and 15")
         if fio2 < 0.21 or fio2 > 1.0:
             raise ValueError("FiO2 must be between 0.21 and 1.0")
-        
+
         # Calculate component scores
         aps_breakdown = {}
-        
+
         # Temperature
         temp_points = self._score_temperature(temperature)
         aps_breakdown["temperature"] = temp_points
-        
+
         # MAP
         map_points = self._score_map(mean_arterial_pressure)
         aps_breakdown["map"] = map_points
-        
+
         # Heart rate
         hr_points = self._score_heart_rate(heart_rate)
         aps_breakdown["heart_rate"] = hr_points
-        
+
         # Respiratory rate
         rr_points = self._score_respiratory_rate(respiratory_rate)
         aps_breakdown["respiratory_rate"] = rr_points
-        
+
         # Oxygenation
         oxy_points = self._score_oxygenation(fio2, pao2, aado2)
         aps_breakdown["oxygenation"] = oxy_points
-        
+
         # Arterial pH
         ph_points = self._score_ph(arterial_ph)
         aps_breakdown["ph"] = ph_points
-        
+
         # Sodium
         na_points = self._score_sodium(serum_sodium)
         aps_breakdown["sodium"] = na_points
-        
+
         # Potassium
         k_points = self._score_potassium(serum_potassium)
         aps_breakdown["potassium"] = k_points
-        
+
         # Creatinine
         cr_points = self._score_creatinine(serum_creatinine, acute_renal_failure)
         aps_breakdown["creatinine"] = cr_points
-        
+
         # Hematocrit
         hct_points = self._score_hematocrit(hematocrit)
         aps_breakdown["hematocrit"] = hct_points
-        
+
         # WBC
         wbc_points = self._score_wbc(wbc_count)
         aps_breakdown["wbc"] = wbc_points
-        
+
         # GCS (15 - GCS)
         gcs_points = 15 - gcs_score
         aps_breakdown["gcs"] = gcs_points
-        
+
         # Total APS
         aps_total = sum(aps_breakdown.values())
-        
+
         # Age points
         age_points = self._score_age(age)
-        
+
         # Chronic health points
         chronic_points = self._score_chronic_health(
             chronic_health_conditions, admission_type
         )
-        
+
         # Total APACHE II
         total_score = aps_total + age_points + chronic_points
-        
+
         # Get mortality estimate
         mortality_estimate = self._estimate_mortality(total_score)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(total_score, mortality_estimate)
-        
+
         return ScoreResult(
             value=float(total_score),
             unit=Unit.SCORE,
@@ -289,7 +283,7 @@ class ApacheIiCalculator(BaseCalculator):
                 "APACHE II has been superseded but remains widely used",
             ]
         )
-    
+
     def _score_temperature(self, temp: float) -> int:
         """Score temperature (°C)"""
         if temp >= 41 or temp <= 29.9:
@@ -305,7 +299,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif temp >= 34 and temp <= 35.9:
             return 1
         return 0
-    
+
     def _score_map(self, map_: float) -> int:
         """Score mean arterial pressure (mmHg)"""
         if map_ >= 160 or map_ <= 49:
@@ -317,7 +311,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif map_ >= 70 and map_ <= 109:
             return 0
         return 0
-    
+
     def _score_heart_rate(self, hr: float) -> int:
         """Score heart rate (bpm)"""
         if hr >= 180 or hr <= 39:
@@ -329,7 +323,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif hr >= 70 and hr <= 109:
             return 0
         return 0
-    
+
     def _score_respiratory_rate(self, rr: float) -> int:
         """Score respiratory rate (breaths/min)"""
         if rr >= 50 or rr <= 5:
@@ -341,7 +335,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif rr >= 12 and rr <= 24:
             return 0
         return 0
-    
+
     def _score_oxygenation(
         self, fio2: float, pao2: Optional[float], aado2: Optional[float]
     ) -> int:
@@ -370,7 +364,7 @@ class ApacheIiCalculator(BaseCalculator):
                 return 1
             else:
                 return 0
-    
+
     def _score_ph(self, ph: float) -> int:
         """Score arterial pH"""
         if ph >= 7.70 or ph < 7.15:
@@ -382,7 +376,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif ph >= 7.33 and ph <= 7.49:
             return 0
         return 0
-    
+
     def _score_sodium(self, na: float) -> int:
         """Score serum sodium (mEq/L)"""
         if na >= 180 or na <= 110:
@@ -396,7 +390,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif na >= 130 and na <= 149:
             return 0
         return 0
-    
+
     def _score_potassium(self, k: float) -> int:
         """Score serum potassium (mEq/L)"""
         if k >= 7.0 or k < 2.5:
@@ -410,7 +404,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif k >= 3.5 and k < 5.5:
             return 0
         return 0
-    
+
     def _score_creatinine(self, cr: float, arf: bool) -> int:
         """Score serum creatinine (mg/dL) - doubled for acute renal failure"""
         if cr >= 3.5:
@@ -423,7 +417,7 @@ class ApacheIiCalculator(BaseCalculator):
             return 2
         else:
             return 0
-    
+
     def _score_hematocrit(self, hct: float) -> int:
         """Score hematocrit (%)"""
         if hct >= 60 or hct < 20:
@@ -435,7 +429,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif hct >= 30 and hct < 46:
             return 0
         return 0
-    
+
     def _score_wbc(self, wbc: float) -> int:
         """Score WBC count (×10³/µL)"""
         if wbc >= 40 or wbc < 1:
@@ -447,7 +441,7 @@ class ApacheIiCalculator(BaseCalculator):
         elif wbc >= 3 and wbc < 15:
             return 0
         return 0
-    
+
     def _score_age(self, age: int) -> int:
         """Score age in years"""
         if age < 45:
@@ -460,20 +454,20 @@ class ApacheIiCalculator(BaseCalculator):
             return 5
         else:
             return 6
-    
+
     def _score_chronic_health(
-        self, conditions: tuple, admission_type: str
+        self, conditions: tuple[str, ...], admission_type: str
     ) -> int:
         """Score chronic health conditions"""
         if not conditions:
             return 0
-        
+
         # Any severe chronic condition present
         if admission_type == "elective_postoperative":
             return 2
         else:  # nonoperative or emergency_postoperative
             return 5
-    
+
     def _estimate_mortality(self, score: int) -> float:
         """Estimate hospital mortality based on APACHE II score"""
         # Approximate mortality curve from original publication
@@ -493,10 +487,10 @@ class ApacheIiCalculator(BaseCalculator):
             return 75.0
         else:
             return 85.0
-    
+
     def _get_interpretation(self, score: int, mortality: float) -> Interpretation:
         """Get clinical interpretation for APACHE II score"""
-        
+
         if score <= 9:
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -513,13 +507,13 @@ class ApacheIiCalculator(BaseCalculator):
             severity = Severity.CRITICAL
             risk_level = RiskLevel.VERY_HIGH
             stage = "Critical severity"
-        
+
         recommendations = [
             "Reassess APACHE II daily to track trajectory",
             "Optimize all organ support",
         ]
         warnings = []
-        
+
         if score >= 25:
             recommendations.extend([
                 "Goals of care discussion with family",
@@ -532,7 +526,7 @@ class ApacheIiCalculator(BaseCalculator):
                 "Aggressive treatment optimization",
                 "Consider escalation of care if not improving",
             ])
-        
+
         return Interpretation(
             summary=f"APACHE II Score {score}: {stage} (estimated mortality {mortality:.0f}%)",
             detail=f"Total APACHE II score of {score} points corresponds to approximately "
@@ -542,7 +536,7 @@ class ApacheIiCalculator(BaseCalculator):
             stage=stage,
             stage_description=f"APACHE II {score} points",
             recommendations=tuple(recommendations),
-            warnings=tuple(warnings) if warnings else None,
+            warnings=tuple(warnings),
             next_steps=(
                 "Continue intensive monitoring",
                 "Optimize organ support",

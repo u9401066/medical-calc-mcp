@@ -8,67 +8,67 @@ References:
     Allgöwer M, Burri C. Schockindex. Dtsch Med Wochenschr. 1967;92(43):1947-1950.
     DOI: 10.1055/s-0028-1106070
     PMID: 5592563
-    
-    Birkhahn RH, Gaeta TJ, Terry D, Bove JJ, Tloczkowski J. Shock index in 
+
+    Birkhahn RH, Gaeta TJ, Terry D, Bove JJ, Tloczkowski J. Shock index in
     diagnosing early acute hypovolemia. Am J Emerg Med. 2005;23(3):323-326.
     DOI: 10.1016/j.ajem.2005.02.029
     PMID: 15915406
-    
-    Rady MY, Nightingale P, Little RA, Edwards JD. Shock index: a re-evaluation 
+
+    Rady MY, Nightingale P, Little RA, Edwards JD. Shock index: a re-evaluation
     in acute circulatory failure. Resuscitation. 1992;23(3):227-234.
     DOI: 10.1016/0300-9572(92)90006-x
     PMID: 1321482
-    
-    Cannon CM, Braxton CC, Kling-Smith M, et al. Utility of the shock index in 
-    predicting mortality in traumatically injured patients. J Trauma. 
+
+    Cannon CM, Braxton CC, Kling-Smith M, et al. Utility of the shock index in
+    predicting mortality in traumatically injured patients. J Trauma.
     2009;67(6):1426-1430.
     DOI: 10.1097/TA.0b013e3181bbf728
     PMID: 20009697
 """
 
-from typing import Optional, Literal
+from typing import Literal, Optional
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class ShockIndexCalculator(BaseCalculator):
     """
     Shock Index (SI) Calculator
-    
+
     The Shock Index is a simple ratio of heart rate to systolic blood pressure
     that provides a rapid assessment of hemodynamic status.
-    
+
     Formula:
         SI = Heart Rate (bpm) / Systolic BP (mmHg)
-        
+
     Normal Range:
         0.5 - 0.7
-        
+
     Interpretation:
         < 0.6: Normal, hemodynamically stable
         0.6 - 0.9: Normal to borderline
         1.0: Upper limit of normal (HR = SBP)
         > 1.0: Elevated - suggests hemodynamic instability
         > 1.4: Severely elevated - high mortality risk
-        
+
     Modified Shock Index (MSI):
         MSI = Heart Rate / Mean Arterial Pressure (MAP)
         Normal: 0.7 - 1.3
-        
+
     Age-adjusted Shock Index (in pediatrics):
         Varies by age group
-        
+
     Clinical Applications:
         - Trauma triage
         - Early detection of occult hemorrhage
@@ -76,14 +76,14 @@ class ShockIndexCalculator(BaseCalculator):
         - Assessment of hypovolemic shock
         - Emergency department risk stratification
         - Obstetric hemorrhage assessment
-        
+
     Advantages:
         - Quick bedside calculation
         - No equipment needed beyond vital signs
         - Detects compensated shock before BP drops
         - Predicts mortality better than HR or BP alone
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -136,7 +136,7 @@ class ShockIndexCalculator(BaseCalculator):
             ),
             references=self._get_references(),
         )
-    
+
     def _get_references(self) -> tuple[Reference, ...]:
         return (
             Reference(
@@ -158,7 +158,7 @@ class ShockIndexCalculator(BaseCalculator):
                 year=2009,
             ),
         )
-    
+
     def calculate(
         self,
         heart_rate: float,
@@ -168,13 +168,13 @@ class ShockIndexCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Shock Index.
-        
+
         Args:
             heart_rate: Heart rate in beats per minute (bpm)
             systolic_bp: Systolic blood pressure in mmHg
             diastolic_bp: Diastolic blood pressure in mmHg (optional, for MSI)
             patient_type: Patient category ('adult', 'pediatric', 'obstetric')
-            
+
         Returns:
             ScoreResult with Shock Index and interpretation
         """
@@ -185,11 +185,11 @@ class ShockIndexCalculator(BaseCalculator):
             raise ValueError(f"Systolic BP {systolic_bp} mmHg is outside expected range (30-300 mmHg)")
         if diastolic_bp is not None and (diastolic_bp < 20 or diastolic_bp > 200):
             raise ValueError(f"Diastolic BP {diastolic_bp} mmHg is outside expected range (20-200 mmHg)")
-        
+
         # Calculate Shock Index
         shock_index = heart_rate / systolic_bp
         shock_index = round(shock_index, 2)
-        
+
         # Calculate Modified Shock Index (MSI) if diastolic provided
         msi = None
         map_value = None
@@ -197,31 +197,31 @@ class ShockIndexCalculator(BaseCalculator):
             map_value = (systolic_bp + 2 * diastolic_bp) / 3
             msi = heart_rate / map_value
             msi = round(msi, 2)
-        
+
         # Generate interpretation
         interpretation = self._interpret_shock_index(
             shock_index, msi, patient_type
         )
-        
+
         # Build calculation details
         details = {
             "Heart_rate": f"{heart_rate} bpm",
             "Systolic_BP": f"{systolic_bp} mmHg",
             "Shock_Index": f"{shock_index:.2f}",
         }
-        
+
         if diastolic_bp is not None:
             details["Diastolic_BP"] = f"{diastolic_bp} mmHg"
             details["MAP"] = f"{map_value:.1f} mmHg"
             details["Modified_Shock_Index"] = f"{msi:.2f}"
-        
+
         details["Patient_type"] = patient_type.capitalize()
-        
+
         return ScoreResult(
             value=shock_index,
             unit=Unit.RATIO,
             interpretation=interpretation,
-            references=self._get_references(),
+            references=list(self._get_references()),
             tool_id=self.tool_id,
             tool_name=self.metadata.name,
             raw_inputs={
@@ -233,15 +233,15 @@ class ShockIndexCalculator(BaseCalculator):
             calculation_details=details,
             formula_used="SI = Heart Rate / Systolic BP",
         )
-    
+
     def _interpret_shock_index(
-        self, 
-        si: float, 
+        self,
+        si: float,
         msi: Optional[float],
         patient_type: str
     ) -> Interpretation:
         """Generate interpretation based on Shock Index."""
-        
+
         # Adjust thresholds for obstetric patients
         # In pregnancy, normal HR increases and BP may be lower
         if patient_type == "obstetric":
@@ -259,8 +259,10 @@ class ShockIndexCalculator(BaseCalculator):
             elevated_threshold = 1.0
             severe_threshold = 1.4
             context_note = ""
-        
+
         # Determine severity
+        recommendations: tuple[str, ...]
+        warnings: tuple[str, ...]
         if si <= 0.5:
             severity = Severity.NORMAL
             risk_level = RiskLevel.VERY_LOW
@@ -333,23 +335,23 @@ class ShockIndexCalculator(BaseCalculator):
                 "Immediate resuscitation and intervention required",
                 "High likelihood of needing massive transfusion",
             )
-        
+
         # Add MSI information if available
-        next_steps = [
+        next_steps: list[str] = [
             "Serial vital signs to assess trend",
             "Point-of-care lactate if available",
             "Bedside ultrasound (FAST exam if trauma)",
         ]
-        
+
         if msi is not None:
             if msi > 1.3:
                 next_steps.append(f"Modified SI {msi:.2f} also elevated - confirms instability")
             else:
                 next_steps.append(f"Modified SI {msi:.2f} within normal range (0.7-1.3)")
-        
+
         if context_note:
             next_steps.append(context_note)
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

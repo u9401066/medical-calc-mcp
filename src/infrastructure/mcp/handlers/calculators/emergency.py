@@ -15,7 +15,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all emergency medicine calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_wells_dvt(
         active_cancer: Annotated[bool, Field(
@@ -51,9 +51,9 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🦵 Wells DVT: 深靜脈血栓機率評估
-        
+
         評估疑似深靜脈血栓 (DVT) 患者的檢前機率，指導診斷流程。
-        
+
         **計分項目 (各 +1 分):**
         - 活動性癌症
         - 癱瘓/輕癱/近期石膏
@@ -65,19 +65,19 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - 側支淺靜脈 (非靜脈曲張)
         - 曾有 DVT 病史
         - **其他診斷可能性相當或更高: -2 分**
-        
+
         **二級模型 (常用):**
         - ≤1 分: DVT Unlikely (~10%) → D-dimer 篩檢
         - ≥2 分: DVT Likely (~25%) → 直接超音波
-        
+
         **三級模型:**
         - ≤0: 低風險 (~5%)
         - 1-2: 中等風險 (~17%)
         - ≥3: 高風險 (~53%)
-        
+
         **參考文獻:** Wells PS, et al. Lancet. 1997;350:1795-1798.
         PMID: 9428249
-        
+
         Returns:
             Wells DVT 分數、DVT 機率、診斷建議
         """
@@ -98,7 +98,7 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_wells_pe(
         clinical_signs_dvt: Annotated[bool, Field(
@@ -125,9 +125,9 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫁 Wells PE: 肺栓塞機率評估
-        
+
         評估疑似肺栓塞 (PE) 患者的檢前機率，指導診斷流程。
-        
+
         **計分項目:**
         - DVT 臨床症狀/徵象: +3
         - PE 為最可能或同等可能的診斷: +3
@@ -136,19 +136,19 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - 曾有 DVT/PE 病史: +1.5
         - 咳血: +1
         - 活動性惡性腫瘤: +1
-        
+
         **簡化二級模型 (最常用):**
         - ≤4 分: PE Unlikely (~12%) → D-dimer 篩檢
         - >4 分: PE Likely (~37%) → 直接 CTPA
-        
+
         **三級模型:**
         - <2: 低風險 (~3.6%)
         - 2-6: 中等風險 (~20.5%)
         - >6: 高風險 (~66.7%)
-        
+
         **參考文獻:** Wells PS, et al. Thromb Haemost. 2000;83(3):416-420.
         PMID: 10744147
-        
+
         Returns:
             Wells PE 分數、PE 機率、診斷建議
         """
@@ -166,7 +166,7 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_shock_index(
         heart_rate: Annotated[float, Field(
@@ -188,40 +188,40 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🚨 Shock Index (SI): 休克指數 - 快速血流動力學評估
-        
+
         計算心率與收縮壓比值，提供快速的血流動力學評估。
-        
+
         **公式:**
         SI = 心率 (bpm) / 收縮壓 (mmHg)
-        
+
         **正常範圍:** 0.5 - 0.7
-        
+
         **判讀:**
         - < 0.6: 正常，血流動力學穩定
         - 0.6 - 0.9: 正常至邊緣
         - 1.0: 上限 (心率 = 收縮壓)
         - > 1.0: 升高 - 血流動力學不穩定
         - > 1.4: 嚴重升高 - 高死亡風險
-        
+
         **臨床應用:**
         - 創傷分級
         - 早期偵測隱匿性出血
         - 預測大量輸血需求
         - 低血容性休克評估
         - 產後出血評估
-        
+
         **優點:**
         - 床邊快速計算
         - 僅需生命徵象
         - 在血壓下降前偵測代償性休克
         - 預測死亡率優於單獨使用心率或血壓
-        
+
         **Modified Shock Index (MSI):**
         若提供舒張壓，將計算 MSI = HR / MAP
         正常範圍: 0.7 - 1.3
-        
+
         **參考文獻:** Allgöwer 1967, Cannon 2009. PMID: 20009697
-        
+
         Returns:
             Shock Index、風險分級、處置建議、Modified SI (如適用)
         """

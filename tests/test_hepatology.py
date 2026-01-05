@@ -1,33 +1,35 @@
+from typing import Any
 """Tests for Hepatology Calculators"""
-import pytest
 
 
 class TestMeldScoreCalculator:
-    def test_meld_basic(self):
+    def test_meld_basic(self) -> None:
         from src.domain.services.calculators import MeldScoreCalculator
         calc = MeldScoreCalculator()
         result = calc.calculate(
             creatinine=1.0, bilirubin=1.0, inr=1.0, sodium=140
         )
+        assert result.value is not None
         assert result.value >= 6
 
-    def test_meld_dialysis(self):
+    def test_meld_dialysis(self) -> None:
         from src.domain.services.calculators import MeldScoreCalculator
         calc = MeldScoreCalculator()
         result = calc.calculate(
             creatinine=4.0, bilirubin=1.0, inr=1.0, sodium=140, on_dialysis=True
         )
+        assert result.value is not None
         assert result.value >= 6
 
-    def test_tool_id(self):
+    def test_tool_id(self) -> None:
         from src.domain.services.calculators import MeldScoreCalculator
         assert MeldScoreCalculator().tool_id == "meld_score"
 
 
 class TestChildPughCalculator:
     """Tests for Child-Pugh Score calculator"""
-    
-    def test_class_a_minimal(self):
+
+    def test_class_a_minimal(self) -> None:
         """Test Class A with minimal derangements"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
@@ -38,10 +40,12 @@ class TestChildPughCalculator:
             ascites="none", # 1 point
             encephalopathy_grade=0,  # 1 point
         )
+        assert result.value is not None
         assert result.value == 5
+        assert result.interpretation.stage is not None
         assert "Class A" in result.interpretation.stage
-    
-    def test_class_b_moderate(self):
+
+    def test_class_b_moderate(self) -> None:
         """Test Class B with moderate disease"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
@@ -52,11 +56,13 @@ class TestChildPughCalculator:
             ascites="mild", # 2 points
             encephalopathy_grade=1,  # 2 points
         )
+        assert result.value is not None
         assert result.value == 10  # Actually Class C boundary
         # Wait, let me recalculate: 2+2+2+2+2=10 -> Class C
+        assert result.interpretation.stage is not None
         assert "Class C" in result.interpretation.stage
-    
-    def test_class_b_exact(self):
+
+    def test_class_b_exact(self) -> None:
         """Test Class B with exact boundary"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
@@ -67,10 +73,12 @@ class TestChildPughCalculator:
             ascites="mild", # 2 points
             encephalopathy_grade=0,  # 1 point
         )
+        assert result.value is not None
         assert result.value == 8  # 2+2+1+2+1=8 -> Class B
+        assert result.interpretation.stage is not None
         assert "Class B" in result.interpretation.stage
-    
-    def test_class_c_severe(self):
+
+    def test_class_c_severe(self) -> None:
         """Test Class C with severe disease"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
@@ -81,49 +89,55 @@ class TestChildPughCalculator:
             ascites="moderate_severe",  # 3 points
             encephalopathy_grade=3,     # 3 points
         )
+        assert result.value is not None
         assert result.value == 15  # Maximum score
+        assert result.interpretation.stage is not None
         assert "Class C" in result.interpretation.stage
-    
-    def test_ascites_normalization(self):
+
+    def test_ascites_normalization(self) -> None:
         """Test that various ascites inputs are normalized correctly"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
-        
+
         # Test "controlled" maps to "mild"
         result1 = calc.calculate(
             bilirubin=1.5, albumin=4.0, inr=1.3,
             ascites="controlled", encephalopathy_grade=0
         )
-        
+
         result2 = calc.calculate(
             bilirubin=1.5, albumin=4.0, inr=1.3,
             ascites="mild", encephalopathy_grade=0
         )
-        
+
+        assert result1.value is not None
         assert result1.value == result2.value
-    
-    def test_encephalopathy_boundaries(self):
+
+    def test_encephalopathy_boundaries(self) -> None:
         """Test encephalopathy grade boundaries"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
-        
+
         # Grade 0 = 1 point
-        r0 = calc.calculate(bilirubin=1.5, albumin=4.0, inr=1.3, 
+        r0 = calc.calculate(bilirubin=1.5, albumin=4.0, inr=1.3,
                            ascites="none", encephalopathy_grade=0)
-        
+
         # Grade 2 = 2 points
         r2 = calc.calculate(bilirubin=1.5, albumin=4.0, inr=1.3,
                            ascites="none", encephalopathy_grade=2)
-        
+
         # Grade 3 = 3 points
         r3 = calc.calculate(bilirubin=1.5, albumin=4.0, inr=1.3,
                            ascites="none", encephalopathy_grade=3)
-        
+
+        assert r0.value is not None
         assert r0.value == 5  # Base score
+        assert r2.value is not None
         assert r2.value == 6  # +1 for grade 2
+        assert r3.value is not None
         assert r3.value == 7  # +2 for grade 3
-    
-    def test_surgical_risk_in_interpretation(self):
+
+    def test_surgical_risk_in_interpretation(self) -> None:
         """Test that surgical mortality is mentioned"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
@@ -131,16 +145,17 @@ class TestChildPughCalculator:
             bilirubin=5.0, albumin=2.0, inr=2.5,
             ascites="moderate_severe", encephalopathy_grade=3
         )
+        assert result.interpretation.detail is not None
         assert "mortality" in result.interpretation.detail.lower()
-    
-    def test_references_include_pugh(self):
+
+    def test_references_include_pugh(self) -> None:
         """Test that references include original Pugh paper"""
         from src.domain.services.calculators import ChildPughCalculator
         calc = ChildPughCalculator()
         refs = calc.references
         pmids = [r.pmid for r in refs if r.pmid]
         assert "4541913" in pmids  # Pugh 1973
-    
-    def test_tool_id(self):
+
+    def test_tool_id(self) -> None:
         from src.domain.services.calculators import ChildPughCalculator
         assert ChildPughCalculator().tool_id == "child_pugh"

@@ -18,46 +18,48 @@ Validation Reference:
     doi:10.1016/j.amjmed.2005.01.006. PMID: 15808136.
 """
 
-from ..base import BaseCalculator
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class PsiPortCalculator(BaseCalculator):
     """
     Pneumonia Severity Index (PSI) / PORT Score Calculator
-    
+
     Calculates PSI score for community-acquired pneumonia to determine
     risk class and guide disposition decisions.
-    
+
     Scoring System:
-    
+
     Demographics:
     - Age (years): Male = age, Female = age - 10
-    
+
     Comorbidities (+10 each):
     - Neoplastic disease
     - Liver disease
     - Congestive heart failure
     - Cerebrovascular disease
     - Renal disease
-    
+
     Physical Exam Findings:
     - Altered mental status: +20
     - Respiratory rate ≥30/min: +20
     - Systolic BP <90 mmHg: +20
     - Temperature <35°C or ≥40°C: +15
     - Pulse ≥125/min: +10
-    
+
     Laboratory/Radiology Findings:
     - Arterial pH <7.35: +30
     - BUN ≥30 mg/dL (≥11 mmol/L): +20
@@ -66,14 +68,14 @@ class PsiPortCalculator(BaseCalculator):
     - Hematocrit <30%: +10
     - PaO2 <60 mmHg or O2 sat <90%: +10
     - Pleural effusion: +10
-    
+
     Risk Classes:
     - Class I: ≤50 years, no comorbidities, normal vitals → Outpatient
     - Class II: ≤70 points → Outpatient
     - Class III: 71-90 points → Brief inpatient/observation
     - Class IV: 91-130 points → Inpatient
     - Class V: >130 points → Inpatient (consider ICU)
-    
+
     30-Day Mortality by Class:
     - Class I: 0.1-0.4%
     - Class II: 0.6-0.7%
@@ -81,7 +83,7 @@ class PsiPortCalculator(BaseCalculator):
     - Class IV: 8.2-9.3%
     - Class V: 27.0-31.1%
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -180,7 +182,7 @@ class PsiPortCalculator(BaseCalculator):
             version="1997",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         age_years: int,
@@ -209,7 +211,7 @@ class PsiPortCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate PSI/PORT Score for Community-Acquired Pneumonia.
-        
+
         Args:
             age_years: Patient age in years
             female: Patient is female (age -10 adjustment)
@@ -231,22 +233,22 @@ class PsiPortCalculator(BaseCalculator):
             hematocrit_lt_30: Hematocrit <30% (+10)
             pao2_lt_60_or_sao2_lt_90: PaO2 <60 mmHg or O2 sat <90% (+10)
             pleural_effusion: Pleural effusion on imaging (+10)
-            
+
         Returns:
             ScoreResult with PSI score, risk class, and disposition recommendations
         """
-        components = {}
-        
+        components: dict[str, Any] = {}
+
         # Check for Class I (low-risk criteria)
         has_comorbidities = any([
-            neoplastic_disease, liver_disease, chf, 
+            neoplastic_disease, liver_disease, chf,
             cerebrovascular_disease, renal_disease
         ])
         has_abnormal_vitals = any([
             altered_mental_status, respiratory_rate_gte_30,
             systolic_bp_lt_90, temperature_abnormal, pulse_gte_125
         ])
-        
+
         # Class I: ≤50 years, no comorbidities, no abnormal vitals
         is_class_i = (
             age_years <= 50 and
@@ -255,7 +257,7 @@ class PsiPortCalculator(BaseCalculator):
             not has_comorbidities and
             not has_abnormal_vitals
         )
-        
+
         # Actually, Class I is determined differently:
         # Low-risk criteria: age ≤50, no neoplastic/liver/CHF/CVD/renal disease,
         # no altered mental status, no RR≥30, no SBP<90, no temp<35 or ≥40, no pulse≥125
@@ -273,7 +275,7 @@ class PsiPortCalculator(BaseCalculator):
             not temperature_abnormal and
             not pulse_gte_125
         )
-        
+
         if is_class_i:
             # Class I - don't calculate score, just assign class
             score = 0
@@ -282,7 +284,7 @@ class PsiPortCalculator(BaseCalculator):
         else:
             # Calculate score for Classes II-V
             score = 0
-            
+
             # Age points
             if female:
                 age_points = age_years - 10
@@ -291,12 +293,12 @@ class PsiPortCalculator(BaseCalculator):
                 age_points = age_years
                 components["Age (male)"] = age_points
             score += max(0, age_points)  # Ensure non-negative
-            
+
             # Nursing home resident
             if nursing_home_resident:
                 score += 10
                 components["Nursing home resident"] = 10
-            
+
             # Comorbidities (+10 each)
             if neoplastic_disease:
                 score += 30
@@ -313,7 +315,7 @@ class PsiPortCalculator(BaseCalculator):
             if renal_disease:
                 score += 10
                 components["Renal disease"] = 10
-            
+
             # Physical exam findings
             if altered_mental_status:
                 score += 20
@@ -330,7 +332,7 @@ class PsiPortCalculator(BaseCalculator):
             if pulse_gte_125:
                 score += 10
                 components["Pulse ≥125/min"] = 10
-            
+
             # Laboratory/radiology findings
             if arterial_ph_lt_7_35:
                 score += 30
@@ -353,7 +355,7 @@ class PsiPortCalculator(BaseCalculator):
             if pleural_effusion:
                 score += 10
                 components["Pleural effusion"] = 10
-            
+
             # Determine risk class
             if score <= 70:
                 risk_class = "II"
@@ -363,10 +365,10 @@ class PsiPortCalculator(BaseCalculator):
                 risk_class = "IV"
             else:
                 risk_class = "V"
-        
+
         # Generate interpretation
         interpretation = self._interpret_score(score, risk_class, is_class_i)
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -376,10 +378,10 @@ class PsiPortCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int, risk_class: str, is_class_i: bool) -> Interpretation:
         """Generate interpretation based on PSI/PORT score and risk class"""
-        
+
         mortality_rates = {
             "I": "0.1-0.4%",
             "II": "0.6-0.7%",
@@ -387,7 +389,7 @@ class PsiPortCalculator(BaseCalculator):
             "IV": "8.2-9.3%",
             "V": "27.0-31.1%",
         }
-        
+
         if risk_class == "I":
             severity = Severity.NORMAL
             risk_level = RiskLevel.VERY_LOW
@@ -405,7 +407,7 @@ class PsiPortCalculator(BaseCalculator):
                 "Provide return precautions",
                 "Consider social factors that may require admission",
             ]
-            
+
         elif risk_class == "II":
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -423,7 +425,7 @@ class PsiPortCalculator(BaseCalculator):
                 "Review social situation (ability to care for self)",
                 "Low threshold for short observation if any concern",
             ]
-            
+
         elif risk_class == "III":
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
@@ -441,7 +443,7 @@ class PsiPortCalculator(BaseCalculator):
                 "Reassess in 24-48 hours for discharge",
                 "Transition to oral antibiotics when improving",
             ]
-            
+
         elif risk_class == "IV":
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
@@ -460,7 +462,7 @@ class PsiPortCalculator(BaseCalculator):
                 "Monitor respiratory status closely",
                 "Assess for ICU criteria (severe CAP)",
             ]
-            
+
         else:  # Class V
             severity = Severity.CRITICAL
             risk_level = RiskLevel.VERY_HIGH
@@ -479,19 +481,19 @@ class PsiPortCalculator(BaseCalculator):
                 "Monitor for need for mechanical ventilation",
                 "Consider vasopressors if hypotensive",
             ]
-        
+
         if is_class_i:
             summary = f"PSI Class I: Very Low Risk ({mortality} 30-day mortality)"
         else:
             summary = f"PSI = {score}, Class {risk_class}: {mortality} 30-day mortality"
-        
+
         detail = (
             f"Pneumonia Severity Index Class {risk_class} indicates a {risk_level} risk "
             f"with estimated 30-day mortality of {mortality}. "
             f"Recommended disposition: {disposition}."
         )
-        
-        warnings = tuple()
+
+        warnings: tuple[str, ...] = tuple()
         if risk_class in ["IV", "V"]:
             warnings = (
                 "High-risk pneumonia - inpatient treatment required",
@@ -501,7 +503,7 @@ class PsiPortCalculator(BaseCalculator):
             warnings = warnings + (
                 "Very high mortality risk - consider ICU admission",
             )
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for ROX Index Calculator
 
 Tests the ROX Index for HFNC through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestRoxIndexE2E:
     """E2E tests for ROX Index Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/rox_index"
-    
-    def test_low_risk_intubation(self, test_client):
+
+    def test_low_risk_intubation(self, test_client: Any) -> None:
         """Test low risk of intubation (ROX ≥4.88)"""
         payload = {
             "params": {
@@ -27,8 +27,8 @@ class TestRoxIndexE2E:
         # If FiO2 is percentage: (96/40)/18 = 0.133
         # If FiO2 is fraction: need different calc
         assert data["result"]["value"] > 0
-    
-    def test_high_risk_intubation(self, test_client):
+
+    def test_high_risk_intubation(self, test_client: Any) -> None:
         """Test high risk of intubation (ROX <3.85)"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestRoxIndexE2E:
         data = assert_successful_calculation(response)
         # High risk patient
         assert data["result"]["value"] < 5
-    
-    def test_intermediate_risk(self, test_client):
+
+    def test_intermediate_risk(self, test_client: Any) -> None:
         """Test intermediate risk (ROX 3.85-4.88)"""
         payload = {
             "params": {
@@ -54,8 +54,8 @@ class TestRoxIndexE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_with_hours_on_hfnc_2h(self, test_client):
+
+    def test_with_hours_on_hfnc_2h(self, test_client: Any) -> None:
         """Test at 2 hours on HFNC"""
         payload = {
             "params": {
@@ -68,8 +68,8 @@ class TestRoxIndexE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_with_hours_on_hfnc_6h(self, test_client):
+
+    def test_with_hours_on_hfnc_6h(self, test_client: Any) -> None:
         """Test at 6 hours on HFNC"""
         payload = {
             "params": {
@@ -82,8 +82,8 @@ class TestRoxIndexE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_with_hours_on_hfnc_12h(self, test_client):
+
+    def test_with_hours_on_hfnc_12h(self, test_client: Any) -> None:
         """Test at 12 hours on HFNC"""
         payload = {
             "params": {
@@ -96,8 +96,8 @@ class TestRoxIndexE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_improving_patient(self, test_client):
+
+    def test_improving_patient(self, test_client: Any) -> None:
         """Test improving patient on HFNC"""
         payload = {
             "params": {
@@ -110,8 +110,8 @@ class TestRoxIndexE2E:
         data = assert_successful_calculation(response)
         # Good ROX score
         assert data["result"]["value"] > 5
-    
-    def test_deteriorating_patient(self, test_client):
+
+    def test_deteriorating_patient(self, test_client: Any) -> None:
         """Test deteriorating patient on HFNC"""
         payload = {
             "params": {
@@ -124,8 +124,8 @@ class TestRoxIndexE2E:
         data = assert_successful_calculation(response)
         # Poor ROX score - needs intubation
         assert data["result"]["value"] < 3
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

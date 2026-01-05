@@ -24,39 +24,34 @@ Interpretation:
 References:
     Apgar V. A proposal for a new method of evaluation of the newborn infant.
     Curr Res Anesth Analg. 1953;32(4):260-267.
-    
+
     American Academy of Pediatrics Committee on Fetus and Newborn.
     The Apgar Score. Pediatrics. 2015;136(4):819-822. PMID: 26416932
-    
+
     ACOG Committee Opinion No. 644: The Apgar Score. Obstet Gynecol.
     2015;126(4):e52-e55. PMID: 26393460
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class APGARScoreCalculator(BaseCalculator):
     """
     APGAR Score Calculator
-    
+
     Evaluates newborn status using 5 criteria:
     - Appearance (skin color)
     - Pulse (heart rate)
     - Grimace (reflex irritability)
     - Activity (muscle tone)
     - Respiration (breathing effort)
-    
+
     Each criterion scored 0-2, total 0-10.
     """
 
@@ -118,7 +113,7 @@ class APGARScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate APGAR score.
-        
+
         Args:
             appearance: Skin color
                 0 = Blue/pale all over
@@ -141,7 +136,7 @@ class APGARScoreCalculator(BaseCalculator):
                 1 = Slow/irregular/weak cry
                 2 = Good/strong cry
             assessment_time: "1_minute", "5_minute", or "10_minute"
-        
+
         Returns:
             ScoreResult with APGAR score and interpretation
         """
@@ -155,7 +150,7 @@ class APGARScoreCalculator(BaseCalculator):
         ]:
             if not isinstance(value, int) or value < 0 or value > 2:
                 raise ValueError(f"{name} must be 0, 1, or 2")
-        
+
         valid_times = ["1_minute", "5_minute", "10_minute"]
         if assessment_time not in valid_times:
             raise ValueError(f"assessment_time must be one of: {valid_times}")
@@ -174,7 +169,7 @@ class APGARScoreCalculator(BaseCalculator):
 
         # Determine interpretation based on score and time
         time_label = assessment_time.replace("_", "-")
-        
+
         if total_score >= 7:
             severity = Severity.NORMAL
             status = "Normal/Vigorous"

@@ -5,10 +5,10 @@ MCP tool handlers for pediatric and anesthesia calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional, Annotated, Literal
+from typing import Annotated, Any, Literal, Optional
 
-from pydantic import Field
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from .....application.dto import CalculateRequest
 from .....application.use_cases import CalculateUseCase
@@ -16,7 +16,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all pediatric and anesthesia calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_pediatric_drug_dose(
         drug_name: Annotated[
@@ -32,10 +32,10 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         小兒藥物劑量計算器 (Pediatric Drug Dosing)
-        
+
         Weight-based dosing with safety limits.
         ⚠️ Always verify: dose≤max, age-appropriate, interactions.
-        
+
         References: Lexicomp Pediatric Handbook, Nelson Textbook.
         """
         request = CalculateRequest(
@@ -49,7 +49,7 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_mabl(
         weight_kg: Annotated[float, Field(gt=0, le=250, description="體重 Weight | Unit: kg | Range: >0-250")],
@@ -62,10 +62,10 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         計算 MABL 最大允許失血量 (Maximum Allowable Blood Loss)
-        
+
         Formula: MABL = EBV × (Hi - Hf) / Havg
         EBV varies by patient type (mL/kg in parentheses).
-        
+
         Reference: Miller's Anesthesia 9th ed.
         """
         request = CalculateRequest(
@@ -79,7 +79,7 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_transfusion_volume(
         weight_kg: Annotated[float, Field(gt=0, le=250, description="體重 Weight | Unit: kg | Range: >0-250")],
@@ -100,10 +100,10 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         輸血量計算器 (Transfusion Volume Calculator)
-        
+
         Calculate blood product volume for target Hct/Hgb/Plt.
         pRBC: 10-15mL/kg raises Hgb ~2-3 g/dL.
-        
+
         References: Roseff 2002, New 2016.
         """
         request = CalculateRequest(

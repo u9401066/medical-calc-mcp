@@ -5,36 +5,36 @@ Estimates the pretest probability of deep vein thrombosis (DVT) in patients
 with suspected DVT to guide diagnostic workup.
 
 Original Reference:
-    Wells PS, Anderson DR, Bormanis J, et al. Value of assessment of 
-    pretest probability of deep-vein thrombosis in clinical management. 
+    Wells PS, Anderson DR, Bormanis J, et al. Value of assessment of
+    pretest probability of deep-vein thrombosis in clinical management.
     Lancet. 1997;350(9094):1795-1798.
     doi:10.1016/S0140-6736(97)08140-3. PMID: 9428249.
 
 Validation Reference:
-    Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in 
-    the diagnosis of suspected deep-vein thrombosis. N Engl J Med. 
+    Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in
+    the diagnosis of suspected deep-vein thrombosis. N Engl J Med.
     2003;349(13):1227-1235.
     doi:10.1056/NEJMoa023153. PMID: 14507948.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class WellsDvtCalculator(BaseCalculator):
     """
     Wells Score for DVT (Deep Vein Thrombosis)
-    
+
     Scoring criteria:
     - Active cancer (treatment within 6 months or palliative): +1
     - Paralysis, paresis, or recent cast of lower extremity: +1
@@ -46,17 +46,17 @@ class WellsDvtCalculator(BaseCalculator):
     - Collateral superficial veins (non-varicose): +1
     - Previously documented DVT: +1
     - Alternative diagnosis at least as likely as DVT: -2
-    
+
     Risk stratification:
     - ≤0: Low probability (~5% DVT)
     - 1-2: Moderate probability (~17% DVT)
     - ≥3: High probability (~53% DVT)
-    
+
     Two-level model:
     - ≤1: Unlikely (<10% DVT)
     - ≥2: Likely (~25% DVT)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -142,7 +142,7 @@ class WellsDvtCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         active_cancer: bool,
@@ -158,7 +158,7 @@ class WellsDvtCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Wells score for DVT.
-        
+
         Args:
             active_cancer: Active cancer (treatment ongoing, within 6 months, or palliative)
             paralysis_paresis_or_recent_cast: Paralysis, paresis, or recent plaster cast of leg
@@ -170,7 +170,7 @@ class WellsDvtCalculator(BaseCalculator):
             collateral_superficial_veins: Collateral superficial veins (non-varicose)
             previous_dvt: Previously documented DVT
             alternative_diagnosis_likely: Alternative diagnosis at least as likely as DVT
-            
+
         Returns:
             ScoreResult with Wells score, DVT probability, and diagnostic recommendations
         """
@@ -186,10 +186,10 @@ class WellsDvtCalculator(BaseCalculator):
         score += 1 if collateral_superficial_veins else 0
         score += 1 if previous_dvt else 0
         score -= 2 if alternative_diagnosis_likely else 0
-        
+
         # Determine interpretation
         interpretation = self._interpret_score(score)
-        
+
         # Component details
         components = {
             "Active cancer": 1 if active_cancer else 0,
@@ -203,7 +203,7 @@ class WellsDvtCalculator(BaseCalculator):
             "Previously documented DVT": 1 if previous_dvt else 0,
             "Alternative diagnosis likely": -2 if alternative_diagnosis_likely else 0,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -213,10 +213,10 @@ class WellsDvtCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int) -> Interpretation:
         """Generate interpretation based on Wells DVT score"""
-        
+
         # Two-level model (most commonly used)
         if score <= 1:
             # DVT Unlikely
@@ -240,7 +240,7 @@ class WellsDvtCalculator(BaseCalculator):
                 "Positive D-dimer requires ultrasound confirmation",
                 "Consider alternative diagnoses (cellulitis, Baker's cyst, etc.)",
             ]
-            
+
         else:
             # DVT Likely (score ≥2)
             if score >= 3:
@@ -251,7 +251,7 @@ class WellsDvtCalculator(BaseCalculator):
                 severity = Severity.MODERATE
                 risk_level = RiskLevel.INTERMEDIATE
                 dvt_probability = "~25%"
-            
+
             category = "DVT Likely"
             summary = f"Wells DVT = {score}: {category} ({dvt_probability} probability)"
             detail = (
@@ -269,10 +269,10 @@ class WellsDvtCalculator(BaseCalculator):
                 "If isolated distal DVT: Consider serial ultrasound vs anticoagulation",
                 "If negative but suspicion remains: Repeat ultrasound in 1 week",
             ]
-            
+
             if score >= 3:
                 recommendations.insert(0, "Consider initiating empiric anticoagulation while awaiting imaging")
-        
+
         # Three-level interpretation (for reference)
         if score <= 0:
             three_level = "Low probability (~5%)"
@@ -280,7 +280,7 @@ class WellsDvtCalculator(BaseCalculator):
             three_level = "Moderate probability (~17%)"
         else:
             three_level = "High probability (~53%)"
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

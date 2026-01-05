@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Rockall Score Calculator
 
 Tests the Rockall Score for Upper GI Bleeding through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestRockallScoreE2E:
     """E2E tests for Rockall Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/rockall_score"
-    
-    def test_low_risk_score_0_2(self, test_client):
+
+    def test_low_risk_score_0_2(self, test_client: Any) -> None:
         """Test low risk patient (score 0-2)"""
         payload = {
             "params": {
@@ -26,8 +26,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
-    
-    def test_intermediate_risk(self, test_client):
+
+    def test_intermediate_risk(self, test_client: Any) -> None:
         """Test intermediate risk patient (score 3-4)"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
-    
-    def test_high_risk_score_5_plus(self, test_client):
+
+    def test_high_risk_score_5_plus(self, test_client: Any) -> None:
         """Test high risk patient (score ≥5)"""
         payload = {
             "params": {
@@ -56,8 +56,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_young_patient_ulcer_bleed(self, test_client):
+
+    def test_young_patient_ulcer_bleed(self, test_client: Any) -> None:
         """Test young patient with peptic ulcer bleeding"""
         payload = {
             "params": {
@@ -71,8 +71,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_elderly_with_comorbidities(self, test_client):
+
+    def test_elderly_with_comorbidities(self, test_client: Any) -> None:
         """Test elderly patient with significant comorbidities"""
         payload = {
             "params": {
@@ -86,8 +86,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 3
-    
-    def test_hypotensive_patient(self, test_client):
+
+    def test_hypotensive_patient(self, test_client: Any) -> None:
         """Test hypotensive patient"""
         payload = {
             "params": {
@@ -101,8 +101,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_mallory_weiss_tear(self, test_client):
+
+    def test_mallory_weiss_tear(self, test_client: Any) -> None:
         """Test Mallory-Weiss tear - generally lower risk"""
         payload = {
             "params": {
@@ -116,8 +116,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
-    
-    def test_gi_malignancy(self, test_client):
+
+    def test_gi_malignancy(self, test_client: Any) -> None:
         """Test GI malignancy bleeding"""
         payload = {
             "params": {
@@ -131,8 +131,8 @@ class TestRockallScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -9,22 +9,21 @@ References:
 - AAAM. The Abbreviated Injury Scale 2015 Revision.
 """
 
-from typing import Optional
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
 from ...value_objects.units import Unit
-from ...value_objects.tool_keys import LowLevelKey, HighLevelKey, Specialty, ClinicalContext
+from ..base import BaseCalculator
 
 
 class InjurySeverityScoreCalculator(BaseCalculator):
     """
     Injury Severity Score (ISS) Calculator
-    
+
     ISS = sum of squares of highest AIS in 3 most injured body regions
-    
+
     Body regions:
     1. Head/Neck
     2. Face
@@ -32,7 +31,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
     4. Abdomen
     5. Extremity (including pelvis)
     6. External (skin)
-    
+
     AIS severity codes:
     1 = Minor
     2 = Moderate
@@ -40,10 +39,10 @@ class InjurySeverityScoreCalculator(BaseCalculator):
     4 = Severe
     5 = Critical
     6 = Unsurvivable (ISS automatically = 75)
-    
+
     ISS range: 1-75
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -51,10 +50,10 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                 tool_id="iss",
                 name="Injury Severity Score (ISS)",
                 purpose="Calculate anatomic injury severity for trauma patients",
-                input_params=(
+                input_params=[
                     "head_neck_ais", "face_ais", "chest_ais",
                     "abdomen_ais", "extremity_ais", "external_ais"
-                ),
+                ],
                 output_type="ISS (1-75) with mortality prediction"
             ),
             high_level=HighLevelKey(
@@ -101,7 +100,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         head_neck_ais: int = 0,
@@ -113,7 +112,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Injury Severity Score
-        
+
         Args:
             head_neck_ais: AIS for head/neck region (0-6)
             face_ais: AIS for face (0-6)
@@ -121,7 +120,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
             abdomen_ais: AIS for abdomen/pelvic contents (0-6)
             extremity_ais: AIS for extremity/pelvic girdle (0-6)
             external_ais: AIS for external/skin (0-6)
-            
+
         AIS Codes:
             0 = No injury
             1 = Minor
@@ -130,7 +129,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
             4 = Severe
             5 = Critical
             6 = Unsurvivable (Maximum ISS = 75)
-            
+
         Returns:
             ScoreResult with ISS and mortality prediction
         """
@@ -143,11 +142,11 @@ class InjurySeverityScoreCalculator(BaseCalculator):
             "Extremity": extremity_ais,
             "External": external_ais,
         }
-        
+
         for region, ais in ais_values.items():
             if not 0 <= ais <= 6:
                 raise ValueError(f"{region} AIS must be between 0-6")
-        
+
         # Check for AIS 6 (unsurvivable) - ISS automatically = 75
         if 6 in ais_values.values():
             iss = 75
@@ -156,7 +155,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                 f"{r}: AIS 6 (Unsurvivable)" for r in unsurvivable_regions
             ]
             components.append("ISS automatically = 75 (maximum)")
-            
+
             return ScoreResult(
                 value=75,
                 unit=Unit.SCORE,
@@ -207,27 +206,27 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                     "Focus on comfort care or heroic measures based on clinical context"
                 ],
             )
-        
+
         # Get three highest AIS scores
         ais_list = sorted(ais_values.values(), reverse=True)
         top_three = ais_list[:3]
-        
+
         # Calculate ISS = sum of squares of top 3
         iss = sum(a ** 2 for a in top_three)
-        
+
         # Build components
         components = []
         sorted_regions = sorted(ais_values.items(), key=lambda x: x[1], reverse=True)
-        
+
         ais_labels = {
             0: "No injury",
             1: "Minor",
-            2: "Moderate", 
+            2: "Moderate",
             3: "Serious",
             4: "Severe",
             5: "Critical"
         }
-        
+
         top_three_regions = []
         for i, (region, ais) in enumerate(sorted_regions):
             if ais > 0:
@@ -237,12 +236,12 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                     top_three_regions.append(region)
                 else:
                     components.append(f"{region}: AIS {ais} ({label}) - not in top 3")
-        
+
         if not components:
             components = ["No injuries documented"]
-        
+
         components.append(f"ISS = {' + '.join(str(a**2) for a in top_three if a > 0)} = {iss}")
-        
+
         # Severity and mortality classification
         if iss == 0:
             severity = "No injury"
@@ -377,10 +376,10 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                     "Consider futility",
                 ),
             )
-        
+
         # Major trauma definition
         is_major_trauma = iss > 15
-        
+
         return ScoreResult(
             value=iss,
             unit=Unit.SCORE,

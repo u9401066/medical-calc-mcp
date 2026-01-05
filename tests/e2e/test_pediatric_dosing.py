@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Pediatric Dosing Calculator
 
 Tests the pediatric dosing calculator through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestPediatricDosingE2E:
     """E2E tests for Pediatric Dosing Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/pediatric_dosing"
-    
-    def test_acetaminophen_dosing(self, test_client):
+
+    def test_acetaminophen_dosing(self, test_client: Any) -> None:
         """Test acetaminophen dosing for pediatric patient"""
         payload = {
             "params": {
@@ -25,8 +25,8 @@ class TestPediatricDosingE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_ibuprofen_dosing(self, test_client):
+
+    def test_ibuprofen_dosing(self, test_client: Any) -> None:
         """Test ibuprofen dosing"""
         payload = {
             "params": {
@@ -39,8 +39,8 @@ class TestPediatricDosingE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_amoxicillin_dosing(self, test_client):
+
+    def test_amoxicillin_dosing(self, test_client: Any) -> None:
         """Test amoxicillin dosing"""
         payload = {
             "params": {
@@ -54,8 +54,8 @@ class TestPediatricDosingE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_infant_dosing(self, test_client):
+
+    def test_infant_dosing(self, test_client: Any) -> None:
         """Test dosing for infant"""
         payload = {
             "params": {
@@ -68,8 +68,8 @@ class TestPediatricDosingE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_iv_route(self, test_client):
+
+    def test_iv_route(self, test_client: Any) -> None:
         """Test IV route dosing"""
         payload = {
             "params": {
@@ -82,8 +82,8 @@ class TestPediatricDosingE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_custom_dose_per_kg(self, test_client):
+
+    def test_custom_dose_per_kg(self, test_client: Any) -> None:
         """Test custom dose per kg calculation"""
         payload = {
             "params": {
@@ -98,8 +98,8 @@ class TestPediatricDosingE2E:
         data = assert_successful_calculation(response)
         # 20kg * 10mg/kg = 200mg
         assert data["result"]["value"] == 200
-    
-    def test_max_dose_cap(self, test_client):
+
+    def test_max_dose_cap(self, test_client: Any) -> None:
         """Test that max dose is properly capped"""
         payload = {
             "params": {
@@ -113,8 +113,8 @@ class TestPediatricDosingE2E:
         data = assert_successful_calculation(response)
         # Should be capped at adult max dose
         assert data["result"]["value"] <= 1000  # Typical single dose max
-    
-    def test_missing_weight(self, test_client):
+
+    def test_missing_weight(self, test_client: Any) -> None:
         """Test missing weight parameter"""
         payload = {
             "params": {
@@ -124,8 +124,8 @@ class TestPediatricDosingE2E:
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)
-    
-    def test_invalid_drug_name(self, test_client):
+
+    def test_invalid_drug_name(self, test_client: Any) -> None:
         """Test invalid drug name"""
         payload = {
             "params": {

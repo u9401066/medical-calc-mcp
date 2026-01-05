@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for NIH Stroke Scale (NIHSS) Calculator
 
 Tests the NIHSS for Stroke Severity through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestNihssE2E:
     """E2E tests for NIHSS Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/nihss"
-    
-    def test_normal_score_0(self, test_client):
+
+    def test_normal_score_0(self, test_client: Any) -> None:
         """Test normal examination (score 0)"""
         payload = {
             "params": {
@@ -36,8 +36,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_minor_stroke(self, test_client):
+
+    def test_minor_stroke(self, test_client: Any) -> None:
         """Test minor stroke (score 1-4)"""
         payload = {
             "params": {
@@ -61,8 +61,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 1 <= data["result"]["value"] <= 4
-    
-    def test_moderate_stroke(self, test_client):
+
+    def test_moderate_stroke(self, test_client: Any) -> None:
         """Test moderate stroke (score 5-15)"""
         payload = {
             "params": {
@@ -86,8 +86,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 5 <= data["result"]["value"] <= 15
-    
-    def test_severe_stroke(self, test_client):
+
+    def test_severe_stroke(self, test_client: Any) -> None:
         """Test severe stroke (score 16-20)"""
         payload = {
             "params": {
@@ -111,8 +111,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 15
-    
-    def test_very_severe_stroke(self, test_client):
+
+    def test_very_severe_stroke(self, test_client: Any) -> None:
         """Test very severe stroke (score >20)"""
         payload = {
             "params": {
@@ -136,8 +136,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 20
-    
-    def test_right_hemispheric_stroke(self, test_client):
+
+    def test_right_hemispheric_stroke(self, test_client: Any) -> None:
         """Test right hemispheric stroke with left-sided weakness"""
         payload = {
             "params": {
@@ -161,8 +161,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_left_hemispheric_stroke_with_aphasia(self, test_client):
+
+    def test_left_hemispheric_stroke_with_aphasia(self, test_client: Any) -> None:
         """Test left hemispheric stroke with aphasia and right-sided weakness"""
         payload = {
             "params": {
@@ -186,8 +186,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 10
-    
-    def test_pure_motor_stroke(self, test_client):
+
+    def test_pure_motor_stroke(self, test_client: Any) -> None:
         """Test pure motor stroke (lacunar)"""
         payload = {
             "params": {
@@ -211,8 +211,8 @@ class TestNihssE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 1 <= data["result"]["value"] <= 6
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

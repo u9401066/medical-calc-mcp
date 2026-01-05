@@ -1,3 +1,4 @@
+from typing import Any
 """
 E2E Tests for Bishop Score Calculator
 
@@ -15,16 +16,15 @@ Parameters:
     position: str - Cervical position
         "posterior", "mid", "anterior"
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestBishopScoreE2E:
     """E2E tests for Bishop Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/bishop_score"
-    
-    def test_unfavorable_cervix_score_0_3(self, test_client):
+
+    def test_unfavorable_cervix_score_0_3(self, test_client: Any) -> None:
         """Test unfavorable cervix (score 0-3)"""
         payload = {
             "params": {
@@ -39,8 +39,8 @@ class TestBishopScoreE2E:
         data = assert_successful_calculation(response)
         # Unfavorable for induction
         assert data["result"]["value"] <= 3
-    
-    def test_intermediate_cervix_score_5_6(self, test_client):
+
+    def test_intermediate_cervix_score_5_6(self, test_client: Any) -> None:
         """Test intermediate cervix (score 5-6)"""
         payload = {
             "params": {
@@ -54,8 +54,8 @@ class TestBishopScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 5
-    
-    def test_favorable_cervix_score_8_plus(self, test_client):
+
+    def test_favorable_cervix_score_8_plus(self, test_client: Any) -> None:
         """Test favorable cervix (score ≥8)"""
         payload = {
             "params": {
@@ -70,8 +70,8 @@ class TestBishopScoreE2E:
         data = assert_successful_calculation(response)
         # Favorable for induction
         assert data["result"]["value"] >= 8
-    
-    def test_maximum_score_13(self, test_client):
+
+    def test_maximum_score_13(self, test_client: Any) -> None:
         """Test maximum possible score (13)"""
         payload = {
             "params": {
@@ -86,8 +86,8 @@ class TestBishopScoreE2E:
         data = assert_successful_calculation(response)
         # Maximum score
         assert data["result"]["value"] == 13
-    
-    def test_nulliparous_unfavorable(self, test_client):
+
+    def test_nulliparous_unfavorable(self, test_client: Any) -> None:
         """Test nulliparous patient with unfavorable cervix"""
         payload = {
             "params": {
@@ -101,8 +101,8 @@ class TestBishopScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 3
-    
-    def test_multiparous_favorable(self, test_client):
+
+    def test_multiparous_favorable(self, test_client: Any) -> None:
         """Test multiparous patient with favorable cervix"""
         payload = {
             "params": {
@@ -116,8 +116,8 @@ class TestBishopScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 9
-    
-    def test_partially_dilated_effaced(self, test_client):
+
+    def test_partially_dilated_effaced(self, test_client: Any) -> None:
         """Test partially dilated and effaced cervix"""
         payload = {
             "params": {
@@ -131,8 +131,8 @@ class TestBishopScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_term_ripening(self, test_client):
+
+    def test_term_ripening(self, test_client: Any) -> None:
         """Test cervix ripening at term"""
         payload = {
             "params": {
@@ -146,8 +146,8 @@ class TestBishopScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_need_cervical_ripening(self, test_client):
+
+    def test_need_cervical_ripening(self, test_client: Any) -> None:
         """Test when cervical ripening is needed"""
         payload = {
             "params": {
@@ -162,8 +162,8 @@ class TestBishopScoreE2E:
         data = assert_successful_calculation(response)
         # Score 0 = needs ripening agent
         assert data["result"]["value"] == 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

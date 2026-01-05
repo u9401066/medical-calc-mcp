@@ -1,15 +1,15 @@
+from typing import Any
 """Tests for Tool Registry"""
-import pytest
 
 
 class TestToolRegistry:
-    def test_registry_not_empty(self):
+    def test_registry_not_empty(self) -> None:
         from src.infrastructure.mcp.server import MedicalCalculatorServer
         server = MedicalCalculatorServer()
         all_ids = server.registry.list_all_ids()
         assert len(all_ids) >= 20
 
-    def test_registry_has_calculators(self):
+    def test_registry_has_calculators(self) -> None:
         from src.infrastructure.mcp.server import MedicalCalculatorServer
         server = MedicalCalculatorServer()
         calc = server.registry.get_calculator("ckd_epi_2021")
@@ -17,7 +17,7 @@ class TestToolRegistry:
 
 
 class TestCalculatorMetadata:
-    def test_all_have_tool_id(self):
+    def test_all_have_tool_id(self) -> None:
         from src.domain.services.calculators import CALCULATORS
         for cls in CALCULATORS:
             calc = cls()

@@ -1,20 +1,20 @@
+from typing import Any
 """
 E2E Tests for Caprini VTE Score Calculator
 
 Tests the Caprini VTE risk assessment through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestCapriniVteE2E:
     """E2E tests for Caprini VTE Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/caprini_vte"
-    
-    def test_very_low_risk(self, test_client):
+
+    def test_very_low_risk(self, test_client: Any) -> None:
         """Test very low risk (score 0)"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 35,
                 "minor_surgery": True,
@@ -24,10 +24,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 1
-    
-    def test_low_risk(self, test_client):
+
+    def test_low_risk(self, test_client: Any) -> None:
         """Test low risk (score 1-2)"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 45,  # 41-60 = 1 point
                 "minor_surgery": True  # +1 point = total 2
@@ -36,10 +36,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 1 <= data["result"]["value"] <= 2
-    
-    def test_moderate_risk(self, test_client):
+
+    def test_moderate_risk(self, test_client: Any) -> None:
         """Test moderate risk (score 3-4)"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 65,  # 61-74 = 2 points
                 "minor_surgery": True,  # +1 point
@@ -49,10 +49,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 3 <= data["result"]["value"] <= 5
-    
-    def test_high_risk(self, test_client):
+
+    def test_high_risk(self, test_client: Any) -> None:
         """Test high risk (score 5+)"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 70,
                 "major_surgery": True,
@@ -63,10 +63,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_highest_risk_multiple_factors(self, test_client):
+
+    def test_highest_risk_multiple_factors(self, test_client: Any) -> None:
         """Test highest risk with multiple factors"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 75,
                 "major_surgery": True,
@@ -80,10 +80,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 10
-    
-    def test_orthopedic_surgery(self, test_client):
+
+    def test_orthopedic_surgery(self, test_client: Any) -> None:
         """Test orthopedic surgery patient"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 68,
                 "elective_arthroplasty": True,
@@ -93,10 +93,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_cancer_patient(self, test_client):
+
+    def test_cancer_patient(self, test_client: Any) -> None:
         """Test cancer patient undergoing surgery"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 60,
                 "major_surgery": True,
@@ -107,10 +107,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_pregnancy_related(self, test_client):
+
+    def test_pregnancy_related(self, test_client: Any) -> None:
         """Test pregnancy-related risk factors"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {
                 "age_years": 30,
                 "female": True,
@@ -121,10 +121,10 @@ class TestCapriniVteE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
+        payload: dict[str, Any] = {
             "params": {}
         }
         response = test_client.post(self.ENDPOINT, json=payload)

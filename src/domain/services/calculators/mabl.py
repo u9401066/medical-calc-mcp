@@ -6,12 +6,12 @@ is required, based on the patient's estimated blood volume and acceptable
 hematocrit levels.
 
 References:
-    Gross JB. Estimating allowable blood loss: corrected for dilution. 
+    Gross JB. Estimating allowable blood loss: corrected for dilution.
     Anesthesiology. 1983;58(3):277-280.
     DOI: 10.1097/00000542-198303000-00016
     PMID: 6829965
 
-    Butterworth JF, Mackey DC, Wasnick JD. Morgan & Mikhail's Clinical 
+    Butterworth JF, Mackey DC, Wasnick JD. Morgan & Mikhail's Clinical
     Anesthesiology. 7th ed. New York: McGraw-Hill; 2022.
 
     Miller RD, et al. Miller's Anesthesia. 9th ed. Philadelphia: Elsevier; 2020.
@@ -19,44 +19,39 @@ References:
 
 from typing import Optional
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity
 from ...value_objects.clinical_constants import EBV_ML_PER_KG, get_ebv_per_kg
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class MablCalculator(BaseCalculator):
     """
     Maximum Allowable Blood Loss (MABL) Calculator
-    
+
     MABL represents the maximum blood loss tolerated before transfusion
     is indicated. It accounts for:
     - Patient's estimated blood volume (EBV)
     - Starting hematocrit
     - Minimum acceptable hematocrit
-    
+
     Formula (Gross method):
         MABL = EBV × (Hi - Hf) / Hav
-        
+
         Where:
         - EBV = Estimated Blood Volume (weight × blood volume per kg)
         - Hi = Initial hematocrit
         - Hf = Final (minimum acceptable) hematocrit
         - Hav = Average hematocrit = (Hi + Hf) / 2
-    
+
     Alternative simpler formula:
         MABL = EBV × (Hi - Hf) / Hi
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -141,7 +136,7 @@ class MablCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         weight_kg: float,
@@ -153,7 +148,7 @@ class MablCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Maximum Allowable Blood Loss.
-        
+
         Args:
             weight_kg: Patient weight in kg
             initial_hematocrit: Starting hematocrit (%)
@@ -164,7 +159,7 @@ class MablCalculator(BaseCalculator):
                          adolescent, adult_male, adult_female, obese_adult, elderly
             estimated_blood_volume_ml: Override calculated EBV (mL)
             use_gross_method: Use Gross formula with average Hct (more accurate)
-            
+
         Returns:
             ScoreResult with MABL and related calculations
         """
@@ -177,7 +172,7 @@ class MablCalculator(BaseCalculator):
             raise ValueError("Target hematocrit must be between 10-70%")
         if target_hematocrit >= initial_hematocrit:
             raise ValueError("Target hematocrit must be less than initial hematocrit")
-        
+
         # Calculate or use provided EBV
         if estimated_blood_volume_ml is not None:
             ebv = estimated_blood_volume_ml
@@ -189,11 +184,11 @@ class MablCalculator(BaseCalculator):
                     f"Available types: {list(EBV_ML_PER_KG.keys())}"
                 )
             ebv = weight_kg * ebv_per_kg
-        
+
         # Calculate MABL
         hi = initial_hematocrit
         hf = target_hematocrit
-        
+
         if use_gross_method:
             # Gross method: accounts for dilutional coagulopathy
             hav = (hi + hf) / 2  # Average hematocrit
@@ -203,10 +198,10 @@ class MablCalculator(BaseCalculator):
             # Simple method
             mabl = ebv * (hi - hf) / hi
             method = "Simple"
-        
+
         # Calculate percentage of blood volume
         mabl_percent = (mabl / ebv) * 100
-        
+
         # Determine clinical guidance
         warnings = []
         if mabl_percent > 40:
@@ -217,13 +212,13 @@ class MablCalculator(BaseCalculator):
             warnings.append("MABL >30% of blood volume: prepare blood products")
         else:
             severity = Severity.NORMAL
-        
+
         # Transfusion threshold guidance
         if target_hematocrit < 21:
             warnings.append("Target Hct <21%: Consider only for healthy patients with good reserve")
         if target_hematocrit < 24 and patient_type in ("elderly", "cardiac"):
             warnings.append("Consider higher transfusion threshold (Hct 24-30%) for cardiac/elderly patients")
-        
+
         # Build interpretation
         interpretation = Interpretation(
             summary=f"MABL = {mabl:.0f} mL ({mabl_percent:.1f}% of blood volume)",
@@ -232,7 +227,7 @@ class MablCalculator(BaseCalculator):
             recommendations=(f"Transfusion should be considered when blood loss approaches {mabl:.0f} mL",),
             warnings=tuple(warnings),
         )
-        
+
         return ScoreResult(
             tool_name="Maximum Allowable Blood Loss",
             tool_id="mabl",
@@ -246,7 +241,7 @@ class MablCalculator(BaseCalculator):
                 "percent_blood_volume": round(mabl_percent, 1),
             }
         )
-    
+
     @staticmethod
     def get_ebv_reference() -> dict[str, int]:
         """Return the EBV reference table"""

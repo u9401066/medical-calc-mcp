@@ -5,12 +5,12 @@ The Modified Mallampati Classification is used for predicting difficult intubati
 based on the visibility of oropharyngeal structures.
 
 Reference:
-    Mallampati SR, Gatt SP, Gugino LD, et al. A clinical sign to predict difficult 
+    Mallampati SR, Gatt SP, Gugino LD, et al. A clinical sign to predict difficult
     tracheal intubation: a prospective study. Can Anaesth Soc J. 1985;32(4):429-434.
     DOI: 10.1007/BF03011357
     PMID: 4027773
 
-    Samsoon GL, Young JR. Difficult tracheal intubation: a retrospective study. 
+    Samsoon GL, Young JR. Difficult tracheal intubation: a retrospective study.
     Anaesthesia. 1987;42(5):487-490.
     DOI: 10.1111/j.1365-2044.1987.tb04039.x
     PMID: 3592174
@@ -18,19 +18,13 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey, 
-    HighLevelKey, 
-    Specialty, 
-    ClinicalContext
-)
-
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 MALLAMPATI_CLASS = Literal[1, 2, 3, 4]
 
@@ -38,20 +32,20 @@ MALLAMPATI_CLASS = Literal[1, 2, 3, 4]
 class MallampatiScoreCalculator(BaseCalculator):
     """
     Modified Mallampati Classification
-    
-    Used to assess and predict difficult intubation based on visualization 
+
+    Used to assess and predict difficult intubation based on visualization
     of oropharyngeal structures with mouth fully opened and tongue protruded.
-    
+
     The original Mallampati classification (1985) had 3 classes.
     Samsoon and Young (1987) modified it to 4 classes.
-    
+
     Classes (Modified):
         Class I: Soft palate, fauces, uvula, anterior and posterior pillars visible
         Class II: Soft palate, fauces, uvula visible
         Class III: Soft palate, base of uvula visible
         Class IV: Soft palate not visible at all
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -118,30 +112,30 @@ class MallampatiScoreCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         mallampati_class: MALLAMPATI_CLASS
     ) -> ScoreResult:
         """
         Classify patient using Modified Mallampati Classification.
-        
+
         Args:
             mallampati_class: Mallampati class (1-4) based on visualization:
                 1: Soft palate, uvula, fauces, pillars visible
                 2: Soft palate, uvula, fauces visible
                 3: Soft palate, base of uvula visible
                 4: Hard palate only visible
-            
+
         Returns:
             ScoreResult with Mallampati classification and intubation difficulty prediction
         """
         if mallampati_class not in (1, 2, 3, 4):
             raise ValueError("Mallampati class must be 1, 2, 3, or 4")
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(mallampati_class)
-        
+
         return ScoreResult(
             value=float(mallampati_class),
             unit=Unit.SCORE,
@@ -163,12 +157,12 @@ class MallampatiScoreCalculator(BaseCalculator):
                 "Mallampati alone has limited sensitivity; combine with other predictors",
             ]
         )
-    
+
     def _to_roman(self, num: int) -> str:
         """Convert number to Roman numeral"""
         roman = {1: "I", 2: "II", 3: "III", 4: "IV"}
         return roman.get(num, str(num))
-    
+
     def _get_visible_structures(self, mallampati_class: int) -> list[str]:
         """Get list of visible structures for each class"""
         structures = {
@@ -178,10 +172,10 @@ class MallampatiScoreCalculator(BaseCalculator):
             4: ["Hard palate only"]
         }
         return structures.get(mallampati_class, [])
-    
+
     def _get_interpretation(self, mallampati_class: int) -> Interpretation:
         """Get clinical interpretation for Mallampati class"""
-        
+
         if mallampati_class == 1:
             return Interpretation(
                 summary="Mallampati Class I: Full visualization",

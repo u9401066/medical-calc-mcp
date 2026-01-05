@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Wells DVT Score Calculator
 
 Tests the Wells DVT probability score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestWellsDvtE2E:
     """E2E tests for Wells DVT Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/wells_dvt"
-    
-    def test_low_probability_negative_score(self, test_client):
+
+    def test_low_probability_negative_score(self, test_client: Any) -> None:
         """Test low probability with alternative diagnosis"""
         payload = {
             "params": {
@@ -31,8 +31,8 @@ class TestWellsDvtE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == -2
-    
-    def test_low_probability_score_0(self, test_client):
+
+    def test_low_probability_score_0(self, test_client: Any) -> None:
         """Test low probability - score 0"""
         payload = {
             "params": {
@@ -51,8 +51,8 @@ class TestWellsDvtE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_moderate_probability(self, test_client):
+
+    def test_moderate_probability(self, test_client: Any) -> None:
         """Test moderate probability (score 1-2)"""
         payload = {
             "params": {
@@ -71,8 +71,8 @@ class TestWellsDvtE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_high_probability(self, test_client):
+
+    def test_high_probability(self, test_client: Any) -> None:
         """Test high probability (score ≥3)"""
         payload = {
             "params": {
@@ -91,8 +91,8 @@ class TestWellsDvtE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 3
-    
-    def test_classic_dvt_presentation(self, test_client):
+
+    def test_classic_dvt_presentation(self, test_client: Any) -> None:
         """Test classic DVT presentation"""
         payload = {
             "params": {
@@ -111,8 +111,8 @@ class TestWellsDvtE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

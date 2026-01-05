@@ -5,39 +5,39 @@ Estimates the pretest probability of pulmonary embolism (PE) in patients
 with suspected PE to guide diagnostic workup.
 
 Original Reference:
-    Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple 
-    clinical model to categorize patients probability of pulmonary 
-    embolism: increasing the models utility with the SimpliRED D-dimer. 
+    Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple
+    clinical model to categorize patients probability of pulmonary
+    embolism: increasing the models utility with the SimpliRED D-dimer.
     Thromb Haemost. 2000;83(3):416-420.
     PMID: 10744147.
 
 Validation Reference:
-    Wells PS, Anderson DR, Rodger M, et al. Excluding pulmonary embolism 
-    at the bedside without diagnostic imaging: management of patients 
-    with suspected pulmonary embolism presenting to the emergency 
-    department by using a simple clinical model and D-dimer. 
+    Wells PS, Anderson DR, Rodger M, et al. Excluding pulmonary embolism
+    at the bedside without diagnostic imaging: management of patients
+    with suspected pulmonary embolism presenting to the emergency
+    department by using a simple clinical model and D-dimer.
     Ann Intern Med. 2001;135(2):98-107.
     doi:10.7326/0003-4819-135-2-200107170-00010. PMID: 11453709.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class WellsPeCalculator(BaseCalculator):
     """
     Wells Score for PE (Pulmonary Embolism)
-    
+
     Scoring criteria:
     - Clinical signs/symptoms of DVT: +3
     - PE is #1 diagnosis or equally likely: +3
@@ -46,17 +46,17 @@ class WellsPeCalculator(BaseCalculator):
     - Previous DVT/PE: +1.5
     - Hemoptysis: +1
     - Malignancy (treatment within 6 months or palliative): +1
-    
+
     Original (three-level) interpretation:
     - <2: Low probability (~3.6% PE)
     - 2-6: Moderate probability (~20.5% PE)
     - >6: High probability (~66.7% PE)
-    
+
     Simplified (two-level) interpretation:
     - ≤4: PE Unlikely (~12.1% PE)
     - >4: PE Likely (~37.1% PE)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -142,7 +142,7 @@ class WellsPeCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         clinical_signs_dvt: bool,
@@ -155,7 +155,7 @@ class WellsPeCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Wells score for PE.
-        
+
         Args:
             clinical_signs_dvt: Clinical signs/symptoms of DVT (leg swelling, pain with palpation)
             pe_most_likely_diagnosis: PE is #1 diagnosis or equally likely
@@ -164,7 +164,7 @@ class WellsPeCalculator(BaseCalculator):
             previous_dvt_pe: Previous DVT or PE
             hemoptysis: Hemoptysis (coughing up blood)
             malignancy: Active malignancy (treatment ongoing, within 6 months, or palliative)
-            
+
         Returns:
             ScoreResult with Wells PE score, probability, and diagnostic recommendations
         """
@@ -177,10 +177,10 @@ class WellsPeCalculator(BaseCalculator):
         score += 1.5 if previous_dvt_pe else 0
         score += 1.0 if hemoptysis else 0
         score += 1.0 if malignancy else 0
-        
+
         # Determine interpretation
         interpretation = self._interpret_score(score)
-        
+
         # Component details
         components = {
             "Clinical signs/symptoms of DVT": 3.0 if clinical_signs_dvt else 0,
@@ -191,7 +191,7 @@ class WellsPeCalculator(BaseCalculator):
             "Hemoptysis": 1.0 if hemoptysis else 0,
             "Active malignancy": 1.0 if malignancy else 0,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -201,15 +201,15 @@ class WellsPeCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: float) -> Interpretation:
         """Generate interpretation based on Wells PE score"""
-        
+
         # Two-level model (simplified, most commonly used)
         if score <= 4:
             # PE Unlikely
             category = "PE Unlikely"
-            
+
             if score < 2:
                 # Three-level: Low probability
                 severity = Severity.MILD
@@ -222,7 +222,7 @@ class WellsPeCalculator(BaseCalculator):
                 risk_level = RiskLevel.LOW
                 pe_probability = "~12%"
                 three_level = "Moderate probability"
-            
+
             summary = f"Wells PE = {score}: {category} ({pe_probability} probability)"
             detail = (
                 f"Lower pretest probability of PE (approximately {pe_probability}). "
@@ -240,7 +240,7 @@ class WellsPeCalculator(BaseCalculator):
                 "Positive D-dimer requires imaging",
                 "CTPA is gold standard for PE diagnosis",
             ]
-            
+
         else:
             # PE Likely (score >4)
             if score > 6:
@@ -255,7 +255,7 @@ class WellsPeCalculator(BaseCalculator):
                 risk_level = RiskLevel.INTERMEDIATE
                 pe_probability = "~37%"
                 three_level = "Moderate probability"
-            
+
             category = "PE Likely"
             summary = f"Wells PE = {score}: {category} ({pe_probability} probability)"
             detail = (
@@ -274,10 +274,10 @@ class WellsPeCalculator(BaseCalculator):
                 "If hemodynamically unstable: bedside echo for RV strain",
                 "If PE confirmed: initiate anticoagulation, assess severity",
             ]
-            
+
             if score > 6:
                 recommendations.insert(0, "High probability - strongly consider empiric anticoagulation")
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

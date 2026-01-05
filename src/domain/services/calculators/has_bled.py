@@ -5,8 +5,8 @@ Estimates bleeding risk in patients with atrial fibrillation on anticoagulation.
 Used alongside CHA₂DS₂-VASc to balance stroke prevention vs bleeding risk.
 
 Original Reference:
-    Pisters R, Lane DA, Nieuwlaat R, et al. A novel user-friendly score 
-    (HAS-BLED) to assess 1-year risk of major bleeding in patients with 
+    Pisters R, Lane DA, Nieuwlaat R, et al. A novel user-friendly score
+    (HAS-BLED) to assess 1-year risk of major bleeding in patients with
     atrial fibrillation: the Euro Heart Survey. Chest. 2010;138(5):1093-1100.
     doi:10.1378/chest.10-0134. PMID: 20299623.
 
@@ -16,24 +16,24 @@ anticoagulation decision-making:
     doi:10.1093/eurheartj/ehae176. PMID: 39217497.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class HasBledCalculator(BaseCalculator):
     """
     HAS-BLED Score for Bleeding Risk in Atrial Fibrillation
-    
+
     Scoring criteria (each 1 point):
     - H: Hypertension (uncontrolled, SBP >160 mmHg)
     - A: Abnormal renal and/or liver function (1 point each, max 2)
@@ -43,18 +43,18 @@ class HasBledCalculator(BaseCalculator):
     - E: Elderly (age >65 years)
     - D: Drugs (antiplatelet agents, NSAIDs) and/or alcohol (≥8 drinks/week)
          (1 point each, max 2)
-    
+
     Maximum score: 9
-    
+
     Risk stratification:
     - 0-2: Low bleeding risk
     - ≥3: High bleeding risk - address modifiable risk factors
-    
+
     IMPORTANT: High HAS-BLED score is NOT a contraindication to anticoagulation.
     Rather, it identifies patients needing closer monitoring and modification
     of reversible bleeding risk factors.
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -150,7 +150,7 @@ class HasBledCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         hypertension_uncontrolled: bool,
@@ -165,7 +165,7 @@ class HasBledCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate HAS-BLED score.
-        
+
         Args:
             hypertension_uncontrolled: Uncontrolled hypertension (SBP >160 mmHg)
             renal_disease: Chronic dialysis, renal transplant, or Cr >2.26 mg/dL (200 μmol/L)
@@ -177,7 +177,7 @@ class HasBledCalculator(BaseCalculator):
             elderly_gt_65: Age >65 years
             drugs_antiplatelet_nsaid: Concomitant antiplatelet agents or NSAIDs
             alcohol_excess: Alcohol excess (≥8 drinks/week)
-            
+
         Returns:
             ScoreResult with score, bleeding risk, and management recommendations
         """
@@ -192,7 +192,7 @@ class HasBledCalculator(BaseCalculator):
         score += 1 if elderly_gt_65 else 0
         score += 1 if drugs_antiplatelet_nsaid else 0
         score += 1 if alcohol_excess else 0
-        
+
         # Determine interpretation
         interpretation = self._interpret_score(
             score,
@@ -203,7 +203,7 @@ class HasBledCalculator(BaseCalculator):
             drugs_antiplatelet_nsaid,
             alcohol_excess,
         )
-        
+
         # Component details
         components = {
             "H - Hypertension (uncontrolled)": 1 if hypertension_uncontrolled else 0,
@@ -216,7 +216,7 @@ class HasBledCalculator(BaseCalculator):
             "D - Drugs (antiplatelet/NSAID)": 1 if drugs_antiplatelet_nsaid else 0,
             "D - Alcohol excess (≥8 drinks/wk)": 1 if alcohol_excess else 0,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -226,7 +226,7 @@ class HasBledCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(
         self,
         score: int,
@@ -238,7 +238,7 @@ class HasBledCalculator(BaseCalculator):
         alcohol: bool,
     ) -> Interpretation:
         """Generate interpretation based on HAS-BLED score"""
-        
+
         # Annual major bleeding risk rates from Pisters et al. 2010
         bleeding_rates = {
             0: "1.13%",
@@ -248,9 +248,9 @@ class HasBledCalculator(BaseCalculator):
             4: "8.70%",
             5: "12.50%",
         }
-        
+
         annual_risk = bleeding_rates.get(score, ">12.5%")
-        
+
         # Identify modifiable risk factors
         modifiable_factors = []
         if hypertension:
@@ -261,7 +261,7 @@ class HasBledCalculator(BaseCalculator):
             modifiable_factors.append("Concomitant drugs - review need for antiplatelet agents/NSAIDs")
         if alcohol:
             modifiable_factors.append("Alcohol excess - counsel on alcohol reduction")
-        
+
         if score <= 2:
             # Low bleeding risk
             severity = Severity.NORMAL if score <= 1 else Severity.MILD
@@ -281,7 +281,7 @@ class HasBledCalculator(BaseCalculator):
                 "Choose anticoagulant based on patient factors",
                 "Standard follow-up schedule",
             ]
-            
+
         else:
             # High bleeding risk (≥3)
             if score == 3:
@@ -293,7 +293,7 @@ class HasBledCalculator(BaseCalculator):
             else:  # ≥5
                 severity = Severity.CRITICAL
                 risk_level = RiskLevel.VERY_HIGH
-            
+
             summary = f"HAS-BLED = {score}: High bleeding risk ({annual_risk} annual major bleeding)"
             detail = (
                 f"Elevated risk of major bleeding. Annual major bleeding rate is approximately {annual_risk}. "
@@ -307,13 +307,13 @@ class HasBledCalculator(BaseCalculator):
                 "More frequent clinical monitoring recommended",
                 "Ensure patient education on bleeding signs and symptoms",
             ]
-            
+
             if modifiable_factors:
                 recommendations.extend([
                     "Modifiable risk factors identified:",
                     *[f"  • {f}" for f in modifiable_factors],
                 ])
-            
+
             next_steps = [
                 "Address all modifiable bleeding risk factors",
                 "Review concurrent medications for bleeding risk",
@@ -321,10 +321,10 @@ class HasBledCalculator(BaseCalculator):
                 "Consider GI protection (PPI) if indicated",
                 "Schedule more frequent follow-up visits",
             ]
-            
+
             if labile_inr:
                 next_steps.append("Consider switching from warfarin to DOAC for better TTR equivalent")
-        
+
         # Warnings for very high risk
         warnings = []
         if score >= 4:
@@ -336,7 +336,7 @@ class HasBledCalculator(BaseCalculator):
             warnings.append(
                 "Renal or hepatic dysfunction present - may affect anticoagulant choice and dosing."
             )
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

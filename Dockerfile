@@ -15,18 +15,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies
+RUN uv sync --frozen --no-install-project
 
 # Copy source code
 COPY src/ ./src/
-COPY pyproject.toml .
 
-# Install the package in development mode
-RUN pip install --no-cache-dir -e .
+# Install the project
+RUN uv sync --frozen
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash mcpuser
@@ -34,6 +36,7 @@ RUN chown -R mcpuser:mcpuser /app
 USER mcpuser
 
 # Environment variables
+ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV MCP_MODE=sse
@@ -48,4 +51,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -sf http://localhost:${MCP_PORT}/sse -o /dev/null -m 5 || exit 1
 
 # Default command: Run in SSE mode
-CMD ["python", "src/main.py", "--mode", "sse", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "src.main", "--mode", "sse", "--host", "0.0.0.0", "--port", "8000"]

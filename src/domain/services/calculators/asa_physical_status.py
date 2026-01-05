@@ -5,7 +5,7 @@ The ASA Physical Status Classification System is used for assessing
 the fitness of patients before surgery.
 
 Reference:
-    Mayhew D, Mendonca V, Murthy BVS. A review of ASA physical status – 
+    Mayhew D, Mendonca V, Murthy BVS. A review of ASA physical status –
     historical perspectives and modern developments. Anaesthesia. 2019;74(3):373-379.
     DOI: 10.1111/anae.14569
     PMID: 30648259
@@ -16,19 +16,13 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey, 
-    HighLevelKey, 
-    Specialty, 
-    ClinicalContext
-)
-
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 ASA_CLASS = Literal[1, 2, 3, 4, 5, 6]
 
@@ -36,10 +30,10 @@ ASA_CLASS = Literal[1, 2, 3, 4, 5, 6]
 class AsaPhysicalStatusCalculator(BaseCalculator):
     """
     ASA Physical Status Classification System
-    
+
     A system for assessing the fitness of patients before surgery.
     Originally developed in 1941 and revised multiple times.
-    
+
     Classes:
         ASA I: A normal healthy patient
         ASA II: A patient with mild systemic disease
@@ -47,10 +41,10 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
         ASA IV: A patient with severe systemic disease that is a constant threat to life
         ASA V: A moribund patient who is not expected to survive without the operation
         ASA VI: A declared brain-dead patient whose organs are being removed for donor purposes
-        
+
     The suffix "E" denotes emergency surgery.
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -110,7 +104,7 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         asa_class: ASA_CLASS,
@@ -118,25 +112,25 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Classify patient using ASA Physical Status.
-        
+
         Args:
             asa_class: ASA class (1-6)
             is_emergency: Whether this is an emergency procedure
-            
+
         Returns:
             ScoreResult with ASA classification and perioperative mortality risk
         """
         if asa_class not in (1, 2, 3, 4, 5, 6):
             raise ValueError("ASA class must be 1, 2, 3, 4, 5, or 6")
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(asa_class, is_emergency)
-        
+
         # Format display value
         display_value = f"ASA {self._to_roman(asa_class)}"
         if is_emergency:
             display_value += "E"
-        
+
         return ScoreResult(
             value=float(asa_class),
             unit=Unit.SCORE,
@@ -157,17 +151,17 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                 "Emergency surgery increases perioperative risk",
             ] if is_emergency else []
         )
-    
+
     def _to_roman(self, num: int) -> str:
         """Convert number to Roman numeral"""
         roman = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI"}
         return roman.get(num, str(num))
-    
+
     def _get_interpretation(self, asa_class: int, is_emergency: bool) -> Interpretation:
         """Get clinical interpretation for ASA class"""
-        
+
         # Approximate perioperative mortality rates
-        
+
         if asa_class == 1:
             return Interpretation(
                 summary="ASA I: Normal healthy patient",

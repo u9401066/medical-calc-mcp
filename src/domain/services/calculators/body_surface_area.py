@@ -8,73 +8,73 @@ References:
     Du Bois D, Du Bois EF. A formula to estimate the approximate surface area
     if height and weight be known. Arch Intern Med. 1916;17(6):863-871.
     DOI: 10.1001/archinte.1916.00080130010002
-    
+
     Mosteller RD. Simplified calculation of body-surface area.
     N Engl J Med. 1987;317(17):1098.
     DOI: 10.1056/NEJM198710223171717
     PMID: 3657876
-    
+
     Haycock GB, Schwartz GJ, Wisotsky DH. Geometric method for measuring
     body surface area: a height-weight formula validated in infants,
     children, and adults.
     J Pediatr. 1978;93(1):62-66.
     DOI: 10.1016/S0022-3476(78)80601-5
     PMID: 650346
-    
+
     Boyd E. The growth of the surface area of the human body.
     Minneapolis: University of Minnesota Press; 1935.
 """
 
-from typing import Literal
 import math
+from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
+from ...value_objects.reference import Reference
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class BodySurfaceAreaCalculator(BaseCalculator):
     """
     Body Surface Area (BSA) Calculator
-    
+
     Calculates BSA using multiple validated formulas:
-    
+
     Formulas:
         Du Bois (1916) - Classic reference standard:
             BSA = 0.007184 × weight^0.425 × height^0.725
-            
+
         Mosteller (1987) - Simplified, widely used:
             BSA = √(height × weight / 3600)
-            
+
         Haycock (1978) - Validated in pediatrics:
             BSA = 0.024265 × weight^0.5378 × height^0.3964
-            
+
         Boyd (1935) - Historical:
             BSA = 0.0003207 × weight^(0.7285 - 0.0188×log10(weight)) × height^0.3
-            
+
     Clinical Applications:
         - Chemotherapy dosing (most drugs dosed per m²)
         - Cardiac output indexing (CI = CO/BSA)
         - Burn percentage calculation reference
         - Renal function normalization (GFR/1.73m²)
         - Pediatric drug dosing
-        
+
     Normal BSA:
         - Adult male: ~1.9 m²
         - Adult female: ~1.6 m²
         - Newborn: ~0.25 m²
         - Child (10 yr): ~1.1 m²
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -154,7 +154,7 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                 ),
             ),
         )
-    
+
     def calculate(
         self,
         height_cm: float,
@@ -163,7 +163,7 @@ class BodySurfaceAreaCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate body surface area.
-        
+
         Args:
             height_cm: Height in centimeters (50-250)
             weight_kg: Weight in kilograms (1-500)
@@ -172,10 +172,10 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                 - "dubois": Classic reference standard
                 - "haycock": Validated in pediatrics
                 - "boyd": Historical
-                
+
         Returns:
             ScoreResult with BSA in m²
-            
+
         Raises:
             ValueError: If parameters are out of valid range
         """
@@ -184,16 +184,16 @@ class BodySurfaceAreaCalculator(BaseCalculator):
             raise ValueError(f"Height must be 50-250 cm, got {height_cm}")
         if not 1 <= weight_kg <= 500:
             raise ValueError(f"Weight must be 1-500 kg, got {weight_kg}")
-        
+
         # Calculate BSA using all formulas
         bsa_mosteller = math.sqrt((height_cm * weight_kg) / 3600)
         bsa_dubois = 0.007184 * (weight_kg ** 0.425) * (height_cm ** 0.725)
         bsa_haycock = 0.024265 * (weight_kg ** 0.5378) * (height_cm ** 0.3964)
-        
+
         # Boyd formula - corrected formula
         log_weight = math.log10(weight_kg)
         bsa_boyd = 0.03330 * (weight_kg ** (0.6157 - 0.0188 * log_weight)) * (height_cm ** 0.3)
-        
+
         # Select primary result based on chosen formula
         formula_map = {
             "mosteller": bsa_mosteller,
@@ -201,19 +201,19 @@ class BodySurfaceAreaCalculator(BaseCalculator):
             "haycock": bsa_haycock,
             "boyd": bsa_boyd,
         }
-        
+
         primary_bsa = formula_map[formula]
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(primary_bsa, weight_kg)
-        
+
         return ScoreResult(
             tool_id=self.tool_id,
             tool_name=self.name,
             value=round(primary_bsa, 4),
             unit=Unit.M2,
             interpretation=interpretation,
-            references=self.references,
+            references=list(self.references),
             calculation_details={
                 "primary_formula": formula,
                 "height_cm": height_cm,
@@ -237,10 +237,10 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                 },
             },
         )
-    
+
     def _get_interpretation(self, bsa: float, weight_kg: float) -> Interpretation:
         """Generate interpretation based on BSA value"""
-        
+
         # Determine category based on BSA
         if bsa < 0.5:
             category = "Infant/Small Child"
@@ -260,7 +260,7 @@ class BodySurfaceAreaCalculator(BaseCalculator):
         else:
             category = "Very Large/Obese"
             severity = Severity.MILD
-        
+
         return Interpretation(
             summary=f"BSA: {bsa:.2f} m² - {category}",
             detail=(

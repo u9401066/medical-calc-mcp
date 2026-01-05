@@ -21,54 +21,49 @@ Clinical Notes:
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class FourScoreCalculator(BaseCalculator):
     """
     FOUR Score (Full Outline of UnResponsiveness) Calculator
-    
+
     A 16-point coma scale assessing four components:
-    
+
     Eye Response (E): 0-4
     - E4: Eyelids open or opened, tracking or blinking to command
     - E3: Eyelids open but not tracking
     - E2: Eyelids closed, open to loud voice
     - E1: Eyelids closed, open to pain
     - E0: Eyelids remain closed with pain
-    
+
     Motor Response (M): 0-4
     - M4: Thumbs up, fist, or peace sign to command
     - M3: Localizing to pain
     - M2: Flexion response to pain
     - M1: Extension response to pain
     - M0: No response to pain or generalized myoclonus status
-    
+
     Brainstem Reflexes (B): 0-4
     - B4: Pupil and corneal reflexes present
     - B3: One pupil wide and fixed
     - B2: Pupil OR corneal reflexes absent
     - B1: Pupil AND corneal reflexes absent
     - B0: Absent pupil, corneal, and cough reflexes
-    
+
     Respiration (R): 0-4
     - R4: Not intubated, regular breathing pattern
     - R3: Not intubated, Cheyne-Stokes breathing pattern
     - R2: Not intubated, irregular breathing
     - R1: Breathes above ventilator rate
     - R0: Breathes at ventilator rate or apnea
-    
+
     Advantages over GCS:
     - Provides detailed brainstem assessment
     - Includes respiratory pattern (herniation indicator)
@@ -76,7 +71,7 @@ class FourScoreCalculator(BaseCalculator):
     - Better interrater reliability
     - Applicable to intubated patients
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -139,7 +134,7 @@ class FourScoreCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         eye_response: int,
@@ -149,7 +144,7 @@ class FourScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate FOUR Score.
-        
+
         Args:
             eye_response: Eye response (0-4)
                 4 = Eyelids open, tracking or blinking to command
@@ -157,28 +152,28 @@ class FourScoreCalculator(BaseCalculator):
                 2 = Eyelids closed, open to loud voice
                 1 = Eyelids closed, open to pain
                 0 = Eyelids remain closed with pain
-                
+
             motor_response: Motor response (0-4)
                 4 = Thumbs up, fist, or peace sign to command
                 3 = Localizing to pain
                 2 = Flexion response to pain
                 1 = Extension response to pain
                 0 = No response to pain or myoclonus status
-                
+
             brainstem_reflexes: Brainstem reflexes (0-4)
                 4 = Pupil AND corneal reflexes present
                 3 = One pupil wide and fixed
                 2 = Pupil OR corneal reflexes absent
                 1 = Pupil AND corneal reflexes absent
                 0 = Absent pupil, corneal, AND cough reflexes
-                
+
             respiration: Respiratory pattern (0-4)
                 4 = Not intubated, regular breathing
                 3 = Not intubated, Cheyne-Stokes pattern
                 2 = Not intubated, irregular breathing
                 1 = Intubated, breathes above ventilator rate
                 0 = Intubated, breathes at vent rate OR apnea
-                
+
         Returns:
             ScoreResult with FOUR Score and interpretation
         """
@@ -191,18 +186,18 @@ class FourScoreCalculator(BaseCalculator):
             raise ValueError("Brainstem reflexes must be between 0 and 4")
         if not 0 <= respiration <= 4:
             raise ValueError("Respiration must be between 0 and 4")
-        
+
         # Calculate total score
         total_score = eye_response + motor_response + brainstem_reflexes + respiration
-        
+
         # Format FOUR notation (e.g., "E4M4B4R4 = 16")
         four_notation = f"E{eye_response}M{motor_response}B{brainstem_reflexes}R{respiration}"
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(
             total_score, eye_response, motor_response, brainstem_reflexes, respiration
         )
-        
+
         return ScoreResult(
             value=total_score,
             unit=Unit.SCORE,
@@ -240,7 +235,7 @@ class FourScoreCalculator(BaseCalculator):
                 "brain_death_screening": total_score == 0,
             },
         )
-    
+
     def _get_eye_description(self, score: int) -> str:
         """Get eye response description"""
         descriptions = {
@@ -251,7 +246,7 @@ class FourScoreCalculator(BaseCalculator):
             0: "Eyelids remain closed with pain",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_motor_description(self, score: int) -> str:
         """Get motor response description"""
         descriptions = {
@@ -262,7 +257,7 @@ class FourScoreCalculator(BaseCalculator):
             0: "No response to pain or generalized myoclonus status",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_brainstem_description(self, score: int) -> str:
         """Get brainstem reflexes description"""
         descriptions = {
@@ -273,7 +268,7 @@ class FourScoreCalculator(BaseCalculator):
             0: "Absent pupil, corneal, AND cough reflexes",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_respiration_description(self, score: int) -> str:
         """Get respiration pattern description"""
         descriptions = {
@@ -284,7 +279,7 @@ class FourScoreCalculator(BaseCalculator):
             0: "Breathes at ventilator rate or apnea",
         }
         return descriptions.get(score, "Unknown")
-    
+
     def _get_interpretation(
         self,
         total_score: int,
@@ -294,7 +289,7 @@ class FourScoreCalculator(BaseCalculator):
         respiration: int
     ) -> Interpretation:
         """Generate interpretation based on score"""
-        
+
         # Check for brain death criteria (FOUR = 0)
         if total_score == 0:
             return Interpretation(
@@ -324,7 +319,7 @@ class FourScoreCalculator(BaseCalculator):
                     "Consider ancillary testing",
                 ),
             )
-        
+
         # Check for severe brainstem dysfunction
         if brainstem <= 1:
             return Interpretation(
@@ -351,7 +346,7 @@ class FourScoreCalculator(BaseCalculator):
                     "Goals of care discussion",
                 ),
             )
-        
+
         # Classify by total score
         if total_score <= 4:
             return Interpretation(

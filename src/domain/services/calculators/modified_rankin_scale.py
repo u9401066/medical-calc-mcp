@@ -9,7 +9,7 @@ Reference:
     Stroke. 1988;19(5):604-607.
     DOI: 10.1161/01.str.19.5.604
     PMID: 3363593
-    
+
     Rankin J. Cerebral vascular accidents in patients over the age of 60.
     II. Prognosis.
     Scott Med J. 1957;2(5):200-215.
@@ -18,27 +18,22 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class ModifiedRankinScaleCalculator(BaseCalculator):
     """
     Modified Rankin Scale (mRS)
-    
+
     Measures degree of disability or dependence in daily activities
     after a stroke or neurological disability.
-    
+
     Scale:
     - 0: No symptoms at all
     - 1: No significant disability despite symptoms
@@ -47,7 +42,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
     - 4: Moderately severe disability; unable to walk/attend to needs
     - 5: Severe disability; bedridden, requires constant care
     - 6: Dead
-    
+
     Favorable outcome typically defined as mRS 0-2.
     """
 
@@ -127,30 +122,30 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Record Modified Rankin Scale assessment.
-        
+
         Args:
             mrs_score: Modified Rankin Scale grade
                 - 0: No symptoms at all
                 - 1: No significant disability; able to carry out all usual duties
-                - 2: Slight disability; unable to carry out all previous activities, 
+                - 2: Slight disability; unable to carry out all previous activities,
                      but able to look after own affairs without assistance
                 - 3: Moderate disability; requires some help, able to walk without assistance
-                - 4: Moderately severe disability; unable to walk without assistance, 
+                - 4: Moderately severe disability; unable to walk without assistance,
                      unable to attend to own bodily needs without assistance
                 - 5: Severe disability; bedridden, incontinent, requires constant nursing care
                 - 6: Dead
-            
+
         Returns:
             ScoreResult with mRS grade and functional status interpretation
         """
         # Get interpretation based on score
         interpretation = self._get_interpretation(mrs_score)
-        
+
         # Determine if favorable outcome
         favorable_outcome = mrs_score <= 2
         independent = mrs_score <= 2
         ambulatory = mrs_score <= 3
-        
+
         return ScoreResult(
             value=float(mrs_score),
             unit=Unit.SCORE,
@@ -186,7 +181,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
 
     def _get_interpretation(self, score: int) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score == 0:
             return Interpretation(
                 summary="mRS 0: No Symptoms",
@@ -343,7 +338,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
             "mRS is the most widely used outcome measure in stroke trials",
             "Favorable outcome typically defined as mRS 0-2",
         ]
-        
+
         if score <= 2:
             notes.append("Patient achieved favorable functional outcome (mRS 0-2)")
         elif score == 3:
@@ -354,11 +349,11 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
             notes.append(
                 "Dependent for basic needs - consider rehabilitation potential and goals of care"
             )
-        
+
         if score >= 3:
             notes.append(
                 "Consider structured mRS assessment (rankin focused assessment) for consistency"
             )
-        
+
         return notes
 

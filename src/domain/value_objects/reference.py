@@ -6,16 +6,16 @@ All medical calculators must cite their original sources.
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 
 @dataclass(frozen=True)
 class Reference:
     """
     A citation to an original research paper.
-    
+
     Uses Vancouver citation style.
-    
+
     Example:
         Reference(
             citation="Inker LA, Eneanya ND, Coresh J, et al. New Creatinine- and "
@@ -26,7 +26,7 @@ class Reference:
             year=2021,
             level_of_evidence="Class I"
         )
-    
+
     Level of Evidence (Oxford CEBM):
         - Class I / Level A: High-quality RCT, systematic review
         - Class II / Level B: Lower-quality RCT, prospective cohort
@@ -36,7 +36,7 @@ class Reference:
         - "Validation study": Original validation cohort
         - "Clinical guideline": Society guidelines (e.g., AHA, ESC, ACOG)
     """
-    
+
     citation: str  # Full Vancouver-style citation
     doi: Optional[str] = None  # Digital Object Identifier
     pmid: Optional[str] = None  # PubMed ID
@@ -44,26 +44,26 @@ class Reference:
     year: Optional[int] = None  # Publication year
     url: Optional[str] = None  # Direct URL (if no DOI)
     level_of_evidence: Optional[str] = None  # Evidence level (Oxford CEBM or custom)
-    
-    def __post_init__(self):
+
+    def __post_init__(self) -> None:
         if not self.citation:
             raise ValueError("Citation text is required")
-    
+
     @property
     def doi_url(self) -> Optional[str]:
         """Get the DOI URL if DOI is available"""
         if self.doi:
             return f"https://doi.org/{self.doi}"
         return None
-    
+
     @property
     def pubmed_url(self) -> Optional[str]:
         """Get the PubMed URL if PMID is available"""
         if self.pmid:
             return f"https://pubmed.ncbi.nlm.nih.gov/{self.pmid}/"
         return None
-    
-    def to_dict(self) -> dict:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "citation": self.citation,

@@ -1,8 +1,8 @@
 """
 ICH Score (Intracerebral Hemorrhage Score)
 
-The ICH Score is a clinical grading scale that predicts 30-day mortality in 
-patients with spontaneous intracerebral hemorrhage. It is one of the most 
+The ICH Score is a clinical grading scale that predicts 30-day mortality in
+patients with spontaneous intracerebral hemorrhage. It is one of the most
 widely validated and used prognostic scores in ICH.
 
 Reference (Original):
@@ -22,49 +22,44 @@ Clinical Notes:
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class IchScoreCalculator(BaseCalculator):
     """
     ICH Score Calculator
-    
+
     Predicts 30-day mortality in spontaneous intracerebral hemorrhage.
-    
+
     Components (Total 0-6 points):
-    
+
     1. Glasgow Coma Scale (GCS):
        - GCS 3-4: 2 points
        - GCS 5-12: 1 point
        - GCS 13-15: 0 points
-    
+
     2. ICH Volume:
        - ≥30 mL: 1 point
        - <30 mL: 0 points
-    
+
     3. Intraventricular Hemorrhage (IVH):
        - Yes: 1 point
        - No: 0 points
-    
+
     4. Infratentorial Origin:
        - Yes: 1 point
        - No: 0 points
-    
+
     5. Age:
        - ≥80 years: 1 point
        - <80 years: 0 points
-    
+
     30-day Mortality:
     - ICH Score 0: 0%
     - ICH Score 1: 13%
@@ -74,7 +69,7 @@ class IchScoreCalculator(BaseCalculator):
     - ICH Score 5: 100%
     - ICH Score 6: 100%
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -132,7 +127,7 @@ class IchScoreCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         gcs_score: int,
@@ -143,14 +138,14 @@ class IchScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate ICH Score.
-        
+
         Args:
             gcs_score: Glasgow Coma Scale score (3-15)
             ich_volume_ml: ICH volume in milliliters (ABC/2 method typically)
             ivh_present: Intraventricular hemorrhage present
             infratentorial: Infratentorial (posterior fossa) origin
             age: Patient age in years
-                
+
         Returns:
             ScoreResult with ICH Score and mortality prediction
         """
@@ -161,20 +156,20 @@ class IchScoreCalculator(BaseCalculator):
             raise ValueError("ICH volume must be non-negative")
         if age < 0 or age > 120:
             raise ValueError("Age must be between 0 and 120 years")
-        
+
         # Calculate component scores
         gcs_points = self._get_gcs_points(gcs_score)
         volume_points = 1 if ich_volume_ml >= 30 else 0
         ivh_points = 1 if ivh_present else 0
         location_points = 1 if infratentorial else 0
         age_points = 1 if age >= 80 else 0
-        
+
         # Total score
         total_score = gcs_points + volume_points + ivh_points + location_points + age_points
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(total_score)
-        
+
         return ScoreResult(
             value=total_score,
             unit=Unit.SCORE,
@@ -219,7 +214,7 @@ class IchScoreCalculator(BaseCalculator):
                 "mortality_30_day": self._get_mortality(total_score),
             },
         )
-    
+
     def _get_gcs_points(self, gcs_score: int) -> int:
         """Get points for GCS component"""
         if gcs_score <= 4:
@@ -228,7 +223,7 @@ class IchScoreCalculator(BaseCalculator):
             return 1
         else:  # 13-15
             return 0
-    
+
     def _get_gcs_criteria(self, gcs_score: int) -> str:
         """Get GCS criteria description"""
         if gcs_score <= 4:
@@ -237,7 +232,7 @@ class IchScoreCalculator(BaseCalculator):
             return f"GCS {gcs_score} (5-12 = 1 point)"
         else:
             return f"GCS {gcs_score} (13-15 = 0 points)"
-    
+
     def _get_mortality(self, score: int) -> str:
         """Get 30-day mortality percentage"""
         mortality_map = {
@@ -250,10 +245,10 @@ class IchScoreCalculator(BaseCalculator):
             6: "100%",
         }
         return mortality_map.get(score, "Unknown")
-    
+
     def _get_interpretation(self, score: int) -> Interpretation:
         """Generate interpretation based on score"""
-        
+
         # Mortality data from Hemphill et al. 2001
         mortality_map = {
             0: "0%",
@@ -265,7 +260,7 @@ class IchScoreCalculator(BaseCalculator):
             6: "100%",
         }
         mortality = mortality_map.get(score, "Unknown")
-        
+
         if score == 0:
             return Interpretation(
                 summary="ICH Score 0 - Excellent Prognosis",

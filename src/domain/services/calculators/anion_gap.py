@@ -5,55 +5,50 @@ Calculates the serum anion gap for differential diagnosis of metabolic acidosis.
 Includes albumin-corrected anion gap calculation.
 
 Reference:
-    Kraut JA, Madias NE. Serum anion gap: its uses and limitations in clinical 
+    Kraut JA, Madias NE. Serum anion gap: its uses and limitations in clinical
     medicine. Clin J Am Soc Nephrol. 2007;2(1):162-174.
     DOI: 10.2215/CJN.03020906
     PMID: 17699401
-    
+
     Figge J, Jabor A, Kazda A, Fencl V. Anion gap and hypoalbuminemia.
     Crit Care Med. 1998;26(11):1807-1810.
     PMID: 9824071
 """
 
-from typing import Optional, Tuple
+from typing import Any, Optional
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class AnionGapCalculator(BaseCalculator):
     """
     Anion Gap Calculator
-    
+
     The anion gap (AG) is the difference between measured cations and anions
     in serum, used to classify metabolic acidosis.
-    
+
     Formula:
         AG = Na⁺ - (Cl⁻ + HCO₃⁻)
-        
+
         Normal range: 8-12 mEq/L (without K⁺)
-        
+
     Corrected AG (for hypoalbuminemia):
         Corrected AG = AG + 2.5 × (4.0 - Albumin)
-        
+
         Where albumin is in g/dL
-    
+
     Clinical Application:
         - High AG (>12): MUDPILES (Methanol, Uremia, DKA, Propylene glycol,
                          INH/Iron, Lactic acidosis, Ethylene glycol, Salicylates)
         - Normal AG: GI or renal HCO₃⁻ loss, RTA
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -119,7 +114,7 @@ class AnionGapCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         sodium: float,
@@ -131,7 +126,7 @@ class AnionGapCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate the anion gap.
-        
+
         Args:
             sodium: Serum sodium in mEq/L (120-160)
             chloride: Serum chloride in mEq/L (80-120)
@@ -139,7 +134,7 @@ class AnionGapCalculator(BaseCalculator):
             albumin: Serum albumin in g/dL (optional, for corrected AG)
             include_potassium: Whether to include K⁺ in calculation (rarely used)
             potassium: Serum potassium in mEq/L (if including K⁺)
-            
+
         Returns:
             ScoreResult with anion gap and interpretation
         """
@@ -157,7 +152,7 @@ class AnionGapCalculator(BaseCalculator):
                 raise ValueError("Potassium required when include_potassium=True")
             if not 2.0 <= potassium <= 8.0:
                 raise ValueError("Potassium must be between 2.0 and 8.0 mEq/L")
-        
+
         # Calculate anion gap
         if include_potassium and potassium is not None:
             anion_gap = (sodium + potassium) - (chloride + bicarbonate)
@@ -167,34 +162,33 @@ class AnionGapCalculator(BaseCalculator):
             anion_gap = sodium - (chloride + bicarbonate)
             normal_range = (8, 12)  # Normal without K+
             formula_used = "AG = Na⁺ - (Cl⁻ + HCO₃⁻)"
-        
+
         anion_gap = round(anion_gap, 1)
-        
+
+        # Build calculation details
+        calc_details: dict[str, Any] = {
+            "anion_gap": anion_gap,
+            "normal_range": f"{normal_range[0]}-{normal_range[1]} mEq/L",
+            "include_potassium": include_potassium,
+        }
+
         # Calculate corrected AG if albumin provided
         corrected_ag = None
         if albumin is not None:
             # Each 1 g/dL decrease in albumin from 4.0 decreases AG by 2.5
             corrected_ag = anion_gap + 2.5 * (4.0 - albumin)
             corrected_ag = round(corrected_ag, 1)
-        
+            calc_details["corrected_ag"] = corrected_ag
+            calc_details["albumin_correction"] = round(2.5 * (4.0 - albumin), 1)
+
         # Determine interpretation
         ag_for_interpretation = corrected_ag if corrected_ag is not None else anion_gap
         interpretation = self._get_interpretation(
-            ag_for_interpretation, 
+            ag_for_interpretation,
             normal_range,
             corrected_ag is not None
         )
-        
-        # Build calculation details
-        calc_details = {
-            "anion_gap": anion_gap,
-            "normal_range": f"{normal_range[0]}-{normal_range[1]} mEq/L",
-            "include_potassium": include_potassium,
-        }
-        if corrected_ag is not None:
-            calc_details["corrected_ag"] = corrected_ag
-            calc_details["albumin_correction"] = round(2.5 * (4.0 - albumin), 1)
-        
+
         return ScoreResult(
             value=corrected_ag if corrected_ag is not None else anion_gap,
             unit=Unit.MEQ_L,
@@ -213,17 +207,17 @@ class AnionGapCalculator(BaseCalculator):
             calculation_details=calc_details,
             formula_used=formula_used
         )
-    
+
     def _get_interpretation(
-        self, 
-        ag: float, 
-        normal_range: Tuple[int, int],
+        self,
+        ag: float,
+        normal_range: tuple[int, int],
         is_corrected: bool
     ) -> Interpretation:
         """Get clinical interpretation based on anion gap value"""
-        
+
         ag_type = "Corrected AG" if is_corrected else "Anion Gap"
-        
+
         if ag > normal_range[1]:
             # High Anion Gap Metabolic Acidosis (HAGMA)
             if ag > 30:
@@ -235,7 +229,7 @@ class AnionGapCalculator(BaseCalculator):
             else:
                 severity = Severity.MODERATE
                 severity_desc = "Elevated"
-            
+
             return Interpretation(
                 summary=f"High Anion Gap Metabolic Acidosis (HAGMA) - {ag_type}: {ag} mEq/L",
                 detail=f"{severity_desc} anion gap suggests accumulation of unmeasured anions. "
@@ -254,7 +248,7 @@ class AnionGapCalculator(BaseCalculator):
                 warnings=(
                     "High AG may indicate serious underlying condition",
                     "Urgent workup and treatment may be needed",
-                ) if ag > 20 else None,
+                ) if ag > 20 else (),
                 next_steps=(
                     "Calculate Delta Ratio (ΔAG/ΔHCO₃⁻) to detect mixed disorders",
                     "Obtain arterial blood gas if not already done",

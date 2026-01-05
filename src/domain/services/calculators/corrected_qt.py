@@ -7,18 +7,18 @@ Essential for drug safety monitoring and arrhythmia risk assessment.
 References:
     Bazett HC. An analysis of the time-relations of electrocardiograms.
     Heart. 1920;7:353-370.
-    
-    Fridericia LS. Die Systolendauer im Elektrokardiogramm bei normalen 
+
+    Fridericia LS. Die Systolendauer im Elektrokardiogramm bei normalen
     Menschen und bei Herzkranken. Acta Med Scand. 1920;53:469-486.
-    
+
     Framingham Study formula:
-    Sagie A, et al. An improved method for adjusting the QT interval for 
+    Sagie A, et al. An improved method for adjusting the QT interval for
     heart rate. Am J Cardiol. 1992;70(7):797-801.
     DOI: 10.1016/0002-9149(92)90562-d
     PMID: 1519533
-    
+
     ESC Guidelines 2015:
-    Priori SG, et al. 2015 ESC Guidelines for the management of patients 
+    Priori SG, et al. 2015 ESC Guidelines for the management of patients
     with ventricular arrhythmias and the prevention of sudden cardiac death.
     Eur Heart J. 2015;36(41):2793-2867.
     DOI: 10.1093/eurheartj/ehv316
@@ -28,49 +28,49 @@ References:
 import math
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CorrectedQtCalculator(BaseCalculator):
     """
     Corrected QT Interval (QTc) Calculator
-    
+
     The QT interval represents ventricular depolarization and repolarization.
     QT prolongation increases the risk of Torsades de Pointes (TdP) and
     sudden cardiac death.
-    
+
     Formulas:
         Bazett (most common):
             QTc = QT / √RR
-            
+
         Fridericia (preferred for tachycardia/bradycardia):
             QTc = QT / ∛RR
-            
+
         Framingham (linear correction):
             QTc = QT + 0.154 × (1 - RR)
-            
+
         Where RR = 60 / HR (in seconds)
-        
+
     Normal Values:
         Males: ≤450 ms
         Females: ≤460 ms
-        
+
     Prolonged QTc:
         Borderline: 450-470 ms (males), 460-480 ms (females)
         Prolonged: >470 ms (males), >480 ms (females)
         Markedly prolonged: >500 ms (high risk for TdP)
-        
+
     Common QT-Prolonging Drugs:
         - Antiarrhythmics: amiodarone, sotalol, dofetilide, quinidine
         - Antibiotics: fluoroquinolones, macrolides, azole antifungals
@@ -78,7 +78,7 @@ class CorrectedQtCalculator(BaseCalculator):
         - Antiemetics: ondansetron (high dose), droperidol
         - Others: methadone, TCAs, citalopram/escitalopram
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -128,7 +128,7 @@ class CorrectedQtCalculator(BaseCalculator):
             ),
             references=self._get_references(),
         )
-    
+
     def _get_references(self) -> tuple[Reference, ...]:
         return (
             Reference(
@@ -150,7 +150,7 @@ class CorrectedQtCalculator(BaseCalculator):
                 year=2015,
             ),
         )
-    
+
     def calculate(
         self,
         qt_interval: float,
@@ -160,13 +160,13 @@ class CorrectedQtCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate corrected QT interval.
-        
+
         Args:
             qt_interval: Measured QT interval in milliseconds (ms)
             heart_rate: Heart rate in beats per minute (bpm)
             sex: Patient sex ('male' or 'female')
             formula: Correction formula ('bazett', 'fridericia', 'framingham')
-            
+
         Returns:
             ScoreResult with QTc value and risk interpretation
         """
@@ -175,10 +175,10 @@ class CorrectedQtCalculator(BaseCalculator):
             raise ValueError(f"QT interval {qt_interval} ms is outside physiological range (200-800 ms)")
         if heart_rate < 30 or heart_rate > 250:
             raise ValueError(f"Heart rate {heart_rate} bpm is outside physiological range (30-250 bpm)")
-        
+
         # Calculate RR interval in seconds
         rr_interval = 60 / heart_rate
-        
+
         # Calculate QTc based on formula
         if formula == "bazett":
             qtc = qt_interval / math.sqrt(rr_interval)
@@ -191,12 +191,12 @@ class CorrectedQtCalculator(BaseCalculator):
             formula_used = "QTc = QT + 154 × (1 - RR) (Framingham)"
         else:
             raise ValueError(f"Unknown formula: {formula}")
-        
+
         qtc = round(qtc, 0)
-        
+
         # Determine risk category based on sex
         interpretation = self._interpret_qtc(qtc, sex)
-        
+
         # Build calculation details
         details = {
             "QT_measured": f"{qt_interval} ms",
@@ -206,12 +206,12 @@ class CorrectedQtCalculator(BaseCalculator):
             "QTc": f"{qtc:.0f} ms",
             "Sex": sex.capitalize(),
         }
-        
+
         return ScoreResult(
             value=qtc,
             unit=Unit.MS,
             interpretation=interpretation,
-            references=self._get_references(),
+            references=list(self._get_references()),
             tool_id=self.tool_id,
             tool_name=self.metadata.name,
             raw_inputs={
@@ -223,10 +223,10 @@ class CorrectedQtCalculator(BaseCalculator):
             calculation_details=details,
             formula_used=formula_used,
         )
-    
+
     def _interpret_qtc(self, qtc: float, sex: str) -> Interpretation:
         """Generate interpretation based on QTc value and sex."""
-        
+
         # Define thresholds based on sex
         if sex == "male":
             normal_upper = 450
@@ -234,8 +234,10 @@ class CorrectedQtCalculator(BaseCalculator):
         else:  # female
             normal_upper = 460
             borderline_upper = 480
-        
+
         # Determine severity and risk
+        recommendations: tuple[str, ...]
+        warnings: tuple[str, ...]
         if qtc <= normal_upper:
             severity = Severity.NORMAL
             risk_level = RiskLevel.VERY_LOW
@@ -294,7 +296,7 @@ class CorrectedQtCalculator(BaseCalculator):
                 "⚠️ CRITICAL: QTc >500 ms - high risk of fatal arrhythmia",
                 "Immediate intervention required",
             )
-        
+
         return Interpretation(
             summary=summary,
             detail=detail,

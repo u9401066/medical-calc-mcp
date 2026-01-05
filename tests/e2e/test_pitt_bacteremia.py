@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Pitt Bacteremia Score Calculator
 
 Tests the Pitt Bacteremia Score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestPittBacteremiaE2E:
     """E2E tests for Pitt Bacteremia Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/pitt_bacteremia"
-    
-    def test_low_mortality_score_0_3(self, test_client):
+
+    def test_low_mortality_score_0_3(self, test_client: Any) -> None:
         """Test low mortality risk (score 0-3)"""
         payload = {
             "params": {
@@ -26,8 +26,8 @@ class TestPittBacteremiaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 3
-    
-    def test_intermediate_mortality_score_4_5(self, test_client):
+
+    def test_intermediate_mortality_score_4_5(self, test_client: Any) -> None:
         """Test intermediate mortality risk (score 4-5)"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestPittBacteremiaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_high_mortality_score_6_plus(self, test_client):
+
+    def test_high_mortality_score_6_plus(self, test_client: Any) -> None:
         """Test high mortality risk (score ≥6)"""
         payload = {
             "params": {
@@ -56,8 +56,8 @@ class TestPittBacteremiaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 6
-    
-    def test_critical_patient_with_arrest(self, test_client):
+
+    def test_critical_patient_with_arrest(self, test_client: Any) -> None:
         """Test critical patient with cardiac arrest"""
         payload = {
             "params": {
@@ -72,8 +72,8 @@ class TestPittBacteremiaE2E:
         data = assert_successful_calculation(response)
         # Maximum score scenario
         assert data["result"]["value"] >= 10
-    
-    def test_stable_febrile_patient(self, test_client):
+
+    def test_stable_febrile_patient(self, test_client: Any) -> None:
         """Test stable febrile patient"""
         payload = {
             "params": {
@@ -87,8 +87,8 @@ class TestPittBacteremiaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_septic_shock_patient(self, test_client):
+
+    def test_septic_shock_patient(self, test_client: Any) -> None:
         """Test patient with septic shock"""
         payload = {
             "params": {
@@ -102,8 +102,8 @@ class TestPittBacteremiaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 6
-    
-    def test_altered_mental_status_only(self, test_client):
+
+    def test_altered_mental_status_only(self, test_client: Any) -> None:
         """Test patient with isolated altered mental status"""
         payload = {
             "params": {
@@ -118,8 +118,8 @@ class TestPittBacteremiaE2E:
         data = assert_successful_calculation(response)
         # Comatose = 4 points
         assert data["result"]["value"] == 4
-    
-    def test_hypothermic_patient(self, test_client):
+
+    def test_hypothermic_patient(self, test_client: Any) -> None:
         """Test hypothermic bacteremia patient"""
         payload = {
             "params": {
@@ -133,8 +133,8 @@ class TestPittBacteremiaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for SOFA (Sequential Organ Failure Assessment) Score Calculator
 
 Tests the SOFA score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestSofaScoreE2E:
     """E2E tests for SOFA Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/sofa_score"
-    
-    def test_minimal_organ_dysfunction(self, test_client):
+
+    def test_minimal_organ_dysfunction(self, test_client: Any) -> None:
         """Test minimal organ dysfunction - SOFA 0-1"""
         payload = {
             "params": {
@@ -26,8 +26,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
-    
-    def test_mild_organ_dysfunction(self, test_client):
+
+    def test_mild_organ_dysfunction(self, test_client: Any) -> None:
         """Test mild organ dysfunction"""
         payload = {
             "params": {
@@ -41,8 +41,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
-    
-    def test_moderate_organ_dysfunction(self, test_client):
+
+    def test_moderate_organ_dysfunction(self, test_client: Any) -> None:
         """Test moderate multi-organ dysfunction"""
         payload = {
             "params": {
@@ -56,8 +56,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 6
-    
-    def test_severe_organ_failure(self, test_client):
+
+    def test_severe_organ_failure(self, test_client: Any) -> None:
         """Test severe multi-organ failure"""
         payload = {
             "params": {
@@ -71,8 +71,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 12
-    
-    def test_with_vasopressors(self, test_client):
+
+    def test_with_vasopressors(self, test_client: Any) -> None:
         """Test with vasopressor support"""
         payload = {
             "params": {
@@ -89,8 +89,8 @@ class TestSofaScoreE2E:
         data = assert_successful_calculation(response)
         # Vasopressor use adds cardiovascular points
         assert data["result"]["value"] >= 0
-    
-    def test_mechanically_ventilated(self, test_client):
+
+    def test_mechanically_ventilated(self, test_client: Any) -> None:
         """Test mechanically ventilated patient"""
         payload = {
             "params": {
@@ -105,8 +105,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_with_low_urine_output(self, test_client):
+
+    def test_with_low_urine_output(self, test_client: Any) -> None:
         """Test with low urine output (renal dysfunction)"""
         payload = {
             "params": {
@@ -121,8 +121,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
-    
-    def test_septic_shock_patient(self, test_client):
+
+    def test_septic_shock_patient(self, test_client: Any) -> None:
         """Test typical septic shock patient"""
         payload = {
             "params": {
@@ -139,8 +139,8 @@ class TestSofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 8
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {
@@ -150,8 +150,8 @@ class TestSofaScoreE2E:
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)
-    
-    def test_boundary_pf_ratio_low(self, test_client):
+
+    def test_boundary_pf_ratio_low(self, test_client: Any) -> None:
         """Test boundary P/F ratio (severe ARDS)"""
         payload = {
             "params": {

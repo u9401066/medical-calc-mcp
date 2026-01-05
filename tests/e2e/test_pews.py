@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for PEWS (Pediatric Early Warning Score) Calculator
 
 Tests the PEWS through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestPewsE2E:
     """E2E tests for PEWS Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/pews"
-    
-    def test_stable_child_score_0(self, test_client):
+
+    def test_stable_child_score_0(self, test_client: Any) -> None:
         """Test stable child (score 0)"""
         payload = {
             "params": {
@@ -24,8 +24,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_mild_concern_score_2(self, test_client):
+
+    def test_mild_concern_score_2(self, test_client: Any) -> None:
         """Test mild clinical concern (score 2)"""
         payload = {
             "params": {
@@ -37,8 +37,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_moderate_concern_score_4(self, test_client):
+
+    def test_moderate_concern_score_4(self, test_client: Any) -> None:
         """Test moderate clinical concern (score 4)"""
         payload = {
             "params": {
@@ -50,8 +50,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
-    
-    def test_high_concern_score_6_plus(self, test_client):
+
+    def test_high_concern_score_6_plus(self, test_client: Any) -> None:
         """Test high clinical concern (score ≥6)"""
         payload = {
             "params": {
@@ -63,8 +63,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 6
-    
-    def test_critical_child(self, test_client):
+
+    def test_critical_child(self, test_client: Any) -> None:
         """Test critically ill child (maximum score)"""
         payload = {
             "params": {
@@ -76,8 +76,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 9
-    
-    def test_respiratory_distress(self, test_client):
+
+    def test_respiratory_distress(self, test_client: Any) -> None:
         """Test child with isolated respiratory distress"""
         payload = {
             "params": {
@@ -89,8 +89,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_cardiovascular_compromise(self, test_client):
+
+    def test_cardiovascular_compromise(self, test_client: Any) -> None:
         """Test child with cardiovascular compromise"""
         payload = {
             "params": {
@@ -102,8 +102,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
-    
-    def test_altered_behavior_only(self, test_client):
+
+    def test_altered_behavior_only(self, test_client: Any) -> None:
         """Test child with altered behavior only"""
         payload = {
             "params": {
@@ -115,8 +115,8 @@ class TestPewsE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_trigger_threshold_score_3(self, test_client):
+
+    def test_trigger_threshold_score_3(self, test_client: Any) -> None:
         """Test at trigger threshold (score 3)"""
         payload = {
             "params": {
@@ -129,8 +129,8 @@ class TestPewsE2E:
         data = assert_successful_calculation(response)
         # Score 3 often triggers nursing intervention
         assert data["result"]["value"] == 3
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

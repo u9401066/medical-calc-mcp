@@ -5,10 +5,10 @@ MCP tool handlers for anesthesiology and preoperative calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import Field
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from .....application.dto import CalculateRequest
 from .....application.use_cases import CalculateUseCase
@@ -16,7 +16,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all anesthesiology/preoperative calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_asa_physical_status(
         asa_class: Annotated[
@@ -27,7 +27,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     ) -> dict[str, Any]:
         """
         ASA 身體狀態分級 (ASA Physical Status Classification)
-        
+
         Classify patient overall health for perioperative risk.
         I=Healthy, II=Mild, III=Severe, IV=Life-threatening, V=Moribund, VI=Brain-dead.
         """
@@ -37,7 +37,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_apfel_ponv(
         female_gender: Annotated[bool, Field(description="女性 Female gender")],
@@ -47,29 +47,29 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     ) -> dict[str, Any]:
         """
         🤢 Apfel Score: 術後噁心嘔吐風險評估 (PONV Risk Score)
-        
+
         預測成人全身麻醉後發生術後噁心嘔吐的風險，指導預防性止吐藥使用。
-        
+
         **四個風險因子 (各+1分):**
         - **F**emale gender: 女性
         - **H**istory: 暈動病或 PONV 病史
         - **N**on-smoking: 不吸菸者
         - **O**pioids: 術後使用鴉片類藥物
-        
+
         **PONV 風險:**
         - 0 因子: ~10%
         - 1 因子: ~21%
         - 2 因子: ~39% → 考慮預防
         - 3 因子: ~61% → 建議多重預防
         - 4 因子: ~79% → 積極多重預防
-        
+
         **預防策略:**
         - ≥2 風險因子: 雙重止吐預防 (Ondansetron + Dexamethasone)
         - ≥3 風險因子: 多重預防 + TIVA + 減少鴉片類
-        
+
         **參考文獻:** Apfel CC, et al. Anesthesiology. 1999;91(3):693-700.
         PMID: 10485781
-        
+
         Returns:
             Apfel 分數 (0-4)、PONV 風險百分比、預防建議
         """
@@ -84,7 +84,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_mallampati(
         mallampati_class: Annotated[
@@ -94,7 +94,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     ) -> dict[str, Any]:
         """
         Mallampati 氣道評估分級 (Modified Mallampati Classification)
-        
+
         Predict difficult intubation. Higher class = higher difficulty.
         I=Easy, IV=Most difficult.
         """
@@ -104,7 +104,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_rcri(
         high_risk_surgery: Annotated[bool, Field(description="高風險手術 High-risk surgery (intra-abdominal/thoracic/suprainguinal vascular)")] = False,
@@ -116,10 +116,10 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     ) -> dict[str, Any]:
         """
         計算 RCRI 心臟風險指數 (Revised Cardiac Risk Index)
-        
+
         Cardiac risk for non-cardiac surgery. Score 0-6.
         0=0.4%, 1=0.9%, 2=6.6%, ≥3=11% major cardiac event.
-        
+
         Reference: Lee TH, Circulation 1999.
         """
         request = CalculateRequest(
@@ -135,7 +135,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_stop_bang(
         snoring: Annotated[bool, Field(description="打鼾 Snoring loudly (loud enough to be heard through closed doors)")],
@@ -149,10 +149,10 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     ) -> dict[str, Any]:
         """
         😴 STOP-BANG: 阻塞性睡眠呼吸中止症篩檢 (OSA Screening Questionnaire)
-        
+
         術前評估阻塞性睡眠呼吸中止症 (OSA) 的風險，這是麻醉科超常用的篩檢工具。
         OSA 病人周術期風險增加，需特別注意氣道管理和術後監測。
-        
+
         **STOP-BANG 八項評估 (各+1分):**
         - **S**noring: 大聲打鼾 (隔著門都聽得到)
         - **T**ired: 日間疲倦嗜睡
@@ -162,19 +162,19 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         - **A**ge >50: 年齡大於50歲
         - **N**eck >40cm: 頸圍大於40公分
         - **G**ender: 男性
-        
+
         **OSA 風險分層:**
         - 0-2 分: 低風險 OSA (~15%)
         - 3-4 分: 中度風險 OSA (~30%)
         - 5-8 分: 高風險 OSA (~60%)
-        
+
         **周術期注意事項:**
         - 中高風險: 考慮術前 PSG 確診
         - 高風險: 減少鴉片類、術後延長監測、準備困難氣道
-        
+
         **參考文獻:** Chung F, et al. Anesthesiology. 2008;108(5):812-821.
         PMID: 18431116
-        
+
         Returns:
             STOP-BANG 分數 (0-8)、OSA 風險等級、周術期建議
         """
@@ -193,7 +193,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_aldrete_score(
         activity: Annotated[
@@ -219,12 +219,12 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     ) -> dict[str, Any]:
         """
         🏥 Aldrete Score: 麻醉後恢復評估 (Post-Anesthesia Recovery Score)
-        
+
         評估病人從麻醉恢復的程度，決定是否可從恢復室 (PACU) 出院。
         這是判斷病人是否可離開 PACU 的標準評估工具。
-        
+
         **Aldrete 五項評估 (各 0-2 分):**
-        - **Activity 活動力:** 
+        - **Activity 活動力:**
           - 0分=無法移動四肢, 1分=可動兩肢, 2分=可動四肢
         - **Respiration 呼吸:**
           - 0分=呼吸暫停, 1分=呼吸淺弱/困難, 2分=可深呼吸咳嗽
@@ -234,18 +234,18 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
           - 0分=無反應, 1分=可喚醒, 2分=完全清醒
         - **O2 Saturation 血氧:**
           - 0分=給氧仍<90%, 1分=需給氧維持>90%, 2分=室內空氣>92%
-        
+
         **出院標準:**
         - ≥9 分: 可考慮離開 PACU
         - <9 分: 需繼續在 PACU 監測
-        
+
         **注意事項:**
         - 分數應每 5-15 分鐘評估一次
         - 需同時考慮手術特定因素和病人共病
-        
+
         **參考文獻:** Aldrete JA, Kroulik D. Anesth Analg. 1970;49(6):924-934.
         PMID: 5534693
-        
+
         Returns:
             Aldrete 分數 (0-10)、恢復狀態、PACU 出院建議
         """

@@ -19,25 +19,25 @@ from ....domain.registry.tool_registry import ToolRegistry
 class PromptHandler:
     """
     Handler for MCP prompt templates.
-    
+
     Prompts provide clinical workflow guidance that helps AI agents
     understand how to use multiple tools together for comprehensive
     patient assessments.
     """
-    
+
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
         self._mcp = mcp
         self._registry = registry
         self._register_prompts()
-    
+
     def _register_prompts(self) -> None:
         """Register all clinical workflow prompts"""
-        
+
         @self._mcp.prompt()
         def sepsis_evaluation() -> str:
             """
             Sepsis Evaluation Workflow - 敗血症評估工作流程
-            
+
             A structured approach to evaluate patients with suspected sepsis
             using Sepsis-3 criteria.
             """
@@ -77,7 +77,7 @@ Required Parameters:
   - bilirubin: mg/dL (liver)
   - gcs_score: 3-15 (neurologic)
   - creatinine: mg/dL (renal)
-  
+
 Optional (for cardiovascular scoring):
   - map_value: mmHg (if no vasopressors)
   - dopamine_dose, epinephrine_dose, norepinephrine_dose: µg/kg/min
@@ -129,7 +129,7 @@ For admitted patients:
         def preoperative_risk_assessment() -> str:
             """
             Preoperative Risk Assessment Workflow - 術前風險評估工作流程
-            
+
             A structured approach to evaluate surgical risk before non-cardiac surgery.
             """
             return """# Preoperative Risk Assessment Workflow
@@ -258,7 +258,7 @@ Parameters:
         def icu_daily_assessment() -> str:
             """
             ICU Daily Assessment Workflow - 加護病房每日評估工作流程
-            
+
             A structured approach for daily ICU patient rounds.
             """
             return """# ICU Daily Assessment Workflow
@@ -392,7 +392,7 @@ If mechanically ventilated:
         def pediatric_drug_dosing() -> str:
             """
             Pediatric Drug Dosing Workflow - 兒科藥物劑量工作流程
-            
+
             A structured approach for safe pediatric medication dosing.
             """
             return """# Pediatric Drug Dosing Workflow
@@ -516,7 +516,7 @@ Parameters:
         def acute_kidney_injury_assessment() -> str:
             """
             Acute Kidney Injury Assessment Workflow - 急性腎損傷評估工作流程
-            
+
             A structured approach to evaluate and stage acute kidney injury.
             """
             return """# Acute Kidney Injury Assessment Workflow

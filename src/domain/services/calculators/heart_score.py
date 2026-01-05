@@ -5,48 +5,48 @@ Identifies emergency department patients with chest pain at low risk for
 major adverse cardiac events (MACE) to guide disposition decisions.
 
 Original Reference:
-    Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: 
+    Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room:
     value of the HEART score. Neth Heart J. 2008;16(6):191-196.
     doi:10.1007/BF03086144. PMID: 18665203.
-    
+
 Validation Reference:
-    Backus BE, Six AJ, Kelder JC, et al. A prospective validation of 
-    the HEART score for chest pain patients at the emergency department. 
+    Backus BE, Six AJ, Kelder JC, et al. A prospective validation of
+    the HEART score for chest pain patients at the emergency department.
     Int J Cardiol. 2013;168(3):2153-2158.
     doi:10.1016/j.ijcard.2013.01.255. PMID: 23465250.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class HeartScoreCalculator(BaseCalculator):
     """
     HEART Score for Major Adverse Cardiac Events (MACE)
-    
+
     Scoring criteria (each 0-2 points):
     - History: Slightly suspicious (0), Moderately suspicious (1), Highly suspicious (2)
     - ECG: Normal (0), Non-specific changes (1), Significant ST deviation (2)
     - Age: <45 (0), 45-64 (1), ≥65 (2)
     - Risk factors: None (0), 1-2 (1), ≥3 or atherosclerosis (2)
     - Troponin: Normal (0), 1-3x ULN (1), >3x ULN (2)
-    
+
     Risk stratification (6-week MACE):
     - 0-3: Low risk (0.9-1.7%) → Consider early discharge
     - 4-6: Moderate risk (12-16.6%) → Admit for observation
     - 7-10: High risk (50-65%) → Admit for intervention
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -126,7 +126,7 @@ class HeartScoreCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         history_score: int,
@@ -137,14 +137,14 @@ class HeartScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate HEART score.
-        
+
         Args:
             history_score: 0=slightly suspicious, 1=moderately suspicious, 2=highly suspicious
             ecg_score: 0=normal, 1=non-specific changes, 2=significant ST deviation
             age_score: 0=<45y, 1=45-64y, 2=≥65y
             risk_factors_score: 0=none, 1=1-2 factors, 2=≥3 factors or known atherosclerosis
             troponin_score: 0=normal, 1=1-3x ULN, 2=>3x ULN
-            
+
         Returns:
             ScoreResult with HEART score, MACE risk, and disposition recommendation
         """
@@ -158,20 +158,20 @@ class HeartScoreCalculator(BaseCalculator):
         ]:
             if not 0 <= val <= 2:
                 raise ValueError(f"{name} must be 0, 1, or 2")
-        
+
         # Calculate total score
         score = history_score + ecg_score + age_score + risk_factors_score + troponin_score
-        
+
         # Determine interpretation
         interpretation = self._interpret_score(score)
-        
+
         # Component details
         history_desc = ["Slightly suspicious", "Moderately suspicious", "Highly suspicious"]
         ecg_desc = ["Normal", "Non-specific changes", "Significant ST deviation"]
         age_desc = ["<45 years", "45-64 years", "≥65 years"]
         rf_desc = ["No risk factors", "1-2 risk factors", "≥3 factors or atherosclerosis"]
         trop_desc = ["Normal", "1-3× ULN", ">3× ULN"]
-        
+
         components = {
             f"H - History ({history_desc[history_score]})": history_score,
             f"E - ECG ({ecg_desc[ecg_score]})": ecg_score,
@@ -179,7 +179,7 @@ class HeartScoreCalculator(BaseCalculator):
             f"R - Risk factors ({rf_desc[risk_factors_score]})": risk_factors_score,
             f"T - Troponin ({trop_desc[troponin_score]})": troponin_score,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -189,10 +189,10 @@ class HeartScoreCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int) -> Interpretation:
         """Generate interpretation based on HEART score"""
-        
+
         if score <= 3:
             # Low risk
             severity = Severity.MILD
@@ -216,7 +216,7 @@ class HeartScoreCalculator(BaseCalculator):
                 "Assess ability to follow up reliably",
                 "Provide nitroglycerin if indicated",
             ]
-            
+
         elif score <= 6:
             # Moderate risk
             severity = Severity.MODERATE
@@ -240,7 +240,7 @@ class HeartScoreCalculator(BaseCalculator):
                 "Echocardiogram if not recently performed",
                 "Risk factor modification counseling",
             ]
-            
+
         else:
             # High risk (score 7-10)
             severity = Severity.SEVERE
@@ -263,7 +263,7 @@ class HeartScoreCalculator(BaseCalculator):
                 "Continuous telemetry monitoring",
                 "Assess for hemodynamic instability",
             ]
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

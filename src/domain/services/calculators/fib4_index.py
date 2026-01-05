@@ -13,38 +13,33 @@ Reference:
 """
 
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class Fib4IndexCalculator(BaseCalculator):
     """
     FIB-4 Index for Liver Fibrosis Assessment
-    
+
     Simple, validated non-invasive tool to assess hepatic fibrosis.
-    
+
     Formula: FIB-4 = (Age × AST) / (Platelets × √ALT)
-    
+
     Interpretation (Sterling 2006, revised):
     - <1.30: Low risk of advanced fibrosis (F0-F1), NPV ~90%
     - 1.30-2.67: Indeterminate, consider further testing
     - >2.67: High risk of advanced fibrosis (F3-F4), PPV ~65%
-    
+
     Age-adjusted cutoffs (for age >65):
     - <2.0: Low risk
     - 2.0-3.25: Indeterminate
     - >3.25: High risk
-    
+
     Note: Best validated in HCV, useful in NAFLD/NASH
     """
 
@@ -136,13 +131,13 @@ class Fib4IndexCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate FIB-4 Index.
-        
+
         Args:
             age_years: Patient age in years (typically 18-90)
             ast: AST (SGOT) in U/L
             alt: ALT (SGPT) in U/L
             platelet_count: Platelet count in 10^9/L (K/µL)
-            
+
         Returns:
             ScoreResult with FIB-4 index and fibrosis risk interpretation
         """
@@ -155,14 +150,14 @@ class Fib4IndexCalculator(BaseCalculator):
             raise ValueError("ALT must be between 0 and 5000 U/L")
         if platelet_count <= 0 or platelet_count > 1000:
             raise ValueError("Platelet count must be between 0 and 1000 × 10^9/L")
-        
+
         # Calculate FIB-4
         import math
         fib4 = (age_years * ast) / (platelet_count * math.sqrt(alt))
-        
+
         # Round to 2 decimal places
         fib4 = round(fib4, 2)
-        
+
         # Determine cutoffs based on age
         if age_years > 65:
             # Age-adjusted cutoffs for elderly
@@ -174,12 +169,12 @@ class Fib4IndexCalculator(BaseCalculator):
             low_cutoff = 1.30
             high_cutoff = 2.67
             using_age_adjusted = False
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(
             fib4, low_cutoff, high_cutoff, using_age_adjusted
         )
-        
+
         # Build result
         return ScoreResult(
             value=fib4,
@@ -210,7 +205,7 @@ class Fib4IndexCalculator(BaseCalculator):
             formula_used=f"FIB-4 = ({age_years} × {ast}) / ({platelet_count} × √{alt}) = {fib4}",
             notes=self._get_notes(fib4, low_cutoff, high_cutoff, using_age_adjusted)
         )
-    
+
     def _get_fibrosis_prediction(
         self, fib4: float, low_cutoff: float, high_cutoff: float
     ) -> str:
@@ -221,7 +216,7 @@ class Fib4IndexCalculator(BaseCalculator):
             return "F3-F4 (Advanced fibrosis/cirrhosis)"
         else:
             return "Indeterminate (F2 possible)"
-    
+
     def _get_confidence(
         self, fib4: float, low_cutoff: float, high_cutoff: float
     ) -> str:
@@ -232,7 +227,7 @@ class Fib4IndexCalculator(BaseCalculator):
             return "Moderate PPV (~65%) - further testing recommended"
         else:
             return "Indeterminate - cannot reliably stage fibrosis"
-    
+
     def _get_interpretation(
         self,
         fib4: float,
@@ -256,7 +251,7 @@ class Fib4IndexCalculator(BaseCalculator):
                     "Repeat FIB-4 in 1-3 years if risk factors persist",
                     "Address underlying cause (HCV treatment, NAFLD lifestyle)",
                 ),
-                warnings=None,
+                warnings=(),
                 next_steps=(
                     "No immediate need for elastography or biopsy",
                     "Manage underlying liver disease",
@@ -317,7 +312,7 @@ class Fib4IndexCalculator(BaseCalculator):
                     "Repeat FIB-4 in 6-12 months if choosing watchful waiting",
                 )
             )
-    
+
     def _get_notes(
         self,
         fib4: float,
@@ -327,21 +322,21 @@ class Fib4IndexCalculator(BaseCalculator):
     ) -> list[str]:
         """Get additional clinical notes."""
         notes = []
-        
+
         if using_age_adjusted:
             notes.append("Age-adjusted cutoffs applied (patient >65 years)")
             notes.append(f"Low cutoff: <{low_cutoff}, High cutoff: >{high_cutoff}")
         else:
             notes.append(f"Standard cutoffs: Low <{low_cutoff}, High >{high_cutoff}")
-        
+
         notes.append("Best validated in HCV; also useful in NAFLD/NASH")
         notes.append("Combine with transient elastography for best accuracy")
-        
+
         if fib4 < low_cutoff:
             notes.append("High NPV (~90%) can rule out advanced fibrosis")
         elif fib4 > high_cutoff:
             notes.append("Moderate PPV (~65%) - confirm with elastography")
         else:
             notes.append("Consider ELF, APRI, or elastography for clarification")
-        
+
         return notes

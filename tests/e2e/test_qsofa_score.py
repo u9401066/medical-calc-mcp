@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for qSOFA (Quick SOFA) Score Calculator
 
 Tests the qSOFA sepsis screening score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestQsofaScoreE2E:
     """E2E tests for qSOFA Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/qsofa_score"
-    
-    def test_no_criteria_met(self, test_client):
+
+    def test_no_criteria_met(self, test_client: Any) -> None:
         """Test qSOFA 0 - no criteria met"""
         payload = {
             "params": {
@@ -24,8 +24,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_one_criterion_respiratory(self, test_client):
+
+    def test_one_criterion_respiratory(self, test_client: Any) -> None:
         """Test qSOFA 1 - only respiratory rate elevated"""
         payload = {
             "params": {
@@ -37,8 +37,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_one_criterion_hypotension(self, test_client):
+
+    def test_one_criterion_hypotension(self, test_client: Any) -> None:
         """Test qSOFA 1 - only hypotension"""
         payload = {
             "params": {
@@ -50,8 +50,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_one_criterion_mentation(self, test_client):
+
+    def test_one_criterion_mentation(self, test_client: Any) -> None:
         """Test qSOFA 1 - only altered mentation"""
         payload = {
             "params": {
@@ -63,8 +63,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_two_criteria_positive(self, test_client):
+
+    def test_two_criteria_positive(self, test_client: Any) -> None:
         """Test qSOFA 2 - two criteria met (positive screen)"""
         payload = {
             "params": {
@@ -76,8 +76,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_all_criteria_met(self, test_client):
+
+    def test_all_criteria_met(self, test_client: Any) -> None:
         """Test qSOFA 3 - all criteria met"""
         payload = {
             "params": {
@@ -89,8 +89,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_with_gcs_score(self, test_client):
+
+    def test_with_gcs_score(self, test_client: Any) -> None:
         """Test using GCS score for altered mentation"""
         payload = {
             "params": {
@@ -103,8 +103,8 @@ class TestQsofaScoreE2E:
         data = assert_successful_calculation(response)
         # GCS < 15 = altered mentation
         assert data["result"]["value"] >= 1
-    
-    def test_boundary_respiratory_rate(self, test_client):
+
+    def test_boundary_respiratory_rate(self, test_client: Any) -> None:
         """Test boundary respiratory rate (≥22)"""
         payload = {
             "params": {
@@ -116,8 +116,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_boundary_systolic_bp(self, test_client):
+
+    def test_boundary_systolic_bp(self, test_client: Any) -> None:
         """Test boundary systolic BP (≤100)"""
         payload = {
             "params": {
@@ -129,8 +129,8 @@ class TestQsofaScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

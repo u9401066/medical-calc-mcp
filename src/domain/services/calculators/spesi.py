@@ -10,22 +10,23 @@ References:
 """
 
 from typing import Optional
-from ..base import BaseCalculator
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
 from ...value_objects.units import Unit
-from ...value_objects.tool_keys import LowLevelKey, HighLevelKey, Specialty, ClinicalContext
+from ..base import BaseCalculator
 
 
 class SimplifiedPESICalculator(BaseCalculator):
     """
     Simplified Pulmonary Embolism Severity Index (sPESI) Calculator
-    
+
     Stratifies PE patients into low-risk vs high-risk categories
     for 30-day mortality prediction.
-    
+
     6 criteria (each = 1 point):
     - Age >80 years
     - Cancer history
@@ -33,11 +34,11 @@ class SimplifiedPESICalculator(BaseCalculator):
     - Heart rate ≥110 bpm
     - SBP <100 mmHg
     - SpO₂ <90%
-    
+
     Score 0 = Low risk (30-day mortality ~1%)
     Score ≥1 = High risk (30-day mortality ~10.9%)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -45,10 +46,10 @@ class SimplifiedPESICalculator(BaseCalculator):
                 tool_id="spesi",
                 name="Simplified Pulmonary Embolism Severity Index (sPESI)",
                 purpose="Risk stratify acute PE patients for 30-day mortality",
-                input_params=(
+                input_params=[
                     "age", "cancer", "chronic_cardiopulmonary_disease",
                     "heart_rate", "systolic_bp", "spo2"
-                ),
+                ],
                 output_type="sPESI (0 or ≥1) with risk classification"
             ),
             high_level=HighLevelKey(
@@ -95,7 +96,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         age: int,
@@ -111,7 +112,7 @@ class SimplifiedPESICalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Simplified PESI Score
-        
+
         Args:
             age: Patient age in years
             cancer: Active cancer or cancer within past year
@@ -119,23 +120,23 @@ class SimplifiedPESICalculator(BaseCalculator):
             heart_rate: Heart rate in bpm (optional if heart_rate_gte_110 provided)
             systolic_bp: Systolic BP in mmHg (optional if sbp_lt_100 provided)
             spo2: Oxygen saturation % (optional if spo2_lt_90 provided)
-            
+
         Alternative (direct criteria):
             heart_rate_gte_110: Heart rate ≥110 bpm
             sbp_lt_100: Systolic BP <100 mmHg
             spo2_lt_90: SpO₂ <90%
-            
+
         Returns:
             ScoreResult with risk classification
         """
         # Validate age
         if not 18 <= age <= 120:
             raise ValueError("Age must be between 18-120 years")
-        
+
         # Calculate criteria
         score = 0
         components = []
-        
+
         # 1. Age >80 years
         age_criteria = age > 80
         if age_criteria:
@@ -143,21 +144,21 @@ class SimplifiedPESICalculator(BaseCalculator):
             components.append(f"Age >80: Yes ({age} years) +1")
         else:
             components.append(f"Age >80: No ({age} years) +0")
-        
+
         # 2. Cancer
         if cancer:
             score += 1
             components.append("Cancer history: Yes +1")
         else:
             components.append("Cancer history: No +0")
-        
+
         # 3. Chronic cardiopulmonary disease
         if chronic_cardiopulmonary_disease:
             score += 1
             components.append("Chronic cardiopulmonary disease: Yes +1")
         else:
             components.append("Chronic cardiopulmonary disease: No +0")
-        
+
         # 4. Heart rate ≥110 bpm
         if heart_rate_gte_110 is not None:
             hr_criteria = heart_rate_gte_110
@@ -167,7 +168,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             hr_criteria = heart_rate >= 110
         else:
             hr_criteria = False  # Assume normal if not provided
-            
+
         if hr_criteria:
             score += 1
             hr_text = f" ({heart_rate} bpm)" if heart_rate else ""
@@ -175,7 +176,7 @@ class SimplifiedPESICalculator(BaseCalculator):
         else:
             hr_text = f" ({heart_rate} bpm)" if heart_rate else ""
             components.append(f"Heart rate ≥110: No{hr_text} +0")
-        
+
         # 5. Systolic BP <100 mmHg
         if sbp_lt_100 is not None:
             sbp_criteria = sbp_lt_100
@@ -185,7 +186,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             sbp_criteria = systolic_bp < 100
         else:
             sbp_criteria = False  # Assume normal if not provided
-            
+
         if sbp_criteria:
             score += 1
             sbp_text = f" ({systolic_bp} mmHg)" if systolic_bp else ""
@@ -193,7 +194,7 @@ class SimplifiedPESICalculator(BaseCalculator):
         else:
             sbp_text = f" ({systolic_bp} mmHg)" if systolic_bp else ""
             components.append(f"SBP <100: No{sbp_text} +0")
-        
+
         # 6. SpO₂ <90%
         if spo2_lt_90 is not None:
             spo2_criteria = spo2_lt_90
@@ -203,7 +204,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             spo2_criteria = spo2 < 90
         else:
             spo2_criteria = False  # Assume normal if not provided
-            
+
         if spo2_criteria:
             score += 1
             spo2_text = f" ({spo2}%)" if spo2 else ""
@@ -211,9 +212,9 @@ class SimplifiedPESICalculator(BaseCalculator):
         else:
             spo2_text = f" ({spo2}%)" if spo2 else ""
             components.append(f"SpO₂ <90%: No{spo2_text} +0")
-        
+
         components.append(f"Total sPESI Score: {score}")
-        
+
         # Risk stratification
         if score == 0:
             risk_category = "Low Risk"
@@ -222,7 +223,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             interpretation = Interpretation(
                 summary=f"sPESI {score}: Low Risk PE - Outpatient treatment possible",
                 detail=(
-                    f"sPESI = 0: Low risk for 30-day mortality (~1%). "
+                    "sPESI = 0: Low risk for 30-day mortality (~1%). "
                     "May be candidate for outpatient treatment if other criteria met."
                 ),
                 severity=Severity.MILD,
@@ -247,7 +248,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             risk_category = "High Risk"
             mortality_30d = "10.9% (8.5-13.2%)"
             outpatient_candidate = False
-            
+
             if score == 1:
                 interpretation = Interpretation(
                     summary=f"sPESI {score}: Not Low Risk PE - Hospital admission",
@@ -330,7 +331,7 @@ class SimplifiedPESICalculator(BaseCalculator):
                         "Echocardiogram urgently",
                     ),
                 )
-        
+
         return ScoreResult(
             value=score,
             unit=Unit.SCORE,

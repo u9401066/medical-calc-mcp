@@ -1,3 +1,4 @@
+from typing import Any
 """
 E2E Tests for ABCD2 Score Calculator
 
@@ -10,16 +11,15 @@ Parameters:
     duration_minutes: Literal["lt_10", "10_to_59", "gte_60"]
     diabetes: bool - History of diabetes
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestAbcd2E2E:
     """E2E tests for ABCD2 Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/abcd2"
-    
-    def test_low_risk_score_0_3(self, test_client):
+
+    def test_low_risk_score_0_3(self, test_client: Any) -> None:
         """Test low risk patient (score 0-3)"""
         payload = {
             "params": {
@@ -33,8 +33,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 3
-    
-    def test_moderate_risk_score_4_5(self, test_client):
+
+    def test_moderate_risk_score_4_5(self, test_client: Any) -> None:
         """Test moderate risk patient (score 4-5)"""
         payload = {
             "params": {
@@ -48,8 +48,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_high_risk_score_6_7(self, test_client):
+
+    def test_high_risk_score_6_7(self, test_client: Any) -> None:
         """Test high risk patient (score 6-7)"""
         payload = {
             "params": {
@@ -63,8 +63,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 6
-    
-    def test_young_patient_brief_tia(self, test_client):
+
+    def test_young_patient_brief_tia(self, test_client: Any) -> None:
         """Test young patient with brief TIA"""
         payload = {
             "params": {
@@ -78,8 +78,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_elderly_hypertensive_diabetic(self, test_client):
+
+    def test_elderly_hypertensive_diabetic(self, test_client: Any) -> None:
         """Test elderly, hypertensive, diabetic patient"""
         payload = {
             "params": {
@@ -93,8 +93,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_unilateral_weakness(self, test_client):
+
+    def test_unilateral_weakness(self, test_client: Any) -> None:
         """Test patient with unilateral weakness (clinical features = 2 points)"""
         payload = {
             "params": {
@@ -108,8 +108,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_speech_disturbance_only(self, test_client):
+
+    def test_speech_disturbance_only(self, test_client: Any) -> None:
         """Test patient with speech disturbance only (clinical features = 1 point)"""
         payload = {
             "params": {
@@ -123,8 +123,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_prolonged_symptoms(self, test_client):
+
+    def test_prolonged_symptoms(self, test_client: Any) -> None:
         """Test patient with prolonged symptoms (≥60 min)"""
         payload = {
             "params": {
@@ -138,8 +138,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_maximum_score(self, test_client):
+
+    def test_maximum_score(self, test_client: Any) -> None:
         """Test maximum possible score (7)"""
         payload = {
             "params": {
@@ -153,8 +153,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 7
-    
-    def test_minimum_score(self, test_client):
+
+    def test_minimum_score(self, test_client: Any) -> None:
         """Test minimum possible score (0)"""
         payload = {
             "params": {
@@ -168,8 +168,8 @@ class TestAbcd2E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

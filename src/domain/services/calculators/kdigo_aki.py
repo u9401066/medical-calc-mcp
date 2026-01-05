@@ -22,31 +22,32 @@ Supporting References:
 """
 
 from typing import Optional
-from ..base import BaseCalculator
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class KdigoAkiCalculator(BaseCalculator):
     """
     KDIGO AKI Staging Calculator
-    
+
     AKI Definition (any of the following):
     - Increase in serum creatinine ≥0.3 mg/dL within 48 hours
     - Increase in serum creatinine ≥1.5x baseline within 7 days
     - Urine output <0.5 mL/kg/h for 6 hours
-    
+
     KDIGO AKI Staging:
-    
+
     | Stage | Serum Creatinine Criteria | Urine Output Criteria |
     |-------|---------------------------|----------------------|
     | 1     | 1.5-1.9x baseline OR      | <0.5 mL/kg/h for     |
@@ -56,13 +57,13 @@ class KdigoAkiCalculator(BaseCalculator):
     | 3     | ≥3.0x baseline OR         | <0.3 mL/kg/h for     |
     |       | ≥4.0 mg/dL OR             | ≥24 hours OR         |
     |       | Initiation of RRT         | Anuria for ≥12 hours |
-    
+
     Clinical implications:
     - Stage 1: Mild AKI - close monitoring, identify/treat cause
     - Stage 2: Moderate AKI - aggressive management, nephrology consult
     - Stage 3: Severe AKI - high mortality, likely RRT candidate
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -159,7 +160,7 @@ class KdigoAkiCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         current_creatinine: float,
@@ -171,7 +172,7 @@ class KdigoAkiCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate KDIGO AKI stage.
-        
+
         Args:
             current_creatinine: Current serum creatinine in mg/dL
             baseline_creatinine: Baseline creatinine in mg/dL (if known).
@@ -183,7 +184,7 @@ class KdigoAkiCalculator(BaseCalculator):
             urine_output_duration_hours: Duration of reduced urine output in hours.
             on_rrt: Currently on renal replacement therapy (dialysis/CRRT)?
                 Automatically Stage 3 if true.
-            
+
         Returns:
             ScoreResult with AKI stage and management recommendations
         """
@@ -191,28 +192,28 @@ class KdigoAkiCalculator(BaseCalculator):
         cr_stage = self._stage_by_creatinine(
             current_creatinine, baseline_creatinine, creatinine_increase_48h
         )
-        
+
         # Determine AKI stage based on urine output criteria
         uo_stage = self._stage_by_urine_output(
             urine_output_ml_kg_h, urine_output_duration_hours
         )
-        
+
         # RRT automatically means Stage 3
         if on_rrt:
             final_stage = 3
         else:
             # Take the higher (worse) stage
             final_stage = max(cr_stage, uo_stage)
-        
+
         # Check if AKI criteria met
         has_aki = final_stage > 0
-        
+
         # Generate interpretation
         interpretation = self._interpret_stage(
-            final_stage, cr_stage, uo_stage, 
+            final_stage, cr_stage, uo_stage,
             current_creatinine, baseline_creatinine, on_rrt
         )
-        
+
         # Calculation details
         components = {
             "Current Creatinine": f"{current_creatinine} mg/dL",
@@ -226,7 +227,7 @@ class KdigoAkiCalculator(BaseCalculator):
             "AKI Present": "Yes" if has_aki else "No",
             "Final KDIGO Stage": final_stage if has_aki else "No AKI",
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -236,7 +237,7 @@ class KdigoAkiCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _stage_by_creatinine(
         self,
         current: float,
@@ -245,28 +246,28 @@ class KdigoAkiCalculator(BaseCalculator):
     ) -> int:
         """Determine AKI stage by creatinine criteria"""
         stage = 0
-        
+
         # Check 48h absolute increase (≥0.3 mg/dL = Stage 1)
         if increase_48h is not None and increase_48h >= 0.3:
             stage = max(stage, 1)
-        
+
         # Check ratio to baseline
         if baseline is not None and baseline > 0:
             ratio = current / baseline
-            
+
             if ratio >= 3.0:
                 stage = 3
             elif ratio >= 2.0:
                 stage = max(stage, 2)
             elif ratio >= 1.5:
                 stage = max(stage, 1)
-        
+
         # Absolute creatinine ≥4.0 mg/dL = Stage 3
         if current >= 4.0:
             stage = 3
-        
+
         return stage
-    
+
     def _stage_by_urine_output(
         self,
         uo_ml_kg_h: Optional[float],
@@ -275,25 +276,25 @@ class KdigoAkiCalculator(BaseCalculator):
         """Determine AKI stage by urine output criteria"""
         if uo_ml_kg_h is None or duration_hours is None:
             return 0
-        
+
         # Anuria (essentially 0) for ≥12 hours = Stage 3
         if uo_ml_kg_h < 0.1 and duration_hours >= 12:
             return 3
-        
+
         # <0.3 mL/kg/h for ≥24 hours = Stage 3
         if uo_ml_kg_h < 0.3 and duration_hours >= 24:
             return 3
-        
+
         # <0.5 mL/kg/h for ≥12 hours = Stage 2
         if uo_ml_kg_h < 0.5 and duration_hours >= 12:
             return 2
-        
+
         # <0.5 mL/kg/h for 6-12 hours = Stage 1
         if uo_ml_kg_h < 0.5 and duration_hours >= 6:
             return 1
-        
+
         return 0
-    
+
     def _interpret_stage(
         self,
         stage: int,
@@ -304,7 +305,7 @@ class KdigoAkiCalculator(BaseCalculator):
         on_rrt: bool,
     ) -> Interpretation:
         """Generate interpretation based on KDIGO AKI stage"""
-        
+
         if stage == 0:
             # No AKI
             severity = Severity.NORMAL
@@ -326,7 +327,7 @@ class KdigoAkiCalculator(BaseCalculator):
                 "Address any identified risk factors",
             ]
             warnings = []
-            
+
         elif stage == 1:
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -353,7 +354,7 @@ class KdigoAkiCalculator(BaseCalculator):
             warnings = [
                 "Stage 1 AKI can progress to higher stages if cause not addressed."
             ]
-            
+
         elif stage == 2:
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
@@ -385,11 +386,11 @@ class KdigoAkiCalculator(BaseCalculator):
                 "May progress to Stage 3 requiring dialysis.",
                 "Watch for hyperkalemia, severe acidosis, volume overload as RRT indications.",
             ]
-            
+
         else:  # Stage 3
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
-            
+
             if on_rrt:
                 summary = "KDIGO AKI Stage 3: Severe AKI on renal replacement therapy"
                 detail = (
@@ -404,7 +405,7 @@ class KdigoAkiCalculator(BaseCalculator):
                     "urine output <0.3 mL/kg/h for ≥24h OR anuria for ≥12h. "
                     "Severe injury with high mortality. May require RRT."
                 )
-            
+
             recommendations = [
                 "Urgent nephrology involvement essential",
                 "Evaluate for RRT indications:",
@@ -430,7 +431,7 @@ class KdigoAkiCalculator(BaseCalculator):
                 "Continue to address underlying cause even while on RRT.",
                 "Some patients may recover; monitor for return of urine output.",
             ]
-        
+
         # Add additional context
         stage_criteria = {
             0: "Does not meet AKI criteria",
@@ -438,7 +439,7 @@ class KdigoAkiCalculator(BaseCalculator):
             2: "Cr 2.0-2.9x baseline OR UO <0.5 mL/kg/h × ≥12h",
             3: "Cr ≥3.0x baseline OR ≥4.0 mg/dL OR UO <0.3 mL/kg/h × ≥24h OR anuria ≥12h OR RRT",
         }
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for APACHE II Calculator
 
 Tests the APACHE II ICU severity score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestApacheIiE2E:
     """E2E tests for APACHE II Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/apache_ii"
-    
-    def test_low_severity_normal_values(self, test_client):
+
+    def test_low_severity_normal_values(self, test_client: Any) -> None:
         """Test low severity with normal physiological values"""
         payload = {
             "params": {
@@ -36,8 +36,8 @@ class TestApacheIiE2E:
         data = assert_successful_calculation(response)
         # Low severity should have low score
         assert data["result"]["value"] < 15
-    
-    def test_moderate_severity(self, test_client):
+
+    def test_moderate_severity(self, test_client: Any) -> None:
         """Test moderate severity patient"""
         payload = {
             "params": {
@@ -60,8 +60,8 @@ class TestApacheIiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 10
-    
-    def test_high_severity(self, test_client):
+
+    def test_high_severity(self, test_client: Any) -> None:
         """Test high severity critically ill patient"""
         payload = {
             "params": {
@@ -84,8 +84,8 @@ class TestApacheIiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 25
-    
-    def test_elderly_patient(self, test_client):
+
+    def test_elderly_patient(self, test_client: Any) -> None:
         """Test elderly patient (age points)"""
         payload = {
             "params": {
@@ -109,8 +109,8 @@ class TestApacheIiE2E:
         data = assert_successful_calculation(response)
         # Age > 75 adds points
         assert data["result"]["value"] >= 0
-    
-    def test_with_chronic_health(self, test_client):
+
+    def test_with_chronic_health(self, test_client: Any) -> None:
         """Test with chronic health conditions"""
         payload = {
             "params": {
@@ -134,8 +134,8 @@ class TestApacheIiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_septic_patient(self, test_client):
+
+    def test_septic_patient(self, test_client: Any) -> None:
         """Test typical septic patient presentation"""
         payload = {
             "params": {
@@ -158,8 +158,8 @@ class TestApacheIiE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 15
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

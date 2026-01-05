@@ -10,7 +10,7 @@ Reference:
     Anesthesiology. 2008;108(5):812-821.
     DOI: 10.1097/ALN.0b013e31816d83e4
     PMID: 18431116
-    
+
     Chung F, Abdullah HR, Liao P.
     STOP-Bang Questionnaire: A Practical Approach to Screen for Obstructive Sleep Apnea.
     Chest. 2016;149(3):631-638.
@@ -18,41 +18,36 @@ Reference:
     PMID: 26378880
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class StopBangCalculator(BaseCalculator):
     """
     STOP-BANG Questionnaire for OSA Screening
-    
+
     STOP criteria (symptoms):
     - S: Snoring loudly
     - T: Tired/sleepy during daytime
     - O: Observed apnea during sleep
     - P: Pressure (high blood pressure)
-    
+
     BANG criteria (physical findings):
     - B: BMI > 35 kg/m²
     - A: Age > 50 years
     - N: Neck circumference > 40 cm (16 inches)
     - G: Gender = Male
-    
+
     Risk Stratification:
     - 0-2: Low risk of OSA
     - 3-4: Intermediate risk of OSA
     - 5-8: High risk of OSA
-    
+
     High risk also if:
     - Score ≥2 + Male gender
     - Score ≥2 + BMI > 35
@@ -145,7 +140,7 @@ class StopBangCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate STOP-BANG Score.
-        
+
         Args:
             snoring: Do you SNORE loudly?
             tired: Do you often feel TIRED, fatigued, or sleepy during daytime?
@@ -155,7 +150,7 @@ class StopBangCalculator(BaseCalculator):
             age_over_50: Age > 50 years old?
             neck_over_40cm: Neck circumference > 40 cm (16 inches)?
             male_gender: Gender = Male?
-            
+
         Returns:
             ScoreResult with OSA risk stratification
         """
@@ -170,18 +165,18 @@ class StopBangCalculator(BaseCalculator):
             neck_over_40cm,
             male_gender
         ])
-        
+
         # Check for high-risk BANG criteria
         bang_criteria_met = sum([bmi_over_35, neck_over_40cm, male_gender])
         stop_score = sum([snoring, tired, observed_apnea, high_blood_pressure])
-        
+
         # Determine risk level with special high-risk criteria
-        high_risk_by_criteria = (stop_score >= 2 and 
+        high_risk_by_criteria = (stop_score >= 2 and
                                  (male_gender or bmi_over_35 or neck_over_40cm))
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score, high_risk_by_criteria)
-        
+
         # Build criteria list
         criteria_present = []
         if snoring:
@@ -200,7 +195,7 @@ class StopBangCalculator(BaseCalculator):
             criteria_present.append("N: Neck > 40 cm")
         if male_gender:
             criteria_present.append("G: Male Gender")
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -230,7 +225,7 @@ class StopBangCalculator(BaseCalculator):
 
     def _get_interpretation(self, score: int, high_risk_by_criteria: bool) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score <= 2 and not high_risk_by_criteria:
             return Interpretation(
                 summary="Low Risk for OSA",
@@ -319,18 +314,18 @@ class StopBangCalculator(BaseCalculator):
             "STOP-BANG validated in preoperative surgical patients",
             "Sensitivity increases with OSA severity (highest for severe OSA)",
         ]
-        
+
         if score >= 3 or high_risk:
             notes.extend([
                 "High-risk patients: consider CPAP trial preoperatively",
                 "Outpatient surgery may require extended observation period",
                 "Regional anesthesia preferred when feasible",
             ])
-        
+
         if score >= 5:
             notes.extend([
                 "Score ≥5: 60-70% probability of moderate-severe OSA (AHI ≥15)",
                 "Consider formal sleep study if major surgery planned",
             ])
-        
+
         return notes

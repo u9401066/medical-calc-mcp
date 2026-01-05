@@ -28,37 +28,32 @@ Score Interpretation:
 References:
     James HE. Neurologic evaluation and support in the child with an acute
     brain insult. Pediatr Ann. 1986;15(1):16-22. PMID: 3951884
-    
+
     Simpson D, Reilly P. Pediatric coma scale.
     Lancet. 1982;2(8295):450. PMID: 6124856
-    
+
     Holmes JF, et al. Performance of the pediatric Glasgow Coma Scale
     in children with blunt head trauma.
     Acad Emerg Med. 2005;12(9):814-819. PMID: 16141014
-    
+
     Reilly PL, Simpson DA, Sprod R, Thomas L. Assessing the conscious level
     in infants and young children: a paediatric version of the Glasgow Coma Scale.
     Childs Nerv Syst. 1988;4(1):30-33. PMID: 3401866
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class PediatricGCSCalculator(BaseCalculator):
     """
     Pediatric Glasgow Coma Scale (Pediatric GCS) Calculator
-    
+
     Age-adapted GCS for infants and young children.
     Uses modified verbal scale for pre-verbal patients.
     """
@@ -140,7 +135,7 @@ class PediatricGCSCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Pediatric Glasgow Coma Scale.
-        
+
         Args:
             eye_response: Eye opening response (1-4)
                 4 = Spontaneous
@@ -169,7 +164,7 @@ class PediatricGCSCalculator(BaseCalculator):
                 1 = None
             age_group: "infant" (<1y) or "child" (≥1y)
             intubated: If intubated, verbal score noted as "T"
-        
+
         Returns:
             ScoreResult with Pediatric GCS and interpretation
         """
@@ -180,7 +175,7 @@ class PediatricGCSCalculator(BaseCalculator):
             raise ValueError("verbal_response must be 1-5")
         if motor_response < 1 or motor_response > 6:
             raise ValueError("motor_response must be 1-6")
-        
+
         valid_ages = ["infant", "child"]
         if age_group not in valid_ages:
             raise ValueError(f"age_group must be one of: {valid_ages}")

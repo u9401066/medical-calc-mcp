@@ -1,3 +1,4 @@
+from typing import Any
 """
 E2E Tests for AIMS65 Score Calculator
 
@@ -10,16 +11,15 @@ Parameters:
     sbp_lte_90: bool - Systolic BP ≤ 90 mmHg
     age_gte_65: bool - Age ≥ 65 years
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestAims65E2E:
     """E2E tests for AIMS65 Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/aims65"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low mortality risk (score 0)"""
         payload = {
             "params": {
@@ -34,8 +34,8 @@ class TestAims65E2E:
         data = assert_successful_calculation(response)
         # Score 0 = 0.3% mortality
         assert data["result"]["value"] == 0
-    
-    def test_score_1(self, test_client):
+
+    def test_score_1(self, test_client: Any) -> None:
         """Test score 1 - ~1% mortality"""
         payload = {
             "params": {
@@ -49,8 +49,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_score_2(self, test_client):
+
+    def test_score_2(self, test_client: Any) -> None:
         """Test score 2 - ~3% mortality"""
         payload = {
             "params": {
@@ -64,8 +64,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_score_3(self, test_client):
+
+    def test_score_3(self, test_client: Any) -> None:
         """Test score 3 - ~10% mortality"""
         payload = {
             "params": {
@@ -79,8 +79,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
-    
-    def test_score_4(self, test_client):
+
+    def test_score_4(self, test_client: Any) -> None:
         """Test score 4 - ~20% mortality"""
         payload = {
             "params": {
@@ -94,8 +94,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
-    
-    def test_maximum_score_5(self, test_client):
+
+    def test_maximum_score_5(self, test_client: Any) -> None:
         """Test maximum score 5 - ~25% mortality"""
         payload = {
             "params": {
@@ -109,8 +109,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 5
-    
-    def test_elderly_patient_only(self, test_client):
+
+    def test_elderly_patient_only(self, test_client: Any) -> None:
         """Test elderly patient with no other risk factors"""
         payload = {
             "params": {
@@ -124,8 +124,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_hypotensive_confused(self, test_client):
+
+    def test_hypotensive_confused(self, test_client: Any) -> None:
         """Test hypotensive patient with altered mental status"""
         payload = {
             "params": {
@@ -139,8 +139,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_coagulopathic_patient(self, test_client):
+
+    def test_coagulopathic_patient(self, test_client: Any) -> None:
         """Test coagulopathic patient (elevated INR)"""
         payload = {
             "params": {
@@ -154,8 +154,8 @@ class TestAims65E2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for CHA₂DS₂-VA Score Calculator (2024 ESC, Sex-neutral)
 
 Tests the sex-neutral CHA₂DS₂-VA stroke risk score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestChads2VaE2E:
     """E2E tests for CHA₂DS₂-VA Score Calculator (2024 ESC)"""
-    
+
     ENDPOINT = "/api/v1/calculate/chads2_va"
-    
-    def test_low_risk_score_0(self, test_client):
+
+    def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk - score 0 (no risk factors)"""
         payload = {
             "params": {
@@ -28,8 +28,8 @@ class TestChads2VaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
-    
-    def test_single_risk_factor(self, test_client):
+
+    def test_single_risk_factor(self, test_client: Any) -> None:
         """Test single risk factor (score 1)"""
         payload = {
             "params": {
@@ -45,8 +45,8 @@ class TestChads2VaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
-    
-    def test_prior_stroke_2_points(self, test_client):
+
+    def test_prior_stroke_2_points(self, test_client: Any) -> None:
         """Test prior stroke/TIA (2 points)"""
         payload = {
             "params": {
@@ -62,8 +62,8 @@ class TestChads2VaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_age_over_75_2_points(self, test_client):
+
+    def test_age_over_75_2_points(self, test_client: Any) -> None:
         """Test age ≥75 (2 points)"""
         payload = {
             "params": {
@@ -79,8 +79,8 @@ class TestChads2VaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_multiple_risk_factors(self, test_client):
+
+    def test_multiple_risk_factors(self, test_client: Any) -> None:
         """Test multiple risk factors"""
         payload = {
             "params": {
@@ -97,8 +97,8 @@ class TestChads2VaE2E:
         data = assert_successful_calculation(response)
         # CHF(1) + HTN(1) + DM(1) + Vasc(1) + Age65-74(1) = 5
         assert data["result"]["value"] == 5
-    
-    def test_maximum_score(self, test_client):
+
+    def test_maximum_score(self, test_client: Any) -> None:
         """Test maximum possible score"""
         payload = {
             "params": {
@@ -115,8 +115,8 @@ class TestChads2VaE2E:
         data = assert_successful_calculation(response)
         # Maximum score is 8 (without sex)
         assert data["result"]["value"] == 8
-    
-    def test_anticoagulation_threshold(self, test_client):
+
+    def test_anticoagulation_threshold(self, test_client: Any) -> None:
         """Test at anticoagulation threshold (score 2)"""
         payload = {
             "params": {
@@ -132,8 +132,8 @@ class TestChads2VaE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

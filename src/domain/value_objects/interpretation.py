@@ -5,13 +5,13 @@ Represents clinical interpretation of calculation results.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 from enum import Enum
+from typing import Any, Optional
 
 
 class Severity(Enum):
     """Severity levels for clinical interpretation"""
-    
+
     NORMAL = "normal"
     MILD = "mild"
     MODERATE = "moderate"
@@ -21,7 +21,7 @@ class Severity(Enum):
 
 class RiskLevel(Enum):
     """Risk stratification levels"""
-    
+
     VERY_LOW = "very_low"
     LOW = "low"
     INTERMEDIATE = "intermediate"
@@ -33,10 +33,10 @@ class RiskLevel(Enum):
 class Interpretation:
     """
     Clinical interpretation of a calculation result.
-    
+
     Provides structured clinical meaning of the calculated score/value.
     All interpretation text must be original content.
-    
+
     Attributes:
         summary: Brief interpretation (1-2 sentences)
         detail: Detailed explanation
@@ -48,7 +48,7 @@ class Interpretation:
         warnings: Important warnings or caveats
         next_steps: Suggested next clinical steps
     """
-    
+
     summary: str
     detail: Optional[str] = None
     severity: Optional[Severity] = None
@@ -58,8 +58,8 @@ class Interpretation:
     recommendations: tuple[str, ...] = field(default_factory=tuple)
     warnings: tuple[str, ...] = field(default_factory=tuple)
     next_steps: tuple[str, ...] = field(default_factory=tuple)
-    
-    def to_dict(self) -> dict:
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "summary": self.summary,
             "detail": self.detail,

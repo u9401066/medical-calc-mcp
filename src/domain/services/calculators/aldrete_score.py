@@ -9,7 +9,7 @@ Reference:
     A postanesthetic recovery score.
     Anesth Analg. 1970;49(6):924-934.
     PMID: 5534693
-    
+
     Aldrete JA.
     The post-anesthesia recovery score revisited.
     J Clin Anesth. 1995;7(1):89-91.
@@ -18,51 +18,46 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class AldreteScoreCalculator(BaseCalculator):
     """
     Aldrete Score (Modified) for Post-Anesthesia Discharge
-    
+
     Five criteria, each scored 0-2 (max 10 points):
-    
+
     1. Activity (Motor Function):
        - 2: Moves all extremities voluntarily/on command
        - 1: Moves two extremities
        - 0: Unable to move extremities
-       
+
     2. Respiration:
        - 2: Breathes deeply, coughs freely
        - 1: Dyspnea, shallow or limited breathing
        - 0: Apneic
-       
+
     3. Circulation (Blood Pressure):
        - 2: BP ±20 mmHg of preanesthetic level
        - 1: BP ±20-50 mmHg of preanesthetic level
        - 0: BP ±50 mmHg of preanesthetic level
-       
+
     4. Consciousness:
        - 2: Fully awake
        - 1: Arousable on calling
        - 0: Not responding
-       
+
     5. Oxygen Saturation (SpO2):
        - 2: SpO2 >92% on room air
        - 1: Needs O2 to maintain SpO2 >90%
        - 0: SpO2 <90% even with O2
-    
+
     Discharge criteria: Score ≥9 typically required for PACU discharge
     """
 
@@ -141,7 +136,7 @@ class AldreteScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Aldrete Score.
-        
+
         Args:
             activity: Motor function
                 0=Unable to move, 1=Moves 2 extremities, 2=Moves all 4
@@ -153,13 +148,13 @@ class AldreteScoreCalculator(BaseCalculator):
                 0=Not responding, 1=Arousable, 2=Fully awake
             oxygen_saturation: SpO2 status
                 0=<90% with O2, 1=Needs O2 for >90%, 2=>92% on room air
-            
+
         Returns:
             ScoreResult with discharge recommendation
         """
         # Calculate total score
         score = activity + respiration + circulation + consciousness + oxygen_saturation
-        
+
         # Component analysis
         components = {
             "activity": {
@@ -188,15 +183,15 @@ class AldreteScoreCalculator(BaseCalculator):
                 "description": self._spo2_description(oxygen_saturation)
             }
         }
-        
+
         # Identify limiting factors (components < 2)
         limiting_factors = [
-            name for name, data in components.items() if data["score"] < 2
+            name for name, data in components.items() if int(data["score"]) < 2
         ]
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score, limiting_factors)
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -268,7 +263,7 @@ class AldreteScoreCalculator(BaseCalculator):
 
     def _get_interpretation(self, score: int, limiting_factors: list[str]) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score >= 9:
             return Interpretation(
                 summary=f"Ready for PACU Discharge (Aldrete {score}/10)",
@@ -369,17 +364,17 @@ class AldreteScoreCalculator(BaseCalculator):
             "Aldrete score should be documented every 5-15 minutes in PACU",
             "Score ≥9 generally required for Phase I PACU discharge",
         ]
-        
+
         if "oxygen_saturation" in limiting_factors:
             notes.append("SpO2 issues: Consider residual anesthetic effect, atelectasis, or bronchospasm")
-        
+
         if "consciousness" in limiting_factors:
             notes.append("Delayed awakening: Consider residual drug effect, metabolic causes, or neurological event")
-        
+
         if "activity" in limiting_factors:
             notes.append("Motor deficit: Consider residual neuromuscular blockade (check TOF), neuraxial block effect")
-        
+
         if score < 9:
             notes.append("Some institutions use Aldrete ≥8 for discharge; follow local protocol")
-        
+
         return notes

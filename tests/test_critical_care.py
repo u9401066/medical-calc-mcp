@@ -1,23 +1,23 @@
+from typing import Any
 """Tests for Critical Care Calculators"""
-import pytest
 
 
 class TestSofaCalculator:
-    def test_sofa_basic(self):
+    def test_sofa_basic(self) -> None:
         from src.domain.services.calculators import SofaScoreCalculator
         calc = SofaScoreCalculator()
         result = calc.calculate(
             pao2_fio2_ratio=400, platelets=150, bilirubin=1.0,
             gcs_score=15, creatinine=1.0
         )
+        assert result.value is not None
         assert result.value >= 0
-        assert result.interpretation is not None
 
 
 class TestSofa2Calculator:
     """Test SOFA-2 Score (JAMA 2025 Update)"""
-    
-    def test_sofa2_all_normal(self):
+
+    def test_sofa2_all_normal(self) -> None:
         """Test SOFA-2 with completely normal values = 0"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
@@ -29,11 +29,13 @@ class TestSofa2Calculator:
             platelets=200,         # > 150
             map_value=75,          # ≥ 70
         )
+        assert result.value is not None
         assert result.value == 0
         assert "SOFA-2" in result.tool_name
+        assert result.calculation_details is not None
         assert result.calculation_details["sofa_version"] == "SOFA-2 (2025)"
-    
-    def test_sofa2_mild_dysfunction(self):
+
+    def test_sofa2_mild_dysfunction(self) -> None:
         """Test SOFA-2 with mild dysfunction in each system"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
@@ -45,40 +47,52 @@ class TestSofa2Calculator:
             platelets=120,         # Score 1 (≤ 150)
             map_value=65,          # Score 1 (< 70)
         )
+        assert result.value is not None
         assert result.value == 6  # All organs score 1
+        assert result.calculation_details is not None
         assert result.calculation_details["brain"] == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["liver"] == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["kidney"] == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["hemostasis"] == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["cardiovascular"] == 1
-    
-    def test_sofa2_respiratory_with_pf_thresholds(self):
+
+    def test_sofa2_respiratory_with_pf_thresholds(self) -> None:
         """Test SOFA-2 new P/F ratio thresholds: 300, 225, 150, 75"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         # P/F > 300 = 0
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=350, bilirubin=1.0, creatinine=1.0, platelets=200)
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 0
-        
+
         # P/F ≤ 300 = 1
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=300, bilirubin=1.0, creatinine=1.0, platelets=200)
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 1
-        
+
         # P/F ≤ 225 = 2
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=200, bilirubin=1.0, creatinine=1.0, platelets=200)
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 2
-        
+
         # P/F ≤ 150 with advanced support = 3
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=120, bilirubin=1.0, creatinine=1.0, platelets=200, advanced_ventilatory_support=True)
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 3
-        
+
         # P/F ≤ 75 with advanced support = 4
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=60, bilirubin=1.0, creatinine=1.0, platelets=200, advanced_ventilatory_support=True)
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 4
-    
-    def test_sofa2_ecmo_scores_4(self):
+
+    def test_sofa2_ecmo_scores_4(self) -> None:
         """Test that ECMO automatically scores respiratory = 4"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
@@ -90,98 +104,115 @@ class TestSofa2Calculator:
             platelets=200,
             on_ecmo=True
         )
+        assert result.calculation_details is not None
         assert result.calculation_details["respiratory"] == 4
-    
-    def test_sofa2_platelet_thresholds(self):
+
+    def test_sofa2_platelet_thresholds(self) -> None:
         """Test SOFA-2 updated platelet thresholds: 150, 100, 80, 50"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         # > 150 = 0
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=160)
+        assert result.calculation_details is not None
         assert result.calculation_details["hemostasis"] == 0
-        
+
         # ≤ 150 = 1
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=150)
+        assert result.calculation_details is not None
         assert result.calculation_details["hemostasis"] == 1
-        
+
         # ≤ 100 = 2
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=100)
+        assert result.calculation_details is not None
         assert result.calculation_details["hemostasis"] == 2
-        
+
         # ≤ 80 = 3
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=80)
+        assert result.calculation_details is not None
         assert result.calculation_details["hemostasis"] == 3
-        
+
         # ≤ 50 = 4
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=50)
+        assert result.calculation_details is not None
         assert result.calculation_details["hemostasis"] == 4
-    
-    def test_sofa2_cardiovascular_ne_epi_dosing(self):
+
+    def test_sofa2_cardiovascular_ne_epi_dosing(self) -> None:
         """Test SOFA-2 combined NE+Epi dose thresholds"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         # MAP ≥ 70, no vasopressor = 0
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, map_value=75)
+        assert result.calculation_details is not None
         assert result.calculation_details["cardiovascular"] == 0
-        
+
         # MAP < 70, no vasopressor = 1
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, map_value=65)
+        assert result.calculation_details is not None
         assert result.calculation_details["cardiovascular"] == 1
-        
+
         # NE+Epi ≤ 0.2 = 2
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, norepinephrine_epinephrine_dose=0.15)
+        assert result.calculation_details is not None
         assert result.calculation_details["cardiovascular"] == 2
-        
+
         # NE+Epi > 0.2 to ≤ 0.4 = 3
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, norepinephrine_epinephrine_dose=0.35)
+        assert result.calculation_details is not None
         assert result.calculation_details["cardiovascular"] == 3
-        
+
         # NE+Epi > 0.4 = 4
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, norepinephrine_epinephrine_dose=0.6)
+        assert result.calculation_details is not None
         assert result.calculation_details["cardiovascular"] == 4
-    
-    def test_sofa2_brain_with_sedation(self):
+
+    def test_sofa2_brain_with_sedation(self) -> None:
         """Test brain scoring with sedation consideration"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         # GCS 15 without sedation = 0
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200)
+        assert result.calculation_details is not None
         assert result.calculation_details["brain"] == 0
-        
+
         # GCS 15 with sedation = 1
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, receiving_sedation_or_delirium_drugs=True)
+        assert result.calculation_details is not None
         assert result.calculation_details["brain"] == 1
-    
-    def test_sofa2_kidney_with_rrt(self):
+
+    def test_sofa2_kidney_with_rrt(self) -> None:
         """Test kidney scoring with RRT"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         # RRT = 4 regardless of creatinine
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, on_rrt=True)
+        assert result.calculation_details is not None
         assert result.calculation_details["kidney"] == 4
-    
-    def test_sofa2_kidney_urine_output(self):
+
+    def test_sofa2_kidney_urine_output(self) -> None:
         """Test kidney scoring with urine output"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         # UO < 0.5 for 6h = 1
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, urine_output_6h=0.4)
+        assert result.calculation_details is not None
         assert result.calculation_details["kidney"] == 1
-        
+
         # UO < 0.5 for 12h = 2
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, urine_output_12h=0.4)
+        assert result.calculation_details is not None
         assert result.calculation_details["kidney"] == 2
-        
+
         # UO < 0.3 for 24h = 3
         result = calc.calculate(gcs_score=15, pao2_fio2_ratio=400, bilirubin=1.0, creatinine=1.0, platelets=200, urine_output_24h=0.25)
+        assert result.calculation_details is not None
         assert result.calculation_details["kidney"] == 3
-    
-    def test_sofa2_severe_case(self):
+
+    def test_sofa2_severe_case(self) -> None:
         """Test severe multi-organ failure case"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
@@ -194,14 +225,16 @@ class TestSofa2Calculator:
             norepinephrine_epinephrine_dose=0.6,  # Score 4 (> 0.4)
             advanced_ventilatory_support=True,
         )
+        assert result.value is not None
         assert result.value == 23  # 4+4+4+3+4+4
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity.value == "critical"
-    
-    def test_sofa2_metadata(self):
+
+    def test_sofa2_metadata(self) -> None:
         """Test SOFA-2 metadata includes 2025 reference"""
         from src.domain.services.calculators import Sofa2ScoreCalculator
         calc = Sofa2ScoreCalculator()
-        
+
         assert calc.tool_id == "sofa2_score"
         assert "2025" in calc.name
         assert calc.references[0].year == 2025
@@ -210,34 +243,37 @@ class TestSofa2Calculator:
 
 
 class TestQsofaCalculator:
-    def test_qsofa_basic(self):
+    def test_qsofa_basic(self) -> None:
         from src.domain.services.calculators import QsofaScoreCalculator
         calc = QsofaScoreCalculator()
         result = calc.calculate(respiratory_rate=22, systolic_bp=100, altered_mentation=True)
+        assert result.value is not None
         assert result.value >= 0
 
 
 class TestNewsCalculator:
-    def test_news_basic(self):
+    def test_news_basic(self) -> None:
         from src.domain.services.calculators import NewsScoreCalculator
         calc = NewsScoreCalculator()
         result = calc.calculate(
             respiratory_rate=18, spo2=96, on_supplemental_o2=False,
             temperature=37.0, systolic_bp=120, heart_rate=80, consciousness="A"
         )
+        assert result.value is not None
         assert result.value >= 0
 
 
 class TestGcsCalculator:
-    def test_gcs_basic(self):
+    def test_gcs_basic(self) -> None:
         from src.domain.services.calculators import GlasgowComaScaleCalculator
         calc = GlasgowComaScaleCalculator()
         result = calc.calculate(eye_response=4, verbal_response=5, motor_response=6)
+        assert result.value is not None
         assert result.value == 15
 
 
 class TestCamIcuCalculator:
-    def test_cam_icu_basic(self):
+    def test_cam_icu_basic(self) -> None:
         from src.domain.services.calculators import CamIcuCalculator
         calc = CamIcuCalculator()
         result = calc.calculate(
@@ -248,15 +284,16 @@ class TestCamIcuCalculator:
 
 
 class TestRassCalculator:
-    def test_rass_basic(self):
+    def test_rass_basic(self) -> None:
         from src.domain.services.calculators import RassCalculator
         calc = RassCalculator()
         result = calc.calculate(rass_score=0)
+        assert result.value is not None
         assert result.value == 0
 
 
 class TestApacheIiCalculator:
-    def test_apache_basic(self):
+    def test_apache_basic(self) -> None:
         from src.domain.services.calculators import ApacheIiCalculator
         calc = ApacheIiCalculator()
         result = calc.calculate(
@@ -266,4 +303,5 @@ class TestApacheIiCalculator:
             hematocrit=40, wbc_count=10, gcs_score=15, age=50,
             chronic_health_conditions=(), admission_type="elective_postoperative"
         )
+        assert result.value is not None
         assert result.value >= 0

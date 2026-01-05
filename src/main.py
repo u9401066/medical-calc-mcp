@@ -9,11 +9,11 @@ Supports multiple transport modes via FastMCP:
 Usage:
     # Local STDIO mode (default, for Claude Desktop)
     python -m src.main
-    
+
     # SSE mode for remote access (Docker, cloud)
     python -m src.main --mode sse
     python -m src.main --mode sse --host 0.0.0.0 --port 8000
-    
+
     # Streamable HTTP mode
     python -m src.main --mode http
 
@@ -29,15 +29,19 @@ Environment Variables:
 """
 
 import argparse
+import logging
 import os
 import sys
-import logging
 from pathlib import Path
+from typing import Any
 
 # Ensure the project root is in the path for proper imports
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
+
+from src.infrastructure.mcp.config import McpServerConfig
+from src.infrastructure.mcp.server import MedicalCalculatorServer
 
 # Configure logging
 logging.basicConfig(
@@ -47,25 +51,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def create_server(host: str = "0.0.0.0", port: int = 8000):
+def create_server(host: str = "0.0.0.0", port: int = 8000) -> MedicalCalculatorServer:
     """
     Create and configure the MCP server with custom host/port.
-    
+
     Args:
         host: Host to bind (for SSE/HTTP modes)
         port: Port to bind (for SSE/HTTP modes)
-    
+
     Returns:
         MedicalCalculatorServer instance
     """
-    from src.infrastructure.mcp.config import McpServerConfig
-    from src.infrastructure.mcp.server import MedicalCalculatorServer
-    
     config = McpServerConfig(host=host, port=port)
     return MedicalCalculatorServer(config=config)
 
 
-def main():
+def main() -> None:
     """Main entry point with argument parsing"""
     parser = argparse.ArgumentParser(
         description="Medical Calculator MCP Server",
@@ -74,11 +75,11 @@ def main():
 Examples:
   # Local MCP mode (for Claude Desktop)
   python -m src.main
-  
+
   # Remote SSE mode (for Docker/remote agents)
   python -m src.main --mode sse
   python -m src.main --mode sse --host 0.0.0.0 --port 9000
-  
+
   # Streamable HTTP mode
   python -m src.main --mode http
 
@@ -92,7 +93,7 @@ Claude Desktop Configuration (for SSE mode):
   }
         """
     )
-    
+
     parser.add_argument(
         "--mode", "-m",
         choices=["stdio", "sse", "http"],
@@ -110,27 +111,27 @@ Claude Desktop Configuration (for SSE mode):
         default=int(os.environ.get("MCP_PORT", "8000")),
         help="Port to bind for SSE/HTTP mode (default: 8000)"
     )
-    
+
     args = parser.parse_args()
-    
+
     logger.info("=" * 60)
     logger.info("Medical Calculator MCP Server")
     logger.info("=" * 60)
     logger.info(f"Mode: {args.mode.upper()}")
-    
+
     # Create server with host/port settings
     server = create_server(host=args.host, port=args.port)
-    
+
     if args.mode == "stdio":
         logger.info("Starting in STDIO mode (for Claude Desktop local)...")
         server.run(transport="stdio")
-        
+
     elif args.mode == "sse":
         logger.info(f"Starting in SSE mode on http://{args.host}:{args.port}")
         logger.info(f"SSE Endpoint: http://{args.host}:{args.port}/sse")
         logger.info("-" * 60)
         server.run(transport="sse")
-        
+
     elif args.mode == "http":
         logger.info(f"Starting in HTTP mode on http://{args.host}:{args.port}")
         logger.info(f"MCP Endpoint: http://{args.host}:{args.port}/mcp")

@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for NEWS2 (National Early Warning Score 2) Calculator
 
 Tests the NEWS2 early warning score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestNews2ScoreE2E:
     """E2E tests for NEWS2 Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/news2_score"
-    
-    def test_normal_parameters(self, test_client):
+
+    def test_normal_parameters(self, test_client: Any) -> None:
         """Test NEWS2 0 - all normal parameters"""
         payload = {
             "params": {
@@ -27,8 +27,8 @@ class TestNews2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
-    
-    def test_low_risk(self, test_client):
+
+    def test_low_risk(self, test_client: Any) -> None:
         """Test low risk NEWS2 score (1-4)"""
         payload = {
             "params": {
@@ -43,8 +43,8 @@ class TestNews2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 1 <= data["result"]["value"] <= 6
-    
-    def test_medium_risk(self, test_client):
+
+    def test_medium_risk(self, test_client: Any) -> None:
         """Test medium risk NEWS2 score (5-6)"""
         payload = {
             "params": {
@@ -59,8 +59,8 @@ class TestNews2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
-    
-    def test_high_risk(self, test_client):
+
+    def test_high_risk(self, test_client: Any) -> None:
         """Test high risk NEWS2 score (≥7)"""
         payload = {
             "params": {
@@ -75,8 +75,8 @@ class TestNews2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 7
-    
-    def test_with_consciousness_alert(self, test_client):
+
+    def test_with_consciousness_alert(self, test_client: Any) -> None:
         """Test with alert consciousness (ACVPU)"""
         payload = {
             "params": {
@@ -92,8 +92,8 @@ class TestNews2ScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_with_consciousness_confusion(self, test_client):
+
+    def test_with_consciousness_confusion(self, test_client: Any) -> None:
         """Test with new confusion (ACVPU)"""
         payload = {
             "params": {
@@ -110,8 +110,8 @@ class TestNews2ScoreE2E:
         data = assert_successful_calculation(response)
         # New confusion = 3 points
         assert data["result"]["value"] >= 3
-    
-    def test_scale_2_copd(self, test_client):
+
+    def test_scale_2_copd(self, test_client: Any) -> None:
         """Test Scale 2 for COPD patients"""
         payload = {
             "params": {
@@ -128,8 +128,8 @@ class TestNews2ScoreE2E:
         data = assert_successful_calculation(response)
         # Scale 2 has different SpO2 thresholds for COPD
         assert data["result"]["value"] >= 0
-    
-    def test_extreme_tachycardia(self, test_client):
+
+    def test_extreme_tachycardia(self, test_client: Any) -> None:
         """Test extreme tachycardia"""
         payload = {
             "params": {
@@ -145,8 +145,8 @@ class TestNews2ScoreE2E:
         data = assert_successful_calculation(response)
         # HR ≥131 = 3 points
         assert data["result"]["value"] >= 3
-    
-    def test_hypothermia(self, test_client):
+
+    def test_hypothermia(self, test_client: Any) -> None:
         """Test hypothermia"""
         payload = {
             "params": {
@@ -162,8 +162,8 @@ class TestNews2ScoreE2E:
         data = assert_successful_calculation(response)
         # Temperature ≤35.0 = 3 points
         assert data["result"]["value"] >= 3
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -10,26 +10,25 @@ References:
 - American Burn Association Guidelines
 """
 
-from typing import Optional
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
 from ...value_objects.units import Unit
-from ...value_objects.tool_keys import LowLevelKey, HighLevelKey, Specialty, ClinicalContext
+from ..base import BaseCalculator
 
 
 class TbsaCalculator(BaseCalculator):
     """
     TBSA (Total Body Surface Area) Calculator for Burns
-    
+
     使用 Rule of Nines 計算燒傷面積百分比。
     成人與兒童有不同的體表面積分布。
-    
+
     輸出: TBSA %
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -37,11 +36,11 @@ class TbsaCalculator(BaseCalculator):
                 tool_id="tbsa",
                 name="TBSA Calculator (Rule of Nines)",
                 purpose="Calculate total body surface area burned using Rule of Nines",
-                input_params=(
+                input_params=[
                     "head_neck", "anterior_trunk", "posterior_trunk",
                     "right_arm", "left_arm", "right_leg", "left_leg",
                     "genitalia", "age", "method"
-                ),
+                ],
                 output_type="TBSA percentage with burn severity classification"
             ),
             high_level=HighLevelKey(
@@ -88,7 +87,7 @@ class TbsaCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         head_neck: float = 0,
@@ -111,10 +110,10 @@ class TbsaCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate TBSA using Rule of Nines
-        
+
         Each parameter is the PERCENTAGE of that body part burned (0-100%).
         For example, if half of the right arm is burned, enter 50.
-        
+
         Args:
             head_neck: % of head/neck burned (adult 9%, infant 18%)
             chest: % of anterior chest burned (9%)
@@ -133,7 +132,7 @@ class TbsaCalculator(BaseCalculator):
             right_foot: % of right foot burned (included in leg)
             left_foot: % of left foot burned
             patient_type: "adult" (>14y), "child" (1-14y), or "infant" (<1y)
-            
+
         Returns:
             ScoreResult with TBSA percentage and burn severity
         """
@@ -146,86 +145,87 @@ class TbsaCalculator(BaseCalculator):
         for val in all_inputs:
             if not 0 <= val <= 100:
                 raise ValueError("All percentages must be between 0-100")
-        
+
         if patient_type.lower() not in ["adult", "child", "infant"]:
             raise ValueError("patient_type must be 'adult', 'child', or 'infant'")
-        
+
         patient_type = patient_type.lower()
-        
+
         # Rule of Nines percentages by patient type
         # Values are the % BSA for ENTIRE region
+        regions: dict[str, tuple[float, float]]
         if patient_type == "adult":
             regions = {
-                "head_neck": (9, head_neck),
-                "chest": (9, chest),
-                "abdomen": (9, abdomen),
-                "upper_back": (9, upper_back),
-                "lower_back": (9, lower_back),
-                "right_arm": (9, right_arm),
-                "left_arm": (9, left_arm),
-                "right_hand": (1, right_hand),  # Palm rule
-                "left_hand": (1, left_hand),
-                "perineum": (1, perineum),
-                "right_thigh": (9, right_thigh),
-                "left_thigh": (9, left_thigh),
-                "right_leg": (9, right_leg),
-                "left_leg": (9, left_leg),
-                "right_foot": (1, right_foot),
-                "left_foot": (1, left_foot),
+                "head_neck": (9.0, head_neck),
+                "chest": (9.0, chest),
+                "abdomen": (9.0, abdomen),
+                "upper_back": (9.0, upper_back),
+                "lower_back": (9.0, lower_back),
+                "right_arm": (9.0, right_arm),
+                "left_arm": (9.0, left_arm),
+                "right_hand": (1.0, right_hand),  # Palm rule
+                "left_hand": (1.0, left_hand),
+                "perineum": (1.0, perineum),
+                "right_thigh": (9.0, right_thigh),
+                "left_thigh": (9.0, left_thigh),
+                "right_leg": (9.0, right_leg),
+                "left_leg": (9.0, left_leg),
+                "right_foot": (1.0, right_foot),
+                "left_foot": (1.0, left_foot),
             }
         elif patient_type == "child":
             # Child: Head larger, legs smaller
             regions = {
-                "head_neck": (15, head_neck),
-                "chest": (9, chest),
-                "abdomen": (9, abdomen),
-                "upper_back": (9, upper_back),
-                "lower_back": (9, lower_back),
-                "right_arm": (9, right_arm),
-                "left_arm": (9, left_arm),
-                "right_hand": (1, right_hand),
-                "left_hand": (1, left_hand),
-                "perineum": (1, perineum),
-                "right_thigh": (7, right_thigh),
-                "left_thigh": (7, left_thigh),
-                "right_leg": (7, right_leg),
-                "left_leg": (7, left_leg),
-                "right_foot": (1, right_foot),
-                "left_foot": (1, left_foot),
+                "head_neck": (15.0, head_neck),
+                "chest": (9.0, chest),
+                "abdomen": (9.0, abdomen),
+                "upper_back": (9.0, upper_back),
+                "lower_back": (9.0, lower_back),
+                "right_arm": (9.0, right_arm),
+                "left_arm": (9.0, left_arm),
+                "right_hand": (1.0, right_hand),
+                "left_hand": (1.0, left_hand),
+                "perineum": (1.0, perineum),
+                "right_thigh": (7.0, right_thigh),
+                "left_thigh": (7.0, left_thigh),
+                "right_leg": (7.0, right_leg),
+                "left_leg": (7.0, left_leg),
+                "right_foot": (1.0, right_foot),
+                "left_foot": (1.0, left_foot),
             }
         else:  # infant
             # Infant: Head much larger, legs smaller
             regions = {
-                "head_neck": (18, head_neck),
-                "chest": (9, chest),
-                "abdomen": (9, abdomen),
-                "upper_back": (9, upper_back),
-                "lower_back": (9, lower_back),
-                "right_arm": (9, right_arm),
-                "left_arm": (9, left_arm),
-                "right_hand": (1, right_hand),
-                "left_hand": (1, left_hand),
-                "perineum": (1, perineum),
+                "head_neck": (18.0, head_neck),
+                "chest": (9.0, chest),
+                "abdomen": (9.0, abdomen),
+                "upper_back": (9.0, upper_back),
+                "lower_back": (9.0, lower_back),
+                "right_arm": (9.0, right_arm),
+                "left_arm": (9.0, left_arm),
+                "right_hand": (1.0, right_hand),
+                "left_hand": (1.0, left_hand),
+                "perineum": (1.0, perineum),
                 "right_thigh": (5.5, right_thigh),
                 "left_thigh": (5.5, left_thigh),
-                "right_leg": (5, right_leg),
-                "left_leg": (5, left_leg),
-                "right_foot": (1, right_foot),
-                "left_foot": (1, left_foot),
+                "right_leg": (5.0, right_leg),
+                "left_leg": (5.0, left_leg),
+                "right_foot": (1.0, right_foot),
+                "left_foot": (1.0, left_foot),
             }
-        
+
         # Calculate TBSA
-        tbsa = 0
+        tbsa: float = 0.0
         components = []
-        
+
         for region_name, (max_pct, burned_pct) in regions.items():
             if burned_pct > 0:
                 contribution = (max_pct * burned_pct) / 100
                 tbsa += contribution
                 components.append(f"{region_name.replace('_', ' ').title()}: {burned_pct:.0f}% of {max_pct}% = {contribution:.1f}%")
-        
+
         tbsa = round(tbsa, 1)
-        
+
         # Severity classification
         if tbsa < 10:
             severity = "Minor"
@@ -350,7 +350,7 @@ class TbsaCalculator(BaseCalculator):
                     "Aggressive resuscitation",
                 ),
             )
-        
+
         # Burn center referral criteria (ABA)
         burn_center_criteria = []
         if tbsa >= 10:
@@ -363,7 +363,7 @@ class TbsaCalculator(BaseCalculator):
             burn_center_criteria.append("Feet involved")
         if perineum > 0:
             burn_center_criteria.append("Perineum involved")
-        
+
         return ScoreResult(
             value=tbsa,
             unit=Unit.PERCENT,

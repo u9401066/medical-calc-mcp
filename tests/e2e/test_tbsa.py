@@ -1,3 +1,4 @@
+from typing import Any
 """
 E2E Tests for TBSA (Total Body Surface Area) Burn Calculator
 
@@ -29,16 +30,15 @@ Rule of Nines (adult):
 - Perineum: 1%
 - Each thigh: 9%, Each lower leg: 9%, Each foot: 1%
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestTbsaE2E:
     """E2E tests for TBSA Burn Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/tbsa"
-    
-    def test_minor_burn(self, test_client):
+
+    def test_minor_burn(self, test_client: Any) -> None:
         """Test minor burn (<10% TBSA) - partial head burn"""
         payload = {
             "params": {
@@ -50,8 +50,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # Minor burn - 50% of 9% head = 4.5% TBSA
         assert data["result"]["value"] < 10
-    
-    def test_moderate_burn(self, test_client):
+
+    def test_moderate_burn(self, test_client: Any) -> None:
         """Test moderate burn (10-20% TBSA)"""
         payload = {
             "params": {
@@ -64,8 +64,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # ~13.5% TBSA
         assert 10 <= data["result"]["value"] <= 20
-    
-    def test_severe_burn(self, test_client):
+
+    def test_severe_burn(self, test_client: Any) -> None:
         """Test severe burn (>20% TBSA)"""
         payload = {
             "params": {
@@ -80,8 +80,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # ~36% TBSA
         assert data["result"]["value"] >= 30
-    
-    def test_massive_burn(self, test_client):
+
+    def test_massive_burn(self, test_client: Any) -> None:
         """Test massive burn (>50% TBSA)"""
         payload = {
             "params": {
@@ -99,8 +99,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # ~63% TBSA
         assert data["result"]["value"] >= 50
-    
-    def test_face_and_hands(self, test_client):
+
+    def test_face_and_hands(self, test_client: Any) -> None:
         """Test burn to face and hands (critical areas)"""
         payload = {
             "params": {
@@ -114,8 +114,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # 11% TBSA
         assert data["result"]["value"] == 11
-    
-    def test_trunk_only(self, test_client):
+
+    def test_trunk_only(self, test_client: Any) -> None:
         """Test trunk burns only"""
         payload = {
             "params": {
@@ -130,8 +130,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # 36% TBSA
         assert data["result"]["value"] == 36
-    
-    def test_lower_extremities(self, test_client):
+
+    def test_lower_extremities(self, test_client: Any) -> None:
         """Test lower extremity burns"""
         payload = {
             "params": {
@@ -146,8 +146,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # 36% TBSA
         assert data["result"]["value"] == 36
-    
-    def test_scattered_burns(self, test_client):
+
+    def test_scattered_burns(self, test_client: Any) -> None:
         """Test scattered burns across body"""
         payload = {
             "params": {
@@ -161,8 +161,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # ~13.5% TBSA
         assert 12 <= data["result"]["value"] <= 15
-    
-    def test_child_burn(self, test_client):
+
+    def test_child_burn(self, test_client: Any) -> None:
         """Test burn calculation for a child (different percentages)"""
         payload = {
             "params": {
@@ -174,8 +174,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # Child head is 15% of BSA
         assert data["result"]["value"] == 15
-    
-    def test_infant_burn(self, test_client):
+
+    def test_infant_burn(self, test_client: Any) -> None:
         """Test burn calculation for an infant (different percentages)"""
         payload = {
             "params": {
@@ -187,8 +187,8 @@ class TestTbsaE2E:
         data = assert_successful_calculation(response)
         # Infant head is 18% of BSA
         assert data["result"]["value"] == 18
-    
-    def test_all_default_params(self, test_client):
+
+    def test_all_default_params(self, test_client: Any) -> None:
         """Test with minimal parameters (all have defaults)"""
         payload = {
             "params": {

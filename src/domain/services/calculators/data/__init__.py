@@ -6,8 +6,8 @@ This package contains reference data used by calculators:
 """
 
 from .pediatric_drugs import (
-    PediatricDrugInfo,
     PEDIATRIC_DRUGS,
+    PediatricDrugInfo,
     get_drug_info,
     list_available_drugs,
     list_drugs_by_category,

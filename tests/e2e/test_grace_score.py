@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for GRACE Score Calculator
 
 Tests the GRACE (Global Registry of Acute Coronary Events) Score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestGraceScoreE2E:
     """E2E tests for GRACE Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/grace_score"
-    
-    def test_low_risk_patient(self, test_client):
+
+    def test_low_risk_patient(self, test_client: Any) -> None:
         """Test low risk patient (GRACE ≤108)"""
         payload = {
             "params": {
@@ -30,8 +30,8 @@ class TestGraceScoreE2E:
         data = assert_successful_calculation(response)
         # Low risk patient
         assert data["result"]["value"] >= 0
-    
-    def test_intermediate_risk_patient(self, test_client):
+
+    def test_intermediate_risk_patient(self, test_client: Any) -> None:
         """Test intermediate risk patient (GRACE 109-140)"""
         payload = {
             "params": {
@@ -48,8 +48,8 @@ class TestGraceScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_high_risk_patient(self, test_client):
+
+    def test_high_risk_patient(self, test_client: Any) -> None:
         """Test high risk patient (GRACE >140)"""
         payload = {
             "params": {
@@ -67,8 +67,8 @@ class TestGraceScoreE2E:
         data = assert_successful_calculation(response)
         # High risk - expect high score
         assert data["result"]["value"] > 100
-    
-    def test_elderly_patient_with_nstemi(self, test_client):
+
+    def test_elderly_patient_with_nstemi(self, test_client: Any) -> None:
         """Test elderly patient with NSTEMI"""
         payload = {
             "params": {
@@ -85,8 +85,8 @@ class TestGraceScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_patient_with_cardiogenic_shock(self, test_client):
+
+    def test_patient_with_cardiogenic_shock(self, test_client: Any) -> None:
         """Test patient with cardiogenic shock (Killip IV)"""
         payload = {
             "params": {
@@ -104,8 +104,8 @@ class TestGraceScoreE2E:
         data = assert_successful_calculation(response)
         # Very high risk patient
         assert data["result"]["value"] > 0
-    
-    def test_post_cardiac_arrest_patient(self, test_client):
+
+    def test_post_cardiac_arrest_patient(self, test_client: Any) -> None:
         """Test post cardiac arrest patient"""
         payload = {
             "params": {
@@ -123,8 +123,8 @@ class TestGraceScoreE2E:
         data = assert_successful_calculation(response)
         # Cardiac arrest adds significant points
         assert data["result"]["value"] > 0
-    
-    def test_tachycardic_patient(self, test_client):
+
+    def test_tachycardic_patient(self, test_client: Any) -> None:
         """Test patient with significant tachycardia"""
         payload = {
             "params": {
@@ -141,8 +141,8 @@ class TestGraceScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_hypotensive_patient(self, test_client):
+
+    def test_hypotensive_patient(self, test_client: Any) -> None:
         """Test hypotensive patient"""
         payload = {
             "params": {
@@ -159,8 +159,8 @@ class TestGraceScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_renal_impairment_patient(self, test_client):
+
+    def test_renal_impairment_patient(self, test_client: Any) -> None:
         """Test patient with renal impairment"""
         payload = {
             "params": {
@@ -178,8 +178,8 @@ class TestGraceScoreE2E:
         data = assert_successful_calculation(response)
         # Renal impairment increases risk
         assert data["result"]["value"] > 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

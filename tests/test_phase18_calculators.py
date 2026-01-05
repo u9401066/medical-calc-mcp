@@ -1,33 +1,35 @@
+from typing import Any
 """
 Tests for Phase 18 Calculators: GI Bleeding & Trauma Tools
 
 Tests for:
 - Glasgow-Blatchford Score (GBS) - UGIB intervention risk
-- AIMS65 Score - UGIB mortality prediction  
+- AIMS65 Score - UGIB mortality prediction
 - TBSA Calculator - Burns assessment
 - Injury Severity Score (ISS) - Trauma severity
 - Simplified PESI (sPESI) - PE prognosis
 """
 
 import pytest
+
 from src.domain.services.calculators import (
-    GlasgowBlatchfordCalculator,
     AIMS65Calculator,
-    TbsaCalculator,
+    GlasgowBlatchfordCalculator,
     InjurySeverityScoreCalculator,
     SimplifiedPESICalculator,
+    TbsaCalculator,
 )
-from src.domain.value_objects.interpretation import Interpretation, Severity, RiskLevel
+from src.domain.value_objects.interpretation import Severity
 
 
 class TestGlasgowBlatchford:
     """Test Glasgow-Blatchford Score Calculator"""
-    
+
     @pytest.fixture
-    def calc(self):
+    def calc(self) -> Any:
         return GlasgowBlatchfordCalculator()
-    
-    def test_gbs_zero_low_risk(self, calc):
+
+    def test_gbs_zero_low_risk(self, calc: Any) -> None:
         """GBS = 0 should identify very low risk patients"""
         result = calc.calculate(
             bun_mg_dl=15,  # <18.2
@@ -40,10 +42,12 @@ class TestGlasgowBlatchford:
             hepatic_disease=False,
             cardiac_failure=False
         )
+        assert result.value is not None
         assert result.value == 0
+        assert result.calculation_details is not None
         assert "Very Low Risk" in result.calculation_details["risk_category"]
-    
-    def test_gbs_high_risk(self, calc):
+
+    def test_gbs_high_risk(self, calc: Any) -> None:
         """High GBS score with multiple risk factors"""
         result = calc.calculate(
             bun_mg_dl=35,  # +4
@@ -57,10 +61,12 @@ class TestGlasgowBlatchford:
             cardiac_failure=True  # +2
         )
         # Total = 4+6+3+1+1+2+2+2 = 21
+        assert result.value is not None
         assert result.value >= 15
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity == Severity.CRITICAL
-    
-    def test_gbs_female_hemoglobin_scoring(self, calc):
+
+    def test_gbs_female_hemoglobin_scoring(self, calc: Any) -> None:
         """Female hemoglobin scoring differs from male"""
         result = calc.calculate(
             bun_mg_dl=15,
@@ -69,9 +75,10 @@ class TestGlasgowBlatchford:
             sex="female",
             heart_rate_bpm=80,  # Explicitly set to avoid default +1
         )
+        assert result.value is not None
         assert result.value == 1  # Only Hgb 10-11.9 female
-    
-    def test_gbs_validation_errors(self, calc):
+
+    def test_gbs_validation_errors(self, calc: Any) -> None:
         """Invalid inputs should raise ValueError"""
         with pytest.raises(ValueError):
             calc.calculate(bun_mg_dl=-1, hemoglobin_g_dl=10, systolic_bp_mmhg=100, sex="male")
@@ -81,12 +88,12 @@ class TestGlasgowBlatchford:
 
 class TestAIMS65:
     """Test AIMS65 Score Calculator"""
-    
+
     @pytest.fixture
-    def calc(self):
+    def calc(self) -> Any:
         return AIMS65Calculator()
-    
-    def test_aims65_zero_very_low_risk(self, calc):
+
+    def test_aims65_zero_very_low_risk(self, calc: Any) -> None:
         """AIMS65 = 0 should be very low mortality risk"""
         result = calc.calculate(
             albumin_lt_3=False,
@@ -95,10 +102,12 @@ class TestAIMS65:
             sbp_lte_90=False,
             age_gte_65=False
         )
+        assert result.value is not None
         assert result.value == 0
+        assert result.calculation_details is not None
         assert "0.3%" in result.calculation_details["in_hospital_mortality"]
-    
-    def test_aims65_high_risk(self, calc):
+
+    def test_aims65_high_risk(self, calc: Any) -> None:
         """AIMS65 ≥3 should be high risk"""
         result = calc.calculate(
             albumin_lt_3=True,
@@ -107,10 +116,12 @@ class TestAIMS65:
             sbp_lte_90=True,
             age_gte_65=True
         )
+        assert result.value is not None
         assert result.value == 5
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity == Severity.CRITICAL
-    
-    def test_aims65_intermediate_risk(self, calc):
+
+    def test_aims65_intermediate_risk(self, calc: Any) -> None:
         """AIMS65 = 2 should be intermediate risk"""
         result = calc.calculate(
             albumin_lt_3=True,
@@ -119,36 +130,41 @@ class TestAIMS65:
             sbp_lte_90=False,
             age_gte_65=False
         )
+        assert result.value is not None
         assert result.value == 2
+        assert result.calculation_details is not None
         assert "Intermediate" in result.calculation_details["risk_category"]
 
 
 class TestTBSA:
     """Test TBSA Calculator (Rule of Nines)"""
-    
+
     @pytest.fixture
-    def calc(self):
+    def calc(self) -> Any:
         return TbsaCalculator()
-    
-    def test_tbsa_no_burns(self, calc):
+
+    def test_tbsa_no_burns(self, calc: Any) -> None:
         """No burns should return 0% TBSA"""
         result = calc.calculate(
             head_neck=0,
             chest=0,
             abdomen=0
         )
+        assert result.value is not None
         assert result.value == 0
-    
-    def test_tbsa_minor_burn(self, calc):
+
+    def test_tbsa_minor_burn(self, calc: Any) -> None:
         """Small burn area should be minor severity"""
         result = calc.calculate(
             right_arm=50,  # 50% of 9% = 4.5%
             patient_type="adult"
         )
+        assert result.value is not None
         assert result.value < 10
+        assert result.calculation_details is not None
         assert "Minor" in result.calculation_details["severity"]
-    
-    def test_tbsa_major_burn_adult(self, calc):
+
+    def test_tbsa_major_burn_adult(self, calc: Any) -> None:
         """Large burn area should be major severity"""
         result = calc.calculate(
             head_neck=100,  # 9%
@@ -158,26 +174,29 @@ class TestTBSA:
             patient_type="adult"
         )
         # 9+9+9+9 = 36%
+        assert result.value is not None
         assert result.value >= 30
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity in [Severity.SEVERE, Severity.CRITICAL]
-    
-    def test_tbsa_infant_head_proportion(self, calc):
+
+    def test_tbsa_infant_head_proportion(self, calc: Any) -> None:
         """Infant head is larger proportion than adult"""
         # Same burn to head
         adult_result = calc.calculate(head_neck=100, patient_type="adult")
         infant_result = calc.calculate(head_neck=100, patient_type="infant")
         # Infant head = 18%, Adult head = 9%
+        assert infant_result.value is not None
         assert infant_result.value > adult_result.value
 
 
 class TestInjurySeverityScore:
     """Test Injury Severity Score (ISS) Calculator"""
-    
+
     @pytest.fixture
-    def calc(self):
+    def calc(self) -> Any:
         return InjurySeverityScoreCalculator()
-    
-    def test_iss_minor_injury(self, calc):
+
+    def test_iss_minor_injury(self, calc: Any) -> None:
         """Single minor injury should have low ISS"""
         result = calc.calculate(
             head_neck_ais=1,  # Minor
@@ -187,10 +206,11 @@ class TestInjurySeverityScore:
             extremity_ais=0,
             external_ais=0
         )
+        assert result.value is not None
         assert result.value == 1
         assert "Minor" in result.calculation_details.get("severity", "Minor")
-    
-    def test_iss_major_trauma(self, calc):
+
+    def test_iss_major_trauma(self, calc: Any) -> None:
         """ISS > 15 should be major trauma"""
         result = calc.calculate(
             head_neck_ais=3,  # Serious
@@ -198,18 +218,21 @@ class TestInjurySeverityScore:
             abdomen_ais=2,  # Moderate
         )
         # ISS = 3² + 3² + 2² = 9 + 9 + 4 = 22
+        assert result.value is not None
         assert result.value > 15
         assert result.calculation_details.get("is_major_trauma", True)
-    
-    def test_iss_unsurvivable_injury(self, calc):
+
+    def test_iss_unsurvivable_injury(self, calc: Any) -> None:
         """AIS 6 should result in ISS = 75"""
         result = calc.calculate(
             head_neck_ais=6,  # Unsurvivable
         )
+        assert result.value is not None
         assert result.value == 75
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity == Severity.CRITICAL
-    
-    def test_iss_polytrauma(self, calc):
+
+    def test_iss_polytrauma(self, calc: Any) -> None:
         """Multiple region injuries should sum correctly"""
         result = calc.calculate(
             head_neck_ais=4,  # Severe
@@ -217,17 +240,18 @@ class TestInjurySeverityScore:
             extremity_ais=3,  # Serious
         )
         # ISS = 4² + 4² + 3² = 16 + 16 + 9 = 41
+        assert result.value is not None
         assert result.value == 41
 
 
 class TestSimplifiedPESI:
     """Test Simplified PESI (sPESI) Calculator"""
-    
+
     @pytest.fixture
-    def calc(self):
+    def calc(self) -> Any:
         return SimplifiedPESICalculator()
-    
-    def test_spesi_low_risk(self, calc):
+
+    def test_spesi_low_risk(self, calc: Any) -> None:
         """sPESI = 0 should be low risk"""
         result = calc.calculate(
             age=50,  # ≤80
@@ -237,11 +261,14 @@ class TestSimplifiedPESI:
             systolic_bp=120,  # ≥100
             spo2=95  # ≥90
         )
+        assert result.value is not None
         assert result.value == 0
+        assert result.calculation_details is not None
         assert "Low Risk" in result.calculation_details["risk_category"]
-        assert result.calculation_details["outpatient_candidate"] == True
-    
-    def test_spesi_high_risk_age(self, calc):
+        assert result.calculation_details is not None
+        assert result.calculation_details["outpatient_candidate"]
+
+    def test_spesi_high_risk_age(self, calc: Any) -> None:
         """Age >80 alone should make high risk"""
         result = calc.calculate(
             age=85,  # >80 = +1
@@ -251,10 +278,12 @@ class TestSimplifiedPESI:
             systolic_bp=120,
             spo2=95
         )
+        assert result.value is not None
         assert result.value >= 1
+        assert result.calculation_details is not None
         assert "High Risk" in result.calculation_details["risk_category"]
-    
-    def test_spesi_multiple_risk_factors(self, calc):
+
+    def test_spesi_multiple_risk_factors(self, calc: Any) -> None:
         """Multiple risk factors increase score"""
         result = calc.calculate(
             age=85,  # +1
@@ -264,10 +293,12 @@ class TestSimplifiedPESI:
             systolic_bp=85,  # +1 (<100)
             spo2=88  # +1 (<90)
         )
+        assert result.value is not None
         assert result.value == 6
+        assert result.interpretation.severity is not None
         assert result.interpretation.severity == Severity.CRITICAL
-    
-    def test_spesi_alternative_boolean_params(self, calc):
+
+    def test_spesi_alternative_boolean_params(self, calc: Any) -> None:
         """Test using direct boolean parameters"""
         result = calc.calculate(
             age=50,
@@ -275,13 +306,14 @@ class TestSimplifiedPESI:
             sbp_lt_100=True,
             spo2_lt_90=True
         )
+        assert result.value is not None
         assert result.value == 3
 
 
 class TestPhase18Integration:
     """Integration tests for Phase 18 calculators"""
-    
-    def test_all_calculators_have_metadata(self):
+
+    def test_all_calculators_have_metadata(self) -> None:
         """All Phase 18 calculators should have valid metadata"""
         calculators = [
             GlasgowBlatchfordCalculator(),
@@ -295,8 +327,8 @@ class TestPhase18Integration:
             assert calc.metadata.low_level.tool_id
             assert calc.metadata.low_level.name
             assert len(calc.metadata.references) > 0
-    
-    def test_all_calculators_have_references(self):
+
+    def test_all_calculators_have_references(self) -> None:
         """All Phase 18 calculators should cite original papers"""
         calculators = [
             GlasgowBlatchfordCalculator(),

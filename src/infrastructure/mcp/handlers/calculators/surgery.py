@@ -15,7 +15,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_surgery_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all surgery/perioperative calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_caprini_vte(
         age_years: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
@@ -65,10 +65,10 @@ def register_surgery_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🔪 Caprini VTE 風險評估: 手術病人靜脈血栓栓塞風險
-        
+
         評估手術病人發生深部靜脈血栓 (DVT) 和肺栓塞 (PE) 的風險，
         以指導預防性抗凝治療的選擇與時程。
-        
+
         **計分方式:**
         - 1分: 年齡41-60、小手術、靜脈曲張、IBD、下肢水腫、BMI>25、
                急性MI、心衰<1月、敗血症<1月、肺病、COPD、臥床(內科)、
@@ -81,17 +81,17 @@ def register_surgery_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         - 5分: 中風<1月、選擇性關節置換、髖/骨盆/腿骨折<1月、
                急性脊髓損傷<1月
         - 女性專用(+1): 口服避孕藥/HRT、懷孕或產後、不良妊娠史
-        
+
         **風險分級與VTE發生率:**
         - 0分: 極低風險 (~0.5%) → 早期下床活動
         - 1-2分: 低風險 (~1.5%) → 機械性預防 (SCD)
         - 3-4分: 中度風險 (~3%) → 藥物預防或機械預防
         - ≥5分: 高風險 (~6%) → 藥物預防 + 機械預防
-        
-        **參考文獻:** 
+
+        **參考文獻:**
         - Caprini JA. Dis Mon. 2005;51(2-3):70-78. PMID: 15900257
         - Bahl V, et al. Ann Surg. 2010;251(2):344-350. PMID: 19779324
-        
+
         Returns:
             Caprini 分數、VTE 風險等級、預防措施建議
         """

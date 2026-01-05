@@ -14,26 +14,21 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class Abcd2Calculator(BaseCalculator):
     """
     ABCD2 Score for TIA Stroke Risk
-    
+
     Predicts short-term stroke risk after TIA:
-    
+
     A - Age ≥60 years: 1 point
     B - Blood pressure ≥140/90 mmHg: 1 point
     C - Clinical features:
@@ -43,14 +38,14 @@ class Abcd2Calculator(BaseCalculator):
         - ≥60 minutes: 2 points
         - 10-59 minutes: 1 point
     D - Diabetes: 1 point
-    
+
     Total: 0-7 points
-    
+
     2-day stroke risk:
     - 0-3: Low risk (1.0%)
     - 4-5: Moderate risk (4.1%)
     - 6-7: High risk (8.1%)
-    
+
     7-day stroke risk:
     - 0-3: Low risk (1.2%)
     - 4-5: Moderate risk (5.9%)
@@ -145,7 +140,7 @@ class Abcd2Calculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate ABCD2 Score.
-        
+
         Args:
             age_gte_60: Age ≥60 years
             bp_gte_140_90: Blood pressure ≥140/90 mmHg at initial evaluation
@@ -158,14 +153,14 @@ class Abcd2Calculator(BaseCalculator):
                 - "10_to_59": 10-59 minutes
                 - "gte_60": ≥60 minutes
             diabetes: History of diabetes mellitus
-            
+
         Returns:
             ScoreResult with ABCD2 score and stroke risk stratification
         """
         # Calculate component scores
         age_points = 1 if age_gte_60 else 0
         bp_points = 1 if bp_gte_140_90 else 0
-        
+
         # Clinical features
         if clinical_features == "unilateral_weakness":
             clinical_points = 2
@@ -173,7 +168,7 @@ class Abcd2Calculator(BaseCalculator):
             clinical_points = 1
         else:
             clinical_points = 0
-        
+
         # Duration
         if duration_minutes == "gte_60":
             duration_points = 2
@@ -181,18 +176,18 @@ class Abcd2Calculator(BaseCalculator):
             duration_points = 1
         else:
             duration_points = 0
-        
+
         diabetes_points = 1 if diabetes else 0
-        
+
         # Total score
         score = age_points + bp_points + clinical_points + duration_points + diabetes_points
-        
+
         # Get stroke risks
         risk_2day, risk_7day, risk_90day = self._get_stroke_risks(score)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(score, risk_2day, risk_7day)
-        
+
         return ScoreResult(
             value=float(score),
             unit=Unit.SCORE,
@@ -227,7 +222,7 @@ class Abcd2Calculator(BaseCalculator):
     def _get_stroke_risks(self, score: int) -> tuple[float, float, float]:
         """
         Get stroke risks at 2, 7, and 90 days based on score.
-        
+
         Returns:
             Tuple of (2-day risk %, 7-day risk %, 90-day risk %)
         """
@@ -246,7 +241,7 @@ class Abcd2Calculator(BaseCalculator):
         risk_7day: float
     ) -> Interpretation:
         """Get clinical interpretation based on score"""
-        
+
         if score <= 3:
             return Interpretation(
                 summary=f"Low Risk TIA (ABCD2 = {score})",
@@ -333,20 +328,20 @@ class Abcd2Calculator(BaseCalculator):
             "Consider imaging findings (DWI lesion) to refine risk (ABCD2-I score)",
             "Dual antiplatelet therapy (DAPT) reduces recurrent stroke in high-risk TIA",
         ]
-        
+
         if score >= 4:
             notes.append(
                 "POINT trial: DAPT (aspirin + clopidogrel x 21 days) reduces 90-day stroke risk"
             )
-        
+
         if score <= 3:
             notes.append(
                 "Low ABCD2 does not exclude stroke - clinical judgment remains essential"
             )
-        
+
         notes.append(
             "Etiology-specific treatment (e.g., anticoagulation for AF) may be needed"
         )
-        
+
         return notes
 

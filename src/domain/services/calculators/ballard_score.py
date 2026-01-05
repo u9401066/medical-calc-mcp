@@ -18,24 +18,19 @@ Clinical Use:
     - More accurate than dates alone for premature infants
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class BallardScoreCalculator(BaseCalculator):
     """
     New Ballard Score for Gestational Age Assessment
-    
+
     Neuromuscular Maturity (6 items, each -1 to 4 or 5):
     1. Posture
     2. Square Window (wrist)
@@ -43,7 +38,7 @@ class BallardScoreCalculator(BaseCalculator):
     4. Popliteal Angle
     5. Scarf Sign
     6. Heel to Ear
-    
+
     Physical Maturity (6 items, each -1 to 4 or 5):
     1. Skin
     2. Lanugo
@@ -51,10 +46,10 @@ class BallardScoreCalculator(BaseCalculator):
     4. Breast
     5. Eye/Ear
     6. Genitals (male or female)
-    
+
     Total Score Range: -10 to 50
     Gestational Age: 20-44 weeks
-    
+
     Scoring accuracy: ±2 weeks
     Best timing: First 12-24 hours of life
     """
@@ -136,9 +131,9 @@ class BallardScoreCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate New Ballard Score for gestational age estimation.
-        
+
         Neuromuscular Maturity Scoring (-1 to 4 or 5):
-        
+
         posture: (-1 to 4)
             -1 = Completely flaccid
             0 = Slight flexion of hips and knees
@@ -146,10 +141,10 @@ class BallardScoreCalculator(BaseCalculator):
             2 = Legs flexed, arms extended
             3 = Full flexion of arms and legs
             4 = Full flexion, active movement
-        
+
         square_window: (-1 to 4) - wrist flexion angle
             -1 = >90°, 0 = 90°, 1 = 60°, 2 = 45°, 3 = 30°, 4 = 0°
-        
+
         arm_recoil: (-1 to 4)
             -1 = Arms remain extended
             0 = Slow, random movement (140-180°)
@@ -157,10 +152,10 @@ class BallardScoreCalculator(BaseCalculator):
             2 = Brisk flexion (90-110°)
             3 = Very brisk (<90°)
             4 = Instantaneous (<90°)
-        
+
         popliteal_angle: (-1 to 5)
             -1 = 180°, 0 = 160°, 1 = 140°, 2 = 120°, 3 = 100°, 4 = 90°, 5 = <90°
-        
+
         scarf_sign: (-1 to 4)
             -1 = Elbow passes axillary line
             0 = Elbow reaches axillary line
@@ -168,14 +163,14 @@ class BallardScoreCalculator(BaseCalculator):
             2 = Elbow at midline
             3 = Elbow does not reach midline
             4 = Elbow at anterior axillary line
-        
+
         heel_to_ear: (-1 to 4)
             -1 = Heel reaches ear easily
             0 = Heel almost reaches ear
             1-4 = Progressive resistance
-        
+
         Physical Maturity Scoring (-1 to 5):
-        
+
         skin: (-1 to 5)
             -1 = Sticky, friable, transparent
             0 = Gelatinous, red, translucent
@@ -184,29 +179,29 @@ class BallardScoreCalculator(BaseCalculator):
             3 = Cracking, pale areas, rare veins
             4 = Parchment, deep cracking
             5 = Leathery, cracked, wrinkled
-        
+
         lanugo: (-1 to 4)
             -1 = None, 0 = Sparse, 1 = Abundant, 2 = Thinning, 3 = Bald areas, 4 = Mostly bald
-        
+
         plantar_surface: (-1 to 4)
             -1 = Heel-toe <40 mm, no crease
             0 = Heel-toe 40-50 mm, faint marks
             1-4 = Progressive creasing
-        
+
         breast: (-1 to 4)
             -1 = Imperceptible
             0 = Barely perceptible
             1-4 = Progressive development
-        
+
         eye_ear: (-1 to 4)
             -1 = Lids fused
             0 = Lids open, pinna flat
             1-4 = Progressive cartilage development
-        
+
         genitals: (-1 to 4)
             Male: -1 (flat) to 4 (pendulous, deep rugae)
             Female: -1 (prominent clitoris) to 4 (majora cover minora)
-        
+
         Returns:
             ScoreResult with Ballard score and estimated gestational age
         """
@@ -219,7 +214,7 @@ class BallardScoreCalculator(BaseCalculator):
             "scarf_sign": (scarf_sign, -1, 4),
             "heel_to_ear": (heel_to_ear, -1, 4),
         }
-        
+
         physical_items = {
             "skin": (skin, -1, 5),
             "lanugo": (lanugo, -1, 4),
@@ -228,22 +223,22 @@ class BallardScoreCalculator(BaseCalculator):
             "eye_ear": (eye_ear, -1, 4),
             "genitals": (genitals, -1, 4),
         }
-        
+
         for name, (value, min_val, max_val) in {**neuromuscular_items, **physical_items}.items():
             if not isinstance(value, int) or value < min_val or value > max_val:
                 raise ValueError(f"{name} must be an integer from {min_val} to {max_val}")
-        
+
         # Calculate subscores
         neuromuscular_score = posture + square_window + arm_recoil + popliteal_angle + scarf_sign + heel_to_ear
         physical_score = skin + lanugo + plantar_surface + breast + eye_ear + genitals
         total_score = neuromuscular_score + physical_score
-        
+
         # Convert to gestational age (linear interpolation)
         # Score -10 = 20 weeks, Score 50 = 44 weeks
         # Each 5 points = 2 weeks
         gestational_age_weeks = 20 + ((total_score + 10) / 5) * 2
         gestational_age_weeks = round(gestational_age_weeks, 1)
-        
+
         # Categorize maturity
         if gestational_age_weeks < 28:
             category = "Extremely Preterm"
@@ -292,7 +287,7 @@ class BallardScoreCalculator(BaseCalculator):
                 "Post-term infant. Monitor for meconium aspiration, "
                 "hypoglycemia, and polycythemia."
             )
-        
+
         # Build interpretation
         interpretation = Interpretation(
             severity=severity,
@@ -308,7 +303,7 @@ class BallardScoreCalculator(BaseCalculator):
             ),
             recommendations=(clinical_action,),
         )
-        
+
         # Calculation details
         details = {
             "estimated_gestational_age_weeks": gestational_age_weeks,

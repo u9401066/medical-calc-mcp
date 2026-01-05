@@ -5,10 +5,10 @@ MCP tool handlers for critical care and ICU calculators.
 Uses Annotated + Field to provide rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Optional, Annotated, List, Literal
+from typing import Annotated, Any, Literal, Optional
 
-from pydantic import Field
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from .....application.dto import CalculateRequest
 from .....application.use_cases import CalculateUseCase
@@ -16,7 +16,7 @@ from .....application.use_cases import CalculateUseCase
 
 def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all critical care/ICU calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_apache_ii(
         temperature: Annotated[float, Field(ge=30.0, le=42.0, description="體溫 Temperature | Unit: °C | Range: 30.0-42.0")],
@@ -34,7 +34,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         age: Annotated[int, Field(ge=16, le=120, description="年齡 Age | Unit: years | Range: 16-120")] = 50,
         pao2: Annotated[Optional[float], Field(ge=20, le=700, description="動脈血氧分壓 PaO2 | Unit: mmHg (use if FiO2<0.5)")] = None,
         aado2: Annotated[Optional[float], Field(ge=0, le=700, description="肺泡動脈氧分壓差 A-a gradient | Unit: mmHg (if FiO2≥0.5)")] = None,
-        chronic_conditions: Annotated[Optional[List[str]], Field(description="慢性健康問題 Chronic conditions list")] = None,
+        chronic_conditions: Annotated[Optional[list[str]], Field(description="慢性健康問題 Chronic conditions list")] = None,
         admission_type: Annotated[
             Literal["nonoperative", "elective_postop", "emergency_postop"],
             Field(description="入院類型 | Options: 'nonoperative', 'elective_postop', 'emergency_postop'")
@@ -43,10 +43,10 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 APACHE II 分數 (ICU 嚴重度評估)
-        
+
         Estimate ICU mortality based on acute physiology and chronic health.
         Score range: 0-71. Higher scores indicate greater severity.
-        
+
         Reference: Knaus WA, et al. Crit Care Med. 1985.
         """
         request = CalculateRequest(
@@ -74,7 +74,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_rass(
         rass_score: Annotated[
@@ -84,7 +84,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         RASS 鎮靜躁動評估量表 (Richmond Agitation-Sedation Scale)
-        
+
         Assess level of agitation or sedation in ICU patients.
         Target RASS: Usually 0 to -2 per PADIS guidelines.
         """
@@ -94,7 +94,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_sofa(
         pao2_fio2_ratio: Annotated[float, Field(gt=0, le=700, description="PaO2/FiO2比值 | Unit: mmHg | Range: >0-700 (normal >400)")],
@@ -112,7 +112,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 SOFA 分數 (Sequential Organ Failure Assessment)
-        
+
         SOFA evaluates 6 organ systems. Core criterion for Sepsis-3.
         SOFA ≥2 with suspected infection = Sepsis diagnosis.
         Score range: 0-24 (each organ 0-4)
@@ -136,7 +136,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_sofa2(
         gcs_score: Annotated[int, Field(ge=3, le=15, description="格拉斯哥昏迷指數 GCS | Range: 3-15")],
@@ -156,12 +156,12 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 SOFA-2 分數 (2025 JAMA 更新版)
-        
+
         SOFA-2 is the updated 2025 version validated on 3.34 million ICU patients.
         Key updates: New P/F thresholds (300,225,150,75), updated platelet thresholds (150,100,80,50),
         combined NE+Epi dosing, ECMO and RRT criteria.
         Score range: 0-24. AUROC 0.79 for ICU mortality.
-        
+
         Reference: Ranzani OT, et al. JAMA. 2025. doi:10.1001/jama.2025.20516
         """
         request = CalculateRequest(
@@ -185,7 +185,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_qsofa(
         respiratory_rate: Annotated[int, Field(ge=4, le=60, description="呼吸速率 RR | Unit: breaths/min | Range: 4-60 (≥22 scores 1)")],
@@ -195,7 +195,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 qSOFA 分數 (Quick SOFA)
-        
+
         Quick bedside assessment for infection risk. Score: 0-3.
         qSOFA ≥2 suggests higher risk.
         ⚠️ Per SSC 2021: Do NOT use qSOFA alone for sepsis screening.
@@ -211,7 +211,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_news2(
         respiratory_rate: Annotated[int, Field(ge=4, le=60, description="呼吸速率 RR | Unit: breaths/min | Range: 4-60 (normal 8-25)")],
@@ -228,7 +228,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 NEWS2 分數 (National Early Warning Score 2)
-        
+
         Detect clinical deterioration. Score: 0-20.
         0-4=Routine, 5-6/single3=Urgent, ≥7=Emergency.
         """
@@ -247,7 +247,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_gcs(
         eye_response: Annotated[
@@ -266,7 +266,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 GCS 分數 (Glasgow Coma Scale)
-        
+
         Assess consciousness. Score: 3-15 (or 3T-11T if intubated).
         13-15=Mild, 9-12=Moderate, 3-8=Severe.
         """
@@ -281,7 +281,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         )
         response = use_case.execute(request)
         return response.to_dict()
-    
+
     @mcp.tool()
     def calculate_cam_icu(
         rass_score: Annotated[
@@ -295,7 +295,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     ) -> dict[str, Any]:
         """
         計算 CAM-ICU (Confusion Assessment Method for ICU)
-        
+
         Standard delirium screening for ICU. Requires RASS≥-3.
         Positive = Delirium if: F1+F2 AND (F3 OR F4).
         """

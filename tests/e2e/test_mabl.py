@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for MABL (Maximum Allowable Blood Loss) Calculator
 
 Tests the MABL calculator through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestMablE2E:
     """E2E tests for MABL Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/mabl"
-    
-    def test_adult_male(self, test_client):
+
+    def test_adult_male(self, test_client: Any) -> None:
         """Test MABL for adult male"""
         payload = {
             "params": {
@@ -25,8 +25,8 @@ class TestMablE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_adult_female(self, test_client):
+
+    def test_adult_female(self, test_client: Any) -> None:
         """Test MABL for adult female"""
         payload = {
             "params": {
@@ -39,8 +39,8 @@ class TestMablE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_pediatric_patient(self, test_client):
+
+    def test_pediatric_patient(self, test_client: Any) -> None:
         """Test MABL for pediatric patient"""
         payload = {
             "params": {
@@ -53,8 +53,8 @@ class TestMablE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_neonate(self, test_client):
+
+    def test_neonate(self, test_client: Any) -> None:
         """Test MABL for neonate"""
         payload = {
             "params": {
@@ -67,8 +67,8 @@ class TestMablE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_custom_blood_volume(self, test_client):
+
+    def test_custom_blood_volume(self, test_client: Any) -> None:
         """Test with custom estimated blood volume"""
         payload = {
             "params": {
@@ -81,8 +81,8 @@ class TestMablE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_gross_method(self, test_client):
+
+    def test_gross_method(self, test_client: Any) -> None:
         """Test using Gross method"""
         payload = {
             "params": {
@@ -96,8 +96,8 @@ class TestMablE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
-    
-    def test_high_starting_hematocrit(self, test_client):
+
+    def test_high_starting_hematocrit(self, test_client: Any) -> None:
         """Test with high starting hematocrit (polycythemia)"""
         payload = {
             "params": {
@@ -111,8 +111,8 @@ class TestMablE2E:
         data = assert_successful_calculation(response)
         # Higher starting Hct = more allowable blood loss
         assert data["result"]["value"] > 1000
-    
-    def test_anemic_patient(self, test_client):
+
+    def test_anemic_patient(self, test_client: Any) -> None:
         """Test with anemic patient (low starting hematocrit)"""
         payload = {
             "params": {
@@ -126,8 +126,8 @@ class TestMablE2E:
         data = assert_successful_calculation(response)
         # Lower starting Hct = less allowable blood loss
         assert data["result"]["value"] > 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {
@@ -136,8 +136,8 @@ class TestMablE2E:
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)
-    
-    def test_invalid_hematocrit_relationship(self, test_client):
+
+    def test_invalid_hematocrit_relationship(self, test_client: Any) -> None:
         """Test invalid hematocrit (target > initial)"""
         payload = {
             "params": {

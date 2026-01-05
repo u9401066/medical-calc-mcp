@@ -1,12 +1,12 @@
 """
 CHA₂DS₂-VA Score Calculator (2024 ESC Guidelines)
 
-Updated stroke risk assessment for atrial fibrillation that removes sex 
+Updated stroke risk assessment for atrial fibrillation that removes sex
 as a risk modifier, as per the 2024 ESC Guidelines for AF management.
 
 2024 ESC Guideline Reference:
-    Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines for 
-    the management of atrial fibrillation developed in collaboration with 
+    Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines for
+    the management of atrial fibrillation developed in collaboration with
     EACTS. Eur Heart J. 2024;45(36):3314-3414.
     doi:10.1093/eurheartj/ehae176. PMID: 39217497.
 
@@ -16,29 +16,29 @@ Key Change from CHA₂DS₂-VASc:
     - Sex-neutral thresholds for anticoagulation decisions
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class Chads2VaCalculator(BaseCalculator):
     """
     CHA₂DS₂-VA Score for Atrial Fibrillation Stroke Risk (2024 ESC)
-    
+
     2024 ESC Guidelines removed sex as a risk modifier because:
     - Female sex alone does not increase stroke risk without other factors
     - Avoids gender-based treatment disparities
     - Simplifies clinical decision-making
-    
+
     Scoring criteria:
     - Congestive Heart Failure: +1
     - Hypertension: +1
@@ -47,22 +47,22 @@ class Chads2VaCalculator(BaseCalculator):
     - Stroke/TIA/TE history: +2
     - Vascular disease (prior MI, PAD, aortic plaque): +1
     - Age 65-74 years: +1
-    
+
     Maximum score: 8
-    
+
     Anticoagulation recommendations (2024 ESC guidelines):
     - Score 0: No anticoagulation (very low risk)
     - Score 1: Anticoagulation should be considered
     - Score ≥2: Anticoagulation is recommended
-    
+
     CHA₂DS₂-VA 計分系統（2024年ESC心房顫動指引）
-    
+
     2024年ESC指引移除性別作為風險修飾因子，原因：
     - 單純女性性別在沒有其他因素下不增加中風風險
     - 避免基於性別的治療差異
     - 簡化臨床決策
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -152,7 +152,7 @@ class Chads2VaCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         chf_or_lvef_lte_40: bool,
@@ -166,19 +166,19 @@ class Chads2VaCalculator(BaseCalculator):
         """
         Calculate CHA₂DS₂-VA score (2024 ESC - sex-neutral version).
         計算CHA₂DS₂-VA分數（2024 ESC - 無性別因素版本）
-        
+
         Args:
             chf_or_lvef_lte_40: CHF or LVEF ≤40% / 心衰竭或LVEF≤40%
             hypertension: History of hypertension / 高血壓病史
             age_gte_75: Age ≥75 years (2 points) / 年齡≥75歲（2分）
             diabetes: Diabetes mellitus / 糖尿病
-            stroke_tia_or_te_history: Prior stroke, TIA, or thromboembolism (2 points) / 
+            stroke_tia_or_te_history: Prior stroke, TIA, or thromboembolism (2 points) /
                                        中風/TIA/血栓栓塞病史（2分）
-            vascular_disease: Prior MI, PAD, or aortic plaque / 
+            vascular_disease: Prior MI, PAD, or aortic plaque /
                               心肌梗塞、周邊動脈疾病或主動脈斑塊
             age_65_to_74: Age 65-74 years (1 point; mutually exclusive with age ≥75) /
                           年齡65-74歲（1分；與≥75歲互斥）
-            
+
         Returns:
             ScoreResult with score, stroke risk, and anticoagulation recommendation
         """
@@ -191,10 +191,10 @@ class Chads2VaCalculator(BaseCalculator):
         score += 2 if stroke_tia_or_te_history else 0
         score += 1 if vascular_disease else 0
         score += 1 if age_65_to_74 and not age_gte_75 else 0  # Only if not ≥75
-        
+
         # Determine interpretation
         interpretation = self._interpret_score(score)
-        
+
         # Component details
         components = {
             "C - CHF/LVEF ≤40% (心衰竭)": 1 if chf_or_lvef_lte_40 else 0,
@@ -205,7 +205,7 @@ class Chads2VaCalculator(BaseCalculator):
             "V - Vascular disease (血管疾病)": 1 if vascular_disease else 0,
             "A - Age 65-74 (年齡65-74歲)": 1 if (age_65_to_74 and not age_gte_75) else 0,
         }
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -215,13 +215,13 @@ class Chads2VaCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int) -> Interpretation:
         """
         Generate interpretation based on CHA₂DS₂-VA score per 2024 ESC guidelines.
         根據2024 ESC指引產生CHA₂DS₂-VA分數解讀
         """
-        
+
         # Annual stroke risk rates (estimated from original CHA₂DS₂-VASc data,
         # adjusted for sex-neutral scoring)
         stroke_rates = {
@@ -235,9 +235,9 @@ class Chads2VaCalculator(BaseCalculator):
             7: "11.2%",
             8: "14.5%",
         }
-        
+
         annual_risk = stroke_rates.get(score, ">14%")
-        
+
         if score == 0:
             # Very low risk - no anticoagulation
             severity = Severity.NORMAL
@@ -262,7 +262,7 @@ class Chads2VaCalculator(BaseCalculator):
                 "定期重新評估CHA₂DS₂-VA分數",
                 "生活型態調整以降低心血管風險",
             ]
-            
+
         elif score == 1:
             # Low risk - consider anticoagulation
             severity = Severity.MILD
@@ -289,7 +289,7 @@ class Chads2VaCalculator(BaseCalculator):
                 "若決定抗凝血，DOAC為首選",
                 "處理可改變的出血風險因子",
             ]
-            
+
         else:
             # Score ≥2: Anticoagulation recommended
             if score <= 3:
@@ -301,7 +301,7 @@ class Chads2VaCalculator(BaseCalculator):
             else:
                 severity = Severity.CRITICAL
                 risk_level = RiskLevel.VERY_HIGH
-                
+
             summary = f"CHA₂DS₂-VA = {score}: {risk_level.value.replace('_', ' ').title()} risk ({annual_risk} annual stroke risk)"
             detail = (
                 f"{'Significant' if score <= 4 else 'High'} stroke risk per 2024 ESC guidelines. "
@@ -323,13 +323,13 @@ class Chads2VaCalculator(BaseCalculator):
                 "依病患因素選擇適當DOAC",
                 "確保病患衛教理解抗凝血治療",
             ]
-            
+
             if score >= 4:
                 recommendations.append("High stroke risk - ensure OAC adherence (高風險-確保服藥順從性)")
             if score >= 6:
                 recommendations.append("Very high risk - consider cardiology consultation")
-            
-        
+
+
         return Interpretation(
             summary=summary,
             severity=severity,

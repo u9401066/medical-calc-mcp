@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
-> **Last Updated**: 2025-12-09
-> **Current Version**: v1.1.0 (Production Ready)
-> **Status**: 75 Calculators | 75 MCP Tools | 1639 Tests | 88% Coverage
+> **Last Updated**: 2026-01-05
+> **Current Version**: v1.2.0 (Production Ready)
+> **Status**: 78 Calculators | 78 MCP Tools | 1641 Tests | 90% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -63,7 +63,7 @@
 | **Test Coverage** | ✅ 88% | 90%+ | 🟡 MEDIUM |
 | **E2E Tests** | ✅ 697 tests (77 files) | Full Calculator Coverage | ✅ DONE |
 | **Load Testing** | ❌ None | Locust / k6 scripts | 🟢 LOW |
-| **Type Checking** | Partial | mypy --strict | 🟡 MEDIUM |
+| **Type Checking** | ✅ 100% | mypy --strict | ✅ DONE |
 
 > **Testing Progress** (2025-12-09):
 > - Total tests: 1639 (was 940)

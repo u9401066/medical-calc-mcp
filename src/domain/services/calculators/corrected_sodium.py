@@ -6,12 +6,12 @@ High glucose causes osmotic shift of water from intracellular to extracellular s
 diluting serum sodium.
 
 Reference:
-    Katz MA. Hyperglycemia-induced hyponatremia—calculation of expected serum 
+    Katz MA. Hyperglycemia-induced hyponatremia—calculation of expected serum
     sodium depression. N Engl J Med. 1973;289(16):843-844.
     DOI: 10.1056/NEJM197310182891607
     PMID: 4763428
-    
-    Hillier TA, Abbott RD, Barrett EJ. Hyponatremia: evaluating the correction 
+
+    Hillier TA, Abbott RD, Barrett EJ. Hyponatremia: evaluating the correction
     factor for hyperglycemia. Am J Med. 1999;106(4):399-403.
     DOI: 10.1016/S0002-9343(99)00055-8
     PMID: 10225241
@@ -19,42 +19,37 @@ Reference:
 
 from typing import Literal
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CorrectedSodiumCalculator(BaseCalculator):
     """
     Corrected Sodium Calculator for Hyperglycemia
-    
+
     Hyperglycemia causes an osmotic shift of water from ICF to ECF,
     diluting the serum sodium. The corrected sodium estimates what
     the sodium would be if glucose were normal.
-    
+
     Formulas:
         Katz (1973): Corrected Na = Measured Na + 1.6 × ((Glucose - 100) / 100)
         Hillier (1999): Corrected Na = Measured Na + 2.4 × ((Glucose - 100) / 100)
-    
+
     Note:
         - Katz formula: Standard, most widely used
         - Hillier formula: May be more accurate at very high glucose (>400 mg/dL)
-        
+
     Clinical Application:
         - DKA (Diabetic Ketoacidosis)
         - HHS (Hyperosmolar Hyperglycemic State)
         - Hyperglycemic emergencies
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -121,7 +116,7 @@ class CorrectedSodiumCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         measured_sodium: float,
@@ -131,53 +126,53 @@ class CorrectedSodiumCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate corrected sodium for hyperglycemia.
-        
+
         Args:
             measured_sodium: Measured serum sodium in mEq/L (100-180)
             glucose: Blood glucose level
             formula: "katz" (1.6 factor) or "hillier" (2.4 factor)
             glucose_unit: "mg/dL" or "mmol/L"
-            
+
         Returns:
             ScoreResult with corrected sodium and interpretation
         """
         # Validate measured sodium
         if not 100 <= measured_sodium <= 180:
             raise ValueError("Measured sodium must be between 100 and 180 mEq/L")
-        
+
         # Convert glucose to mg/dL if needed
         if glucose_unit == "mmol/L":
             glucose_mgdl = glucose * 18.0  # Convert mmol/L to mg/dL
         else:
             glucose_mgdl = glucose
-        
+
         # Validate glucose
         if not 70 <= glucose_mgdl <= 2000:
             raise ValueError("Glucose must be between 70 and 2000 mg/dL (or 3.9-111 mmol/L)")
-        
+
         # Calculate correction
         if formula == "katz":
             correction_factor = 1.6
         else:  # hillier
             correction_factor = 2.4
-        
+
         # Correction formula: Na_corrected = Na_measured + factor × ((Glucose - 100) / 100)
         glucose_excess = (glucose_mgdl - 100) / 100
         sodium_correction = correction_factor * glucose_excess
         corrected_sodium = measured_sodium + sodium_correction
-        
+
         # Round results
         corrected_sodium = round(corrected_sodium, 1)
         sodium_correction = round(sodium_correction, 1)
-        
+
         # Get interpretation
         interpretation = self._get_interpretation(
-            measured_sodium, 
-            corrected_sodium, 
+            measured_sodium,
+            corrected_sodium,
             sodium_correction,
             glucose_mgdl
         )
-        
+
         return ScoreResult(
             value=corrected_sodium,
             unit=Unit.MEQ_L,
@@ -201,16 +196,16 @@ class CorrectedSodiumCalculator(BaseCalculator):
             },
             formula_used=f"Corrected Na = Measured Na + {correction_factor} × ((Glucose - 100) / 100)"
         )
-    
+
     def _get_interpretation(
-        self, 
-        measured_na: float, 
-        corrected_na: float, 
+        self,
+        measured_na: float,
+        corrected_na: float,
         correction: float,
         glucose: float
     ) -> Interpretation:
         """Get clinical interpretation based on corrected sodium"""
-        
+
         # Determine glucose severity
         if glucose >= 600:
             glucose_severity = "severe hyperglycemia (consider HHS)"
@@ -220,7 +215,7 @@ class CorrectedSodiumCalculator(BaseCalculator):
             glucose_severity = "moderate hyperglycemia"
         else:
             glucose_severity = "mild hyperglycemia"
-        
+
         # Interpret corrected sodium
         if corrected_na < 130:
             # True hyponatremia
@@ -233,7 +228,7 @@ class CorrectedSodiumCalculator(BaseCalculator):
             else:
                 severity = Severity.MODERATE
                 na_status = "mild hyponatremia"
-            
+
             return Interpretation(
                 summary=f"True Hyponatremia: Corrected Na = {corrected_na} mEq/L ({na_status})",
                 detail=f"After correcting for {glucose_severity} (glucose {glucose} mg/dL), "
@@ -272,7 +267,7 @@ class CorrectedSodiumCalculator(BaseCalculator):
             else:
                 severity = Severity.MODERATE
                 na_status = "mild hypernatremia"
-            
+
             return Interpretation(
                 summary=f"Hypernatremia: Corrected Na = {corrected_na} mEq/L ({na_status})",
                 detail=f"After correcting for {glucose_severity} (glucose {glucose} mg/dL), "

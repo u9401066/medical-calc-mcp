@@ -21,28 +21,28 @@ Validation Reference:
     doi:10.1016/j.amjsurg.2009.10.006. PMID: 20103082.
 """
 
-from ..base import BaseCalculator
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
 from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
     ClinicalContext,
+    HighLevelKey,
+    LowLevelKey,
+    Specialty,
 )
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class CapriniVteCalculator(BaseCalculator):
     """
     Caprini VTE Risk Assessment Score
-    
+
     Comprehensive risk stratification for VTE in surgical patients.
-    
+
     Risk Factor Categories:
-    
+
     1 Point Each:
     - Age 41-60 years
     - Minor surgery planned
@@ -59,7 +59,7 @@ class CapriniVteCalculator(BaseCalculator):
     - Medical patient currently at bed rest
     - Leg plaster cast or brace
     - Central venous access
-    
+
     2 Points Each:
     - Age 61-74 years
     - Arthroscopic surgery
@@ -68,7 +68,7 @@ class CapriniVteCalculator(BaseCalculator):
     - Laparoscopic surgery (>45 min)
     - Patient confined to bed (>72 hours)
     - Immobilizing plaster cast (<1 month)
-    
+
     3 Points Each:
     - Age ≥75 years
     - History of DVT/PE
@@ -80,26 +80,26 @@ class CapriniVteCalculator(BaseCalculator):
     - Elevated anticardiolipin antibodies
     - HIT (heparin-induced thrombocytopenia)
     - Other congenital or acquired thrombophilia
-    
+
     5 Points Each:
     - Stroke (<1 month)
     - Elective arthroplasty
     - Hip, pelvis, or leg fracture (<1 month)
     - Acute spinal cord injury (<1 month)
-    
+
     For Women Only:
     - Oral contraceptives or HRT: +1
     - Pregnancy or postpartum (<1 month): +1
-    - Unexplained stillbirth, recurrent spontaneous abortion (≥3), 
+    - Unexplained stillbirth, recurrent spontaneous abortion (≥3),
       premature birth with toxemia or growth-restricted infant: +1
-    
+
     Risk Stratification:
     - 0 points: Very Low Risk (VTE rate ~0.5%)
     - 1-2 points: Low Risk (VTE rate ~1.5%)
     - 3-4 points: Moderate Risk (VTE rate ~3%)
     - ≥5 points: High Risk (VTE rate ~6%)
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -227,7 +227,7 @@ class CapriniVteCalculator(BaseCalculator):
             version="2005",
             validation_status="validated",
         )
-    
+
     def calculate(
         self,
         age_years: int,
@@ -275,7 +275,7 @@ class CapriniVteCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Caprini VTE Risk Assessment Score.
-        
+
         Args:
             age_years: Patient age in years
             minor_surgery: Minor surgery planned
@@ -316,13 +316,13 @@ class CapriniVteCalculator(BaseCalculator):
             pregnancy_or_postpartum: Pregnancy or postpartum <1 month
             pregnancy_loss_history: Unexplained stillborn, recurrent spontaneous abortion (≥3),
                                     premature birth with toxemia or growth-restricted infant
-            
+
         Returns:
             ScoreResult with Caprini score, VTE risk level, and prophylaxis recommendations
         """
         score = 0
         components = {}
-        
+
         # Age scoring
         if age_years >= 75:
             score += 3
@@ -335,7 +335,7 @@ class CapriniVteCalculator(BaseCalculator):
             components["Age 41-60 years"] = 1
         else:
             components["Age ≤40 years"] = 0
-        
+
         # 1-point factors
         if minor_surgery:
             score += 1
@@ -379,7 +379,7 @@ class CapriniVteCalculator(BaseCalculator):
         if central_venous_access:
             score += 1
             components["Central venous access"] = 1
-        
+
         # 2-point factors
         if arthroscopic_surgery:
             score += 2
@@ -399,7 +399,7 @@ class CapriniVteCalculator(BaseCalculator):
         if immobilizing_cast_lt_1mo:
             score += 2
             components["Immobilizing plaster cast <1 month"] = 2
-        
+
         # 3-point factors
         if history_dvt_pe:
             score += 3
@@ -428,7 +428,7 @@ class CapriniVteCalculator(BaseCalculator):
         if other_thrombophilia:
             score += 3
             components["Other thrombophilia"] = 3
-        
+
         # 5-point factors
         if stroke_lt_1mo:
             score += 5
@@ -442,7 +442,7 @@ class CapriniVteCalculator(BaseCalculator):
         if spinal_cord_injury_lt_1mo:
             score += 5
             components["Acute spinal cord injury <1 month"] = 5
-        
+
         # Female-specific factors (only if female)
         if female:
             if oral_contraceptives_or_hrt:
@@ -454,10 +454,10 @@ class CapriniVteCalculator(BaseCalculator):
             if pregnancy_loss_history:
                 score += 1
                 components["Pregnancy loss history"] = 1
-        
+
         # Generate interpretation
         interpretation = self._interpret_score(score, hit_history)
-        
+
         return ScoreResult(
             tool_name=self.low_level_key.name,
             tool_id=self.low_level_key.tool_id,
@@ -467,10 +467,10 @@ class CapriniVteCalculator(BaseCalculator):
             calculation_details=components,
             references=list(self.references),
         )
-    
+
     def _interpret_score(self, score: int, hit_history: bool) -> Interpretation:
         """Generate interpretation based on Caprini score"""
-        
+
         if score == 0:
             severity = Severity.NORMAL
             risk_level = RiskLevel.VERY_LOW
@@ -482,7 +482,7 @@ class CapriniVteCalculator(BaseCalculator):
             ]
             prophylaxis = "No pharmacologic prophylaxis indicated"
             duration = "N/A"
-            
+
         elif score <= 2:
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
@@ -494,7 +494,7 @@ class CapriniVteCalculator(BaseCalculator):
             ]
             prophylaxis = "Mechanical prophylaxis recommended"
             duration = "Until ambulatory"
-            
+
         elif score <= 4:
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
@@ -507,7 +507,7 @@ class CapriniVteCalculator(BaseCalculator):
             ]
             prophylaxis = "LMWH (e.g., enoxaparin 40 mg SC daily) OR UFH 5000 units SC q8-12h"
             duration = "Until ambulatory or discharge"
-            
+
         else:  # score >= 5
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
@@ -520,25 +520,25 @@ class CapriniVteCalculator(BaseCalculator):
             ]
             prophylaxis = "LMWH (e.g., enoxaparin 40 mg SC daily) + mechanical prophylaxis"
             duration = "Continue 7-10 days minimum; consider 28 days for major orthopedic/cancer surgery"
-        
+
         # Special considerations for HIT history
         if hit_history:
             recommendations.append("AVOID heparin products - use fondaparinux or direct oral anticoagulants")
-        
+
         summary = f"Caprini = {score}: {category} (VTE rate {vte_rate})"
         detail = (
             f"Based on the Caprini VTE Risk Assessment, this patient has a {risk_level} risk "
             f"of developing venous thromboembolism with an estimated VTE rate of {vte_rate}."
         )
-        
+
         next_steps = [
             f"Prophylaxis: {prophylaxis}",
             f"Duration: {duration}",
             "Reassess risk daily and with any change in clinical status",
             "Ensure adequate hydration and early mobilization",
         ]
-        
-        warnings = tuple()
+
+        warnings: tuple[str, ...] = tuple()
         if score >= 5:
             warnings = (
                 "High VTE risk - ensure both pharmacologic AND mechanical prophylaxis",
@@ -548,7 +548,7 @@ class CapriniVteCalculator(BaseCalculator):
             warnings = warnings + (
                 "History of HIT - AVOID all heparin products",
             )
-        
+
         return Interpretation(
             summary=summary,
             severity=severity,

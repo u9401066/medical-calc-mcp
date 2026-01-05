@@ -1456,19 +1456,85 @@ doi:10.1056/NEJMoa2102953
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| Phase 1 | ✅ Complete | Foundation Layer (DDD architecture) |
-| Phase 2 | ✅ Complete | 6 Example Calculators (CKD-EPI, ASA, Mallampati, RCRI, APACHE II, RASS) |
-| Phase 3 | ✅ Complete | MCP Integration (FastMCP) with Tool Discovery |
-| Phase 4 | ✅ Complete | ICU/ED Calculators (SOFA, qSOFA, NEWS, GCS, CAM-ICU) per Sepsis-3 |
-| Phase 5 | ✅ Complete | Pediatric/Anesthesia (MABL, Transfusion, Pediatric Dosing) + Handler Modularization |
-| Phase 5.5 | ✅ Complete | MCP Prompts (5 workflows) + Parameter Descriptions + Enhanced Errors |
-| Phase 6 | ✅ Complete | More Calculators (CURB-65, CHA₂DS₂-VASc, HEART, Wells DVT/PE, MELD) |
-| Phase 7 | ✅ Complete | Validation Layer (Domain validation module, 22 parameter specs) |
-| Phase 7.5 | ✅ Complete | CHA₂DS₂-VA (2024 ESC), Caprini VTE, PSI/PORT + Type Safety Fixes |
-| Phase 8 | ✅ Complete | **Guideline-Recommended Tools** (HAS-BLED, Child-Pugh, KDIGO AKI) |
-| Phase 9 | 📋 Planned | HTTP Transport (FastAPI/Starlette for web deployment) |
-| Phase 10 | 📋 Planned | Internationalization (i18n for multi-language support) |
-| Phase 13 | ✅ Complete | **Additional Clinical Tools** (ABCD2, mRS, TIMI STEMI, Rockall, FIB-4) |
+| **Modernization** | ✅ Complete | **Migrated to `uv`, 100% `mypy --strict` coverage, `ruff` integration** |
+| Phase 1-8 | ✅ Complete | Foundation, 78 Calculators, MCP Integration, Validation Layer |
+| Phase 13 | ✅ Complete | Additional Clinical Tools (ABCD2, mRS, TIMI STEMI, Rockall, FIB-4) |
+| Phase 17-18 | ✅ Complete | Obstetrics (Bishop, Ballard), Trauma (ISS, TBSA, Parkland) |
+
+### Quick Start (Developer) | 快速開始 (開發者)
+
+```bash
+# 1. Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. Setup environment and install dependencies
+uv sync
+
+# 3. Run tests
+uv run pytest
+
+# 4. Run MCP server in dev mode
+uv run mcp dev src/main.py
+```
+
+---
+
+## 🧪 Testing | 測試
+
+### Testing Strategy | 測試策略
+
+We maintain a high-quality codebase with over **1640+ tests** and **90% code coverage**.
+
+我們維持高品質的程式碼庫，擁有超過 **1640+ 個測試**與 **90% 的程式碼覆蓋率**。
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Testing Pyramid                          │
+├─────────────────────────────────────────────────────────────────┤
+│                     E2E Tests (MCP Protocol)                     │
+│                    (700+ tests covering all tools)               │
+│                               ╱  ╲                               │
+│           Integration Tests              MCP Inspector           │
+│          (Use Cases + Registry)          (Manual Testing)        │
+│                  ╱              ╲                                │
+│      Unit Tests (Domain)    Validation Tests                     │
+│      (940+ tests for logic) (Parameter constraints)              │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Running Tests | 執行測試
+
+```bash
+# Run all tests | 執行所有測試
+uv run pytest
+
+# Run with coverage | 執行並計算覆蓋率
+uv run pytest --cov=src --cov-report=html
+
+# Run specific layer tests | 執行特定層測試
+uv run pytest tests/test_acid_base.py -v
+```
+
+### Type Safety | 型別安全
+
+The project enforces **strict type checking** across the entire codebase.
+
+專案在整個程式碼庫中強制執行**嚴格型別檢查**。
+
+```bash
+# Run strict type check | 執行嚴格型別檢查
+uv run mypy --strict src tests
+```
+
+---
+
+## 🛠️ Requirements | 需求
+
+- **Python 3.11+**
+- **uv** (Recommended for dependency management)
+- **MCP SDK** (FastMCP)
+
+---
 
 ### Roadmap | 路線圖
 
@@ -1500,164 +1566,6 @@ Phase 9: ✅ Complete
 | ✅ Done | `timi_stemi` | TIMI STEMI Risk Score | Complete | Morrow 2000 |
 | ✅ Done | `rockall_score` | Rockall Score | Complete | Rockall 1996 |
 | ✅ Done | `fib4_index` | FIB-4 Index | Complete | Sterling 2006 |
-
----
-
-### Testing | 測試
-
-#### Testing Strategy | 測試策略
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Testing Pyramid                          │
-├─────────────────────────────────────────────────────────────────┤
-│                     E2E Tests (MCP Protocol)                     │
-│                    ╱                          ╲                  │
-│           Integration Tests              MCP Inspector           │
-│          (Use Cases + Registry)          (Manual Testing)        │
-│                  ╱              ╲                                │
-│      Unit Tests (Domain)    Validation Tests                     │
-│      ╱                  ╲                                        │
-│  Calculator Tests    Entity Tests                                │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-#### Quick Testing | 快速測試
-
-```bash
-# 1. Domain Unit Test - Calculator logic
-# 1. Domain 單元測試 - 計算器邏輯
-python -c "
-from src.domain.services.calculators.sofa_score import SofaScoreCalculator
-calc = SofaScoreCalculator()
-result = calc.calculate(
-    pao2_fio2_ratio=200, platelets=100, bilirubin=2.0,
-    cardiovascular='dopamine_lte_5', gcs_score=13, creatinine=2.5
-)
-print(f'SOFA: {result.value}, Severity: {result.interpretation.severity}')
-"
-
-# 2. Validation Test - Parameter specs
-# 2. 驗證測試 - 參數規格
-python -c "
-from src.domain.validation import validate_params
-result = validate_params({'age': 150, 'sex': 'unknown'}, required=['age', 'sex'])
-print(f'Valid: {result.is_valid}')
-print(f'Errors: {result.get_error_message()}')
-"
-
-# 3. Integration Test - Use Case
-# 3. 整合測試 - Use Case
-python -c "
-from src.infrastructure.mcp.server import MedicalCalculatorServer
-server = MedicalCalculatorServer()
-# Test discovery
-from src.application.use_cases.discovery_use_case import DiscoveryUseCase
-from src.application.dto import DiscoveryRequest, DiscoveryMode
-use_case = DiscoveryUseCase(server.registry)
-result = use_case.execute(DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty='critical_care'))
-print(f'Found {len(result.tools)} tools for critical_care')
-"
-
-# 4. MCP Protocol Test - Full E2E
-# 4. MCP 協議測試 - 完整端對端
-mcp dev src/infrastructure/mcp/server.py
-# Then use Inspector UI to test tools interactively
-```
-
-#### Automated Test Suite (Planned) | 自動化測試套件（計劃中）
-
-```bash
-# Install test dependencies | 安裝測試依賴
-pip install pytest pytest-cov pytest-asyncio
-
-# Run all tests | 執行所有測試
-pytest tests/ -v
-
-# Run with coverage | 執行並計算覆蓋率
-pytest tests/ --cov=src --cov-report=html
-
-# Run specific layer tests | 執行特定層測試
-pytest tests/domain/ -v          # Domain layer
-pytest tests/application/ -v      # Application layer
-pytest tests/integration/ -v      # Integration tests
-```
-
-#### Test File Structure (Planned) | 測試檔案結構（計劃中）
-
-```
-tests/
-├── domain/
-│   ├── services/
-│   │   └── calculators/
-│   │       ├── test_sofa_score.py
-│   │       ├── test_ckd_epi.py
-│   │       └── test_gcs.py
-│   ├── validation/
-│   │   ├── test_rules.py
-│   │   └── test_parameter_specs.py
-│   └── registry/
-│       └── test_tool_registry.py
-├── application/
-│   ├── use_cases/
-│   │   ├── test_calculate_use_case.py
-│   │   └── test_discovery_use_case.py
-│   └── dto/
-│       └── test_dto_serialization.py
-├── integration/
-│   ├── test_mcp_tools.py
-│   └── test_mcp_resources.py
-└── conftest.py                   # Shared fixtures
-```
-
-#### Medical Formula Verification | 醫學公式驗證
-
-Each calculator should be verified against:
-每個計算器應驗證：
-
-1. **Original Paper Examples** - Use cases from the original publication
-2. **Edge Cases** - Boundary values (min/max inputs)
-3. **Known Values** - Validated against trusted sources (UpToDate, PubMed)
-4. **Clinical Reasonability** - Results within clinically expected ranges
-
-### Contributing | 貢獻
-
-PRs are welcome! To add a new calculator:
-
-歡迎 PR！要新增計算器：
-
-1. Create calculator in `src/domain/services/calculators/`
-2. Define `LowLevelKey` and `HighLevelKey` in the calculator
-3. Add paper references with DOI/PMID
-4. Register in `CALCULATORS` list
-5. Add MCP tool wrapper in `server.py`
-
-### Requirements | 需求
-
-- Python 3.11+ (MCP SDK requirement)
-- `mcp[cli]` - MCP Python SDK with FastMCP
-- `pydantic` - Data validation
-
-### Testing | 測試
-
-```bash
-# Run with MCP inspector | 使用 MCP 檢查器執行
-mcp dev src/infrastructure/mcp/server.py
-
-# Test specific calculator | 測試特定計算器
-python -c "from src.domain.services.calculators import CkdEpi2021Calculator; \
-           calc = CkdEpi2021Calculator(); \
-           print(calc.calculate(age=65, sex='female', serum_creatinine=1.2))"
-
-# Test validation module | 測試驗證模組
-python -c "from src.domain.validation import validate_params; \
-           r = validate_params({'age': 150}, required=['age']); \
-           print(f'Valid: {r.is_valid}, Error: {r.get_error_message()}')"
-```
-
-For comprehensive testing guide, see [Testing section](#testing--測試) above.
-
-詳細測試指南請參考上方的[測試章節](#testing--測試)。
 
 ---
 

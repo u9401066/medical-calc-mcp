@@ -6,16 +6,16 @@ This is domain knowledge about valid ranges for clinical measurements.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
-from .rules import ValidationRule, RangeRule, EnumRule
+from .rules import EnumRule, RangeRule, ValidationRule
 
 
 @dataclass
 class ParameterSpec:
     """
     Specification for a medical calculator parameter.
-    
+
     Attributes:
         name: Parameter name (snake_case)
         display_name: Human-readable name (中英文)
@@ -30,42 +30,42 @@ class ParameterSpec:
     display_name: str
     description: str
     param_type: type
-    rules: List[ValidationRule] = field(default_factory=list)
+    rules: list[ValidationRule] = field(default_factory=list)
     unit: str = ""
     default: Any = None
-    examples: Tuple[Any, ...] = ()
-    
+    examples: tuple[Any, ...] = ()
+
     @property
     def is_required(self) -> bool:
         return self.default is None
-    
-    def validate(self, value: Any) -> Tuple[bool, List[str]]:
+
+    def validate(self, value: Any) -> tuple[bool, list[str]]:
         """
         Validate a value against all rules.
-        
+
         Returns:
             Tuple of (is_valid, list of error messages)
         """
         errors = []
-        
+
         # Check required
         if value is None:
             if self.is_required:
                 errors.append(f"{self.display_name} is required")
             return len(errors) == 0, errors
-        
+
         # Check all rules
         for rule in self.rules:
             is_valid, error = rule.validate(value)
             if not is_valid and error:
                 errors.append(error)
-        
+
         return len(errors) == 0, errors
-    
+
     def to_hint(self) -> str:
         """Generate a hint string for error messages"""
         parts = [self.display_name]
-        
+
         for rule in self.rules:
             if isinstance(rule, RangeRule):
                 if rule.min_value is not None and rule.max_value is not None:
@@ -76,7 +76,7 @@ class ParameterSpec:
                     parts.append(f"(≤{rule.max_value}{rule.unit})")
             elif isinstance(rule, EnumRule):
                 parts.append(f"({', '.join(str(v) for v in rule.allowed_values)})")
-        
+
         return " ".join(parts)
 
 
@@ -84,7 +84,7 @@ class ParameterSpec:
 # Common Medical Parameters
 # =============================================================================
 
-COMMON_PARAMETERS: Dict[str, ParameterSpec] = {
+COMMON_PARAMETERS: dict[str, ParameterSpec] = {
     # Vital Signs
     "temperature": ParameterSpec(
         name="temperature",
@@ -140,7 +140,7 @@ COMMON_PARAMETERS: Dict[str, ParameterSpec] = {
         unit="%",
         examples=(92, 96, 99),
     ),
-    
+
     # Oxygenation
     "fio2": ParameterSpec(
         name="fio2",
@@ -160,7 +160,7 @@ COMMON_PARAMETERS: Dict[str, ParameterSpec] = {
         unit="mmHg",
         examples=(100, 200, 400),
     ),
-    
+
     # Laboratory Values
     "serum_creatinine": ParameterSpec(
         name="serum_creatinine",
@@ -216,7 +216,7 @@ COMMON_PARAMETERS: Dict[str, ParameterSpec] = {
         unit="g/dL",
         examples=(8, 12, 15),
     ),
-    
+
     # Demographics
     "age": ParameterSpec(
         name="age",
@@ -245,7 +245,7 @@ COMMON_PARAMETERS: Dict[str, ParameterSpec] = {
         unit="",
         examples=("male", "female"),
     ),
-    
+
     # Scores
     "gcs_score": ParameterSpec(
         name="gcs_score",
@@ -265,7 +265,7 @@ COMMON_PARAMETERS: Dict[str, ParameterSpec] = {
         unit="",
         examples=(-5, 0, 4),
     ),
-    
+
     # Classification
     "asa_class": ParameterSpec(
         name="asa_class",
@@ -303,25 +303,25 @@ def get_parameter_spec(param_name: str) -> Optional[ParameterSpec]:
 
 
 def validate_parameters(
-    params: Dict[str, Any],
-    specs: Dict[str, ParameterSpec]
-) -> Tuple[bool, Dict[str, List[str]]]:
+    params: dict[str, Any],
+    specs: dict[str, ParameterSpec]
+) -> tuple[bool, dict[str, list[str]]]:
     """
     Validate multiple parameters against their specifications.
-    
+
     Args:
         params: Dictionary of parameter name -> value
         specs: Dictionary of parameter name -> ParameterSpec
-        
+
     Returns:
         Tuple of (all_valid, dict of param_name -> list of errors)
     """
-    all_errors: Dict[str, List[str]] = {}
-    
+    all_errors: dict[str, list[str]] = {}
+
     for name, spec in specs.items():
         value = params.get(name, spec.default)
         is_valid, errors = spec.validate(value)
         if not is_valid:
             all_errors[name] = errors
-    
+
     return len(all_errors) == 0, all_errors

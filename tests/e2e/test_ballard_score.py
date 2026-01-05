@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for Ballard Score Calculator
 
 Tests the Ballard Score for Neonatal Maturity through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestBallardScoreE2E:
     """E2E tests for Ballard Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/ballard_score"
-    
-    def test_preterm_infant(self, test_client):
+
+    def test_preterm_infant(self, test_client: Any) -> None:
         """Test preterm infant (score suggesting <37 weeks)"""
         payload = {
             "params": {
@@ -34,8 +34,8 @@ class TestBallardScoreE2E:
         data = assert_successful_calculation(response)
         # Low score indicates preterm
         assert data["result"]["value"] < 30
-    
-    def test_term_infant(self, test_client):
+
+    def test_term_infant(self, test_client: Any) -> None:
         """Test term infant (score suggesting 38-40 weeks)"""
         payload = {
             "params": {
@@ -57,8 +57,8 @@ class TestBallardScoreE2E:
         data = assert_successful_calculation(response)
         # Score around 30-35 for term
         assert data["result"]["value"] >= 30
-    
-    def test_post_term_infant(self, test_client):
+
+    def test_post_term_infant(self, test_client: Any) -> None:
         """Test post-term infant (score suggesting >42 weeks)"""
         payload = {
             "params": {
@@ -80,8 +80,8 @@ class TestBallardScoreE2E:
         data = assert_successful_calculation(response)
         # High score indicates post-term
         assert data["result"]["value"] >= 40
-    
-    def test_early_preterm(self, test_client):
+
+    def test_early_preterm(self, test_client: Any) -> None:
         """Test early preterm infant (<32 weeks)"""
         payload = {
             "params": {
@@ -102,8 +102,8 @@ class TestBallardScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_late_preterm(self, test_client):
+
+    def test_late_preterm(self, test_client: Any) -> None:
         """Test late preterm infant (34-36 weeks)"""
         payload = {
             "params": {
@@ -124,8 +124,8 @@ class TestBallardScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 20
-    
-    def test_neuromuscular_component(self, test_client):
+
+    def test_neuromuscular_component(self, test_client: Any) -> None:
         """Test with focus on neuromuscular maturity"""
         payload = {
             "params": {
@@ -146,8 +146,8 @@ class TestBallardScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 25
-    
-    def test_physical_maturity_component(self, test_client):
+
+    def test_physical_maturity_component(self, test_client: Any) -> None:
         """Test with focus on physical maturity"""
         payload = {
             "params": {
@@ -168,8 +168,8 @@ class TestBallardScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 25
-    
-    def test_discordant_maturity(self, test_client):
+
+    def test_discordant_maturity(self, test_client: Any) -> None:
         """Test infant with discordant maturity features"""
         payload = {
             "params": {
@@ -190,8 +190,8 @@ class TestBallardScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

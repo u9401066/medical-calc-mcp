@@ -5,10 +5,10 @@ MCP tool handlers for nephrology calculators.
 Uses Annotated + Field for rich parameter descriptions in JSON Schema.
 """
 
-from typing import Any, Annotated, Optional, Literal
+from typing import Annotated, Any, Literal, Optional
 
-from pydantic import Field
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from .....application.dto import CalculateRequest
 from .....application.use_cases import CalculateUseCase
@@ -16,15 +16,15 @@ from .....application.use_cases import CalculateUseCase
 
 def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register all nephrology calculator tools with MCP"""
-    
+
     @mcp.tool()
     def calculate_ckd_epi_2021(
         serum_creatinine: Annotated[
-            float, 
+            float,
             Field(gt=0, le=20.0, description="血清肌酐 Serum creatinine | Unit: mg/dL | Range: 0.1-20.0")
         ],
         age: Annotated[
-            int, 
+            int,
             Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")
         ],
         sex: Annotated[
@@ -34,10 +34,10 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         計算 CKD-EPI 2021 eGFR (腎絲球過濾率)
-        
+
         Race-free equation. Returns eGFR in mL/min/1.73m².
         G1≥90, G2:60-89, G3a:45-59, G3b:30-44, G4:15-29, G5<15.
-        
+
         Reference: Inker LA, et al. NEJM 2021.
         """
         request = CalculateRequest(
@@ -75,31 +75,31 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     ) -> dict[str, Any]:
         """
         🫀 KDIGO AKI Staging: 急性腎損傷分期
-        
+
         根據 KDIGO 標準分類急性腎損傷 (AKI) 的嚴重程度。
-        
+
         **AKI 診斷標準 (符合任一):**
         - 48小時內血清肌酸酐上升 ≥0.3 mg/dL
         - 7天內血清肌酸酐上升至基準值 ≥1.5倍
         - 尿量 <0.5 mL/kg/h 持續 6小時
-        
+
         **KDIGO AKI 分期:**
-        
+
         | 分期 | 肌酸酐標準 | 尿量標準 |
         |------|-----------|---------|
         | 1 | 1.5-1.9倍基準 或 ≥0.3 mg/dL↑ | <0.5 mL/kg/h × 6-12h |
         | 2 | 2.0-2.9倍基準 | <0.5 mL/kg/h × ≥12h |
         | 3 | ≥3.0倍基準 或 ≥4.0 mg/dL 或 RRT | <0.3 mL/kg/h × ≥24h 或 無尿 ≥12h |
-        
+
         **臨床意義:**
         - Stage 1: 輕度 AKI - 密切監測，找出並治療病因
         - Stage 2: 中度 AKI - 積極處理，會診腎臟科
         - Stage 3: 重度 AKI - 高死亡率，可能需要透析
-        
-        **參考文獻:** 
+
+        **參考文獻:**
         - KDIGO AKI Work Group. Kidney Int Suppl. 2012;2(1):1-138.
         - Kellum JA, et al. Crit Care. 2013;17(1):204. PMID: 23394211
-        
+
         Returns:
             KDIGO AKI 分期 (0-3)、處置建議
         """

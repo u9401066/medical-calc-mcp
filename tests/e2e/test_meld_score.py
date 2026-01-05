@@ -1,18 +1,18 @@
+from typing import Any
 """
 E2E Tests for MELD Score Calculator
 
 Tests the MELD (Model for End-Stage Liver Disease) score through the REST API.
 """
-import pytest
-from tests.e2e.conftest import assert_successful_calculation, assert_calculation_error
+from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 
 class TestMeldScoreE2E:
     """E2E tests for MELD Score Calculator"""
-    
+
     ENDPOINT = "/api/v1/calculate/meld_score"
-    
-    def test_low_meld_score(self, test_client):
+
+    def test_low_meld_score(self, test_client: Any) -> None:
         """Test low MELD score (good liver function)"""
         payload = {
             "params": {
@@ -27,8 +27,8 @@ class TestMeldScoreE2E:
         data = assert_successful_calculation(response)
         # Low MELD should be < 10
         assert data["result"]["value"] < 15
-    
-    def test_moderate_meld_score(self, test_client):
+
+    def test_moderate_meld_score(self, test_client: Any) -> None:
         """Test moderate MELD score"""
         payload = {
             "params": {
@@ -42,8 +42,8 @@ class TestMeldScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 10 <= data["result"]["value"] <= 25
-    
-    def test_high_meld_score(self, test_client):
+
+    def test_high_meld_score(self, test_client: Any) -> None:
         """Test high MELD score (severe liver disease)"""
         payload = {
             "params": {
@@ -57,8 +57,8 @@ class TestMeldScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 25
-    
-    def test_on_dialysis(self, test_client):
+
+    def test_on_dialysis(self, test_client: Any) -> None:
         """Test patient on dialysis (creatinine set to 4.0)"""
         payload = {
             "params": {
@@ -72,8 +72,8 @@ class TestMeldScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 20
-    
-    def test_meld_na(self, test_client):
+
+    def test_meld_na(self, test_client: Any) -> None:
         """Test MELD-Na with hyponatremia"""
         payload = {
             "params": {
@@ -87,8 +87,8 @@ class TestMeldScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 15
-    
-    def test_minimum_values(self, test_client):
+
+    def test_minimum_values(self, test_client: Any) -> None:
         """Test with minimum lab values"""
         payload = {
             "params": {
@@ -103,8 +103,8 @@ class TestMeldScoreE2E:
         data = assert_successful_calculation(response)
         # MELD has minimum score of 6
         assert data["result"]["value"] >= 6
-    
-    def test_maximum_score(self, test_client):
+
+    def test_maximum_score(self, test_client: Any) -> None:
         """Test maximum MELD score (capped at 40)"""
         payload = {
             "params": {
@@ -118,8 +118,8 @@ class TestMeldScoreE2E:
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 40
-    
-    def test_missing_required_params(self, test_client):
+
+    def test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
         payload = {
             "params": {

@@ -1,0 +1,34 @@
+# Virtual environments (contains large binary files)
+.venv/
+venv/
+env/
+ENV/
+
+# Cache directories
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.nox/
+.tox/
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.so
+
+# Node modules (if any)
+node_modules/
+
+# Large data files
+*.csv
+*.db
+*.sqlite
+
+# Git
+.git/

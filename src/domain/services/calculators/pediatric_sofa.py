@@ -28,34 +28,30 @@ References:
     Sequential Organ Failure Assessment Score and Evaluation of the Sepsis-3
     Definitions in Critically Ill Children.
     JAMA Pediatr. 2017;171(10):e172352. PMID: 28783810
-    
+
     Schlapbach LJ, et al. International Consensus Criteria for Pediatric
     Sepsis and Septic Shock (Phoenix Criteria).
     JAMA. 2024;331(8):665-674. PMID: 38245889
-    
+
     Goldstein B, et al. International pediatric sepsis consensus conference.
     Pediatr Crit Care Med. 2005;6(1):2-8. PMID: 15636651
 """
 
 from typing import Optional
-from ..base import BaseCalculator
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class PediatricSOFACalculator(BaseCalculator):
     """
     Pediatric SOFA (pSOFA) Score Calculator
-    
+
     Age-adapted Sequential Organ Failure Assessment for children.
     Based on Matics & Sanchez-Pinto 2017 validation study.
     """
@@ -146,7 +142,7 @@ class PediatricSOFACalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Pediatric SOFA score.
-        
+
         Args:
             age_group: Patient age category
                 "0-1m", "1-12m", "1-2y", "2-5y", "5-12y", "12-18y"
@@ -160,7 +156,7 @@ class PediatricSOFACalculator(BaseCalculator):
                 "none", "dopamine_low", "dopamine_high", "epinephrine", "norepinephrine"
             vasopressor_dose: Dose in mcg/kg/min
             on_mechanical_ventilation: Whether on mechanical ventilation
-        
+
         Returns:
             ScoreResult with pSOFA score and organ-specific breakdown
         """
@@ -319,7 +315,7 @@ class PediatricSOFACalculator(BaseCalculator):
         """Calculate cardiovascular subscore with age-adjusted MAP."""
         # Get age-specific MAP threshold
         map_threshold = self.MAP_THRESHOLDS.get(age_group, 65)
-        
+
         # Vasopressor scoring
         if vaso_type == "epinephrine" or vaso_type == "norepinephrine":
             if vaso_dose and vaso_dose > 0.1:
@@ -350,7 +346,7 @@ class PediatricSOFACalculator(BaseCalculator):
     def _calc_renal(self, age_group: str, creatinine: float) -> int:
         """Calculate renal subscore with age-adjusted thresholds."""
         thresholds = self.CREATININE_THRESHOLDS.get(age_group, self.CREATININE_THRESHOLDS["12-18y"])
-        
+
         if creatinine <= thresholds["normal"]:
             return 0
         elif creatinine <= thresholds["mild"]:
@@ -362,7 +358,7 @@ class PediatricSOFACalculator(BaseCalculator):
         else:
             return 4
 
-    def _get_recommendation(self, score: int, worst_organs: list) -> str:
+    def _get_recommendation(self, score: int, worst_organs: list[str]) -> str:
         """Get clinical recommendation."""
         if score <= 3:
             return "Continue supportive care; monitor for progression"

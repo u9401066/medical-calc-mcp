@@ -24,39 +24,35 @@ References:
     Parshuram CS, Hutchison J, Middaugh K. Development and initial validation
     of the Bedside Paediatric Early Warning System score.
     Crit Care. 2009;13(4):R135. PMID: 19678924
-    
+
     Chapman SM, Wray J, Oulton K, Peters MJ. The value of paediatric early
     warning scores: A systematic review.
     Pediatrics. 2017;140(6):e20164154. PMID: 29167378
-    
+
     NICE Guideline NG51: Sepsis: recognition, diagnosis and early management.
     National Institute for Health and Care Excellence. 2016 (updated 2024).
 """
 
 from typing import Optional
-from ..base import BaseCalculator
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.units import Unit
-from ...value_objects.reference import Reference
 from ...value_objects.interpretation import Interpretation, Severity
-from ...value_objects.tool_keys import (
-    LowLevelKey,
-    HighLevelKey,
-    Specialty,
-    ClinicalContext
-)
+from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
+from ...value_objects.units import Unit
+from ..base import BaseCalculator
 
 
 class PEWSCalculator(BaseCalculator):
     """
     Pediatric Early Warning Score (PEWS) Calculator
-    
+
     Evaluates risk of clinical deterioration using 3 domains:
     1. Behavior/Neurological
     2. Cardiovascular
     3. Respiratory
-    
+
     Age-specific vital sign thresholds are incorporated.
     """
 
@@ -68,7 +64,7 @@ class PEWSCalculator(BaseCalculator):
         "4-12y": (70, 120),
         "12-18y": (60, 100),
     }
-    
+
     # Age-specific normal ranges for respiratory rate
     RR_RANGES = {
         "0-3m": (30, 50),
@@ -140,7 +136,7 @@ class PEWSCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate PEWS score.
-        
+
         Args:
             behavior_score: Neurological/behavior status (0-3)
                 0 = Playing/appropriate
@@ -163,7 +159,7 @@ class PEWSCalculator(BaseCalculator):
             respiratory_rate: Optional actual RR (breaths/min)
             spo2: Optional oxygen saturation (%)
             supplemental_oxygen: Whether child is on supplemental O2
-        
+
         Returns:
             ScoreResult with PEWS score and escalation guidance
         """
@@ -225,7 +221,7 @@ class PEWSCalculator(BaseCalculator):
                 vs_context.append(f"Bradycardia: HR {heart_rate} bpm (normal {hr_range[0]}-{hr_range[1]})")
             elif heart_rate > hr_range[1]:
                 vs_context.append(f"Tachycardia: HR {heart_rate} bpm (normal {hr_range[0]}-{hr_range[1]})")
-        
+
         if respiratory_rate and age_group and age_group in self.RR_RANGES:
             rr_range = self.RR_RANGES[age_group]
             if respiratory_rate > rr_range[1]:

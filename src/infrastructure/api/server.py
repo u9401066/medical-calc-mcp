@@ -7,20 +7,20 @@ Can run standalone or alongside the MCP server.
 Usage:
     # Direct run
     python -m src.infrastructure.api.server
-    
+
     # Via main entry point
     python src/main.py --mode api --port 8080
-    
+
     # With uvicorn (production)
     uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080
 """
 
 import os
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from pathlib import Path
+from typing import Any, AsyncGenerator, Optional
 
 # Ensure project root is in path
 project_root = Path(__file__).parent.parent.parent.parent
@@ -29,16 +29,13 @@ if str(project_root) not in sys.path:
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from src.domain.registry.tool_registry import get_registry
-from src.domain.services.calculators import CALCULATORS
+from src.application.dto import CalculateRequest, DiscoveryMode, DiscoveryRequest
 from src.application.use_cases.calculate_use_case import CalculateUseCase
 from src.application.use_cases.discovery_use_case import DiscoveryUseCase
-from src.application.dto import (
-    CalculateRequest, DiscoveryRequest, DiscoveryMode
-)
-
+from src.domain.registry.tool_registry import get_registry
+from src.domain.services.calculators import CALCULATORS
 
 # =============================================================================
 # Pydantic Models for API
@@ -46,8 +43,8 @@ from src.application.dto import (
 
 class CalculatorInput(BaseModel):
     """Generic calculator input model"""
-    params: Dict[str, Any] = Field(..., description="Calculator parameters")
-    
+    params: dict[str, Any] = Field(..., description="Calculator parameters")
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -65,14 +62,14 @@ class CalculatorResponse(BaseModel):
     """Calculator response model"""
     success: bool
     calculator: str
-    result: Optional[Dict[str, Any]] = None
+    result: Optional[dict[str, Any]] = None
     error: Optional[str] = None
 
 
 class DiscoveryResponse(BaseModel):
     """Discovery response model"""
     count: int
-    tools: List[Dict[str, Any]]
+    tools: list[dict[str, Any]]
 
 
 class HealthResponse(BaseModel):
@@ -89,7 +86,7 @@ class HealthResponse(BaseModel):
 # =============================================================================
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler"""
     # Startup: Register all calculators
     registry = get_registry()
@@ -97,9 +94,9 @@ async def lifespan(app: FastAPI):
         instance = calculator_cls()
         if registry.get_calculator(instance.tool_id) is None:
             registry.register(instance)
-    
+
     yield
-    
+
     # Shutdown: Cleanup if needed
     pass
 
@@ -159,7 +156,7 @@ app.add_middleware(
 # =============================================================================
 
 @app.get("/", tags=["Info"])
-async def root():
+async def root() -> dict[str, Any]:
     """API root with service information"""
     registry = get_registry()
     return {
@@ -173,7 +170,7 @@ async def root():
 
 
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
-async def health_check():
+async def health_check() -> HealthResponse:
     """Health check endpoint for Docker/K8s"""
     registry = get_registry()
     return HealthResponse(
@@ -192,18 +189,18 @@ async def health_check():
 @app.get("/api/v1/calculators", response_model=DiscoveryResponse, tags=["Discovery"])
 async def list_calculators(
     limit: int = Query(50, ge=1, le=100, description="Maximum results")
-):
+) -> DiscoveryResponse:
     """
     列出所有可用的計算器
-    
+
     List all available calculators with their metadata.
     """
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
-    
+
     request = DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=limit)
     result = use_case.execute(request)
-    
+
     return DiscoveryResponse(
         count=len(result.tools),
         tools=[asdict(t) for t in result.tools]
@@ -211,22 +208,22 @@ async def list_calculators(
 
 
 @app.get("/api/v1/calculators/{tool_id}", tags=["Discovery"])
-async def get_calculator_info(tool_id: str):
+async def get_calculator_info(tool_id: str) -> dict[str, Any]:
     """
     取得特定計算器的詳細資訊
-    
+
     Get detailed information about a specific calculator including
     parameters, references, and usage examples.
     """
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
-    
+
     request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id=tool_id)
     result = use_case.execute(request)
-    
+
     if result.tool_detail is None:
         raise HTTPException(status_code=404, detail=f"Calculator '{tool_id}' not found")
-    
+
     return asdict(result.tool_detail)
 
 
@@ -234,18 +231,18 @@ async def get_calculator_info(tool_id: str):
 async def search_calculators(
     q: str = Query(..., min_length=1, description="Search keyword"),
     limit: int = Query(10, ge=1, le=50, description="Maximum results")
-):
+) -> DiscoveryResponse:
     """
     依關鍵字搜尋計算器
-    
+
     Search calculators by keyword (name, specialty, condition, etc.)
     """
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
-    
+
     request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query=q, limit=limit)
     result = use_case.execute(request)
-    
+
     return DiscoveryResponse(
         count=len(result.tools),
         tools=[asdict(t) for t in result.tools]
@@ -253,18 +250,18 @@ async def search_calculators(
 
 
 @app.get("/api/v1/specialties", tags=["Discovery"])
-async def list_specialties():
+async def list_specialties() -> dict[str, Any]:
     """
     列出所有可用的專科分類
-    
+
     List all available medical specialties.
     """
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
-    
+
     request = DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
     result = use_case.execute(request)
-    
+
     return {
         "specialties": result.available_specialties,
         "count": len(result.available_specialties) if result.available_specialties else 0
@@ -275,18 +272,18 @@ async def list_specialties():
 async def list_by_specialty(
     specialty: str,
     limit: int = Query(20, ge=1, le=50, description="Maximum results")
-):
+) -> DiscoveryResponse:
     """
     列出特定專科的所有計算器
-    
+
     List all calculators for a specific medical specialty.
     """
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
-    
+
     request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty=specialty, limit=limit)
     result = use_case.execute(request)
-    
+
     return DiscoveryResponse(
         count=len(result.tools),
         tools=[asdict(t) for t in result.tools]
@@ -294,18 +291,18 @@ async def list_by_specialty(
 
 
 @app.get("/api/v1/contexts", tags=["Discovery"])
-async def list_contexts():
+async def list_contexts() -> dict[str, Any]:
     """
     列出所有臨床情境
-    
+
     List all available clinical contexts.
     """
     registry = get_registry()
     use_case = DiscoveryUseCase(registry)
-    
+
     request = DiscoveryRequest(mode=DiscoveryMode.LIST_CONTEXTS)
     result = use_case.execute(request)
-    
+
     return {
         "contexts": result.available_contexts,
         "count": len(result.available_contexts) if result.available_contexts else 0
@@ -317,12 +314,12 @@ async def list_contexts():
 # =============================================================================
 
 @app.post("/api/v1/calculate/{tool_id}", response_model=CalculatorResponse, tags=["Calculate"])
-async def calculate(tool_id: str, input_data: CalculatorInput):
+async def calculate(tool_id: str, input_data: CalculatorInput) -> CalculatorResponse:
     """
     執行計算
-    
+
     Execute a medical calculation with the given parameters.
-    
+
     Example for CKD-EPI 2021:
     ```json
     {
@@ -336,20 +333,20 @@ async def calculate(tool_id: str, input_data: CalculatorInput):
     """
     registry = get_registry()
     use_case = CalculateUseCase(registry)
-    
+
     request = CalculateRequest(
         tool_id=tool_id,
         params=input_data.params
     )
     result = use_case.execute(request)
-    
+
     if not result.success:
         return CalculatorResponse(
             success=False,
             calculator=tool_id,
             error=result.error
         )
-    
+
     # Convert dataclass to dict, excluding success and error fields
     result_dict = {
         "tool_id": result.tool_id,
@@ -357,7 +354,7 @@ async def calculate(tool_id: str, input_data: CalculatorInput):
         "value": result.result,
         "unit": result.unit,
     }
-    
+
     if result.interpretation:
         result_dict["interpretation"] = {
             "summary": result.interpretation.summary,
@@ -366,10 +363,10 @@ async def calculate(tool_id: str, input_data: CalculatorInput):
             result_dict["interpretation"]["severity"] = result.interpretation.severity
         if result.interpretation.recommendation:
             result_dict["interpretation"]["recommendation"] = result.interpretation.recommendation
-    
+
     if result.component_scores:
         result_dict["component_scores"] = result.component_scores
-    
+
     return CalculatorResponse(
         success=True,
         calculator=tool_id,
@@ -386,24 +383,24 @@ async def calculate_ckd_epi(
     serum_creatinine: float = Query(..., gt=0, description="Serum creatinine (mg/dL)"),
     age: int = Query(..., ge=18, le=120, description="Age in years"),
     sex: str = Query(..., pattern="^(male|female)$", description="Sex (male/female)")
-):
+) -> dict[str, Any]:
     """
     快速計算 CKD-EPI 2021 eGFR
-    
+
     Calculate eGFR using CKD-EPI 2021 equation (race-free).
     """
     registry = get_registry()
     use_case = CalculateUseCase(registry)
-    
+
     request = CalculateRequest(
         tool_id="ckd_epi_2021",
         params={"serum_creatinine": serum_creatinine, "age": age, "sex": sex}
     )
     result = use_case.execute(request)
-    
+
     if not result.success:
-        raise HTTPException(status_code=400, detail=result.error_message)
-    
+        raise HTTPException(status_code=400, detail=result.error)
+
     # Convert dataclass result to dict
     result_dict = {
         "tool_id": result.tool_id,
@@ -426,15 +423,15 @@ async def calculate_sofa(
     cardiovascular: str = Query(..., description="MAP or vasopressor status"),
     gcs_score: int = Query(..., ge=3, le=15, description="GCS score"),
     creatinine: float = Query(..., description="Creatinine (mg/dL)")
-):
+) -> dict[str, Any]:
     """
     快速計算 SOFA Score
-    
+
     Calculate Sequential Organ Failure Assessment score.
     """
     registry = get_registry()
     use_case = CalculateUseCase(registry)
-    
+
     request = CalculateRequest(
         tool_id="sofa_score",
         params={
@@ -447,10 +444,10 @@ async def calculate_sofa(
         }
     )
     result = use_case.execute(request)
-    
+
     if not result.success:
-        raise HTTPException(status_code=400, detail=result.error_message)
-    
+        raise HTTPException(status_code=400, detail=result.error)
+
     # Convert dataclass result to dict
     result_dict = {
         "tool_id": result.tool_id,
@@ -469,17 +466,17 @@ async def calculate_sofa(
 # Entry Point
 # =============================================================================
 
-def main():
+def main() -> None:
     """Run the API server"""
     import uvicorn
-    
+
     host = os.environ.get("API_HOST", "0.0.0.0")
     port = int(os.environ.get("API_PORT", "8080"))
-    
+
     print(f"🏥 Medical Calculator API starting on http://{host}:{port}")
     print(f"📚 API Docs: http://{host}:{port}/docs")
     print(f"📖 ReDoc: http://{host}:{port}/redoc")
-    
+
     uvicorn.run(
         "src.infrastructure.api.server:app",
         host=host,

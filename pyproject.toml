@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "medical-calc-mcp"
-version = "1.0.0"
+version = "1.2.0"
 description = "DDD-architected medical calculator MCP server with intelligent tool discovery"
 readme = "README.md"
 license = "Apache-2.0"
@@ -32,15 +32,15 @@ classifiers = [
 ]
 
 dependencies = [
-    "mcp>=1.0.0",
-    "pydantic>=2.0.0",
+    "mcp[cli]>=1.22.0",
+    "pydantic>=2.11.0,<3.0.0",
+    "starlette>=0.32.0",
+    "uvicorn>=0.38.0",
+    "sse-starlette>=2.0.0",
+    "fastapi>=0.115.0",
 ]
 
 [project.optional-dependencies]
-api = [
-    "fastapi>=0.110.0",
-    "uvicorn>=0.27.0",
-]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",
@@ -52,6 +52,9 @@ dev = [
 [project.scripts]
 medical-calc-mcp = "src.infrastructure.mcp.server:main"
 medical-calc-api = "src.infrastructure.api.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [tool.ruff]
 line-length = 100

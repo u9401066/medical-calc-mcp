@@ -9,25 +9,27 @@ References:
 - ESGE Guideline. Endoscopy. 2021;53(3):300-332. PMID: 33567467
 """
 
-from ..base import BaseCalculator
+from typing import Any, Literal
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
-from ...value_objects.interpretation import Interpretation, Severity, RiskLevel
+from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
 from ...value_objects.reference import Reference
+from ...value_objects.tool_keys import ClinicalContext, HighLevelKey, LowLevelKey, Specialty
 from ...value_objects.units import Unit
-from ...value_objects.tool_keys import LowLevelKey, HighLevelKey, Specialty, ClinicalContext
+from ..base import BaseCalculator
 
 
 class GlasgowBlatchfordCalculator(BaseCalculator):
     """
     Glasgow-Blatchford Score (GBS) for Upper GI Bleeding
-    
+
     上消化道出血風險評估工具，預測需要干預（輸血、內視鏡、手術）的風險。
     GBS = 0 表示低風險，可考慮門診處理。
-    
+
     評分範圍: 0-23 分
     """
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -35,11 +37,11 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                 tool_id="glasgow_blatchford",
                 name="Glasgow-Blatchford Score (GBS)",
                 purpose="Stratify upper GI bleeding risk and predict need for intervention",
-                input_params=(
-                    "bun_mg_dl", "hemoglobin_g_dl", "systolic_bp_mmhg", 
-                    "heart_rate_bpm", "melena", "syncope", 
+                input_params=[
+                    "bun_mg_dl", "hemoglobin_g_dl", "systolic_bp_mmhg",
+                    "heart_rate_bpm", "melena", "syncope",
                     "hepatic_disease", "cardiac_failure", "sex"
-                ),
+                ],
                 output_type="GBS (0-23) with intervention risk and disposition"
             ),
             high_level=HighLevelKey(
@@ -50,7 +52,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                     Specialty.CRITICAL_CARE,
                 ),
                 conditions=(
-                    "Upper GI Bleeding", "UGIB", "Hematemesis", 
+                    "Upper GI Bleeding", "UGIB", "Hematemesis",
                     "Melena", "GI Hemorrhage"
                 ),
                 clinical_contexts=(
@@ -89,7 +91,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             version="1.0.0",
             validation_status="validated"
         )
-    
+
     def calculate(
         self,
         bun_mg_dl: float,
@@ -104,7 +106,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
     ) -> ScoreResult:
         """
         Calculate Glasgow-Blatchford Score
-        
+
         Args:
             bun_mg_dl: Blood urea nitrogen (mg/dL), range 0-150
             hemoglobin_g_dl: Hemoglobin (g/dL), range 3-20
@@ -115,7 +117,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             syncope: Presentation with syncope
             hepatic_disease: Known hepatic disease
             cardiac_failure: Known cardiac failure
-            
+
         Returns:
             ScoreResult with GBS score and intervention risk
         """
@@ -128,10 +130,10 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             raise ValueError("Systolic BP must be between 50-250 mmHg")
         if sex.lower() not in ["male", "female"]:
             raise ValueError("Sex must be 'male' or 'female'")
-        
+
         score = 0
-        components = []
-        
+        components: list[str] = []
+
         # BUN scoring (mg/dL) - convert if needed
         # Score: 0 (<18.2), 2 (18.2-22.3), 3 (22.4-27.9), 4 (28-69.9), 6 (≥70)
         if bun_mg_dl >= 70:
@@ -148,7 +150,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             components.append("BUN 18.2-22.3: +2")
         else:
             components.append("BUN <18.2: +0")
-        
+
         # Hemoglobin scoring
         is_male = sex.lower() == "male"
         if is_male:
@@ -174,7 +176,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                 components.append("Hgb 10-11.9 (female): +1")
             else:
                 components.append("Hgb ≥12 (female): +0")
-        
+
         # Systolic BP scoring
         # <90 (+3), 90-99 (+2), 100-109 (+1), ≥110 (+0)
         if systolic_bp_mmhg < 90:
@@ -188,34 +190,34 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             components.append("SBP 100-109: +1")
         else:
             components.append("SBP ≥110: +0")
-        
+
         # Heart rate (Pulse ≥100 = +1)
         if heart_rate_bpm >= 100:
             score += 1
             components.append("HR ≥100: +1")
         else:
             components.append("HR <100: +0")
-        
+
         # Melena (+1)
         if melena:
             score += 1
             components.append("Melena: +1")
-        
+
         # Syncope (+2)
         if syncope:
             score += 2
             components.append("Syncope: +2")
-        
+
         # Hepatic disease (+2)
         if hepatic_disease:
             score += 2
             components.append("Hepatic disease: +2")
-        
+
         # Cardiac failure (+2)
         if cardiac_failure:
             score += 2
             components.append("Cardiac failure: +2")
-        
+
         # Risk stratification
         if score == 0:
             risk_category = "Very Low Risk"
@@ -362,7 +364,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                     "Surgical/IR consultation",
                 ),
             )
-        
+
         return ScoreResult(
             value=score,
             unit=Unit.SCORE,

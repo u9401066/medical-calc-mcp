@@ -1,19 +1,19 @@
+from typing import Any
 """
 Tests for Neurology Calculators
 
 Tests NIHSS and other neurology-related calculators.
 """
 
-import pytest
 
 
 class TestNihssCalculator:
     """Tests for NIHSS (NIH Stroke Scale) Calculator."""
 
-    def test_no_stroke_symptoms(self):
+    def test_no_stroke_symptoms(self) -> None:
         """Test NIHSS score 0 - no stroke symptoms."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=0,
@@ -32,14 +32,16 @@ class TestNihssCalculator:
             dysarthria=0,
             extinction_inattention=0
         )
-        
+
+        assert result.value is not None
         assert result.value == 0
+        assert result.interpretation.summary is not None
         assert "no stroke" in result.interpretation.summary.lower()
 
-    def test_minor_stroke(self):
+    def test_minor_stroke(self) -> None:
         """Test NIHSS score 1-4 - minor stroke."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=0,
@@ -58,14 +60,16 @@ class TestNihssCalculator:
             dysarthria=1,
             extinction_inattention=0
         )
-        
+
+        assert result.value is not None
         assert result.value == 4
+        assert result.interpretation.summary is not None
         assert "minor" in result.interpretation.summary.lower()
 
-    def test_moderate_stroke(self):
+    def test_moderate_stroke(self) -> None:
         """Test NIHSS score 5-15 - moderate stroke."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=1,
@@ -84,14 +88,16 @@ class TestNihssCalculator:
             dysarthria=1,
             extinction_inattention=0
         )
-        
+
+        assert result.value is not None
         assert 5 <= result.value <= 15
+        assert result.interpretation.summary is not None
         assert "moderate" in result.interpretation.summary.lower()
 
-    def test_moderate_severe_stroke(self):
+    def test_moderate_severe_stroke(self) -> None:
         """Test NIHSS score 16-20 - moderate to severe stroke."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=2,
@@ -110,13 +116,14 @@ class TestNihssCalculator:
             dysarthria=1,
             extinction_inattention=0
         )
-        
+
+        assert result.value is not None
         assert 16 <= result.value <= 20
 
-    def test_severe_stroke(self):
+    def test_severe_stroke(self) -> None:
         """Test NIHSS score 21-42 - severe stroke."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=3,
@@ -135,14 +142,16 @@ class TestNihssCalculator:
             dysarthria=2,
             extinction_inattention=2
         )
-        
+
+        assert result.value is not None
         assert result.value >= 21
+        assert result.interpretation.summary is not None
         assert "severe" in result.interpretation.summary.lower()
 
-    def test_right_hemispheric_stroke_pattern(self):
+    def test_right_hemispheric_stroke_pattern(self) -> None:
         """Test typical right hemispheric stroke: left-sided weakness."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=0,
@@ -161,16 +170,19 @@ class TestNihssCalculator:
             dysarthria=1,
             extinction_inattention=2  # Left neglect
         )
-        
+
+        assert result.value is not None
         assert result.value > 0
+        assert result.calculation_details is not None
         details = result.calculation_details
+        assert result.calculation_details is not None
         assert details["left_motor_total"] > 0
         assert details["right_motor_total"] == 0
 
-    def test_left_hemispheric_stroke_pattern(self):
+    def test_left_hemispheric_stroke_pattern(self) -> None:
         """Test typical left hemispheric stroke: right-sided weakness + aphasia."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=0,
@@ -189,17 +201,21 @@ class TestNihssCalculator:
             dysarthria=1,
             extinction_inattention=0
         )
-        
+
+        assert result.value is not None
         assert result.value > 0
+        assert result.calculation_details is not None
         details = result.calculation_details
+        assert result.calculation_details is not None
         assert details["right_motor_total"] > 0
+        assert result.calculation_details is not None
         assert details["left_motor_total"] == 0
         assert details["component_scores"]["9_best_language"] > 0
 
-    def test_max_score(self):
+    def test_max_score(self) -> None:
         """Test NIHSS maximum score of 42."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=3,
@@ -218,13 +234,14 @@ class TestNihssCalculator:
             dysarthria=2,
             extinction_inattention=2
         )
-        
+
+        assert result.value is not None
         assert result.value == 42
 
-    def test_has_references(self):
+    def test_has_references(self) -> None:
         """Test that NIHSS includes Brott 1989 reference."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=0,
@@ -243,23 +260,23 @@ class TestNihssCalculator:
             dysarthria=0,
             extinction_inattention=0
         )
-        
+
         assert result.references is not None
         assert len(result.references) >= 1
         ref_text = str(result.references[0])
         assert "Brott" in ref_text or "2749846" in ref_text
 
-    def test_tool_id(self):
+    def test_tool_id(self) -> None:
         """Test tool ID is correct."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         assert calc.tool_id == "nihss"
 
-    def test_calculation_details_include_subscores(self):
+    def test_calculation_details_include_subscores(self) -> None:
         """Test that calculation details include all subscores."""
         from src.domain.services.calculators import NihssCalculator
-        
+
         calc = NihssCalculator()
         result = calc.calculate(
             loc=1,
@@ -278,10 +295,13 @@ class TestNihssCalculator:
             dysarthria=1,
             extinction_inattention=0
         )
-        
+
+        assert result.calculation_details is not None
         details = result.calculation_details
+        assert details is not None
         assert "component_scores" in details
         component_scores = details["component_scores"]
+        assert component_scores is not None
         assert "1a_loc" in component_scores
         assert "1b_loc_questions" in component_scores
         assert "1c_loc_commands" in component_scores
@@ -294,10 +314,10 @@ class TestNihssCalculator:
 class TestAbcd2Calculator:
     """Tests for ABCD2 Score (TIA Stroke Risk) Calculator."""
 
-    def test_low_risk_score_0(self):
+    def test_low_risk_score_0(self) -> None:
         """Test ABCD2 score 0 - very low risk."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=False,
@@ -306,14 +326,16 @@ class TestAbcd2Calculator:
             duration_minutes="lt_10",
             diabetes=False
         )
-        
+
+        assert result.value is not None
         assert result.value == 0
+        assert result.interpretation.summary is not None
         assert "low" in result.interpretation.summary.lower()
 
-    def test_low_risk_score_3(self):
+    def test_low_risk_score_3(self) -> None:
         """Test ABCD2 score 3 - low risk upper bound."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,    # +1
@@ -322,14 +344,16 @@ class TestAbcd2Calculator:
             duration_minutes="lt_10",
             diabetes=False
         )
-        
+
+        assert result.value is not None
         assert result.value == 3
+        assert result.interpretation.summary is not None
         assert "low" in result.interpretation.summary.lower()
 
-    def test_moderate_risk_score_4(self):
+    def test_moderate_risk_score_4(self) -> None:
         """Test ABCD2 score 4 - moderate risk lower bound."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,    # +1
@@ -338,14 +362,16 @@ class TestAbcd2Calculator:
             duration_minutes="lt_10",
             diabetes=False
         )
-        
+
+        assert result.value is not None
         assert result.value == 4
+        assert result.interpretation.summary is not None
         assert "moderate" in result.interpretation.summary.lower()
 
-    def test_moderate_risk_score_5(self):
+    def test_moderate_risk_score_5(self) -> None:
         """Test ABCD2 score 5 - moderate risk."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,    # +1
@@ -354,14 +380,16 @@ class TestAbcd2Calculator:
             duration_minutes="lt_10",
             diabetes=True       # +1
         )
-        
+
+        assert result.value is not None
         assert result.value == 5
+        assert result.interpretation.summary is not None
         assert "moderate" in result.interpretation.summary.lower()
 
-    def test_high_risk_score_6(self):
+    def test_high_risk_score_6(self) -> None:
         """Test ABCD2 score 6 - high risk."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,    # +1
@@ -370,14 +398,16 @@ class TestAbcd2Calculator:
             duration_minutes="10_to_59",  # +1
             diabetes=True       # +1
         )
-        
+
+        assert result.value is not None
         assert result.value == 6
+        assert result.interpretation.summary is not None
         assert "high" in result.interpretation.summary.lower()
 
-    def test_high_risk_score_7_max(self):
+    def test_high_risk_score_7_max(self) -> None:
         """Test ABCD2 maximum score 7 - high risk."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,    # +1
@@ -386,14 +416,16 @@ class TestAbcd2Calculator:
             duration_minutes="gte_60",  # +2
             diabetes=True       # +1
         )
-        
+
+        assert result.value is not None
         assert result.value == 7
+        assert result.interpretation.summary is not None
         assert "high" in result.interpretation.summary.lower()
 
-    def test_stroke_risk_values_included(self):
+    def test_stroke_risk_values_included(self) -> None:
         """Test that 2-day and 7-day stroke risks are in calculation details."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,
@@ -402,16 +434,18 @@ class TestAbcd2Calculator:
             duration_minutes="gte_60",
             diabetes=True
         )
-        
+
+        assert result.calculation_details is not None
         details = result.calculation_details
+        assert details is not None
         assert "stroke_risk_2day" in details
         assert "stroke_risk_7day" in details
         assert "stroke_risk_90day" in details
 
-    def test_component_scores_breakdown(self):
+    def test_component_scores_breakdown(self) -> None:
         """Test that component scores are broken down correctly."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=True,
@@ -420,27 +454,30 @@ class TestAbcd2Calculator:
             duration_minutes="10_to_59",
             diabetes=True
         )
-        
+
+        assert result.calculation_details is not None
         details = result.calculation_details
+        assert details is not None
         assert "component_scores" in details
         components = details["component_scores"]
+        assert components is not None
         assert components["A_age"] == 1
         assert components["B_blood_pressure"] == 0
         assert components["C_clinical_features"] == 1
         assert components["D1_duration"] == 1
         assert components["D2_diabetes"] == 1
 
-    def test_tool_id(self):
+    def test_tool_id(self) -> None:
         """Test tool ID is correct."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         assert calc.tool_id == "abcd2"
 
-    def test_has_references(self):
+    def test_has_references(self) -> None:
         """Test that ABCD2 includes Johnston 2007 reference."""
         from src.domain.services.calculators import Abcd2Calculator
-        
+
         calc = Abcd2Calculator()
         result = calc.calculate(
             age_gte_60=False,
@@ -449,7 +486,7 @@ class TestAbcd2Calculator:
             duration_minutes="lt_10",
             diabetes=False
         )
-        
+
         assert result.references is not None
         assert len(result.references) >= 1
         ref_text = str(result.references[0])
@@ -459,97 +496,118 @@ class TestAbcd2Calculator:
 class TestModifiedRankinScaleCalculator:
     """Tests for Modified Rankin Scale (mRS) Calculator."""
 
-    def test_mrs_0_no_symptoms(self):
+    def test_mrs_0_no_symptoms(self) -> None:
         """Test mRS 0 - no symptoms."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=0)
-        
+
+        assert result.value is not None
         assert result.value == 0
+        assert result.interpretation.summary is not None
         assert "no symptoms" in result.interpretation.summary.lower()
+        assert result.calculation_details is not None
         assert result.calculation_details["favorable_outcome"] is True
 
-    def test_mrs_1_no_significant_disability(self):
+    def test_mrs_1_no_significant_disability(self) -> None:
         """Test mRS 1 - no significant disability."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=1)
-        
+
+        assert result.value is not None
         assert result.value == 1
+        assert result.calculation_details is not None
         assert result.calculation_details["favorable_outcome"] is True
+        assert result.calculation_details is not None
         assert result.calculation_details["independent"] is True
 
-    def test_mrs_2_slight_disability(self):
+    def test_mrs_2_slight_disability(self) -> None:
         """Test mRS 2 - slight disability (still favorable)."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=2)
-        
+
+        assert result.value is not None
         assert result.value == 2
+        assert result.interpretation.summary is not None
         assert "slight" in result.interpretation.summary.lower()
+        assert result.calculation_details is not None
         assert result.calculation_details["favorable_outcome"] is True
 
-    def test_mrs_3_moderate_disability(self):
+    def test_mrs_3_moderate_disability(self) -> None:
         """Test mRS 3 - moderate disability (not favorable)."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=3)
-        
+
+        assert result.value is not None
         assert result.value == 3
+        assert result.interpretation.summary is not None
         assert "moderate" in result.interpretation.summary.lower()
+        assert result.calculation_details is not None
         assert result.calculation_details["favorable_outcome"] is False
+        assert result.calculation_details is not None
         assert result.calculation_details["ambulatory"] is True
 
-    def test_mrs_4_moderately_severe_disability(self):
+    def test_mrs_4_moderately_severe_disability(self) -> None:
         """Test mRS 4 - moderately severe disability."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=4)
-        
+
+        assert result.value is not None
         assert result.value == 4
+        assert result.calculation_details is not None
         assert result.calculation_details["favorable_outcome"] is False
+        assert result.calculation_details is not None
         assert result.calculation_details["ambulatory"] is False
 
-    def test_mrs_5_severe_disability(self):
+    def test_mrs_5_severe_disability(self) -> None:
         """Test mRS 5 - severe disability."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=5)
-        
+
+        assert result.value is not None
         assert result.value == 5
+        assert result.interpretation.summary is not None
         assert "severe" in result.interpretation.summary.lower()
+        assert result.calculation_details is not None
         assert result.calculation_details["favorable_outcome"] is False
 
-    def test_mrs_6_dead(self):
+    def test_mrs_6_dead(self) -> None:
         """Test mRS 6 - dead."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=6)
-        
+
+        assert result.value is not None
         assert result.value == 6
+        assert result.interpretation.summary is not None
         assert "dead" in result.interpretation.summary.lower()
 
-    def test_tool_id(self):
+    def test_tool_id(self) -> None:
         """Test tool ID is correct."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         assert calc.tool_id == "modified_rankin_scale"
 
-    def test_has_references(self):
+    def test_has_references(self) -> None:
         """Test that mRS includes van Swieten 1988 reference."""
         from src.domain.services.calculators import ModifiedRankinScaleCalculator
-        
+
         calc = ModifiedRankinScaleCalculator()
         result = calc.calculate(mrs_score=0)
-        
+
         assert result.references is not None
         assert len(result.references) >= 1
 
