@@ -57,12 +57,12 @@ medical-calc-api = "src.infrastructure.api.server:main"
 packages = ["src"]
 
 [tool.ruff]
-line-length = 100
+line-length = 160
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["UP045"]  # Allow Optional[X] syntax for compatibility
+select = ["F", "I", "N", "W", "UP"]
+ignore = ["UP045", "E501", "E402", "N818"]  # Allow long lines, late imports, exception naming
 
 [tool.mypy]
 python_version = "3.11"

@@ -33,7 +33,14 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any
+
+# Configure logging to stderr IMMEDIATELY to avoid interfering with MCP stdio transport
+logging.basicConfig(
+    level=os.environ.get("LOG_LEVEL", "INFO"),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=sys.stderr
+)
+logger = logging.getLogger(__name__)
 
 # Ensure the project root is in the path for proper imports
 project_root = Path(__file__).parent.parent
@@ -42,14 +49,6 @@ if str(project_root) not in sys.path:
 
 from src.infrastructure.mcp.config import McpServerConfig
 from src.infrastructure.mcp.server import MedicalCalculatorServer
-
-# Configure logging to stderr to avoid interfering with MCP stdio transport
-logging.basicConfig(
-    level=os.environ.get("LOG_LEVEL", "INFO"),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    stream=sys.stderr
-)
-logger = logging.getLogger(__name__)
 
 
 def create_server(host: str = "0.0.0.0", port: int = 8000) -> MedicalCalculatorServer:

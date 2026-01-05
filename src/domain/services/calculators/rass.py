@@ -18,7 +18,7 @@ Reference:
     PMID: 12799407
 """
 
-from typing import Any, Literal
+from typing import Literal
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata

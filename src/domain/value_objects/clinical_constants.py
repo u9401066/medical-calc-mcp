@@ -8,7 +8,6 @@ This ensures consistency and provides a single source of truth.
 
 from typing import Any
 
-
 # =============================================================================
 # Estimated Blood Volume (EBV) by Patient Type
 # =============================================================================

@@ -9,7 +9,6 @@ References:
 - ESGE Guideline. Endoscopy. 2021;53(3):300-332. PMID: 33567467
 """
 
-from typing import Any, Literal
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata

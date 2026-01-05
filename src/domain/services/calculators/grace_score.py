@@ -20,7 +20,7 @@ Reference:
     GRACE ACS Risk Model: www.gracescore.org
 """
 
-from typing import Any, Literal
+from typing import Literal
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata

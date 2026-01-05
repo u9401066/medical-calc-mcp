@@ -169,7 +169,7 @@ class CpisCalculator(BaseCalculator):
         """
         score = 0
         components: dict[str, Any] = {}
-        
+
         # Temperature
         if temperature_category == "high":
             score += 2

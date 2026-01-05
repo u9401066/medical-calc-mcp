@@ -17,10 +17,11 @@ Usage:
 
 import os
 import sys
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, AsyncGenerator, Optional
+from typing import Any, Optional
 
 # Ensure project root is in path
 project_root = Path(__file__).parent.parent.parent.parent

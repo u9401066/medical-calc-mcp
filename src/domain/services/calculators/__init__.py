@@ -8,9 +8,8 @@ Each calculator inherits from BaseCalculator and provides:
 - Calculate method returning ScoreResult
 """
 
-from typing import Type
-from ..base import BaseCalculator
 
+from ..base import BaseCalculator
 from .aa_gradient import AaGradientCalculator
 from .abcd2 import Abcd2Calculator
 from .acef_ii_score import AcefIiScoreCalculator
@@ -256,7 +255,7 @@ __all__ = [
 
 
 # Calculator registry for easy iteration
-CALCULATORS: list[Type[BaseCalculator]] = [
+CALCULATORS: list[type[BaseCalculator]] = [
     CkdEpi2021Calculator,
     AsaPhysicalStatusCalculator,
     MallampatiScoreCalculator,

@@ -28,7 +28,6 @@ Clinical Notes:
 """
 
 
-from typing import Any
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata

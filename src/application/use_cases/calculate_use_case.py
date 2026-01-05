@@ -72,8 +72,10 @@ class CalculateUseCase:
                     score_name="",
                     result=None,
                     unit="",
-                    error=f"Validation error: {validation_result.get_error_message()}. "
-                          f"Use get_calculator_info('{request.tool_id}') to see required parameters."
+                    error=(
+                        f"Validation error: {validation_result.get_error_message()}. "
+                        f"Use get_calculator_info('{request.tool_id}') for parameters."
+                    )
                 )
 
             # Execute calculation
@@ -138,11 +140,11 @@ class CalculateUseCase:
             value = params[param]
             # Skip validation if the value type doesn't match the spec type
             # This allows calculator-specific overrides
-            if spec.param_type == str and not isinstance(value, str):
+            if spec.param_type is str and not isinstance(value, str):
                 continue
-            if spec.param_type == int and not isinstance(value, (int, bool)):
+            if spec.param_type is int and not isinstance(value, (int, bool)):
                 continue
-            if spec.param_type == float and not isinstance(value, (int, float)):
+            if spec.param_type is float and not isinstance(value, (int, float)):
                 continue
             safe_params.append(param)
 

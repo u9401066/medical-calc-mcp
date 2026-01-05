@@ -26,8 +26,6 @@ Reference:
 
 from typing import Optional
 
-from typing import Any, Optional
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, RiskLevel, Severity

@@ -17,7 +17,7 @@ Reference:
     PMID: 30576221
 """
 
-from typing import Any, Optional
+from typing import Optional
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata

@@ -25,7 +25,6 @@ References:
     PMID: 20018449
 """
 
-from typing import Any
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
