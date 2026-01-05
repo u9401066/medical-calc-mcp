@@ -43,10 +43,11 @@ if str(project_root) not in sys.path:
 from src.infrastructure.mcp.config import McpServerConfig
 from src.infrastructure.mcp.server import MedicalCalculatorServer
 
-# Configure logging
+# Configure logging to stderr to avoid interfering with MCP stdio transport
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO"),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=sys.stderr
 )
 logger = logging.getLogger(__name__)
 
