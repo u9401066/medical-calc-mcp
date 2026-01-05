@@ -2,17 +2,22 @@
 
 ## Done
 
-- Migrated to uv package management
-- Achieved 100% mypy --strict coverage across src and tests
-- Integrated ruff for linting and formatting
-- Updated Dockerfile to use uv multi-stage builds
-- Fixed .vscode/mcp.json for Copilot integration
-- Updated all project documentation (README, CHANGELOG, ROADMAP)
+- uv 套件管理遷移完成
+- mypy --strict 100% 類型覆蓋
+- ruff 程式碼清理
+- 測試套件通過 (940/942)
+- 文件更新 (README, CHANGELOG, ROADMAP, CONTRIBUTING)
+- Dockerfile 更新為 uv 多階段建構
+- Git 推送 (commit 01d7ee1)
+- MCP stdio logging 修正 (重導向至 stderr)
+- .vscode/mcp.json 配置修正
 
 ## Doing
 
-
+- 監控 Copilot MCP 整合狀態
 
 ## Next
 
-- Continue clinical logic audit of remaining calculators if requested
+- 驗證 VS Code MCP 伺服器運作正常
+- 新增更多醫學計算器
+- 效能優化

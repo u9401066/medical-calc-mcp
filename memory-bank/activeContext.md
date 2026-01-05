@@ -2,7 +2,7 @@
 
 ## Current Goals
 
-- Modernization phase complete. Project is now using uv, has strict type safety, and follows latest MCP standards. Ready for production or further feature development.
+- v1.2.0 現代化完成：uv 遷移、mypy strict 100%、ruff 清理、Dockerfile 更新。MCP 伺服器配置已修正 (logging 重導向至 stderr)。82 個工具已註冊，低於 128 限制。等待使用者重新載入 VS Code 驗證 Copilot 整合。
 
 ## Current Blockers
 
