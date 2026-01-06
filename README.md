@@ -82,6 +82,16 @@ This project provides:
 | **MCP Protocol** | Standard protocol for AI-tool communication |
 | **Paper References** | Every calculator cites original research |
 
+### 🧪 Development Methodology
+
+We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy:
+
+1.  **Domain Specification**: Human experts define the target medical specialty or clinical domain.
+2.  **AI-Driven Search**: AI agents perform comprehensive searches for the latest clinical guidelines and consensus.
+3.  **Guideline Extraction**: Systematically identify recommended scoring systems and calculations mentioned in those guidelines.
+4.  **Source Validation**: Trace back to original peer-reviewed primary papers to verify exact formulas and coefficients.
+5.  **Implementation**: Develop validated calculation tools with precise parameters and evidence-based interpretations.
+
 ---
 
 ## 🏗️ Architecture
