@@ -7,17 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.0] - 2026-01-05
+## [1.2.0] - 2026-01-06
 
 ### Added
+- **82 MCP Tools**: Expanded library to 75 clinical calculators and 7 discovery tools.
+- **1,566 Tests**: Reached 92% code coverage with a comprehensive unit and E2E test suite.
 - **uv Package Management**: Migrated from `pip` to `uv` for faster and more reliable dependency management.
-- **Strict Type Safety**: Achieved 100% `mypy --strict` coverage across the entire codebase (src and tests).
+- **Strict Type Safety**: Achieved 100% `mypy --strict` coverage across the entire codebase (src, tests, examples, scripts).
+- **Internationalization**: Split documentation into English (`README.md`) and Traditional Chinese (`README.zh-TW.md`).
 - **Modernized Tooling**: Integrated `ruff` for linting and formatting.
 
 ### Changed
+- **CI/CD Pipeline**: Enhanced GitHub Actions with `uv` and enforced a 90% coverage threshold.
 - **Project Structure**: Updated `pyproject.toml` to use `hatchling` as build backend.
 - **MCP Entry Point**: Unified MCP server entry point to `src.main`.
-- **Docker Image**: Updated `Dockerfile` to use `uv` for multi-stage builds and faster deployment.
+- **Docker Image**: Updated `Dockerfile` to v1.2.0 using `uv` for multi-stage builds.
+- **MCP Debugging**: Optimized logging to `stderr` for better compatibility with MCP clients.
 - **VS Code Integration**: Updated `.vscode/mcp.json` to follow the latest Copilot MCP server configuration standards.
 
 ### Fixed
