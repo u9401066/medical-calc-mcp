@@ -12,7 +12,7 @@ Usage:
     pytest tests/test_api.py -v
 
 Requirements:
-    pip install pytest httpx pytest-asyncio
+    uv sync
 """
 
 

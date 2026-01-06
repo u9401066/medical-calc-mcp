@@ -174,7 +174,7 @@
 
 | Item | Status | Description |
 |------|--------|-------------|
-| **PyPI Package** | 📋 Planned | `pip install medical-calc-mcp` |
+| **PyPI Package** | 📋 Planned | `uv add medical-calc-mcp` |
 | **GitHub Releases** | 📋 Planned | Automated versioning with tags |
 | **Docker Hub** | 📋 Planned | `docker pull medical-calc-mcp` |
 
@@ -232,7 +232,7 @@ python -m medical_calc.cli new calculator \\
 ├── Test coverage 90%+
 ├── Phase 18: Trauma (4 calculators remaining) - ISS, RTS, TRISS, TBSA
 ├── Phase 19: GI Bleeding (2 calculators) - Blatchford, AIMS65
-├── 📦 PyPI package release (pip install medical-calc-mcp)
+├── 📦 PyPI package release (uv add medical-calc-mcp)
 ├── 🏷️ GitHub Release workflow (automated versioning)
 └── Target: 77 calculators
 

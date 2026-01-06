@@ -10,7 +10,7 @@
 #   ./scripts/start-https-local.sh
 #
 # 前置需求：
-#   1. 已安裝依賴：pip install -r requirements.txt
+#   1. 已安裝依賴：uv sync
 #   2. 已生成憑證：./scripts/generate-ssl-certs.sh
 #
 # =============================================================================
@@ -40,8 +40,8 @@ if [ ! -f "$SSL_DIR/server.crt" ] || [ ! -f "$SSL_DIR/server.key" ]; then
 fi
 
 # 檢查 Python 依賴
-if ! python -c "import uvicorn" 2>/dev/null; then
-    echo -e "${RED}❌ 缺少依賴，請先執行: pip install -r requirements.txt${NC}"
+if ! uv run python -c "import uvicorn" 2>/dev/null; then
+    echo -e "${RED}❌ 缺少依賴，請先執行: uv sync${NC}"
     exit 1
 fi
 
@@ -50,7 +50,7 @@ MODE="${1:-both}"  # sse, api, both
 
 start_mcp_sse() {
     echo -e "${BLUE}🚀 啟動 MCP SSE Server (HTTPS, port 8443)...${NC}"
-    uvicorn src.infrastructure.mcp.server:create_app \
+    uv run uvicorn src.infrastructure.mcp.server:create_app \
         --factory \
         --host 0.0.0.0 \
         --port 8443 \
@@ -63,7 +63,7 @@ start_mcp_sse() {
 
 start_rest_api() {
     echo -e "${BLUE}🚀 啟動 REST API Server (HTTPS, port 9443)...${NC}"
-    uvicorn src.infrastructure.api.server:create_api_app \
+    uv run uvicorn src.infrastructure.api.server:create_api_app \
         --factory \
         --host 0.0.0.0 \
         --port 9443 \

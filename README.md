@@ -175,7 +175,7 @@ This project provides:
 ### Prerequisites | 前置需求
 
 - Python 3.11+ (required by MCP SDK)
-- pip or uv package manager
+- [uv](https://github.com/astral-sh/uv) (recommended)
 
 ### Installation | 安裝
 
@@ -184,25 +184,18 @@ This project provides:
 git clone https://github.com/u9401066/medical-calc-mcp.git
 cd medical-calc-mcp
 
-# Create virtual environment (recommended) | 建立虛擬環境（建議）
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# or
-.venv\Scripts\activate     # Windows
-
-# Install dependencies | 安裝依賴
-pip install -r requirements.txt
+# Install dependencies and setup environment with uv | 使用 uv 安裝依賴並同步環境
+uv sync
 ```
 
 ### Run MCP Server | 執行 MCP 伺服器
 
 ```bash
 # Start MCP server (stdio transport) | 啟動 MCP 伺服器（stdio 傳輸）
-python -m src.infrastructure.mcp.server
+uv run python -m src.main
 
 # Or with MCP development inspector | 或使用 MCP 開發檢查器
-pip install "mcp[cli]"
-mcp dev src/infrastructure/mcp/server.py
+uvx mcp dev src/main.py
 ```
 
 ### Configure with VS Code Copilot | 與 VS Code Copilot 整合 ⭐ NEW
@@ -895,12 +888,11 @@ MCP_PORT=8000
 
 ```bash
 # Check for known vulnerabilities | 檢查已知漏洞
-pip install pip-audit
-pip-audit --strict
+uvx pip-audit --strict
 
 # Upgrade all packages | 升級所有套件
-pip install --upgrade pip setuptools
-pip install -r requirements.txt --upgrade
+uv lock --upgrade
+uv sync
 ```
 
 ### Security Audit Results | 安全審查結果 (2025-06)

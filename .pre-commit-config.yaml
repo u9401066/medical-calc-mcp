@@ -1,6 +1,6 @@
 # Pre-commit configuration for Medical Calculator MCP Server
-# Install: pip install pre-commit && pre-commit install
-# Run all: pre-commit run --all-files
+# Install: uv tool install pre-commit && pre-commit install
+# Run all: uv run pre-commit run --all-files
 
 repos:
   # Ruff - Fast Python linter (replaces flake8, isort, pyupgrade, etc.)

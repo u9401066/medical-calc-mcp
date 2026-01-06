@@ -54,14 +54,14 @@ This guide explains how to deploy the Medical Calculator MCP Server as a standal
 ### Quick Start | 快速開始
 
 ```bash
-# 安裝依賴
-pip install -r requirements.txt
+# 安裝依賴並同步環境
+uv sync
 
 # 啟動 REST API 伺服器
-python src/main.py --mode api --port 8080
+uv run python -m src.main --mode api --port 8080
 
 # 或使用 uvicorn（生產環境）
-uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080 --workers 4
+uv run uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080 --workers 4
 ```
 
 ### API Endpoints | API 端點
@@ -201,8 +201,7 @@ python src/main.py --mode sse --host 0.0.0.0 --port 8000
 ### MCP Inspector (Development)
 
 ```bash
-pip install "mcp[cli]"
-mcp dev src/infrastructure/mcp/server.py
+uvx mcp dev src/main.py
 ```
 
 ---
@@ -686,10 +685,8 @@ python src/main.py --mode api --port 8081
 ```bash
 # 確保在專案根目錄
 cd /path/to/medical-calc-mcp
-# 啟動虛擬環境
-source .venv/bin/activate
-# 重新安裝依賴
-pip install -r requirements.txt
+# 重新安裝依賴並同步環境
+uv sync
 ```
 
 **3. Docker build fails | Docker 建構失敗**
