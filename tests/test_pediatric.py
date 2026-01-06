@@ -1,4 +1,5 @@
 from typing import Any
+
 """Tests for Pediatric Calculators"""
 import pytest
 
@@ -242,7 +243,7 @@ class TestTransfusionCalculator:
 
     def test_transfusion_interpretation(self, calc: Any) -> None:
         """Verify interpretation is returned"""
-        result = calc.calculate(
+        calc.calculate(
             weight_kg=70,
             current_hematocrit=25,
             target_hematocrit=30

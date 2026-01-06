@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for CHA₂DS₂-VA Score Calculator (2024 ESC, Sex-neutral)
 

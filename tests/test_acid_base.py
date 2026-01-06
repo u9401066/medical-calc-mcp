@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Tests for Acid-Base Calculators
 
@@ -247,7 +248,7 @@ class TestAcidBaseIntegration:
 
         # Step 2: Delta Ratio
         assert ag_result.value is not None
-        delta_result = delta_calc.calculate(anion_gap=ag_result.value, bicarbonate=10)
+        delta_calc.calculate(anion_gap=ag_result.value, bicarbonate=10)
         # Check if pure HAGMA or mixed
 
         # Step 3: Corrected Sodium
@@ -320,7 +321,7 @@ class TestValidation:
         calc = AnionGapCalculator()
 
         # Normal ranges should work
-        result = calc.calculate(sodium=140, chloride=104, bicarbonate=24)
+        calc.calculate(sodium=140, chloride=104, bicarbonate=24)
 
     def test_delta_ratio_with_low_ag(self) -> None:
         """Test delta ratio behavior with non-elevated AG"""

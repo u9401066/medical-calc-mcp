@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Tests for Phase 14 General Calculators
 

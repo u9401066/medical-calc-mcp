@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Tests for Phase 18 Calculators: GI Bleeding & Trauma Tools
 

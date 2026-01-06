@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for CPIS (Clinical Pulmonary Infection Score) Calculator
 

@@ -1,4 +1,3 @@
-from typing import Any
 """
 Tests for Security Infrastructure
 

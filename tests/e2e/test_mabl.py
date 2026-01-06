@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for MABL (Maximum Allowable Blood Loss) Calculator
 

@@ -8,6 +8,7 @@ similar to what an AI agent would do when using MCP tools.
 
 import sys
 from pathlib import Path
+from typing import Any
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -19,7 +20,7 @@ if str(project_root) not in sys.path:
 # Workflow 1: Sepsis Evaluation (Sepsis-3 Guidelines)
 # =============================================================================
 
-def workflow_sepsis_evaluation():
+def workflow_sepsis_evaluation() -> None:
     """
     Complete sepsis workup following Sepsis-3 guidelines.
 
@@ -41,7 +42,7 @@ def workflow_sepsis_evaluation():
     print("Step 1: qSOFA (Quick SOFA) - Bedside Screening")
     print("-" * 50)
     qsofa = QsofaScoreCalculator()
-    qsofa_result = qsofa.calculate(
+    qsofa_result: Any = qsofa.calculate(
         respiratory_rate=24,
         systolic_bp=95,
         altered_mentation=True
@@ -56,7 +57,7 @@ def workflow_sepsis_evaluation():
         print("Step 2: SOFA Score - Organ Dysfunction Assessment")
         print("-" * 50)
         sofa = SofaScoreCalculator()
-        sofa_result = sofa.calculate(
+        sofa_result: Any = sofa.calculate(
             pao2_fio2_ratio=250,
             platelets=120,
             bilirubin=1.5,
@@ -73,7 +74,7 @@ def workflow_sepsis_evaluation():
     print("Step 3: RASS - Sedation/Agitation Assessment")
     print("-" * 50)
     rass = RassCalculator()
-    rass_result = rass.calculate(rass_score=0)
+    rass_result: Any = rass.calculate(rass_score=0)
     print(f"  Score: {int(rass_result.value)}")
     print(f"  Result: {rass_result.interpretation.summary}")
 
@@ -81,7 +82,7 @@ def workflow_sepsis_evaluation():
     print("\nStep 4: CAM-ICU - Delirium Screening")
     print("-" * 50)
     cam_icu = CamIcuCalculator()
-    cam_result = cam_icu.calculate(
+    cam_result: Any = cam_icu.calculate(
         rass_score=0,
         acute_onset_fluctuation=True,
         inattention_score=4,
@@ -97,7 +98,7 @@ def workflow_sepsis_evaluation():
 # Workflow 2: Preoperative Risk Assessment
 # =============================================================================
 
-def workflow_preoperative_assessment():
+def workflow_preoperative_assessment() -> None:
     """
     Complete preoperative risk evaluation.
 
@@ -119,7 +120,7 @@ def workflow_preoperative_assessment():
     print("Step 1: ASA Physical Status Classification")
     print("-" * 50)
     asa = AsaPhysicalStatusCalculator()
-    asa_result = asa.calculate(asa_class=3, is_emergency=False)
+    asa_result: Any = asa.calculate(asa_class=3, is_emergency=False)
     print(f"  Classification: ASA {int(asa_result.value)}")
     print(f"  Summary: {asa_result.interpretation.summary}")
 
@@ -127,7 +128,7 @@ def workflow_preoperative_assessment():
     print("\nStep 2: RCRI - Cardiac Risk Assessment")
     print("-" * 50)
     rcri = RcriCalculator()
-    rcri_result = rcri.calculate(
+    rcri_result: Any = rcri.calculate(
         high_risk_surgery=True,  # Hip replacement
         ischemic_heart_disease=False,
         heart_failure=False,
@@ -142,7 +143,7 @@ def workflow_preoperative_assessment():
     print("\nStep 3: Mallampati - Airway Assessment")
     print("-" * 50)
     mallampati = MallampatiScoreCalculator()
-    mallampati_result = mallampati.calculate(mallampati_class=2)
+    mallampati_result: Any = mallampati.calculate(mallampati_class=2)
     print(f"  Classification: Mallampati {int(mallampati_result.value)}")
     print(f"  Summary: {mallampati_result.interpretation.summary}")
 
@@ -150,7 +151,7 @@ def workflow_preoperative_assessment():
     print("\nStep 4: MABL - Maximum Allowable Blood Loss")
     print("-" * 50)
     mabl = MablCalculator()
-    mabl_result = mabl.calculate(
+    mabl_result: Any = mabl.calculate(
         weight_kg=65,
         initial_hematocrit=38,
         target_hematocrit=25,
@@ -166,7 +167,7 @@ def workflow_preoperative_assessment():
 # Workflow 3: Chest Pain Evaluation (ED)
 # =============================================================================
 
-def workflow_chest_pain_ed():
+def workflow_chest_pain_ed() -> None:
     """
     Emergency department chest pain workup.
 
@@ -186,7 +187,7 @@ def workflow_chest_pain_ed():
     print("Step 1: HEART Score - MACE Risk Stratification")
     print("-" * 50)
     heart = HeartScoreCalculator()
-    heart_result = heart.calculate(
+    heart_result: Any = heart.calculate(
         history_score=2,        # Highly suspicious
         ecg_score=1,            # Non-specific changes
         age_score=1,            # 45-64 years
@@ -203,7 +204,7 @@ def workflow_chest_pain_ed():
     print("\nStep 2: Wells PE Score (if PE suspected)")
     print("-" * 50)
     wells_pe = WellsPeCalculator()
-    wells_result = wells_pe.calculate(
+    wells_result: Any = wells_pe.calculate(
         clinical_signs_dvt=False,
         pe_most_likely_diagnosis=False,
         heart_rate_gt_100=True,
@@ -222,7 +223,7 @@ def workflow_chest_pain_ed():
 # Workflow 4: AF Anticoagulation Decision
 # =============================================================================
 
-def workflow_af_anticoagulation():
+def workflow_af_anticoagulation() -> None:
     """
     Atrial fibrillation anticoagulation decision.
 
@@ -239,7 +240,7 @@ def workflow_af_anticoagulation():
     print("CHA₂DS₂-VASc Score - Stroke Risk")
     print("-" * 50)
     chads = Chads2VascCalculator()
-    result = chads.calculate(
+    result: Any = chads.calculate(
         chf_or_lvef_lte_40=False,
         hypertension=True,
         age_gte_75=True,           # +2 points

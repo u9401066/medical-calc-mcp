@@ -2,7 +2,7 @@
 
 > **Last Updated**: 2026-01-05
 > **Current Version**: v1.2.0 (Production Ready)
-> **Status**: 78 Calculators | 78 MCP Tools | 1641 Tests | 90% Coverage
+> **Status**: 82 Tools (75 Calculators + 7 Discovery) | 1566 Tests | 92% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -60,7 +60,7 @@
 
 | Item | Current | Target | Priority |
 |------|---------|--------|----------|
-| **Test Coverage** | ✅ 88% | 90%+ | 🟡 MEDIUM |
+| **Test Coverage** | ✅ 92% | 90%+ | 🟢 HIGH |
 | **E2E Tests** | ✅ 697 tests (77 files) | Full Calculator Coverage | ✅ DONE |
 | **Load Testing** | ❌ None | Locust / k6 scripts | 🟢 LOW |
 | **Type Checking** | ✅ 100% | mypy --strict | ✅ DONE |
@@ -216,7 +216,7 @@ python -m medical_calc.cli new calculator \\
 ├── 70 Calculators = 70 MCP Tools (all registered!)
 ├── Docker + REST API + SSE + HTTPS
 ├── GitHub Actions CI + Pre-commit hooks
-├── 919 tests, 88% coverage
+├── 1566 tests, 92% coverage
 ├── Ruff lint errors fixed
 ├── ✅ SSE remote deployment fix (FastMCP built-in transport)
 ├── ✅ Reference class: level_of_evidence field added
@@ -292,13 +292,13 @@ python -m medical_calc.cli new calculator \\
 | Metric | Current | Target (2026 Q2) |
 |--------|---------|------------------|
 | Calculator Files | **75** | 80+ |
-| MCP Tools | **75** | 80+ |
-| Total Tests | **1639** | 1800+ |
+| MCP Tools | **82** | 85+ |
+| Total Tests | **1566** | 1800+ |
 | E2E Tests | **697** | 750+ |
-| Test Coverage | 88% | 90%+ |
+| Test Coverage | **92%** | 95%+ |
 | API Response Time (p95) | ~50ms | <100ms |
-| Documentation | README only | Full MkDocs site |
-| i18n Languages | 1 (EN) | 3 (EN, zh-TW, zh-CN) |
+| Documentation | **i18n (EN/ZH)** | Full MkDocs site |
+| i18n Languages | 2 (EN, zh-TW) | 3 (EN, zh-TW, zh-CN) |
 | Security Features | ✅ CORS + HTTPS + Rate Limit + Auth | ✅ Complete |
 
 ---

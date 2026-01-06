@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for NEWS2 (National Early Warning Score 2) Calculator
 

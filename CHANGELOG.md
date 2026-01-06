@@ -74,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trauma/Surgery (ISS, TBSA, Parkland Formula, MABL)
 
 ### Technical Features
-- 940 unit tests with 88% code coverage
+- 1566 tests with 92% code coverage
+- Fully migrated to `uv` for dependency management
 - Type-safe Python with dataclass entities
 - Evidence-based formulas with paper citations (Vancouver style)
 - Bilingual documentation (English/Chinese)

@@ -1,27 +1,28 @@
 import os
 import re
 
+
 def fix_remaining_optionals():
     test_dir = "tests"
     files = [f for f in os.listdir(test_dir) if f.endswith(".py")]
-    
+
     for filename in files:
         filepath = os.path.join(test_dir, filename)
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             lines = f.readlines()
-        
+
         new_lines = []
         for i, line in enumerate(lines):
             indent_match = re.match(r'^(\s*)', line)
             indent = indent_match.group(1) if indent_match else ""
-            
+
             # 1. Handle 'in result.interpretation.summary'
             match = re.search(r'assert\s+.*?\s+in\s+([a-zA-Z0-9_]+\.interpretation\.[a-zA-Z0-9_]+)', line)
             if match:
                 var = match.group(1)
                 if i > 0 and f"assert {var} is not None" not in lines[i-1]:
                     new_lines.append(f"{indent}assert {var} is not None\n")
-            
+
             # 2. Handle 'details["key"]' where details is result.calculation_details
             match = re.search(r'assert\s+details\[', line)
             if match:
@@ -44,7 +45,7 @@ def fix_remaining_optionals():
                     new_lines.append(f"{indent}assert {var} is not None\n")
 
             new_lines.append(line)
-            
+
         new_content = "".join(new_lines)
         with open(filepath, "w") as f:
             f.write(new_content)

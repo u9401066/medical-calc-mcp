@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 End-to-End (E2E) Tests for Medical Calculator MCP Server
 
@@ -22,7 +23,7 @@ import pytest
 
 # Check if httpx is available for async testing
 try:
-    import httpx
+    import httpx  # noqa: F401
     HTTPX_AVAILABLE = True
 except ImportError:
     HTTPX_AVAILABLE = False

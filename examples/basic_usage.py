@@ -10,6 +10,7 @@ For MCP integration, see the README.md for VS Code Copilot or Claude Desktop set
 
 import sys
 from pathlib import Path
+from typing import Any
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -21,14 +22,14 @@ if str(project_root) not in sys.path:
 # Example 1: CKD-EPI 2021 (eGFR Calculation)
 # =============================================================================
 
-def example_ckd_epi():
+def example_ckd_epi() -> None:
     """Calculate eGFR using CKD-EPI 2021 equation"""
     from src.domain.services.calculators import CkdEpi2021Calculator
 
     calc = CkdEpi2021Calculator()
 
     # 65-year-old female with creatinine 1.2 mg/dL
-    result = calc.calculate(
+    result: Any = calc.calculate(
         serum_creatinine=1.2,
         age=65,
         sex="female"
@@ -47,14 +48,14 @@ def example_ckd_epi():
 # Example 2: SOFA Score (Sepsis Assessment)
 # =============================================================================
 
-def example_sofa():
+def example_sofa() -> None:
     """Calculate SOFA score for sepsis assessment"""
     from src.domain.services.calculators import SofaScoreCalculator
 
     calc = SofaScoreCalculator()
 
     # ICU patient with moderate organ dysfunction
-    result = calc.calculate(
+    result: Any = calc.calculate(
         pao2_fio2_ratio=200,      # Respiratory: 2 points
         platelets=80,              # Coagulation: 2 points
         bilirubin=2.5,             # Liver: 1 point
@@ -76,14 +77,14 @@ def example_sofa():
 # Example 3: RCRI (Cardiac Risk for Non-Cardiac Surgery)
 # =============================================================================
 
-def example_rcri():
+def example_rcri() -> None:
     """Calculate RCRI for preoperative cardiac risk"""
     from src.domain.services.calculators import RcriCalculator
 
     calc = RcriCalculator()
 
     # Patient undergoing major surgery with cardiac history
-    result = calc.calculate(
+    result: Any = calc.calculate(
         high_risk_surgery=True,
         ischemic_heart_disease=True,
         heart_failure=False,
@@ -107,14 +108,14 @@ def example_rcri():
 # Example 4: CHA₂DS₂-VASc (AF Stroke Risk)
 # =============================================================================
 
-def example_chads2_vasc():
+def example_chads2_vasc() -> None:
     """Calculate CHA₂DS₂-VASc for atrial fibrillation"""
     from src.domain.services.calculators import Chads2VascCalculator
 
     calc = Chads2VascCalculator()
 
     # 70-year-old male with hypertension and diabetes
-    result = calc.calculate(
+    result: Any = calc.calculate(
         chf_or_lvef_lte_40=False,
         hypertension=True,
         age_gte_75=False,
@@ -140,14 +141,14 @@ def example_chads2_vasc():
 # Example 5: Wells PE Score
 # =============================================================================
 
-def example_wells_pe():
+def example_wells_pe() -> None:
     """Calculate Wells score for PE probability"""
     from src.domain.services.calculators import WellsPeCalculator
 
     calc = WellsPeCalculator()
 
     # Patient with suspected PE
-    result = calc.calculate(
+    result: Any = calc.calculate(
         clinical_signs_dvt=True,
         pe_most_likely_diagnosis=True,
         heart_rate_gt_100=True,
@@ -172,7 +173,7 @@ def example_wells_pe():
 # Example 6: Tool Discovery
 # =============================================================================
 
-def example_discovery():
+def example_discovery() -> None:
     """Demonstrate tool discovery capabilities"""
     from src.domain.registry.tool_registry import get_registry
 

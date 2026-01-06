@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Tests for Infectious Disease Calculators
 

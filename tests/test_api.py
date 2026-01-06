@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 REST API Tests for Medical Calculator Server
 

@@ -40,13 +40,13 @@ test_files = [
 def fix_file(filepath):
     if not os.path.exists(filepath):
         return
-    
-    with open(filepath, 'r') as f:
+
+    with open(filepath) as f:
         lines = f.readlines()
 
     changed = False
     new_lines = []
-    
+
     # Ensure Any is imported
     has_any = any("from typing import Any" in line or "import typing" in line for line in lines)
     if not has_any:
@@ -56,17 +56,17 @@ def fix_file(filepath):
     i = 0
     while i < len(lines):
         line = lines[i]
-        
+
         match = re.match(r'(\s*)def ([a-zA-Z0-9_]+)\(([^)]*)\)([^:]*):', line)
         if match:
             indent = match.group(1)
             name = match.group(2)
             args_str = match.group(3)
             suffix = match.group(4)
-            
+
             args = []
             needs_fix = False
-            
+
             # Special case for __init__
             if name == "__init__":
                 if "->" in suffix and "None" not in suffix:
@@ -85,7 +85,7 @@ def fix_file(filepath):
                     needs_fix = True
                 else:
                     new_suffix = suffix
-            
+
             for arg in args_str.split(','):
                 arg = arg.strip()
                 if not arg:
@@ -97,14 +97,14 @@ def fix_file(filepath):
                     needs_fix = True
                 else:
                     args.append(arg)
-            
+
             if needs_fix:
                 new_line = f"{indent}def {name}({', '.join(args)}){new_suffix}:\n"
                 new_lines.append(new_line)
                 changed = True
                 i += 1
                 continue
-        
+
         new_lines.append(line)
         i += 1
 

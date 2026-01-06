@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for SOFA-2 Score Calculator (JAMA 2025)
 

@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Pytest Configuration for Medical Calculator MCP Tests
 

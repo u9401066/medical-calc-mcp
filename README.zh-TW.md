@@ -8,7 +8,7 @@
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1639%20passed-brightgreen.svg)](#-開發指南)
+[![Tests](https://img.shields.io/badge/tests-1564%20passed-brightgreen.svg)](#-開發指南)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-架構)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
@@ -656,9 +656,9 @@ LowLevelKey(
 
 ## 🔧 可用工具
 
-> **MCP 基本元素**: 75 個工具 + 5 個提示詞 + 4 個資源
+> **MCP 基本元素**: 82 個工具 + 5 個提示詞 + 4 個資源
 >
-> **目前統計**: 75 個計算器 | 940 個測試 | 88% 覆蓋率 | 第 19 階段已完成 ✅
+> **目前統計**: 82 個工具 | 1566 個測試 | 92% 覆蓋率 | 第 19 階段已完成 ✅
 
 ### 📑 快速導覽
 

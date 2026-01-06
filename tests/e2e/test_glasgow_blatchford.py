@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for Glasgow-Blatchford Score Calculator
 

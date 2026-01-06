@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for TBSA (Total Body Surface Area) Burn Calculator
 

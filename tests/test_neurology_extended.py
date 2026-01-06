@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Tests for Extended Neurology Calculators (Phase 14)
 

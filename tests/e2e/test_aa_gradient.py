@@ -1,10 +1,10 @@
 from typing import Any
+
 """
 E2E Tests for A-a Gradient Calculator
 
 Tests the Alveolar-arterial oxygen gradient calculator through the REST API.
 """
-from typing import Any
 from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
 
 

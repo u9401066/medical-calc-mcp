@@ -1,10 +1,11 @@
 from typing import Any
+
 """
 E2E Tests for ISS (Injury Severity Score) Calculator
 
 Tests the ISS for Trauma through the REST API.
 """
-from tests.e2e.conftest import assert_calculation_error, assert_successful_calculation
+from tests.e2e.conftest import assert_successful_calculation
 
 
 class TestIssE2E:

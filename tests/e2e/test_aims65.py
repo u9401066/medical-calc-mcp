@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for AIMS65 Score Calculator
 

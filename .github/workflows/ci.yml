@@ -29,14 +29,14 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Lint with ruff
-        run: uv run ruff check src/ --output-format=github
+        run: uv run ruff check src/ tests/ --output-format=github
 
       - name: Type check with mypy
-        run: uv run mypy src/
+        run: uv run mypy src/ tests/
 
       - name: Run tests with coverage
         run: |
-          uv run pytest tests/ --cov=src --cov-report=xml --cov-report=term-missing --cov-fail-under=75
+          uv run pytest tests/ --cov=src --cov-report=xml --cov-report=term-missing --cov-fail-under=90
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

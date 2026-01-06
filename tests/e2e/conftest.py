@@ -1,8 +1,9 @@
 from typing import Any
+
 """
 Shared fixtures for E2E calculator tests.
 """
-from typing import Any, Optional
+from typing import Optional
 
 import pytest
 from starlette.testclient import TestClient

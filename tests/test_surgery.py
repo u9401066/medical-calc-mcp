@@ -1,4 +1,5 @@
 from typing import Any
+
 """Tests for Surgery/Perioperative Calculators"""
 import pytest
 

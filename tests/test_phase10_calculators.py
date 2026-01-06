@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 Tests for Phase 10 High-Priority Calculators
 

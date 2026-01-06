@@ -1,4 +1,5 @@
 from typing import Any, cast
+
 """
 Tests for MCP Parameter Validation
 
@@ -70,7 +71,7 @@ class TestCriticalCareParameterValidation:
         from src.domain.services.calculators import GlasgowComaScaleCalculator
         calc = GlasgowComaScaleCalculator()
 
-        result = calc.calculate(
+        calc.calculate(
             eye_response=4,
             verbal_response=1,  # Not testable when intubated
             motor_response=6,
@@ -85,7 +86,7 @@ class TestCriticalCareParameterValidation:
 
         for val in ["A", "V", "P", "U", "C"]:
             consciousness: Any = val
-            result = calc.calculate(
+            calc.calculate(
                 respiratory_rate=18,
                 spo2=96,
                 on_supplemental_o2=False,
@@ -102,7 +103,7 @@ class TestCriticalCareParameterValidation:
 
         for val in ["nonoperative", "elective_postop", "emergency_postop"]:
             admission_type: Any = val
-            result = calc.calculate(
+            calc.calculate(
                 temperature=37.0,
                 mean_arterial_pressure=80,
                 heart_rate=80,
@@ -134,7 +135,7 @@ class TestCriticalCareParameterValidation:
         calc = CamIcuCalculator()
 
         # Positive delirium: F1 + F2 AND (F3 OR F4)
-        result = calc.calculate(
+        calc.calculate(
             rass_score=0,  # Adequate RASS for assessment
             acute_onset_fluctuation=True,  # F1 positive
             inattention_score=5,  # F2 positive (≥3)
@@ -235,7 +236,7 @@ class TestPediatricParameterValidation:
         ]
 
         for drug in supported_drugs:
-            result = calc.calculate(drug_name=drug, weight_kg=20)
+            calc.calculate(drug_name=drug, weight_kg=20)
 
     def test_pediatric_routes(self) -> None:
         """Test pediatric dosing accepts valid routes."""
@@ -243,7 +244,7 @@ class TestPediatricParameterValidation:
         calc = PediatricDosingCalculator()
 
         # IV route for fentanyl
-        result = calc.calculate(drug_name="fentanyl", weight_kg=20, route="iv")
+        calc.calculate(drug_name="fentanyl", weight_kg=20, route="iv")
 
     def test_mabl_patient_types(self) -> None:
         """Test MABL accepts all patient types with correct EBV."""
@@ -260,7 +261,7 @@ class TestPediatricParameterValidation:
         ]
 
         for patient_type, expected_ebv_factor in patient_types:
-            result = calc.calculate(
+            calc.calculate(
                 weight_kg=10,
                 initial_hematocrit=40,
                 target_hematocrit=30,
@@ -291,7 +292,7 @@ class TestHepatologyParameterValidation:
         calc = ChildPughCalculator()
 
         for ascites in ["none", "mild", "moderate_severe"]:
-            result = calc.calculate(
+            calc.calculate(
                 bilirubin=1.5,
                 albumin=3.5,
                 inr=1.3,
@@ -305,7 +306,7 @@ class TestHepatologyParameterValidation:
         calc = ChildPughCalculator()
 
         for grade in [0, 1, 2, 3, 4]:
-            result = calc.calculate(
+            calc.calculate(
                 bilirubin=1.5,
                 albumin=3.5,
                 inr=1.3,
@@ -442,10 +443,10 @@ class TestBoundaryConditions:
         }
 
         # Scale 1 (default): SpO2 88-92% scores 3
-        result_scale1 = calc.calculate(**cast(Any, base_params), spo2=90, use_scale_2=False)
+        calc.calculate(**cast(Any, base_params), spo2=90, use_scale_2=False)
 
         # Scale 2: SpO2 88-92% on target is ok (lower score)
-        result_scale2 = calc.calculate(**cast(Any, base_params), spo2=90, use_scale_2=True)
+        calc.calculate(**cast(Any, base_params), spo2=90, use_scale_2=True)
 
         # Scale 2 should have different scoring for same SpO2
 

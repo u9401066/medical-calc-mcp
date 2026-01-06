@@ -39,24 +39,24 @@ test_files = [
 def fix_file(filepath):
     if not os.path.exists(filepath):
         return
-    
-    with open(filepath, 'r') as f:
+
+    with open(filepath) as f:
         content = f.read()
 
     lines = content.split('\n')
     new_lines = []
-    
+
     for i, line in enumerate(lines):
         indent_match = re.match(r'^(\s*)', line)
         indent = indent_match.group(1) if indent_match else ""
-        
+
         # Case: result.value comparison
         match = re.search(r'assert\s+([a-zA-Z0-9_]+\.value)\s*[=<>!]+', line)
         if match:
             var = match.group(1)
             if i > 0 and f"assert {var} is not None" not in lines[i-1]:
                 new_lines.append(f"{indent}assert {var} is not None")
-        
+
         # Case: result.interpretation.summary/details/etc 'in' check
         match = re.search(r'assert\s+.*?\s+in\s+([a-zA-Z0-9_]+\.interpretation\.[a-zA-Z0-9_]+)', line)
         if match:

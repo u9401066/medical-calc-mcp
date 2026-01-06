@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 E2E Tests for PIM3 (Pediatric Index of Mortality 3) Calculator
 

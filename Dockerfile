@@ -5,7 +5,7 @@ FROM python:3.11-slim
 
 LABEL maintainer="Medical-Calc-MCP"
 LABEL description="Medical Calculator MCP Server for AI Agent Integration"
-LABEL version="1.0.0"
+LABEL version="1.2.0"
 
 # Set working directory
 WORKDIR /app
