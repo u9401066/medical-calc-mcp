@@ -12,7 +12,7 @@ class McpServerConfig:
     """Configuration for MCP server"""
 
     name: str = "Medical Calculator MCP"
-    version: str = "1.0.0"
+    version: str = "1.2.0"
     json_response: bool = True
 
     # Server network settings (for SSE/HTTP transport)
