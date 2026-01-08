@@ -8,7 +8,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1540%2B%20passed-brightgreen.svg)](#-development)
+[![Tests](https://img.shields.io/badge/tests-124%20passed-brightgreen.svg)](#-development)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-architecture)
@@ -55,6 +55,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 
 - **🔌 MCP Native Integration**: Built with FastMCP SDK for seamless AI agent integration
 - **🔍 Intelligent Tool Discovery**: Two-level key system (Low/High Level) for smart tool selection
+- **🛡️ Smart Parameter Matching**: Alias support, fuzzy matching, and typo tolerance
+- **⚠️ Boundary Validation**: Literature-backed clinical range checking with automatic warnings
 - **🏗️ Clean DDD Architecture**: Onion architecture with clear separation of concerns
 - **📚 Evidence-Based**: All formulas cite original peer-reviewed research papers (Vancouver style)
 - **🔒 Type Safe**: Full Python type hints with dataclass entities
@@ -150,12 +152,14 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 │      (Automatic from Annotated[type, Field(description)])   │
 ├─────────────────────────────────────────────────────────────┤
 │  Layer 2: Application (Use Case)                             │
-│  └── ParameterValidator: Pre-calculation validation         │
-│      (22 parameter specs with valid ranges)                 │
+│  ├── ParamMatcher: Intelligent parameter matching           │
+│  │   (Alias, fuzzy, suffix matching with typo tolerance)    │
+│  └── BoundaryValidator: Clinical range validation           │
+│      (Literature-backed warnings for extreme values)        │
 ├─────────────────────────────────────────────────────────────┤
 │  Layer 3: Domain (Calculator)                                │
-│  └── Medical logic validation                                │
-│      (Clinical rules, formula constraints)                  │
+│  └── ParameterValidator: Medical logic validation           │
+│      (22 parameter specs with valid ranges)                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -163,6 +167,12 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 - `rules.py`: Base classes (RangeRule, EnumRule, TypeRule, CustomRule)
 - `parameter_specs.py`: 22 medical parameter specifications
 - `validators.py`: ParameterValidator with `validate_params()` function
+- `boundaries.py`: BoundarySpec with literature-backed clinical ranges
+
+**Parameter Matching** (`src/domain/services/param_matcher.py`):
+- Alias matching: `cr` → `serum_creatinine`, `hr` → `heart_rate`
+- Fuzzy matching: `creatnine` → `creatinine` (typo tolerance)
+- Suffix stripping: `creatinine_mg_dl` → `creatinine`
 
 ---
 

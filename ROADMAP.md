@@ -71,6 +71,38 @@
 > - Full REST API endpoint coverage for all 75 calculators
 > - Tests include clinical scenarios, edge cases, and error handling
 
+### 5. 🛡️ Parameter Boundary Validation | 參數邊界驗證 (NEW!)
+
+> **Priority**: 🔴 HIGH | **Target**: 2026 Q1
+> **Rationale**: MCP 自動防呆，確保輸入值在臨床有效範圍內
+
+| Item | Current | Target | Priority |
+|------|---------|--------|----------|
+| **BoundarySpec** | ✅ Core module | Production ready | ✅ DONE |
+| **Reference Backed** | ✅ 15+ params | 50+ params with PMID | 🔴 HIGH |
+| **Auto-validation** | 📋 Planned | Integrated in calculate() | 🔴 HIGH |
+| **Markdown Docs** | ✅ Auto-generated | Full parameter docs | 🟡 MEDIUM |
+
+**設計架構:**
+```
+BoundaryRegistry
+├── BoundarySpec (參數邊界規範)
+│   ├── physiological_min/max (生理極限 - 超出=錯誤)
+│   ├── warning_min/max (警告閾值 - 超出=需複檢)
+│   ├── clinical_min/max (臨床常見範圍)
+│   └── BoundaryReference (文獻來源 - PMID/DOI)
+└── validate_all(params) → ValidationResult[]
+```
+
+**已定義參數邊界:**
+- Vital Signs: temperature, heart_rate, respiratory_rate, systolic_bp, MAP, SpO2
+- Renal: serum_creatinine, BUN
+- Hematology: hemoglobin, hematocrit, platelets
+- Liver: bilirubin
+- Demographics: age, weight_kg
+- Oxygenation: FiO2, P/F ratio
+- Scores: GCS, RASS
+
 ---
 
 ## 🧮 New Calculators | 新計算器
@@ -229,6 +261,10 @@ python -m medical_calc.cli new calculator \\
 
 2026 Q1 (Current Focus)
 ├── ✅ Rate Limiting + API Auth (DONE)
+├── ✅ BoundarySpec Module (DONE) - 參數邊界驗證框架
+├── ✅ E2E Workflow Tests (DONE) - 17 production-quality tests
+├── ✅ ParamMatcher Service (DONE) - 智慧參數匹配
+├── 📋 Boundary Integration - 整合至 calculate() 流程
 ├── Test coverage 90%+
 ├── Phase 18: Trauma (4 calculators remaining) - ISS, RTS, TRISS, TBSA
 ├── Phase 19: GI Bleeding (2 calculators) - Blatchford, AIMS65
