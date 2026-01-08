@@ -26,17 +26,25 @@ from .apfel_ponv import ApfelPonvCalculator
 from .apgar_score import APGARScoreCalculator
 from .asa_physical_status import AsaPhysicalStatusCalculator
 from .ballard_score import BallardScoreCalculator
+from .barthel_index import BarthelIndexCalculator
 
 # Phase 17: Obstetrics & Neonatology (Classic Tools)
 from .bishop_score import BishopScoreCalculator
 
 # Phase 14: General Tools
 from .body_surface_area import BodySurfaceAreaCalculator
+from .bosniak import BosniakClassificationCalculator
+from .bsa_derm import BSADermatologyCalculator
 from .cam_icu import CamIcuCalculator
 
 # Phase 7: Surgery/Perioperative & Pulmonology
 from .caprini_vte import CapriniVteCalculator
+from .caps5 import CAPS5Calculator
+from .cas_graves import CASCalculator
 from .centor_score import CentorScoreCalculator
+
+# Phase 30: Geriatrics (Guideline-Recommended)
+from .cfs import ClinicalFrailtyScaleCalculator
 from .chads2_va import Chads2VaCalculator  # 2024 ESC - sex-neutral
 
 # Phase 6: Cardiology
@@ -55,26 +63,37 @@ from .cpis import CpisCalculator
 
 # Phase 6: Pulmonology
 from .curb65 import Curb65Calculator
+from .cushingoid import CushingoidScoreCalculator
 from .das28 import DAS28Calculator
 from .delta_ratio import DeltaRatioCalculator
+from .dlqi import DLQICalculator
 
 # Phase 21: Oncology & Geriatrics (Guideline-Recommended)
 from .ecog_ps import ECOGPerformanceStatusCalculator
 
+# Phase 28: OB/GYN (Guideline-Recommended)
+from .epds import EPDSCalculator
+
 # Phase 19: Guideline-Recommended Missing Tools (2025)
 from .euroscore_ii import EuroSCOREIICalculator
 from .fib4_index import Fib4IndexCalculator
+
+# Phase 26: Endocrinology (Guideline-Recommended)
+from .findrisc import FINDRISCCalculator
 from .fisher_grade import FisherGradeCalculator
 from .four_at_delirium import FourATCalculator
 from .four_score import FourScoreCalculator
 from .four_ts_hit import FourTsHitCalculator
 from .frax import FRAXCalculator
 from .free_water_deficit import FreeWaterDeficitCalculator
+from .gad7 import GAD7Calculator
 from .gcs import GlasgowComaScaleCalculator
 
 # Phase 18: High-Priority GI Bleeding & Trauma Tools (Guideline-Recommended)
 from .glasgow_blatchford import GlasgowBlatchfordCalculator
 from .grace_score import GraceScoreCalculator
+from .hama import HAMACalculator
+from .hamd import HAMDCalculator
 from .has_bled import HasBledCalculator  # Phase 8: 2024 ESC recommended
 from .heart_score import HeartScoreCalculator
 from .hfa_peff import HFAPEFFCalculator
@@ -85,15 +104,20 @@ from .hunt_hess import HuntHessCalculator
 # Phase 20: ICU & Cardiac (Existing Guideline Gaps)
 from .icdsc import ICDSCCalculator
 from .ich_score import IchScoreCalculator
+from .iciq_sf import ICIQSFCalculator
 
 # Phase 11: Upcoming Calculators (All Completed)
 from .ideal_body_weight import IdealBodyWeightCalculator
+
+# Phase 27: Urology (Guideline-Recommended)
+from .ipss import IPSSCalculator
 from .iss import InjurySeverityScoreCalculator
 from .karnofsky import KarnofskyPerformanceScaleCalculator
 from .kdigo_aki import KdigoAkiCalculator
 from .lille_model import LilleModelCalculator
 from .mabl import MablCalculator
 from .maddrey_df import MaddreyDFCalculator
+from .madrs import MADRSCalculator
 from .mallampati_score import MallampatiScoreCalculator
 
 # Phase 16: Infectious Disease (Guideline-Recommended)
@@ -101,8 +125,12 @@ from .mascc_score import MasccScoreCalculator
 
 # Phase 6: Hepatology
 from .meld_score import MeldScoreCalculator
+from .mmse import MMSECalculator
+from .mna import MNACalculator
+from .moca import MoCACalculator
 from .modified_rankin_scale import ModifiedRankinScaleCalculator
 from .murray_score import MurrayLungInjuryScoreCalculator
+from .nds import NDSCalculator
 from .news_score import NewsScoreCalculator
 
 # Phase 12: Neurology
@@ -114,14 +142,22 @@ from .nutric_score import NUTRICScoreCalculator
 from .osmolar_gap import OsmolarGapCalculator
 from .parkland_formula import ParklandFormulaCalculator
 
+# Phase 25: Dermatology (Guideline-Recommended)
+from .pasi import PASICalculator
+from .pcl5 import PCL5Calculator
+
 # Phase 5: Pediatric & Anesthesia Calculators
 from .pediatric_dosing import PediatricDosingCalculator
 from .pediatric_gcs import PediatricGCSCalculator
 from .pediatric_sofa import PediatricSOFACalculator
 from .pews import PEWSCalculator
 from .pf_ratio import PfRatioCalculator
+
+# Phase 24: Psychiatry (Guideline-Recommended)
+from .phq9 import PHQ9Calculator
 from .pim3 import PIM3Calculator
 from .pitt_bacteremia import PittBacteremiaCalculator
+from .pop_q import POPQCalculator
 from .psi_port import PsiPortCalculator
 from .qsofa_score import QsofaScoreCalculator
 from .rass import RassCalculator
@@ -129,22 +165,28 @@ from .rcri import RcriCalculator
 from .rockall_score import RockallScoreCalculator
 from .rox_index import RoxIndexCalculator
 from .rts import RevisedTraumaScoreCalculator
+from .salt import SALTCalculator
+from .scorad import SCORADCalculator
 
 # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
 from .score2 import SCORE2Calculator
+from .sflt_plgf import SFltPlGFRatioCalculator
 from .shock_index import ShockIndexCalculator
 from .sofa2_score import Sofa2ScoreCalculator  # SOFA-2 (JAMA 2025)
 
 # Phase 4: ICU/Emergency Calculators
 from .sofa_score import SofaScoreCalculator
 from .spesi import SimplifiedPESICalculator
+from .stone_score import STONEScoreCalculator
 from .stop_bang import StopBangCalculator
 from .tbsa import TbsaCalculator
 
 # Phase 13: Additional Scores
 from .timi_stemi import TimiStemiCalculator
+from .toronto_css import TorontoCSSCalculator
 from .transfusion_calc import TransfusionCalculator
 from .triss import TRISSCalculator
+from .tug import TUGCalculator
 
 # Phase 6: Emergency Medicine
 from .wells_dvt import WellsDvtCalculator
@@ -274,6 +316,42 @@ __all__ = [
     # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
     "SCORE2Calculator",
     "FRAXCalculator",
+    # Phase 24: Psychiatry (Guideline-Recommended)
+    "PHQ9Calculator",
+    "GAD7Calculator",
+    "HAMDCalculator",
+    "HAMACalculator",
+    "MADRSCalculator",
+    "CAPS5Calculator",
+    "PCL5Calculator",
+    # Phase 25: Dermatology (Guideline-Recommended)
+    "PASICalculator",
+    "SCORADCalculator",
+    "DLQICalculator",
+    "SALTCalculator",
+    "BSADermatologyCalculator",
+    # Phase 26: Endocrinology (Guideline-Recommended)
+    "FINDRISCCalculator",
+    "NDSCalculator",
+    "TorontoCSSCalculator",
+    "CASCalculator",
+    "CushingoidScoreCalculator",
+    # Phase 27: Urology (Guideline-Recommended)
+    "IPSSCalculator",
+    "ICIQSFCalculator",
+    "STONEScoreCalculator",
+    "BosniakClassificationCalculator",
+    # Phase 28: OB/GYN (Guideline-Recommended)
+    "EPDSCalculator",
+    "POPQCalculator",
+    "SFltPlGFRatioCalculator",
+    # Phase 30: Geriatrics (Guideline-Recommended)
+    "ClinicalFrailtyScaleCalculator",
+    "MMSECalculator",
+    "MoCACalculator",
+    "TUGCalculator",
+    "BarthelIndexCalculator",
+    "MNACalculator",
 ]
 
 
@@ -396,4 +474,40 @@ CALCULATORS: list[type[BaseCalculator]] = [
     # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
     SCORE2Calculator,
     FRAXCalculator,
+    # Phase 24: Psychiatry (Guideline-Recommended)
+    PHQ9Calculator,
+    GAD7Calculator,
+    HAMDCalculator,
+    HAMACalculator,
+    MADRSCalculator,
+    CAPS5Calculator,
+    PCL5Calculator,
+    # Phase 25: Dermatology (Guideline-Recommended)
+    PASICalculator,
+    SCORADCalculator,
+    DLQICalculator,
+    SALTCalculator,
+    BSADermatologyCalculator,
+    # Phase 26: Endocrinology (Guideline-Recommended)
+    FINDRISCCalculator,
+    NDSCalculator,
+    TorontoCSSCalculator,
+    CASCalculator,
+    CushingoidScoreCalculator,
+    # Phase 27: Urology (Guideline-Recommended)
+    IPSSCalculator,
+    ICIQSFCalculator,
+    STONEScoreCalculator,
+    BosniakClassificationCalculator,
+    # Phase 28: OB/GYN (Guideline-Recommended)
+    EPDSCalculator,
+    POPQCalculator,
+    SFltPlGFRatioCalculator,
+    # Phase 30: Geriatrics (Guideline-Recommended)
+    ClinicalFrailtyScaleCalculator,
+    MMSECalculator,
+    MoCACalculator,
+    TUGCalculator,
+    BarthelIndexCalculator,
+    MNACalculator,
 ]

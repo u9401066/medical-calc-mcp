@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
 > **Last Updated**: 2026-01-08
-> **Current Version**: v1.3.0 (Production Ready)
-> **Status**: 82 Tools (75 Calculators + 7 Discovery) | 124 Core Tests | 92% Coverage
+> **Current Version**: v1.5.0 (Production Ready)
+> **Status**: 128 Tools (121 Calculators + 7 Discovery) | 1721 Tests | 92% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 

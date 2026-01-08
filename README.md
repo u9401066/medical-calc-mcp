@@ -60,7 +60,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - **🛡️ Smart Parameter Matching**: Alias support, fuzzy matching, and typo tolerance
 - **⚠️ Boundary Validation**: Literature-backed clinical range checking with automatic warnings
 - **🏗️ Clean DDD Architecture**: Onion architecture with clear separation of concerns
-- **📚 Evidence-Based**: All 91 calculators cite peer-reviewed research (100% coverage, Vancouver style)
+- **📚 Evidence-Based**: All 121 calculators cite peer-reviewed research (100% coverage, Vancouver style)
 - **🔒 Type Safe**: Full Python type hints with dataclass entities
 - **🌐 Bilingual**: Chinese/English documentation and tool descriptions
 

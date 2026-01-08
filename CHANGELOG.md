@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-01-08
+
+### Added
+- **121 MCP Calculators**: Expanded from 103 to 121 clinical calculators (+18)
+- **Phase 26 - Endocrinology** (5 new tools):
+  - FINDRISC (Finnish Diabetes Risk Score)
+  - NDS (Neuropathy Disability Score)
+  - Toronto CSS (Clinical Scoring System for Diabetic Polyneuropathy)
+  - CAS (Clinical Activity Score for Graves' Ophthalmopathy)
+  - Cushingoid Score
+- **Phase 27 - Urology** (4 new tools):
+  - IPSS (International Prostate Symptom Score)
+  - ICIQ-SF (Urinary Incontinence Severity)
+  - STONE Score (Ureteral Stone Prediction)
+  - Bosniak Classification (Renal Cyst Malignancy Risk)
+- **Phase 28 - OB/GYN** (3 new tools):
+  - EPDS (Edinburgh Postnatal Depression Scale)
+  - POP-Q (Pelvic Organ Prolapse Quantification)
+  - sFlt-1/PlGF Ratio (Preeclampsia Biomarker)
+- **Phase 30 - Geriatrics** (6 new tools):
+  - CFS (Clinical Frailty Scale)
+  - MMSE (Mini-Mental State Examination)
+  - MoCA (Montreal Cognitive Assessment)
+  - TUG (Timed Up and Go Test)
+  - Barthel Index (ADL Assessment)
+  - MNA (Mini Nutritional Assessment)
+- **1,721 Tests**: Comprehensive test coverage maintained
+
+### Changed
+- Updated test assertions for new calculator count (121 total)
+- Improved specialty coverage across Endocrinology, Urology, OB/GYN, and Geriatrics
+
 ## [1.2.0] - 2026-01-06
 
 ### Added
@@ -91,11 +123,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.5.0 | 2026-01-08 | 121 calculators, Phase 26-30 complete |
+| 1.2.0 | 2026-01-06 | 82 MCP tools, uv migration |
 | 1.1.0 | 2025-12-09 | 697 E2E tests, comprehensive API testing |
 | 1.0.0 | 2025-12-03 | Initial release, 75 calculators |
 
 ---
 
-[Unreleased]: https://github.com/u9401066/medical-calc-mcp/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/u9401066/medical-calc-mcp/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.2.0...v1.5.0
+[1.2.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/u9401066/medical-calc-mcp/releases/tag/v1.0.0
