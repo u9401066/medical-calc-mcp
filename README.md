@@ -887,22 +887,47 @@ When an AI agent needs a medical calculator, it uses **Hierarchical Navigation**
 │  ① list_specialties() → ["critical_care", "anesthesiology"]│
 │  ② list_by_specialty("anesthesiology") → [tool_id, ...]    │
 │  ③ get_calculator_info("rcri") → params, references        │
-│  ④ calculate_rcri(...)                                      │
+│  ④ calculate("rcri", {...params})                           │
 ├─────────────────────────────────────────────────────────────┤
 │  Path B: Context-based                                       │
 │  ① list_contexts() → ["preoperative_assessment", ...]      │
 │  ② list_by_context("preoperative_assessment") → [tools]    │
 │  ③ get_calculator_info("asa_physical_status")              │
-│  ④ calculate_asa_physical_status(...)                       │
+│  ④ calculate("asa_physical_status", {...params})            │
 ├─────────────────────────────────────────────────────────────┤
 │  Path C: Quick Search (Quick keyword search)                 │
 │  ① search_calculators("sepsis") → [sofa_score, qsofa, ...] │
 │  ② get_calculator_info("sofa_score")                        │
-│  ③ calculate_sofa(...)                                      │
+│  ③ calculate("sofa_score", {...params})                     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 **Every step returns `next_step` hints, so the Agent never gets lost!**
+
+### Unified Calculate Interface (v2.0)
+
+Instead of 75+ individual calculator tools, we provide a **single unified `calculate()` tool**:
+
+```python
+# Old approach (deprecated):
+# calculate_sofa(pao2_fio2=300, platelets=150, ...)
+
+# New approach (v2.0):
+calculate(
+    tool_id="sofa_score",
+    params={
+        "pao2_fio2_ratio": 300,
+        "platelets": 150,
+        "bilirubin": 1.2,
+        # ... other params
+    }
+)
+```
+
+**Benefits:**
+- 🎯 **Token Efficient**: Only 10 tools instead of 75+ in context
+- 🔍 **Discovery First**: Use discovery tools to find the right calculator
+- 📖 **Self-Documenting**: `get_calculator_info()` shows exact params needed
 
 ### Low Level Key (Precise Selection)
 
@@ -1245,6 +1270,12 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Tool | Description |
 |------|-------------|
 | `get_calculator_info(tool_id)` | 📖 Get params, references, examples |
+
+#### Step 4: Execute Calculation
+
+| Tool | Description |
+|------|-------------|
+| `calculate(tool_id, params)` | 🧮 Unified calculator (supports all 75+ calculators) |
 
 [↑ Back to Navigation](#-quick-navigation)
 

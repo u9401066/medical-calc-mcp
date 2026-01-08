@@ -142,7 +142,7 @@ class TypeRule(ValidationRule):
         # Handle numeric type conversions
         if self.expected_type in (int, float):
             try:
-                if self.expected_type == int:
+                if self.expected_type is int:
                     # Check if it's actually an integer value
                     if isinstance(value, float) and not value.is_integer():
                         return False, f"Expected integer, got float {value}"

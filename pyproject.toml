@@ -38,6 +38,7 @@ dependencies = [
     "uvicorn>=0.38.0",
     "sse-starlette>=2.0.0",
     "fastapi>=0.115.0",
+    # Note: networkx is optional (tool_graph.py has fallback)
 ]
 
 [project.optional-dependencies]
@@ -48,6 +49,8 @@ dev = [
     "mypy>=1.8.0",
     "ruff>=0.2.0",
 ]
+# Note: NO ML dependencies (torch, transformers) required
+# networkx is pure Python, ~2MB, no native compilation
 
 [project.scripts]
 medical-calc-mcp = "src.infrastructure.mcp.server:main"

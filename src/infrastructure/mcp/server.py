@@ -118,6 +118,13 @@ class MedicalCalculatorServer:
             if self._registry.get_calculator(instance.tool_id) is None:
                 self._registry.register(instance)
 
+        # Build auto-discovery indexes after all tools are registered
+        # This enables intelligent tool discovery without ML dependencies
+        self._registry.build_discovery_indexes()
+        logger.info(
+            f"Auto-discovery indexes built: {self._registry.get_discovery_statistics()}"
+        )
+
     def _init_handlers(self) -> None:
         """Initialize all MCP handlers"""
         # Discovery tools (search_calculators, list_by_specialty, etc.)

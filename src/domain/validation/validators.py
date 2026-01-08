@@ -149,15 +149,15 @@ class ParameterValidator:
         # Skip validation if value type doesn't match expected type
         # This allows calculator-specific parameter overrides
         # (e.g., consciousness in Aldrete uses int 0-2, but NEWS2 uses string A/V/P/U)
-        if spec.param_type == str and not isinstance(value, str):
+        if spec.param_type is str and not isinstance(value, str):
             return None
-        if spec.param_type == int and not isinstance(value, int):
+        if spec.param_type is int and not isinstance(value, int):
             # Allow bool as int since bool is subclass of int
             if isinstance(value, bool):
                 pass  # bools can be validated as ints
             else:
                 return None
-        if spec.param_type == float and not isinstance(value, (int, float)):
+        if spec.param_type is float and not isinstance(value, (int, float)):
             return None
 
         is_valid, error_messages = spec.validate(value)

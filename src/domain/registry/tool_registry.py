@@ -3,14 +3,21 @@ Tool Registry
 
 Central registry for all medical calculators.
 Provides registration, lookup, and search capabilities.
+
+Enhanced with AutoDiscoveryEngine and ToolRelationGraph for
+intelligent tool discovery without ML dependencies.
 """
 
 from collections import defaultdict
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from ..entities.tool_metadata import ToolMetadata
 from ..services.base import BaseCalculator
 from ..value_objects.tool_keys import ClinicalContext, Specialty
+
+if TYPE_CHECKING:
+    from .auto_discovery import AutoDiscoveryEngine
+    from .tool_graph import ToolRelationGraph
 
 
 class ToolRegistry:
@@ -22,6 +29,8 @@ class ToolRegistry:
     - Lookup by tool_id
     - Search by specialty, condition, context, keyword
     - List all tools or by category
+    - Auto-discovery engine (no ML required)
+    - Tool relation graph for related tools
 
     This is a singleton - use ToolRegistry.instance() to get the registry.
     """
@@ -38,6 +47,11 @@ class ToolRegistry:
         self._by_context: dict[ClinicalContext, set[str]] = defaultdict(set)
         self._by_keyword: dict[str, set[str]] = defaultdict(set)
         self._by_icd10: dict[str, set[str]] = defaultdict(set)
+
+        # Auto-discovery components (lazy init)
+        self._discovery_engine: Optional["AutoDiscoveryEngine"] = None
+        self._relation_graph: Optional["ToolRelationGraph"] = None
+        self._discovery_built = False
 
     @classmethod
     def instance(cls) -> "ToolRegistry":
@@ -238,6 +252,151 @@ class ToolRegistry:
     def list_contexts(self) -> list[ClinicalContext]:
         """List all clinical contexts that have registered tools"""
         return [c for c in self._by_context.keys() if self._by_context[c]]
+
+    # ========================================
+    # Auto-Discovery Features (No ML Required)
+    # ========================================
+
+    def build_discovery_indexes(self) -> None:
+        """
+        Build auto-discovery indexes from registered tools.
+
+        This builds:
+        1. AutoDiscoveryEngine - parameter/keyword based discovery
+        2. ToolRelationGraph - graph-based related tool discovery
+
+        Call this AFTER all tools are registered.
+        No ML dependencies - pure Python algorithms.
+        """
+        if self._discovery_built:
+            return
+
+        # Lazy import to avoid circular deps
+        from .auto_discovery import AutoDiscoveryEngine
+        from .tool_graph import ToolRelationGraph
+
+        # Build discovery engine
+        self._discovery_engine = AutoDiscoveryEngine()
+        self._discovery_engine.build_from_registry(self)
+
+        # Build relation graph
+        self._relation_graph = ToolRelationGraph()
+        self._relation_graph.build_from_registry(self)
+
+        self._discovery_built = True
+
+    def get_related_tools(
+        self,
+        tool_id: str,
+        limit: int = 5
+    ) -> list[tuple[str, float]]:
+        """
+        Get tools related to the given tool.
+
+        Uses graph-based relationships built from:
+        - Shared parameters
+        - Same specialty
+        - Same clinical context
+
+        Args:
+            tool_id: The tool to find related tools for
+            limit: Maximum number of related tools to return
+
+        Returns:
+            List of (tool_id, similarity_score) tuples
+        """
+        if not self._discovery_built:
+            self.build_discovery_indexes()
+
+        if self._relation_graph:
+            return self._relation_graph.get_related_tools(tool_id, limit)
+        return []
+
+    def smart_search(
+        self,
+        query: str,
+        limit: int = 10,
+        expand_related: bool = True
+    ) -> list[ToolMetadata]:
+        """
+        Enhanced search using auto-discovery engine.
+
+        Combines:
+        - Keyword matching (from docstrings)
+        - Parameter matching
+        - Related tool expansion
+
+        Args:
+            query: Search query
+            limit: Maximum results
+            expand_related: Whether to include related tools
+
+        Returns:
+            List of matching ToolMetadata
+        """
+        if not self._discovery_built:
+            self.build_discovery_indexes()
+
+        # Use discovery engine if available
+        if self._discovery_engine:
+            results = self._discovery_engine.search(query, limit)
+
+            tool_ids = [r.tool_id for r in results]
+
+            # Optionally expand with related tools
+            if expand_related and self._relation_graph and tool_ids:
+                for tid in tool_ids[:3]:  # Top 3 results
+                    related = self._relation_graph.get_related_tools(tid, 2)
+                    for rel_id, _ in related:
+                        if rel_id not in tool_ids:
+                            tool_ids.append(rel_id)
+
+            return [
+                self._calculators[tid].metadata
+                for tid in tool_ids[:limit]
+                if tid in self._calculators
+            ]
+
+        # Fallback to basic search
+        return self.search(query, limit)
+
+    def find_tools_by_params(self, params: list[str]) -> list[ToolMetadata]:
+        """
+        Find tools that can use the given parameters.
+
+        Useful for: "I have these lab values, what can I calculate?"
+
+        Args:
+            params: List of parameter names (e.g., ["creatinine", "age", "weight"])
+
+        Returns:
+            List of tools that use some/all of these parameters
+        """
+        if not self._discovery_built:
+            self.build_discovery_indexes()
+
+        if self._discovery_engine:
+            tool_ids = self._discovery_engine.find_tools_by_params(params)
+            return [
+                self._calculators[tid].metadata
+                for tid in tool_ids
+                if tid in self._calculators
+            ]
+        return []
+
+    def get_discovery_statistics(self) -> dict[str, Any]:
+        """Get auto-discovery engine statistics."""
+        stats: dict[str, Any] = {
+            "discovery_built": self._discovery_built,
+        }
+
+        if self._discovery_engine:
+            stats["discovery_engine"] = self._discovery_engine.get_statistics()
+
+        if self._relation_graph:
+            stats["relation_graph"] = self._relation_graph.get_statistics()
+
+        return stats
 
     def get_statistics(self) -> dict[str, Any]:
         """Get registry statistics"""
