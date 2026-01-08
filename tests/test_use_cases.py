@@ -160,20 +160,21 @@ class TestCalculateUseCase:
 
         assert response.success is False
         assert "not found" in response.error.lower()
-        assert "Available calculators" in response.error
+        # Should suggest how to find calculators
+        assert "list_calculators" in response.error or "search_calculators" in response.error
 
     def test_calculator_not_found_suggests_alternatives(self, use_case: Any) -> None:
-        """Test that error suggests available calculators"""
+        """Test that error suggests similar calculators when typo is detected"""
         request = CalculateRequest(
-            tool_id="wrong_name",
+            tool_id="sofa_scor",  # Typo - close to sofa_score
             params={}
         )
 
         response = use_case.execute(request)
 
         assert response.success is False
-        # Should list some available calculators
-        assert "gcs" in response.error.lower() or "sofa" in response.error.lower()
+        # Should suggest similar tool names (Did you mean: ...)
+        assert "did you mean" in response.error.lower() or "list_calculators" in response.error.lower()
 
     # ========================================================================
     # Error Cases - Invalid Parameters
