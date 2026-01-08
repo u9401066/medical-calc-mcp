@@ -2,8 +2,8 @@
   "servers": {
     "medical-calc-mcp": {
       "type": "stdio",
-      "command": "${workspaceFolder}/.venv/bin/python",
-      "args": ["-m", "src.main"]
+      "command": "uv",
+      "args": ["run", "medical-calc-mcp"]
     }
   }
 }

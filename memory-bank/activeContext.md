@@ -2,7 +2,30 @@
 
 ## Current Goals
 
-- v1.2.0 現代化完成：uv 遷移、mypy strict 100%、ruff 清理、Dockerfile 更新。MCP 伺服器配置已修正 (logging 重導向至 stderr)。82 個工具已註冊，低於 128 限制。CI 已修復並通過。所有 1564 個測試已通過。等待使用者重新載入 VS Code 驗證 Copilot 整合。
+- ## Current Focus (2026-01-08)
+- ### Just Completed
+- - CI/CD pipeline enhancement:
+- - Added `/health` endpoint for Docker/K8s liveness probes
+- - Fixed Docker healthcheck (changed from /sse to /health)
+- - Added auto-fix job for develop branch (ruff --fix, format, uv lock)
+- - Added auto-release job (creates GitHub Release when version changes)
+- - Added concurrency control (cancels in-progress runs)
+- - Updated README (EN/ZH-TW) with CI/CD documentation
+- - Added tests for health endpoint (test_health_endpoint.py)
+- - Fixed cross-platform mcp.json (uv run entry point)
+- ### Pending Push
+- Files changed:
+- - .github/workflows/ci.yml (major CI/CD enhancement)
+- - .vscode/mcp.json (cross-platform fix)
+- - Dockerfile (healthcheck /health)
+- - README.md (CI/CD docs + uv migration)
+- - README.zh-TW.md (CI/CD docs + uv migration)
+- - src/infrastructure/mcp/server.py (/health endpoint)
+- - tests/test_health_endpoint.py (new)
+- ### Next Tasks
+- 1. Git push and verify CI passes
+- 2. High/Low Level discovery tool design discussion
+- 3. Parameter definition documentation (docs/PARAMETERS.md)
 
 ## Current Blockers
 

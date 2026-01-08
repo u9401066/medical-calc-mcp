@@ -8,7 +8,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1564%20passed-brightgreen.svg)](#-development)
+[![Tests](https://img.shields.io/badge/tests-1540%2B%20passed-brightgreen.svg)](#-development)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-architecture)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
@@ -170,7 +171,7 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 ### Prerequisites
 
 - Python 3.11+ (required by MCP SDK)
-- pip or uv package manager
+- **uv** package manager (recommended) - [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ### Installation
 
@@ -179,25 +180,24 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 git clone https://github.com/u9401066/medical-calc-mcp.git
 cd medical-calc-mcp
 
-# Create virtual environment (recommended)
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# or
-.venv\Scripts\activate     # Windows
+# Install uv (if not already installed)
+# macOS/Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Windows:
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# Install dependencies
-pip install -r requirements.txt
+# Sync dependencies (creates .venv automatically)
+uv sync
 ```
 
 ### Run MCP Server
 
 ```bash
 # Start MCP server (stdio transport)
-python -m src.infrastructure.mcp.server
+uv run python -m src.main
 
 # Or with MCP development inspector
-pip install "mcp[cli]"
-mcp dev src/infrastructure/mcp/server.py
+uv run mcp dev src/main.py
 ```
 
 ### Configure with VS Code Copilot ⭐ NEW
@@ -215,7 +215,7 @@ Simply open this project in VS Code - the MCP server will be auto-discovered!
     "medical-calc-mcp": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "python", "-m", "medical_calc_mcp"]
+      "args": ["run", "python", "-m", "src.main"]
     }
   }
 }
@@ -244,8 +244,8 @@ Add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "medical-calc": {
-      "command": "python",
-      "args": ["-m", "src.infrastructure.mcp.server"],
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main"],
       "cwd": "/path/to/medical-calc-mcp"
     }
   }
@@ -275,9 +275,9 @@ This project supports multiple deployment modes for different use cases:
 
 | Mode | Command | Port | Best For |
 |------|---------|------|----------|
-| **api** | `python src/main.py --mode api` | 8080 | Custom agents, web apps, scripts |
-| **sse** | `python src/main.py --mode sse` | 8000 | Remote MCP clients, Docker |
-| **stdio** | `python src/main.py --mode stdio` | - | Local Claude Desktop, VS Code |
+| **api** | `uv run python src/main.py --mode api` | 8080 | Custom agents, web apps, scripts |
+| **sse** | `uv run python src/main.py --mode sse` | 8000 | Remote MCP clients, Docker |
+| **stdio** | `uv run python src/main.py --mode stdio` | - | Local Claude Desktop, VS Code |
 
 > 📘 For detailed deployment instructions, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
@@ -327,7 +327,7 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#-agent-integration-examples) for Lan
 
 ```bash
 # Start API server
-python src/main.py --mode api --port 8080
+uv run python src/main.py --mode api --port 8080
 
 # Test endpoints
 curl http://localhost:8080/health
@@ -364,9 +364,9 @@ curl -sf http://localhost:8000/sse -o /dev/null && echo "OK"
 
 | Mode | Use Case | Port | Command |
 |------|----------|------|---------|
-| `stdio` | Local Claude Desktop | - | `python -m src.main` |
-| `sse` | Remote MCP (Docker/Cloud) | 8000 | `python -m src.main --mode sse` |
-| `http` | Streamable HTTP transport | 8000 | `python -m src.main --mode http` |
+| `stdio` | Local Claude Desktop | - | `uv run python -m src.main` |
+| `sse` | Remote MCP (Docker/Cloud) | 8000 | `uv run python -m src.main --mode sse` |
+| `http` | Streamable HTTP transport | 8000 | `uv run python -m src.main --mode http` |
 
 > ⚠️ **Important**: SSE/HTTP modes bind to `0.0.0.0` by default for remote access.
 
@@ -374,14 +374,14 @@ curl -sf http://localhost:8000/sse -o /dev/null && echo "OK"
 
 ```bash
 # 1. STDIO Mode - For Claude Desktop (local)
-python -m src.main
+uv run python -m src.main
 
 # 2. SSE Mode - For remote agents (Docker/Cloud)
-python -m src.main --mode sse
-python -m src.main --mode sse --host 0.0.0.0 --port 9000  # Custom port
+uv run python -m src.main --mode sse
+uv run python -m src.main --mode sse --host 0.0.0.0 --port 9000  # Custom port
 
 # 3. HTTP Mode - Streamable HTTP transport
-python -m src.main --mode http
+uv run python -m src.main --mode http
 ```
 
 ### Remote MCP Client Configuration
@@ -678,10 +678,10 @@ Besides MCP protocol, the server also provides a **standalone REST API** for dir
 
 ```bash
 # Start API server
-python src/main.py --mode api --port 8080
+uv run python src/main.py --mode api --port 8080
 
 # With uvicorn (production)
-uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080
+uv run uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080
 ```
 
 ### API Documentation
@@ -848,12 +848,13 @@ MCP_PORT=8000
 
 ```bash
 # Check for known vulnerabilities
-pip install pip-audit
-pip-audit --strict
+uv run pip-audit --strict
 
 # Upgrade all packages
-pip install --upgrade pip setuptools
-pip install -r requirements.txt --upgrade
+uv sync --upgrade
+
+# Lock dependencies
+uv lock
 ```
 
 ### Security Audit Results (2025-06)
@@ -1012,7 +1013,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **MCP Primitives**: 82 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 82 Tools | 1566 Tests | 92% Coverage | Phase 19 Complete ✅
+> **Current Stats**: 82 Tools | 1540+ Tests | 92% Coverage | Phase 19 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -1023,12 +1024,14 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 | Anesthesiology / Preoperative | 9 | [→ Jump](#-anesthesiology--preoperative) |
 | Critical Care / ICU | 8 | [→ Jump](#-critical-care--icu) |
 | Pediatrics | 9 | [→ Jump](#-pediatrics) |
+| Obstetrics | 2 | [→ Jump](#-obstetrics) |
 | Nephrology | 2 | [→ Jump](#-nephrology) |
 | Pulmonology | 6 | [→ Jump](#-pulmonology) |
-| Cardiology | 9 | [→ Jump](#-cardiology) |
+| Cardiology | 8 | [→ Jump](#-cardiology) |
+| Infectious Disease | 4 | [→ Jump](#-infectious-disease) |
 | Emergency Medicine / Trauma | 5 | [→ Jump](#-emergency-medicine) |
 | Hepatology / GI | 6 | [→ Jump](#-hepatology--gi) |
-| Acid-Base / Metabolic | 4 | [→ Jump](#-acid-base--metabolic) |
+| Acid-Base / Metabolic | 7 | [→ Jump](#-acid-base--metabolic) |
 | Hematology | 1 | [→ Jump](#-hematology) |
 | Neurology | 7 | [→ Jump](#-neurology) |
 | General Tools | 4 | [→ Jump](#-general-tools) |
@@ -1088,7 +1091,16 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 [↑ Back to Navigation](#-quick-navigation)
 
-#### 🫘 Nephrology
+#### � Obstetrics
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|------------|
+| `calculate_bishop_score` | Bishop Score 🆕 | Cervical ripening for labor induction | Bishop 1964 |
+| `calculate_ballard_score` | Ballard Score 🆕 | Newborn gestational age assessment | Ballard 1991 |
+
+[↑ Back to Navigation](#-quick-navigation)
+
+#### �🫘 Nephrology
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
@@ -1125,7 +1137,18 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 [↑ Back to Navigation](#-quick-navigation)
 
-#### 🩸 Hematology
+#### � Infectious Disease
+
+| Tool ID | Name | Purpose | Reference |
+|---------|------|---------|------------|
+| `calculate_mascc_score` | MASCC Score 🆕 | Febrile neutropenia risk assessment | Klastersky 2000 |
+| `calculate_pitt_bacteremia_score` | Pitt Bacteremia 🆕 | Bacteremia prognosis & mortality | Paterson 2004 |
+| `calculate_centor_score` | Centor/McIsaac Score 🆕 | Streptococcal pharyngitis risk | Centor 1981, McIsaac 1998 |
+| `calculate_cpis` | CPIS 🆕 | Clinical Pulmonary Infection Score (VAP) | Pugin 1991 |
+
+[↑ Back to Navigation](#-quick-navigation)
+
+#### �🩸 Hematology
 
 | Tool ID | Name | Purpose | Reference |
 |---------|------|---------|-----------|
@@ -1269,10 +1292,10 @@ The project includes ready-to-run example scripts in the `examples/` folder:
 
 ```bash
 # Basic usage examples
-python examples/basic_usage.py
+uv run python examples/basic_usage.py
 
 # Clinical workflow examples
-python examples/clinical_workflows.py
+uv run python examples/clinical_workflows.py
 ```
 
 **Available Examples:**
@@ -1408,7 +1431,7 @@ uv run mcp dev src/main.py
 
 ### Testing Strategy
 
-We maintain a high-quality codebase with over **1640+ tests** and **90% code coverage**.
+We maintain a high-quality codebase with over **1540+ tests** and **90% code coverage**.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1436,6 +1459,9 @@ uv run pytest --cov=src --cov-report=html
 
 # Run specific layer tests
 uv run pytest tests/test_acid_base.py -v
+
+# Run with verbose output
+uv run pytest -v --tb=short
 ```
 
 ### Type Safety
@@ -1445,15 +1471,61 @@ The project enforces **strict type checking** across the entire codebase.
 ```bash
 # Run strict type check
 uv run mypy --strict src tests
+
+# Run linter
+uv run ruff check src tests
+
+# Auto-fix linting issues
+uv run ruff check --fix src tests
 ```
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration with the following features:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Push to develop                          │
+├─────────────────────────────────────────────────────────────┤
+│  auto-fix:                                                  │
+│    • ruff check --fix (auto-fix linting)                    │
+│    • ruff format (auto-format code)                         │
+│    • uv lock (update dependency lock)                       │
+│    • Auto-commit back to develop [skip ci]                  │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    test (3.11, 3.12, 3.13)                  │
+├─────────────────────────────────────────────────────────────┤
+│    • ruff check (lint)                                      │
+│    • ruff format --check (format check)                     │
+│    • mypy (type check)                                      │
+│    • pytest (tests + coverage ≥90%)                         │
+└─────────────────────────────────────────────────────────────┘
+                            ↓ (main only)
+┌─────────────────────────────────────────────────────────────┐
+│                    docker + release                         │
+├─────────────────────────────────────────────────────────────┤
+│    • Build & test Docker image (/health endpoint)           │
+│    • Auto-create GitHub Release when version changes        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+| Feature | Description |
+|---------|-------------|
+| **Auto-fix on develop** | Automatically fix linting/formatting issues |
+| **Multi-Python testing** | Tests on Python 3.11, 3.12, 3.13 |
+| **Docker health check** | Uses `/health` endpoint for liveness probes |
+| **Auto-release** | Creates GitHub Release when `pyproject.toml` version changes |
+| **Concurrency control** | Cancels in-progress runs for same branch |
 
 ---
 
 ## 🛠️ Requirements
 
 - **Python 3.11+**
-- **uv** (Recommended for dependency management)
-- **MCP SDK** (FastMCP)
+- **[uv](https://docs.astral.sh/uv/)** - Fast Python package manager (required)
+- **MCP SDK** (FastMCP) - Installed automatically via `uv sync`
 
 ---
 

@@ -132,6 +132,32 @@ class MedicalCalculatorServer:
         # Prompts (clinical workflows)
         self._prompt_handler = PromptHandler(self._mcp, self._registry)
 
+        # Health check endpoint for Docker/Kubernetes liveness probes
+        self._init_health_endpoint()
+
+    def _init_health_endpoint(self) -> None:
+        """Initialize health check endpoint for container orchestration."""
+        from starlette.requests import Request
+        from starlette.responses import JSONResponse
+
+        @self._mcp.custom_route("/health", methods=["GET", "HEAD"])
+        async def health_check(request: Request) -> JSONResponse:
+            """
+            Health check endpoint for Docker/Kubernetes liveness probes.
+
+            Returns:
+                JSON response with service status and calculator count
+            """
+            return JSONResponse(
+                content={
+                    "status": "healthy",
+                    "service": self._config.name,
+                    "version": "1.2.0",
+                    "calculators_loaded": len(self._registry.list_all()),
+                },
+                status_code=200,
+            )
+
     @property
     def mcp(self) -> FastMCP:
         """Get the FastMCP server instance"""

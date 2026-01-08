@@ -8,7 +8,8 @@
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1564%20passed-brightgreen.svg)](#-開發指南)
+[![Tests](https://img.shields.io/badge/tests-1540%2B%20passed-brightgreen.svg)](#-開發指南)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-架構)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
@@ -170,7 +171,7 @@
 ### 前置需求
 
 - Python 3.11+ (MCP SDK 要求)
-- pip 或 uv 套件管理工具
+- **uv** 套件管理工具（必要）- [安裝 uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ### 安裝
 
@@ -179,25 +180,24 @@
 git clone https://github.com/u9401066/medical-calc-mcp.git
 cd medical-calc-mcp
 
-# 建立虛擬環境（建議）
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# 或
-.venv\Scripts\activate     # Windows
+# 安裝 uv（如果尚未安裝）
+# macOS/Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Windows:
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# 安裝依賴
-pip install -r requirements.txt
+# 同步依賴（自動建立 .venv）
+uv sync
 ```
 
 ### 執行 MCP 伺服器
 
 ```bash
 # 啟動 MCP 伺服器（stdio 傳輸）
-python -m src.infrastructure.mcp.server
+uv run python -m src.main
 
 # 或使用 MCP 開發檢查器 (Inspector)
-pip install "mcp[cli]"
-mcp dev src/infrastructure/mcp/server.py
+uv run mcp dev src/main.py
 ```
 
 ### 與 VS Code Copilot 整合 ⭐ NEW
@@ -215,7 +215,7 @@ mcp dev src/infrastructure/mcp/server.py
     "medical-calc-mcp": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "python", "-m", "medical_calc_mcp"]
+      "args": ["run", "python", "-m", "src.main"]
     }
   }
 }
@@ -244,8 +244,8 @@ mcp dev src/infrastructure/mcp/server.py
 {
   "mcpServers": {
     "medical-calc": {
-      "command": "python",
-      "args": ["-m", "src.infrastructure.mcp.server"],
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main"],
       "cwd": "/path/to/medical-calc-mcp"
     }
   }
@@ -364,9 +364,9 @@ curl -sf http://localhost:8000/sse -o /dev/null && echo "OK"
 
 | 模式 | 適用場景 | 連接埠 | 指令 |
 |------|----------|------|---------|
-| `stdio` | 本地 Claude Desktop | - | `python -m src.main` |
-| `sse` | 遠端 MCP (Docker/雲端) | 8000 | `python -m src.main --mode sse` |
-| `http` | 可串流的 HTTP 傳輸 | 8000 | `python -m src.main --mode http` |
+| `stdio` | 本地 Claude Desktop | - | `uv run python -m src.main` |
+| `sse` | 遠端 MCP (Docker/雲端) | 8000 | `uv run python -m src.main --mode sse` |
+| `http` | 可串流的 HTTP 傳輸 | 8000 | `uv run python -m src.main --mode http` |
 
 > ⚠️ **重要**: SSE/HTTP 模式預設綁定到 `0.0.0.0` 以便遠端存取。
 
@@ -374,14 +374,14 @@ curl -sf http://localhost:8000/sse -o /dev/null && echo "OK"
 
 ```bash
 # 1. STDIO 模式 - 用於 Claude Desktop (本地)
-python -m src.main
+uv run python -m src.main
 
 # 2. SSE 模式 - 用於遠端 Agent (Docker/雲端)
-python -m src.main --mode sse
-python -m src.main --mode sse --host 0.0.0.0 --port 9000  # 自定義連接埠
+uv run python -m src.main --mode sse
+uv run python -m src.main --mode sse --host 0.0.0.0 --port 9000  # 自定義連接埠
 
 # 3. HTTP 模式 - 可串流的 HTTP 傳輸
-python -m src.main --mode http
+uv run python -m src.main --mode http
 ```
 
 ### 遠端 MCP 客戶端設定
@@ -884,7 +884,7 @@ uv run mcp dev src/main.py
 
 ### 測試策略
 
-我們維持高品質的程式碼庫，擁有超過 **1640+ 個測試**與 **90% 的程式碼覆蓋率**。
+我們維持高品質的程式碼庫，擁有超過 **1540+ 個測試**與 **90% 的程式碼覆蓋率**。
 
 ```bash
 # 執行所有測試
@@ -892,7 +892,25 @@ uv run pytest
 
 # 執行並計算覆蓋率
 uv run pytest --cov=src --cov-report=html
+
+# 執行 linter
+uv run ruff check src tests
+
+# 自動修正 linting 問題
+uv run ruff check --fix src tests
 ```
+
+### CI/CD 流程
+
+本專案使用 GitHub Actions 進行持續整合，具備以下功能：
+
+| 功能 | 說明 |
+|------|------|
+| **develop 自動修正** | 自動修正 linting/格式問題並提交 |
+| **多 Python 版本測試** | 在 Python 3.11, 3.12, 3.13 上測試 |
+| **Docker 健康檢查** | 使用 `/health` endpoint 進行存活探針 |
+| **自動發布** | 當 `pyproject.toml` 版本變更時自動建立 GitHub Release |
+| **並行控制** | 取消同一分支上進行中的執行 |
 
 ---
 

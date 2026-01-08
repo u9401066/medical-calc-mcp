@@ -46,9 +46,9 @@ ENV MCP_PORT=8000
 # Expose port for SSE mode
 EXPOSE 8000
 
-# Health check using /sse endpoint (FastMCP SSE mode)
+# Health check using /health endpoint (custom endpoint for liveness probes)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -sf http://localhost:${MCP_PORT}/sse -o /dev/null -m 5 || exit 1
+    CMD curl -sf http://localhost:${MCP_PORT}/health -o /dev/null -m 5 || exit 1
 
 # Default command: Run in SSE mode
 CMD ["python", "-m", "src.main", "--mode", "sse", "--host", "0.0.0.0", "--port", "8000"]
