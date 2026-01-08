@@ -20,6 +20,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 
 - [Features](#-features)
 - [Why This Project?](#-why-this-project)
+- [Research Framework](#-research-framework) 🔬 NEW
 - [Architecture](#-architecture)
 - [Quick Start](#-quick-start)
 - [Deployment Modes](#-deployment-modes) 🚀 NEW
@@ -94,6 +95,50 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 3.  **Guideline Extraction**: Systematically identify recommended scoring systems and calculations mentioned in those guidelines.
 4.  **Source Validation**: Trace back to original peer-reviewed primary papers to verify exact formulas and coefficients.
 5.  **Implementation**: Develop validated calculation tools with precise parameters and evidence-based interpretations.
+
+---
+
+## 🔬 Research Framework
+
+> This project implements a **Neuro-Symbolic Framework** for reliable medical calculation, combining LLM understanding with validated symbolic computation.
+
+### Academic Positioning
+
+| Challenge | Traditional LLM | Our Solution |
+|-----------|-----------------|--------------|
+| **Calculation Accuracy** | ~50% (MedCalc-Bench) | >95% via validated formulas |
+| **Parameter Extraction** | Vocabulary mismatch | ParamMatcher (60+ aliases) |
+| **Safety Guardrails** | No clinical constraints | BoundaryValidator (PMID-backed) |
+| **Tool Discovery** | Keyword/RAG only | Two-Level Key + Hypergraph |
+
+### Three-Module Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     NEURO-SYMBOLIC MEDICAL REASONING                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐     │
+│  │  Discovery Engine │ → │ Reasoning Interface│ → │    Safety Layer   │     │
+│  │  (Tool Selection) │   │  (Param Matching)  │   │  (Validation)     │     │
+│  │                   │   │                    │   │                   │     │
+│  │  • High/Low Keys  │   │  • Alias Matching  │   │  • Range Check    │     │
+│  │  • Hypergraph     │   │  • Fuzzy Match     │   │  • PMID Citation  │     │
+│  │  • Context-Aware  │   │  • Multi-lingual   │   │  • Error Messages │     │
+│  └───────────────────┘   └───────────────────┘   └───────────────────┘     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Core Contributions
+
+1. **Semantic Parameter Mapping** (ParamMatcher): Resolves vocabulary mismatch between clinical text and calculator parameters through alias tables, fuzzy matching, and suffix normalization.
+
+2. **Literature-Based Guardrails** (BoundaryValidator): Validates input values against clinically impossible ranges derived from peer-reviewed literature (17+ parameters with PMID citations).
+
+3. **Context-Aware Tool Discovery**: Two-level key system + Clinical Knowledge Graph for intelligent tool recommendation based on clinical context.
+
+> 📄 For detailed research roadmap and benchmark strategy, see [ROADMAP.md](ROADMAP.md)
 
 ---
 

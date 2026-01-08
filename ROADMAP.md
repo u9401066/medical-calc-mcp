@@ -1,8 +1,8 @@
 # 🗺️ Medical Calculator MCP - Development Roadmap
 
-> **Last Updated**: 2026-01-05
-> **Current Version**: v1.2.0 (Production Ready)
-> **Status**: 82 Tools (75 Calculators + 7 Discovery) | 1566 Tests | 92% Coverage
+> **Last Updated**: 2026-01-08
+> **Current Version**: v1.3.0 (Production Ready)
+> **Status**: 82 Tools (75 Calculators + 7 Discovery) | 124 Core Tests | 92% Coverage
 
 本文件聚焦於**未來改進計畫**。已完成功能請參閱 [README.md](README.md)。
 
@@ -14,11 +14,261 @@
 
 | Section | Description |
 |---------|-------------|
+| [🎓 Academic Research Framework](#-academic-research-framework--學術研究框架) | **論文核心架構 (Neuro-Symbolic Framework)** |
+| [📈 Benchmark Strategy](#-benchmark-strategy--評測策略) | **MedCalc-Bench 整合與自建評測集** |
+| [🕸️ Clinical Knowledge Graph](#️-clinical-knowledge-graph--臨床知識圖譜) | **超圖/共病關聯 (Hypergraph)** |
 | [Improvement Areas](#-improvement-areas--改進方向) | 可改進的領域 |
 | [New Calculators](#-new-calculators--新計算器) | 計畫新增的計算器 |
 | [Infrastructure](#-infrastructure--基礎設施) | 技術改進計畫 |
 | [Developer Experience](#-developer-experience--開發體驗) | 開發者工具改進 |
 | [Timeline](#-timeline--時程規劃) | 開發時程 |
+
+---
+
+## 🎓 Academic Research Framework | 學術研究框架
+
+> **論文標題提案**: *"Medical-Calc-MCP: A Neuro-Symbolic Framework for Reliable Clinical Reasoning with Dynamic Knowledge Graphs and Automated Constraint Verification"*
+
+### Core Innovation | 核心創新
+
+本專案提出 **Neuro-Symbolic Framework**，結合 LLM 的自然語言理解與符號計算的精確性：
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     NEURO-SYMBOLIC FRAMEWORK                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  MODULE 1: Discovery Engine (工具發現引擎)                           │   │
+│  │  ────────────────────────────────────────────────────────────────── │   │
+│  │  Input: User Query / Clinical Question                              │   │
+│  │                                                                     │   │
+│  │  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐   │   │
+│  │  │ High/Low Level  │   │   Hypergraph    │   │  Auto Metadata  │   │   │
+│  │  │   Key Search    │ + │   Traversal     │ + │   Generation    │   │   │
+│  │  │ (Two-Level Key) │   │ (Related Tools) │   │ (Self-Describe) │   │   │
+│  │  └─────────────────┘   └─────────────────┘   └─────────────────┘   │   │
+│  │                                                                     │   │
+│  │  Output: Ranked Tool Set + Related Recommendations                  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                    ↓                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  MODULE 2: Reasoning Interface (推理介面)                            │   │
+│  │  ────────────────────────────────────────────────────────────────── │   │
+│  │  Input: Unstructured Clinical Context / EHR Data                    │   │
+│  │                                                                     │   │
+│  │  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐   │   │
+│  │  │  ParamMatcher   │   │ Semantic Slot   │   │  Multi-lingual  │   │   │
+│  │  │ (Alias/Fuzzy)   │ → │    Filling      │ → │    Support      │   │   │
+│  │  │   ✅ DONE       │   │ (Entity Align)  │   │ (Cr/肌酸酐/SCr) │   │   │
+│  │  └─────────────────┘   └─────────────────┘   └─────────────────┘   │   │
+│  │                                                                     │   │
+│  │  Output: Structured DTO (Data Transfer Object)                      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                    ↓                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  MODULE 3: Safety Layer (安全層)                                     │   │
+│  │  ────────────────────────────────────────────────────────────────── │   │
+│  │  Input: Structured DTO                                              │   │
+│  │                                                                     │   │
+│  │  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐   │   │
+│  │  │ BoundaryValidator│   │Literature-Based │   │ Evidence-Based  │   │   │
+│  │  │  (Clinical Range)│ → │Constraint Extract│ → │   Guardrails    │   │   │
+│  │  │   ✅ DONE       │   │ (NLP from PDF)  │   │ (PMID-backed)   │   │   │
+│  │  └─────────────────┘   └─────────────────┘   └─────────────────┘   │   │
+│  │                                                                     │   │
+│  │  Output: Validated Result / Error with Literature Citation          │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Four Core Contributions | 四大核心貢獻
+
+| # | Contribution | Academic Concept | Status | Implementation |
+|---|--------------|------------------|--------|----------------|
+| 1 | **Clinical Knowledge Graph** | Context-Aware Hypergraph | 📋 Planned | Tool relationship edges |
+| 2 | **Parameter Slot Filling** | Semantic Entity Alignment | ✅ Done | ParamMatcher (60+ aliases) |
+| 3 | **Auto Metadata Generation** | Self-Describing Agents | 📋 Planned | PDF → Schema Pipeline |
+| 4 | **Literature-Based Constraints** | Evidence-Based Guardrails | ✅ Done | BoundaryValidator (17+ params) |
+
+### Research Questions | 研究問題
+
+1. **RQ1**: How can Hypergraph-based tool discovery improve clinical decision completeness compared to keyword/vector search?
+2. **RQ2**: Does semantic parameter mapping reduce input errors compared to raw LLM extraction?
+3. **RQ3**: Can literature-derived constraints prevent clinically impossible values while maintaining usability?
+
+---
+
+## 📈 Benchmark Strategy | 評測策略
+
+### Current Academic Landscape | 學術現狀
+
+| Benchmark | Focus | Medical Calculation? | Our Relevance |
+|-----------|-------|---------------------|---------------|
+| MedQA | Medical knowledge | ❌ No calculation | Low |
+| PubMedQA | Literature QA | ❌ No calculation | Low |
+| GSM8K | Math reasoning | ❌ Not medical | Low |
+| **MedCalc-Bench** (2024) | **Medical Calculation** | ✅ **55 formulas, 1000+ cases** | **🔴 Critical** |
+
+> **Key Finding from MedCalc-Bench**: GPT-4 achieves only ~50% accuracy on medical calculations. Main errors: parameter extraction (vocabulary mismatch) and arithmetic errors.
+
+### Proposed Evaluation Framework | 評測框架
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MED-MCP-EVAL BENCHMARK                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1️⃣ MedCalc-Bench Integration (Baseline Comparison)                         │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • Dataset: 55 formulas × 1000+ clinical vignettes                         │
+│  • Control: GPT-4o direct answer                                           │
+│  • Experimental: GPT-4o + Medical-Calc-MCP                                 │
+│  • Expected: 50% → 95%+ accuracy improvement                               │
+│                                                                             │
+│  2️⃣ Med-MCP-Eval (Our 82-Tool Dataset)                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • 82 tools × 10 synthetic cases each = 820 test cases                     │
+│  • Ground truth calculated by validated formulas                           │
+│  • Coverage: All specialties (Critical Care, Nephrology, Cardiology, etc.) │
+│  • Release as public benchmark dataset                                     │
+│                                                                             │
+│  3️⃣ Tool Selection Benchmark (Agentic Evaluation)                          │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • Input: Ambiguous clinical scenario                                      │
+│  • Metric: Precision@1 (correct tool as first choice)                      │
+│  • Comparison: High/Low Key + Hypergraph vs RAG-only retrieval            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Evaluation Metrics | 評測指標
+
+| Metric | Description | Target |
+|--------|-------------|--------|
+| **Calculation Accuracy** | Exact match with ground truth | >95% |
+| **Parameter Extraction F1** | Correct value extraction from vignette | >90% |
+| **Tool Selection Precision@1** | Correct tool selected first | >85% |
+| **Boundary Violation Rate** | % of impossible values blocked | 100% |
+| **Latency (p95)** | End-to-end response time | <200ms |
+
+### Implementation Roadmap | 實作路線
+
+| Phase | Task | Timeline | Status |
+|-------|------|----------|--------|
+| B1 | Integrate MedCalc-Bench dataset | 2026 Q1 | 📋 Planned |
+| B2 | Generate Med-MCP-Eval (820 cases) | 2026 Q1 | 📋 Planned |
+| B3 | Implement Tool Selection eval | 2026 Q2 | 📋 Planned |
+| B4 | Run baseline experiments (GPT-4o) | 2026 Q2 | 📋 Planned |
+| B5 | Publish benchmark results | 2026 Q3 | 📋 Planned |
+
+---
+
+## 🕸️ Clinical Knowledge Graph | 臨床知識圖譜
+
+> **Academic Concept**: Context-Aware Hypergraph / Clinical Decision Support Graph
+
+### Motivation | 動機
+
+傳統工具檢索是**線性的**（Keyword Search）或**向量相似度**（Vector Similarity）。
+但醫療決策**不是孤立的**——工具之間存在**臨床關聯性**。
+
+**Example**: 當查詢 `CHA₂DS₂-VASc` (中風風險) 時，系統應自動提示 `HAS-BLED` (出血風險)，
+因為這兩個分數在臨床上**總是成對出現**以評估抗凝血劑用藥。
+
+### Graph Edge Types | 邊類型
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    CLINICAL KNOWLEDGE GRAPH                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Edge Type 1: PRE-REQUISITE (前置條件)                                      │
+│  ─────────────────────────────────────                                      │
+│  • qSOFA ──[screen_positive]──→ SOFA (qSOFA≥2 時需完整 SOFA)                │
+│  • RASS ──[required_for]──→ CAM-ICU (CAM-ICU 需要先評估 RASS)               │
+│  • NEWS2 ──[triggers]──→ Sepsis Workup (NEWS2≥5 時觸發敗血症篩檢)           │
+│                                                                             │
+│  Edge Type 2: RISK-BENEFIT PAIR (風險效益對)                                 │
+│  ─────────────────────────────────────────                                  │
+│  • CHA₂DS₂-VASc ←──[balance]──→ HAS-BLED (中風風險 vs 出血風險)              │
+│  • Caprini VTE ←──[balance]──→ Bleeding Risk (血栓風險 vs 出血風險)          │
+│  • RCRI ←──[inform]──→ ASA-PS (心臟風險 ↔ 整體手術風險)                      │
+│                                                                             │
+│  Edge Type 3: COMORBIDITY (共病關聯)                                         │
+│  ─────────────────────────────────────                                      │
+│  • CKD-EPI ──[affects_dosing]──→ Drug Dosing Calculators                    │
+│  • Child-Pugh ──[affects]──→ MELD (兩者都評估肝功能)                         │
+│  • SOFA ──[organ_specific]──→ KDIGO AKI (SOFA腎臟分項 ↔ AKI分期)            │
+│                                                                             │
+│  Edge Type 4: WORKFLOW (臨床流程)                                           │
+│  ─────────────────────────────────                                          │
+│  • Sepsis Pathway: qSOFA → SOFA → RASS → CAM-ICU                           │
+│  • Preop Pathway: ASA → RCRI → Mallampati → STOP-BANG                      │
+│  • GI Bleed Pathway: Glasgow-Blatchford → Rockall → Endoscopy Decision     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Visual Graph Example | 圖譜視覺化
+
+```
+                        ┌─────────────┐
+                        │   qSOFA     │
+                        │ (Screening) │
+                        └──────┬──────┘
+                               │ screen_positive
+                               ▼
+    ┌──────────┐         ┌─────────────┐         ┌──────────┐
+    │   RASS   │◄────────│    SOFA     │────────►│  APACHE  │
+    │(Sedation)│required │  (Sepsis-3) │ compare │   II     │
+    └────┬─────┘         └─────────────┘         └──────────┘
+         │ required_for
+         ▼
+    ┌──────────┐
+    │ CAM-ICU  │
+    │(Delirium)│
+    └──────────┘
+
+
+    ┌──────────────┐                    ┌──────────────┐
+    │ CHA₂DS₂-VASc │◄───── balance ────►│   HAS-BLED   │
+    │ (Stroke Risk)│                    │(Bleed Risk)  │
+    └──────────────┘                    └──────────────┘
+           │                                    │
+           └──────────► Anticoagulation ◄───────┘
+                         Decision
+```
+
+### Implementation Plan | 實作計畫
+
+| Phase | Task | Description | Timeline |
+|-------|------|-------------|----------|
+| G1 | Define Edge Schema | Create `GraphEdge` dataclass with edge types | 2026 Q1 |
+| G2 | Manual Graph Population | Define 50+ edges for existing 75 calculators | 2026 Q1 |
+| G3 | Graph Query API | `get_related_tools(tool_id)` MCP tool | 2026 Q2 |
+| G4 | Workflow Prompts | Auto-generate multi-tool prompts | 2026 Q2 |
+| G5 | LLM-Assisted Expansion | Use GPT-4 to suggest new edges from literature | 2026 Q3 |
+
+### Data Structure | 資料結構
+
+```python
+@dataclass
+class GraphEdge:
+    source_tool: str           # e.g., "qsofa_score"
+    target_tool: str           # e.g., "sofa_score"
+    edge_type: EdgeType        # PRE_REQUISITE, RISK_BENEFIT_PAIR, COMORBIDITY, WORKFLOW
+    condition: str | None      # e.g., "qSOFA >= 2"
+    clinical_rationale: str    # e.g., "Sepsis-3 recommends full SOFA if qSOFA positive"
+    reference: str | None      # e.g., "Singer 2016 JAMA"
+    bidirectional: bool        # True for RISK_BENEFIT_PAIR
+
+class ClinicalKnowledgeGraph:
+    def get_related_tools(self, tool_id: str) -> list[RelatedTool]
+    def get_workflow(self, context: str) -> list[str]  # Ordered tool sequence
+    def suggest_next(self, completed_tools: list[str]) -> list[str]
+```
 
 ---
 
