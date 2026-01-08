@@ -4,7 +4,8 @@ Tests for Health Check Endpoint
 Tests the /health endpoint for Docker/Kubernetes liveness probes.
 """
 
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 import pytest
 from starlette.testclient import TestClient
