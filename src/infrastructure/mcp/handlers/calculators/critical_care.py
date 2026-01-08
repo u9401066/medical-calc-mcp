@@ -37,9 +37,9 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         chronic_conditions: Annotated[Optional[list[str]], Field(description="慢性健康問題 Chronic conditions list")] = None,
         admission_type: Annotated[
             Literal["nonoperative", "elective_postop", "emergency_postop"],
-            Field(description="入院類型 | Options: 'nonoperative', 'elective_postop', 'emergency_postop'")
+            Field(description="入院類型 | Options: 'nonoperative', 'elective_postop', 'emergency_postop'"),
         ] = "nonoperative",
-        acute_renal_failure: Annotated[bool, Field(description="急性腎衰竭 Acute renal failure present")] = False
+        acute_renal_failure: Annotated[bool, Field(description="急性腎衰竭 Acute renal failure present")] = False,
     ) -> dict[str, Any]:
         """
         計算 APACHE II 分數 (ICU 嚴重度評估)
@@ -69,8 +69,8 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "aado2": aado2,
                 "chronic_health_conditions": tuple(chronic_conditions or []),
                 "admission_type": admission_type,
-                "acute_renal_failure": acute_renal_failure
-            }
+                "acute_renal_failure": acute_renal_failure,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -79,8 +79,10 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
     def calculate_rass(
         rass_score: Annotated[
             Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4],
-            Field(description="RASS分數 | Options: +4=Combative, +3=Very agitated, +2=Agitated, +1=Restless, 0=Alert and calm, -1=Drowsy, -2=Light sedation, -3=Moderate sedation, -4=Deep sedation, -5=Unarousable")
-        ]
+            Field(
+                description="RASS分數 | Options: +4=Combative, +3=Very agitated, +2=Agitated, +1=Restless, 0=Alert and calm, -1=Drowsy, -2=Light sedation, -3=Moderate sedation, -4=Deep sedation, -5=Unarousable"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         RASS 鎮靜躁動評估量表 (Richmond Agitation-Sedation Scale)
@@ -88,10 +90,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         Assess level of agitation or sedation in ICU patients.
         Target RASS: Usually 0 to -2 per PADIS guidelines.
         """
-        request = CalculateRequest(
-            tool_id="rass",
-            params={"rass_score": rass_score}
-        )
+        request = CalculateRequest(tool_id="rass", params={"rass_score": rass_score})
         response = use_case.execute(request)
         return response.to_dict()
 
@@ -132,7 +131,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "norepinephrine_dose": norepinephrine_dose,
                 "is_mechanically_ventilated": is_mechanically_ventilated,
                 "urine_output_24h": urine_output_24h,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -143,9 +142,13 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         pao2_fio2_ratio: Annotated[float, Field(gt=0, le=700, description="PaO2/FiO2比值 | Unit: mmHg | Range: >0-700 (SOFA-2 thresholds: 300, 225, 150, 75)")],
         bilirubin: Annotated[float, Field(ge=0, le=50, description="總膽紅素 Bilirubin | Unit: mg/dL | Range: 0-50 (SOFA-2 thresholds: 1.2, 3, 6, 12)")],
         creatinine: Annotated[float, Field(gt=0, le=20, description="血清肌酐 Creatinine | Unit: mg/dL | Range: >0-20 (SOFA-2 thresholds: 1.2, 2.0, 3.5)")],
-        platelets: Annotated[float, Field(gt=0, le=1000, description="血小板 Platelets | Unit: ×10³/µL | Range: >0-1000 (SOFA-2 thresholds: 150, 100, 80, 50)")],
+        platelets: Annotated[
+            float, Field(gt=0, le=1000, description="血小板 Platelets | Unit: ×10³/µL | Range: >0-1000 (SOFA-2 thresholds: 150, 100, 80, 50)")
+        ],
         map_value: Annotated[Optional[float], Field(ge=0, le=200, description="平均動脈壓 MAP | Unit: mmHg (if no vasopressors, threshold <70)")] = None,
-        norepinephrine_epinephrine_dose: Annotated[Optional[float], Field(ge=0, le=5, description="NE+Epi合併劑量 | Unit: µg/kg/min (thresholds: ≤0.2=low, >0.2-0.4=medium, >0.4=high)")] = None,
+        norepinephrine_epinephrine_dose: Annotated[
+            Optional[float], Field(ge=0, le=5, description="NE+Epi合併劑量 | Unit: µg/kg/min (thresholds: ≤0.2=low, >0.2-0.4=medium, >0.4=high)")
+        ] = None,
         receiving_sedation_or_delirium_drugs: Annotated[bool, Field(description="是否接受鎮靜/譫妄藥物 (GCS 15 with sedation = score 1)")] = False,
         advanced_ventilatory_support: Annotated[bool, Field(description="進階呼吸支持 High FiO2 (>0.6), High PEEP, or proning")] = False,
         on_ecmo: Annotated[bool, Field(description="是否使用ECMO (automatically scores 4 for respiratory)")] = False,
@@ -181,7 +184,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "urine_output_12h": urine_output_12h,
                 "urine_output_24h": urine_output_24h,
                 "on_rrt": on_rrt,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -207,7 +210,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "systolic_bp": systolic_bp,
                 "altered_mentation": altered_mentation,
                 "gcs_score": gcs_score,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -221,8 +224,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
         systolic_bp: Annotated[int, Field(ge=40, le=250, description="收縮壓 SBP | Unit: mmHg | Range: 40-250 (normal 111-219)")],
         heart_rate: Annotated[int, Field(ge=20, le=220, description="心率 HR | Unit: bpm | Range: 20-220 (normal 51-90)")],
         consciousness: Annotated[
-            Literal["A", "V", "P", "U", "C"],
-            Field(description="AVPU意識 | Options: 'A'=Alert, 'V'=Voice, 'P'=Pain, 'U'=Unresponsive, 'C'=Confusion")
+            Literal["A", "V", "P", "U", "C"], Field(description="AVPU意識 | Options: 'A'=Alert, 'V'=Voice, 'P'=Pain, 'U'=Unresponsive, 'C'=Confusion")
         ] = "A",
         use_scale_2: Annotated[bool, Field(description="使用Scale 2 (for hypercapnic respiratory failure patients)")] = False,
     ) -> dict[str, Any]:
@@ -243,24 +245,20 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "heart_rate": heart_rate,
                 "consciousness": consciousness,
                 "use_scale_2": use_scale_2,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_gcs(
-        eye_response: Annotated[
-            Literal[1, 2, 3, 4],
-            Field(description="眼睛反應 Eye Response | Options: 1=None, 2=To pain, 3=To voice, 4=Spontaneous")
-        ],
+        eye_response: Annotated[Literal[1, 2, 3, 4], Field(description="眼睛反應 Eye Response | Options: 1=None, 2=To pain, 3=To voice, 4=Spontaneous")],
         verbal_response: Annotated[
-            Literal[1, 2, 3, 4, 5],
-            Field(description="語言反應 Verbal Response | Options: 1=None, 2=Sounds, 3=Words, 4=Confused, 5=Oriented")
+            Literal[1, 2, 3, 4, 5], Field(description="語言反應 Verbal Response | Options: 1=None, 2=Sounds, 3=Words, 4=Confused, 5=Oriented")
         ],
         motor_response: Annotated[
             Literal[1, 2, 3, 4, 5, 6],
-            Field(description="運動反應 Motor Response | Options: 1=None, 2=Extension, 3=Flexion, 4=Withdrawal, 5=Localizes, 6=Obeys")
+            Field(description="運動反應 Motor Response | Options: 1=None, 2=Extension, 3=Flexion, 4=Withdrawal, 5=Localizes, 6=Obeys"),
         ],
         is_intubated: Annotated[bool, Field(description="是否插管 Intubated (verbal not testable)")] = False,
     ) -> dict[str, Any]:
@@ -277,17 +275,14 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "verbal_response": verbal_response,
                 "motor_response": motor_response,
                 "is_intubated": is_intubated,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_cam_icu(
-        rass_score: Annotated[
-            Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4],
-            Field(description="當前RASS | Range: -5 to +4 (CAM-ICU requires RASS≥-3)")
-        ],
+        rass_score: Annotated[Literal[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4], Field(description="當前RASS | Range: -5 to +4 (CAM-ICU requires RASS≥-3)")],
         acute_onset_fluctuation: Annotated[bool, Field(description="Feature 1: 急性發作或波動病程 Acute onset or fluctuating course")],
         inattention_score: Annotated[int, Field(ge=0, le=10, description="Feature 2: ASE注意力錯誤數 | Range: 0-10 (≥3 = positive)")],
         altered_loc: Annotated[bool, Field(description="Feature 3: 意識改變 Altered level of consciousness (RASS≠0)")] = False,
@@ -307,7 +302,7 @@ def register_critical_care_tools(mcp: FastMCP, use_case: CalculateUseCase) -> No
                 "inattention_score": inattention_score,
                 "altered_loc": altered_loc,
                 "disorganized_thinking_errors": disorganized_thinking_errors,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

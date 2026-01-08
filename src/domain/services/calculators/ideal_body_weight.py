@@ -68,7 +68,7 @@ class IdealBodyWeightCalculator(BaseCalculator):
                 name="Ideal Body Weight (IBW)",
                 purpose="Calculate ideal body weight for ventilator settings and drug dosing",
                 input_params=["height_cm", "sex", "actual_weight_kg"],
-                output_type="IBW (kg) with adjusted body weight and tidal volume range"
+                output_type="IBW (kg) with adjusted body weight and tidal volume range",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -99,9 +99,15 @@ class IdealBodyWeightCalculator(BaseCalculator):
                 ),
                 icd10_codes=("J80", "J96.0", "E66"),
                 keywords=(
-                    "ideal body weight", "IBW", "tidal volume", "ARDSNet",
-                    "lung protective ventilation", "Devine formula", "ABW",
-                    "adjusted body weight", "ventilator settings",
+                    "ideal body weight",
+                    "IBW",
+                    "tidal volume",
+                    "ARDSNet",
+                    "lung protective ventilation",
+                    "Devine formula",
+                    "ABW",
+                    "adjusted body weight",
+                    "ventilator settings",
                 ),
             ),
             references=self._get_references(),
@@ -184,9 +190,7 @@ class IdealBodyWeightCalculator(BaseCalculator):
         tv_high = round(8 * ibw)
 
         # Generate interpretation
-        interpretation = self._interpret_ibw(
-            ibw, actual_weight_kg, abw, weight_ratio, tv_low, tv_high, sex
-        )
+        interpretation = self._interpret_ibw(ibw, actual_weight_kg, abw, weight_ratio, tv_low, tv_high, sex)
 
         # Build calculation details
         details = {
@@ -238,7 +242,9 @@ class IdealBodyWeightCalculator(BaseCalculator):
                 severity = Severity.MODERATE
                 risk_level = RiskLevel.INTERMEDIATE
                 weight_status = "significantly above IBW (obese)"
-                detail = f"Actual weight is {weight_ratio:.0%} of IBW. Use adjusted body weight (ABW = {abw} kg) for aminoglycosides and some chemotherapy dosing."
+                detail = (
+                    f"Actual weight is {weight_ratio:.0%} of IBW. Use adjusted body weight (ABW = {abw} kg) for aminoglycosides and some chemotherapy dosing."
+                )
             elif weight_ratio > 1.2:
                 severity = Severity.MILD
                 risk_level = RiskLevel.LOW

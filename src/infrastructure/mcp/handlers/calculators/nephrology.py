@@ -19,18 +19,9 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
     @mcp.tool()
     def calculate_ckd_epi_2021(
-        serum_creatinine: Annotated[
-            float,
-            Field(gt=0, le=20.0, description="血清肌酐 Serum creatinine | Unit: mg/dL | Range: 0.1-20.0")
-        ],
-        age: Annotated[
-            int,
-            Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")
-        ],
-        sex: Annotated[
-            Literal["male", "female"],
-            Field(description="性別 Sex | Options: 'male' or 'female'")
-        ]
+        serum_creatinine: Annotated[float, Field(gt=0, le=20.0, description="血清肌酐 Serum creatinine | Unit: mg/dL | Range: 0.1-20.0")],
+        age: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
+        sex: Annotated[Literal["male", "female"], Field(description="性別 Sex | Options: 'male' or 'female'")],
     ) -> dict[str, Any]:
         """
         計算 CKD-EPI 2021 eGFR (腎絲球過濾率)
@@ -40,38 +31,18 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
         Reference: Inker LA, et al. NEJM 2021.
         """
-        request = CalculateRequest(
-            tool_id="ckd_epi_2021",
-            params={"serum_creatinine": serum_creatinine, "age": age, "sex": sex}
-        )
+        request = CalculateRequest(tool_id="ckd_epi_2021", params={"serum_creatinine": serum_creatinine, "age": age, "sex": sex})
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_kdigo_aki(
-        current_creatinine: Annotated[float, Field(
-            gt=0,
-            description="目前血清肌酸酐 Current serum creatinine (mg/dL)"
-        )],
-        baseline_creatinine: Annotated[Optional[float], Field(
-            default=None,
-            description="基準肌酸酐 Baseline creatinine (mg/dL), if known"
-        )] = None,
-        creatinine_increase_48h: Annotated[Optional[float], Field(
-            default=None,
-            description="48小時內肌酸酐上升量 Absolute Cr increase in 48h (mg/dL)"
-        )] = None,
-        urine_output_ml_kg_h: Annotated[Optional[float], Field(
-            default=None,
-            description="尿量 Average urine output (mL/kg/hour)"
-        )] = None,
-        urine_output_duration_hours: Annotated[Optional[float], Field(
-            default=None,
-            description="尿量減少持續時間 Duration of reduced UO (hours)"
-        )] = None,
-        on_rrt: Annotated[bool, Field(
-            description="是否接受腎臟替代療法 On RRT (dialysis/CRRT)? Auto Stage 3"
-        )] = False,
+        current_creatinine: Annotated[float, Field(gt=0, description="目前血清肌酸酐 Current serum creatinine (mg/dL)")],
+        baseline_creatinine: Annotated[Optional[float], Field(default=None, description="基準肌酸酐 Baseline creatinine (mg/dL), if known")] = None,
+        creatinine_increase_48h: Annotated[Optional[float], Field(default=None, description="48小時內肌酸酐上升量 Absolute Cr increase in 48h (mg/dL)")] = None,
+        urine_output_ml_kg_h: Annotated[Optional[float], Field(default=None, description="尿量 Average urine output (mL/kg/hour)")] = None,
+        urine_output_duration_hours: Annotated[Optional[float], Field(default=None, description="尿量減少持續時間 Duration of reduced UO (hours)")] = None,
+        on_rrt: Annotated[bool, Field(description="是否接受腎臟替代療法 On RRT (dialysis/CRRT)? Auto Stage 3")] = False,
     ) -> dict[str, Any]:
         """
         🫀 KDIGO AKI Staging: 急性腎損傷分期
@@ -112,7 +83,7 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "urine_output_ml_kg_h": urine_output_ml_kg_h,
                 "urine_output_duration_hours": urine_output_duration_hours,
                 "on_rrt": on_rrt,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

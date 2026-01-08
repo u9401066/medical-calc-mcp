@@ -19,6 +19,7 @@ nx: Any = None
 
 try:
     import networkx
+
     nx = networkx
     HAS_NETWORKX = True
 except ImportError:
@@ -30,16 +31,18 @@ if TYPE_CHECKING:
 
 class RelationType(str, Enum):
     """Types of relationships between tools."""
-    SHARED_PARAM = "shared_param"       # Share input parameters
-    SAME_SPECIALTY = "same_specialty"   # Same medical specialty
-    SAME_CONTEXT = "same_context"       # Same clinical context
-    SAME_CONDITION = "same_condition"   # Same target condition
-    WORKFLOW_NEXT = "workflow_next"     # Often used together (A → B)
+
+    SHARED_PARAM = "shared_param"  # Share input parameters
+    SAME_SPECIALTY = "same_specialty"  # Same medical specialty
+    SAME_CONTEXT = "same_context"  # Same clinical context
+    SAME_CONDITION = "same_condition"  # Same target condition
+    WORKFLOW_NEXT = "workflow_next"  # Often used together (A → B)
 
 
 @dataclass
 class GraphEdge:
     """Represents an edge in the tool graph."""
+
     source: str
     target: str
     relation_type: RelationType
@@ -50,7 +53,7 @@ class GraphEdge:
 class ToolRelationGraph:
     """
     Lightweight graph-based tool relationship manager.
-    
+
     Uses networkx (pure Python) for graph operations.
     Provides:
     - Related tool discovery
@@ -74,7 +77,7 @@ class ToolRelationGraph:
         """Check if networkx is available."""
         return HAS_NETWORKX
 
-    def build_from_registry(self, registry: "ToolRegistry") -> None:
+    def build_from_registry(self, registry: ToolRegistry) -> None:
         """Build the relationship graph from registry."""
         if HAS_NETWORKX:
             self._build_with_networkx(registry)
@@ -83,7 +86,7 @@ class ToolRelationGraph:
 
         self._is_built = True
 
-    def _build_with_networkx(self, registry: "ToolRegistry") -> None:
+    def _build_with_networkx(self, registry: ToolRegistry) -> None:
         """Build graph using networkx."""
         self._graph.clear()
 
@@ -119,15 +122,16 @@ class ToolRelationGraph:
 
             tools_list = list(tools)
             for i, tool1 in enumerate(tools_list):
-                for tool2 in tools_list[i + 1:]:
+                for tool2 in tools_list[i + 1 :]:
                     # Update or create edge
                     if self._graph.has_edge(tool1, tool2):
                         # Increase weight
-                        self._graph[tool1][tool2]['weight'] += 0.2
-                        self._graph[tool1][tool2]['shared_params'].append(param)
+                        self._graph[tool1][tool2]["weight"] += 0.2
+                        self._graph[tool1][tool2]["shared_params"].append(param)
                     else:
                         self._graph.add_edge(
-                            tool1, tool2,
+                            tool1,
+                            tool2,
                             weight=0.2,
                             relation_type=RelationType.SHARED_PARAM.value,
                             shared_params=[param],
@@ -148,12 +152,13 @@ class ToolRelationGraph:
 
             tools_list = list(tools)
             for i, tool1 in enumerate(tools_list):
-                for tool2 in tools_list[i + 1:]:
+                for tool2 in tools_list[i + 1 :]:
                     if self._graph.has_edge(tool1, tool2):
-                        self._graph[tool1][tool2]['weight'] += 0.3
+                        self._graph[tool1][tool2]["weight"] += 0.3
                     else:
                         self._graph.add_edge(
-                            tool1, tool2,
+                            tool1,
+                            tool2,
                             weight=0.3,
                             relation_type=RelationType.SAME_SPECIALTY.value,
                             shared_params=[],
@@ -174,18 +179,19 @@ class ToolRelationGraph:
 
             tools_list = list(tools)
             for i, tool1 in enumerate(tools_list):
-                for tool2 in tools_list[i + 1:]:
+                for tool2 in tools_list[i + 1 :]:
                     if self._graph.has_edge(tool1, tool2):
-                        self._graph[tool1][tool2]['weight'] += 0.2
+                        self._graph[tool1][tool2]["weight"] += 0.2
                     else:
                         self._graph.add_edge(
-                            tool1, tool2,
+                            tool1,
+                            tool2,
                             weight=0.2,
                             relation_type=RelationType.SAME_CONTEXT.value,
                             shared_params=[],
                         )
 
-    def _build_fallback(self, registry: "ToolRegistry") -> None:
+    def _build_fallback(self, registry: ToolRegistry) -> None:
         """Build using simple adjacency list (no networkx)."""
         self._adjacency.clear()
 
@@ -210,7 +216,7 @@ class ToolRelationGraph:
                 continue
             tools_list = list(tools)
             for i, tool1 in enumerate(tools_list):
-                for tool2 in tools_list[i + 1:]:
+                for tool2 in tools_list[i + 1 :]:
                     key = tuple(sorted([tool1, tool2]))
                     edge_weights[key] += 0.2  # type: ignore
 
@@ -228,7 +234,7 @@ class ToolRelationGraph:
                 continue
             tools_list = list(tools)
             for i, tool1 in enumerate(tools_list):
-                for tool2 in tools_list[i + 1:]:
+                for tool2 in tools_list[i + 1 :]:
                     key = tuple(sorted([tool1, tool2]))
                     edge_weights[key] += 0.3  # type: ignore
 
@@ -240,19 +246,15 @@ class ToolRelationGraph:
     def _normalize_param(self, param: str) -> str:
         """Normalize parameter name."""
         import re
-        param = re.sub(r'_(mg_dl|mmhg|bpm|kg|cm|ml|min|h|score|value|level)$', '', param.lower())
-        param = re.sub(r'\d+', '', param)
-        return param.strip('_')
 
-    def get_related_tools(
-        self,
-        tool_id: str,
-        limit: int = 5,
-        min_weight: float = 0.2
-    ) -> list[tuple[str, float]]:
+        param = re.sub(r"_(mg_dl|mmhg|bpm|kg|cm|ml|min|h|score|value|level)$", "", param.lower())
+        param = re.sub(r"\d+", "", param)
+        return param.strip("_")
+
+    def get_related_tools(self, tool_id: str, limit: int = 5, min_weight: float = 0.2) -> list[tuple[str, float]]:
         """
         Get tools related to the given tool.
-        
+
         Returns list of (tool_id, weight) sorted by weight descending.
         """
         if not self._is_built:
@@ -263,16 +265,12 @@ class ToolRelationGraph:
                 return []
 
             neighbors = [
-                (neighbor, self._graph[tool_id][neighbor]['weight'])
+                (neighbor, self._graph[tool_id][neighbor]["weight"])
                 for neighbor in self._graph.neighbors(tool_id)
-                if self._graph[tool_id][neighbor]['weight'] >= min_weight
+                if self._graph[tool_id][neighbor]["weight"] >= min_weight
             ]
         else:
-            neighbors = [
-                (neighbor, weight)
-                for neighbor, weight, _ in self._adjacency.get(tool_id, [])
-                if weight >= min_weight
-            ]
+            neighbors = [(neighbor, weight) for neighbor, weight, _ in self._adjacency.get(tool_id, []) if weight >= min_weight]
 
         # Sort by weight
         neighbors.sort(key=lambda x: x[1], reverse=True)
@@ -281,7 +279,7 @@ class ToolRelationGraph:
     def find_path(self, source: str, target: str) -> list[str] | None:
         """
         Find shortest path between two tools.
-        
+
         Returns list of tool_ids or None if no path exists.
         """
         if not self._is_built:
@@ -321,7 +319,7 @@ class ToolRelationGraph:
     def get_tool_clusters(self, min_cluster_size: int = 3) -> list[set[str]]:
         """
         Find clusters of related tools.
-        
+
         Returns list of tool_id sets.
         """
         if not self._is_built:
@@ -329,11 +327,7 @@ class ToolRelationGraph:
 
         if HAS_NETWORKX:
             # Use connected components
-            clusters = [
-                component
-                for component in nx.connected_components(self._graph)
-                if len(component) >= min_cluster_size
-            ]
+            clusters = [component for component in nx.connected_components(self._graph) if len(component) >= min_cluster_size]
             return sorted(clusters, key=len, reverse=True)
         else:
             # Simple DFS-based clustering

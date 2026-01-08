@@ -46,11 +46,8 @@ class SimplifiedPESICalculator(BaseCalculator):
                 tool_id="spesi",
                 name="Simplified Pulmonary Embolism Severity Index (sPESI)",
                 purpose="Risk stratify acute PE patients for 30-day mortality",
-                input_params=[
-                    "age", "cancer", "chronic_cardiopulmonary_disease",
-                    "heart_rate", "systolic_bp", "spo2"
-                ],
-                output_type="sPESI (0 or ≥1) with risk classification"
+                input_params=["age", "cancer", "chronic_cardiopulmonary_disease", "heart_rate", "systolic_bp", "spo2"],
+                output_type="sPESI (0 or ≥1) with risk classification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -59,10 +56,7 @@ class SimplifiedPESICalculator(BaseCalculator):
                     Specialty.CRITICAL_CARE,
                     Specialty.CARDIOLOGY,
                 ),
-                conditions=(
-                    "Pulmonary Embolism", "PE", "VTE",
-                    "Venous Thromboembolism"
-                ),
+                conditions=("Pulmonary Embolism", "PE", "VTE", "Venous Thromboembolism"),
                 clinical_contexts=(
                     ClinicalContext.EMERGENCY,
                     ClinicalContext.PROGNOSIS,
@@ -75,26 +69,22 @@ class SimplifiedPESICalculator(BaseCalculator):
                     "Does this PE patient need ICU admission?",
                 ),
                 icd10_codes=("I26.9", "I26.0"),
-                keywords=(
-                    "sPESI", "PESI", "pulmonary embolism severity",
-                    "PE risk stratification", "PE prognosis",
-                    "outpatient PE treatment", "PE mortality"
-                )
+                keywords=("sPESI", "PESI", "pulmonary embolism severity", "PE risk stratification", "PE prognosis", "outpatient PE treatment", "PE mortality"),
             ),
             references=(
                 Reference(
                     citation="Jiménez D, Aujesky D, Moores L, et al. Simplification of the pulmonary embolism severity index for prognostication in patients with acute symptomatic pulmonary embolism. Arch Intern Med. 2010;170(15):1383-1389.",
                     pmid="20696966",
-                    year=2010
+                    year=2010,
                 ),
                 Reference(
                     citation="Konstantinides SV, Meyer G, Becattini C, et al. 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism. Eur Heart J. 2020;41(4):543-603.",
                     pmid="31504429",
-                    year=2020
+                    year=2020,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -222,10 +212,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             outpatient_candidate = True
             interpretation = Interpretation(
                 summary=f"sPESI {score}: Low Risk PE - Outpatient treatment possible",
-                detail=(
-                    "sPESI = 0: Low risk for 30-day mortality (~1%). "
-                    "May be candidate for outpatient treatment if other criteria met."
-                ),
+                detail=("sPESI = 0: Low risk for 30-day mortality (~1%). May be candidate for outpatient treatment if other criteria met."),
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="Low Risk PE",
@@ -252,10 +239,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             if score == 1:
                 interpretation = Interpretation(
                     summary=f"sPESI {score}: Not Low Risk PE - Hospital admission",
-                    detail=(
-                        f"sPESI = {score}: Not low risk, hospital admission recommended. "
-                        "Perform echo and troponin for further risk stratification."
-                    ),
+                    detail=(f"sPESI = {score}: Not low risk, hospital admission recommended. Perform echo and troponin for further risk stratification."),
                     severity=Severity.MODERATE,
                     risk_level=RiskLevel.INTERMEDIATE,
                     stage="Intermediate Risk PE",
@@ -280,8 +264,7 @@ class SimplifiedPESICalculator(BaseCalculator):
                 interpretation = Interpretation(
                     summary=f"sPESI {score}: Intermediate-High Risk PE",
                     detail=(
-                        f"sPESI = {score}: Intermediate-high risk, hospital admission required. "
-                        "Assess RV dysfunction and troponin for complete stratification."
+                        f"sPESI = {score}: Intermediate-high risk, hospital admission required. Assess RV dysfunction and troponin for complete stratification."
                     ),
                     severity=Severity.SEVERE,
                     risk_level=RiskLevel.HIGH,
@@ -306,10 +289,7 @@ class SimplifiedPESICalculator(BaseCalculator):
             else:
                 interpretation = Interpretation(
                     summary=f"sPESI {score}: High Risk PE - ICU consideration",
-                    detail=(
-                        f"sPESI = {score}: High mortality risk, ICU consideration. "
-                        "If hemodynamically unstable, consider reperfusion therapy."
-                    ),
+                    detail=(f"sPESI = {score}: High mortality risk, ICU consideration. If hemodynamically unstable, consider reperfusion therapy."),
                     severity=Severity.CRITICAL,
                     risk_level=RiskLevel.VERY_HIGH,
                     stage="High Risk PE",
@@ -368,6 +348,6 @@ class SimplifiedPESICalculator(BaseCalculator):
             notes=[
                 "Score 0 = low risk; Score ≥1 = not low risk (requires further stratification)",
                 "Consider echo + troponin for intermediate risk stratification if sPESI ≥1",
-                "ESC 2019 Guidelines on Pulmonary Embolism"
+                "ESC 2019 Guidelines on Pulmonary Embolism",
             ],
         )

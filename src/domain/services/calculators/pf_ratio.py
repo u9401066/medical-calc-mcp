@@ -15,7 +15,6 @@ Reference:
     PMID: 22797452
 """
 
-
 from typing import Optional
 
 from ...entities.score_result import ScoreResult
@@ -67,7 +66,7 @@ class PfRatioCalculator(BaseCalculator):
                 name="P/F Ratio (PaO2/FiO2)",
                 purpose="Calculate P/F ratio for ARDS severity classification",
                 input_params=["pao2", "fio2", "peep"],
-                output_type="P/F ratio with Berlin Definition ARDS staging"
+                output_type="P/F ratio with Berlin Definition ARDS staging",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -99,9 +98,15 @@ class PfRatioCalculator(BaseCalculator):
                 ),
                 icd10_codes=("J80", "J96.0", "J96.9"),
                 keywords=(
-                    "P/F ratio", "PaO2/FiO2", "ARDS", "Berlin definition",
-                    "oxygenation", "hypoxemia", "respiratory failure",
-                    "acute lung injury", "ALI",
+                    "P/F ratio",
+                    "PaO2/FiO2",
+                    "ARDS",
+                    "Berlin definition",
+                    "oxygenation",
+                    "hypoxemia",
+                    "respiratory failure",
+                    "acute lung injury",
+                    "ALI",
                 ),
             ),
             references=self._get_references(),
@@ -158,9 +163,7 @@ class PfRatioCalculator(BaseCalculator):
         peep_adequate = peep is not None and peep >= 5
 
         # Generate interpretation
-        interpretation = self._interpret_pf_ratio(
-            pf_ratio, peep, peep_adequate, on_mechanical_ventilation
-        )
+        interpretation = self._interpret_pf_ratio(pf_ratio, peep, peep_adequate, on_mechanical_ventilation)
 
         # Build calculation details
         details = {

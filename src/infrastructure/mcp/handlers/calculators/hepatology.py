@@ -18,25 +18,11 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
     @mcp.tool()
     def calculate_meld_score(
-        creatinine: Annotated[float, Field(
-            gt=0, le=15.0,
-            description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.5-15.0"
-        )],
-        bilirubin: Annotated[float, Field(
-            gt=0, le=50.0,
-            description="總膽紅素 Total bilirubin | Unit: mg/dL | Range: 0.1-50.0"
-        )],
-        inr: Annotated[float, Field(
-            gt=0, le=10.0,
-            description="國際標準化比值 INR | Range: 1.0-10.0"
-        )],
-        sodium: Annotated[float, Field(
-            ge=100, le=160,
-            description="血清鈉 Serum sodium | Unit: mEq/L | Range: 100-160 (用於 MELD-Na)"
-        )] = 137.0,
-        on_dialysis: Annotated[bool, Field(
-            description="透析狀態 Dialyzed ≥2x/week or CVVHD? | If true, Cr is set to 4.0"
-        )] = False,
+        creatinine: Annotated[float, Field(gt=0, le=15.0, description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.5-15.0")],
+        bilirubin: Annotated[float, Field(gt=0, le=50.0, description="總膽紅素 Total bilirubin | Unit: mg/dL | Range: 0.1-50.0")],
+        inr: Annotated[float, Field(gt=0, le=10.0, description="國際標準化比值 INR | Range: 1.0-10.0")],
+        sodium: Annotated[float, Field(ge=100, le=160, description="血清鈉 Serum sodium | Unit: mEq/L | Range: 100-160 (用於 MELD-Na)")] = 137.0,
+        on_dialysis: Annotated[bool, Field(description="透析狀態 Dialyzed ≥2x/week or CVVHD? | If true, Cr is set to 4.0")] = False,
     ) -> dict[str, Any]:
         """
         🫀 MELD Score: 末期肝病預後評估
@@ -78,32 +64,22 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "inr": inr,
                 "sodium": sodium,
                 "on_dialysis": on_dialysis,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_child_pugh(
-        bilirubin: Annotated[float, Field(
-            gt=0, le=30.0,
-            description="總膽紅素 Total bilirubin | Unit: mg/dL | Range: 0.1-30.0"
-        )],
-        albumin: Annotated[float, Field(
-            gt=0, le=6.0,
-            description="血清白蛋白 Serum albumin | Unit: g/dL | Range: 1.0-6.0"
-        )],
-        inr: Annotated[float, Field(
-            gt=0, le=6.0,
-            description="國際標準化比值 INR | Range: 1.0-6.0"
-        )],
+        bilirubin: Annotated[float, Field(gt=0, le=30.0, description="總膽紅素 Total bilirubin | Unit: mg/dL | Range: 0.1-30.0")],
+        albumin: Annotated[float, Field(gt=0, le=6.0, description="血清白蛋白 Serum albumin | Unit: g/dL | Range: 1.0-6.0")],
+        inr: Annotated[float, Field(gt=0, le=6.0, description="國際標準化比值 INR | Range: 1.0-6.0")],
         ascites: Annotated[
             Literal["none", "mild", "moderate_severe"],
-            Field(description="腹水狀態 Ascites status | Options: 'none'=無, 'mild'=輕度/可控, 'moderate_severe'=中重度")
+            Field(description="腹水狀態 Ascites status | Options: 'none'=無, 'mild'=輕度/可控, 'moderate_severe'=中重度"),
         ],
         encephalopathy_grade: Annotated[
-            Literal[0, 1, 2, 3, 4],
-            Field(description="肝腦病變分級 Hepatic encephalopathy | 0=無, 1=輕度混亂, 2=嗜睡, 3=半昏迷, 4=昏迷")
+            Literal[0, 1, 2, 3, 4], Field(description="肝腦病變分級 Hepatic encephalopathy | 0=無, 1=輕度混亂, 2=嗜睡, 3=半昏迷, 4=昏迷")
         ],
     ) -> dict[str, Any]:
         """
@@ -147,32 +123,31 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "inr": inr,
                 "ascites": ascites,
                 "encephalopathy_grade": encephalopathy_grade,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_rockall_score(
-        age_years: Annotated[int, Field(
-            ge=18, le=120,
-            description="年齡 Patient age in years"
-        )],
+        age_years: Annotated[int, Field(ge=18, le=120, description="年齡 Patient age in years")],
         shock_status: Annotated[
             Literal["none", "tachycardia", "hypotension"],
-            Field(description="休克狀態 Shock | 'none'=無(HR<100,SBP≥100), 'tachycardia'=心搏過速(HR≥100,SBP≥100), 'hypotension'=低血壓(SBP<100)")
+            Field(description="休克狀態 Shock | 'none'=無(HR<100,SBP≥100), 'tachycardia'=心搏過速(HR≥100,SBP≥100), 'hypotension'=低血壓(SBP<100)"),
         ],
         comorbidity: Annotated[
             Literal["none", "cardiac_major", "renal_liver_malignancy"],
-            Field(description="共病狀態 Comorbidity | 'none'=無, 'cardiac_major'=心衰/缺血心臟病/其他重大, 'renal_liver_malignancy'=腎衰/肝衰/惡性腫瘤轉移")
+            Field(description="共病狀態 Comorbidity | 'none'=無, 'cardiac_major'=心衰/缺血心臟病/其他重大, 'renal_liver_malignancy'=腎衰/肝衰/惡性腫瘤轉移"),
         ],
         diagnosis: Annotated[
             Literal["mallory_weiss_no_lesion", "other_diagnosis", "gi_malignancy"],
-            Field(description="內視鏡診斷 Diagnosis | 'mallory_weiss_no_lesion'=撕裂傷/無病灶, 'other_diagnosis'=消化性潰瘍/其他, 'gi_malignancy'=上消化道惡性腫瘤")
+            Field(
+                description="內視鏡診斷 Diagnosis | 'mallory_weiss_no_lesion'=撕裂傷/無病灶, 'other_diagnosis'=消化性潰瘍/其他, 'gi_malignancy'=上消化道惡性腫瘤"
+            ),
         ],
         stigmata_of_recent_hemorrhage: Annotated[
             Literal["none_or_dark_spot", "blood_clot_visible_vessel"],
-            Field(description="近期出血跡象 Stigmata of recent hemorrhage | 'none_or_dark_spot'=無/黑點, 'blood_clot_visible_vessel'=血塊/可見血管/活動性出血")
+            Field(description="近期出血跡象 Stigmata of recent hemorrhage | 'none_or_dark_spot'=無/黑點, 'blood_clot_visible_vessel'=血塊/可見血管/活動性出血"),
         ],
     ) -> dict[str, Any]:
         """
@@ -226,29 +201,17 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "comorbidity": comorbidity,
                 "diagnosis": diagnosis,
                 "stigmata_of_recent_hemorrhage": stigmata_of_recent_hemorrhage,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_fib4_index(
-        age_years: Annotated[int, Field(
-            ge=18, le=100,
-            description="年齡 Patient age in years (18-100)"
-        )],
-        ast: Annotated[float, Field(
-            gt=0, le=5000,
-            description="AST (SGOT) | Unit: U/L | Range: 1-5000"
-        )],
-        alt: Annotated[float, Field(
-            gt=0, le=5000,
-            description="ALT (SGPT) | Unit: U/L | Range: 1-5000"
-        )],
-        platelet_count: Annotated[float, Field(
-            gt=0, le=1000,
-            description="血小板計數 Platelet count | Unit: 10^9/L (K/µL) | Range: 1-1000"
-        )],
+        age_years: Annotated[int, Field(ge=18, le=100, description="年齡 Patient age in years (18-100)")],
+        ast: Annotated[float, Field(gt=0, le=5000, description="AST (SGOT) | Unit: U/L | Range: 1-5000")],
+        alt: Annotated[float, Field(gt=0, le=5000, description="ALT (SGPT) | Unit: U/L | Range: 1-5000")],
+        platelet_count: Annotated[float, Field(gt=0, le=1000, description="血小板計數 Platelet count | Unit: 10^9/L (K/µL) | Range: 1-1000")],
     ) -> dict[str, Any]:
         """
         🫀 FIB-4 Index: 肝纖維化非侵入性評估
@@ -292,7 +255,7 @@ def register_hepatology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "ast": ast,
                 "alt": alt,
                 "platelet_count": platelet_count,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

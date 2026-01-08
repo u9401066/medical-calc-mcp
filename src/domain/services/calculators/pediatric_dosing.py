@@ -51,11 +51,8 @@ class PediatricDosingCalculator(BaseCalculator):
                 tool_id="pediatric_dosing",
                 name="Pediatric Drug Dosing Calculator",
                 purpose="Calculate weight-based drug doses for pediatric patients",
-                input_params=[
-                    "drug_name", "weight_kg",
-                    "age_years", "custom_dose_per_kg"
-                ],
-                output_type="Calculated dose with maximum dose check"
+                input_params=["drug_name", "weight_kg", "age_years", "custom_dose_per_kg"],
+                output_type="Calculated dose with maximum dose check",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -85,36 +82,37 @@ class PediatricDosingCalculator(BaseCalculator):
                 ),
                 icd10_codes=(),
                 keywords=(
-                    "pediatric", "dosing", "weight-based", "mg/kg",
-                    "child", "infant", "neonatal", "dose calculation",
-                    "maximum dose", "drug dose",
-                )
+                    "pediatric",
+                    "dosing",
+                    "weight-based",
+                    "mg/kg",
+                    "child",
+                    "infant",
+                    "neonatal",
+                    "dose calculation",
+                    "maximum dose",
+                    "drug dose",
+                ),
             ),
             references=(
                 Reference(
-                    citation="Taketomo CK, Hodding JH, Kraus DM. Pediatric & Neonatal "
-                             "Dosage Handbook. 29th ed. Hudson, OH: Lexicomp; 2022.",
+                    citation="Taketomo CK, Hodding JH, Kraus DM. Pediatric & Neonatal Dosage Handbook. 29th ed. Hudson, OH: Lexicomp; 2022.",
                     doi=None,
                     pmid=None,
-                    year=2022
+                    year=2022,
                 ),
                 Reference(
-                    citation="British National Formulary for Children (BNFC). London: "
-                             "BMJ Group and Pharmaceutical Press; 2023.",
-                    doi=None,
-                    pmid=None,
-                    year=2023
+                    citation="British National Formulary for Children (BNFC). London: BMJ Group and Pharmaceutical Press; 2023.", doi=None, pmid=None, year=2023
                 ),
                 Reference(
-                    citation="Anderson BJ, Holford NH. Getting the dose right for obese children. "
-                             "Arch Dis Child. 2017;102(1):54-55.",
+                    citation="Anderson BJ, Holford NH. Getting the dose right for obese children. Arch Dis Child. 2017;102(1):54-55.",
                     doi="10.1136/archdischild-2016-311696",
                     pmid="27831906",
-                    year=2017
+                    year=2017,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -168,9 +166,7 @@ class PediatricDosingCalculator(BaseCalculator):
             notes = ""
         else:
             available = list(PEDIATRIC_DRUGS.keys())
-            raise ValueError(
-                f"Drug '{drug_name}' not found. Available drugs: {available}"
-            )
+            raise ValueError(f"Drug '{drug_name}' not found. Available drugs: {available}")
 
         # Calculate dose
         calculated_dose = weight_kg * dose_per_kg
@@ -186,10 +182,7 @@ class PediatricDosingCalculator(BaseCalculator):
         # Build warnings
         warnings = []
         if dose_capped:
-            warnings.append(
-                f"Calculated dose ({calculated_dose:.2f} mg) exceeds maximum "
-                f"({max_dose:.1f} mg). Dose capped at maximum."
-            )
+            warnings.append(f"Calculated dose ({calculated_dose:.2f} mg) exceeds maximum ({max_dose:.1f} mg). Dose capped at maximum.")
 
         if age_years is not None:
             if age_years < 0.08:  # < 1 month
@@ -237,7 +230,7 @@ class PediatricDosingCalculator(BaseCalculator):
                 "calculated_dose": round(calculated_dose, 2),
                 "max_dose": max_dose,
                 "dose_capped": dose_capped,
-            }
+            },
         )
 
     @staticmethod

@@ -13,6 +13,7 @@ from .parameter_specs import COMMON_PARAMETERS, ParameterSpec
 @dataclass
 class ValidationError:
     """Represents a single validation error"""
+
     param_name: str
     message: str
     value: Any = None
@@ -30,6 +31,7 @@ class ValidationError:
 @dataclass
 class ValidationResult:
     """Result of validating parameters"""
+
     is_valid: bool
     errors: list[ValidationError] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -99,12 +101,14 @@ class ParameterValidator:
                 if param_name not in params or params[param_name] is None:
                     spec = self._specs.get(param_name)
                     hint = spec.to_hint() if spec else ""
-                    errors.append(ValidationError(
-                        param_name=param_name,
-                        message="This parameter is required",
-                        value=None,
-                        hint=hint,
-                    ))
+                    errors.append(
+                        ValidationError(
+                            param_name=param_name,
+                            message="This parameter is required",
+                            value=None,
+                            hint=hint,
+                        )
+                    )
                     continue
 
                 # Validate against spec if available
@@ -134,11 +138,7 @@ class ParameterValidator:
             warnings=warnings,
         )
 
-    def _validate_param(
-        self,
-        param_name: str,
-        value: Any
-    ) -> Optional[ValidationError]:
+    def _validate_param(self, param_name: str, value: Any) -> Optional[ValidationError]:
         """Validate a single parameter"""
         spec = self._specs.get(param_name)
 
@@ -187,6 +187,7 @@ class ParameterValidator:
 # =============================================================================
 # Convenience Functions
 # =============================================================================
+
 
 def validate_params(
     params: dict[str, Any],

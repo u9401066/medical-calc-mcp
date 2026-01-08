@@ -56,9 +56,9 @@ class RcriCalculator(BaseCalculator):
                     "heart_failure",
                     "cerebrovascular_disease",
                     "insulin_diabetes",
-                    "creatinine_above_2"
+                    "creatinine_above_2",
                 ],
-                output_type="RCRI Score (0-6) with cardiac complication risk percentage"
+                output_type="RCRI Score (0-6) with cardiac complication risk percentage",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -91,37 +91,44 @@ class RcriCalculator(BaseCalculator):
                     "Is this patient high risk for surgery?",
                 ),
                 icd10_codes=(
-                    "I21",   # Acute myocardial infarction
-                    "I50",   # Heart failure
-                    "I25",   # Chronic ischemic heart disease
-                    "I63",   # Cerebral infarction
+                    "I21",  # Acute myocardial infarction
+                    "I50",  # Heart failure
+                    "I25",  # Chronic ischemic heart disease
+                    "I63",  # Cerebral infarction
                 ),
                 keywords=(
-                    "RCRI", "Lee index", "cardiac risk", "preoperative",
-                    "perioperative", "non-cardiac surgery", "cardiac complications",
-                    "MI risk", "heart failure", "ischemic heart disease",
-                )
+                    "RCRI",
+                    "Lee index",
+                    "cardiac risk",
+                    "preoperative",
+                    "perioperative",
+                    "non-cardiac surgery",
+                    "cardiac complications",
+                    "MI risk",
+                    "heart failure",
+                    "ischemic heart disease",
+                ),
             ),
             references=(
                 Reference(
                     citation="Lee TH, Marcantonio ER, Mangione CM, et al. Derivation and prospective "
-                             "validation of a simple index for prediction of cardiac risk of major "
-                             "noncardiac surgery. Circulation. 1999;100(10):1043-1049.",
+                    "validation of a simple index for prediction of cardiac risk of major "
+                    "noncardiac surgery. Circulation. 1999;100(10):1043-1049.",
                     doi="10.1161/01.cir.100.10.1043",
                     pmid="10477528",
-                    year=1999
+                    year=1999,
                 ),
                 Reference(
                     citation="Fleisher LA, Fleischmann KE, Auerbach AD, et al. 2014 ACC/AHA Guideline "
-                             "on Perioperative Cardiovascular Evaluation and Management of Patients "
-                             "Undergoing Noncardiac Surgery. Circulation. 2014;130(24):e278-e333.",
+                    "on Perioperative Cardiovascular Evaluation and Management of Patients "
+                    "Undergoing Noncardiac Surgery. Circulation. 2014;130(24):e278-e333.",
                     doi="10.1161/CIR.0000000000000106",
                     pmid="25085961",
-                    year=2014
+                    year=2014,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -131,7 +138,7 @@ class RcriCalculator(BaseCalculator):
         heart_failure: bool = False,
         cerebrovascular_disease: bool = False,
         insulin_diabetes: bool = False,
-        creatinine_above_2: bool = False
+        creatinine_above_2: bool = False,
     ) -> ScoreResult:
         """
         Calculate Revised Cardiac Risk Index.
@@ -150,14 +157,7 @@ class RcriCalculator(BaseCalculator):
             ScoreResult with RCRI score and cardiac complication risk
         """
         # Calculate score
-        score = sum([
-            high_risk_surgery,
-            ischemic_heart_disease,
-            heart_failure,
-            cerebrovascular_disease,
-            insulin_diabetes,
-            creatinine_above_2
-        ])
+        score = sum([high_risk_surgery, ischemic_heart_disease, heart_failure, cerebrovascular_disease, insulin_diabetes, creatinine_above_2])
 
         # Get risk percentage
         risk_percentage = self._get_risk_percentage(score)
@@ -193,28 +193,28 @@ class RcriCalculator(BaseCalculator):
                 "heart_failure": heart_failure,
                 "cerebrovascular_disease": cerebrovascular_disease,
                 "insulin_diabetes": insulin_diabetes,
-                "creatinine_above_2": creatinine_above_2
+                "creatinine_above_2": creatinine_above_2,
             },
             calculation_details={
                 "score": score,
                 "risk_percentage": risk_percentage,
                 "risk_factors_present": risk_factors,
-                "risk_factors_count": len(risk_factors)
+                "risk_factors_count": len(risk_factors),
             },
             notes=[
                 "Major cardiac complications: MI, pulmonary edema, VF/cardiac arrest, complete heart block",
                 "Risk percentages from original derivation cohort",
                 "Consider functional capacity (METs) in addition to RCRI",
-            ]
+            ],
         )
 
     def _get_risk_percentage(self, score: int) -> float:
         """Get estimated risk of major cardiac complications"""
         # From original Lee et al. derivation cohort
         risk_map = {
-            0: 0.4,   # Class I: 0.4%
-            1: 0.9,   # Class II: 0.9%
-            2: 6.6,   # Class III: 6.6%
+            0: 0.4,  # Class I: 0.4%
+            1: 0.9,  # Class II: 0.9%
+            2: 6.6,  # Class III: 6.6%
         }
         # 3 or more: Class IV: 11%
         return risk_map.get(score, 11.0)
@@ -227,8 +227,7 @@ class RcriCalculator(BaseCalculator):
         if score == 0:
             return Interpretation(
                 summary=f"RCRI Class I: Very low cardiac risk ({risk_percentage}%)",
-                detail="No RCRI risk factors present. Very low risk of major adverse cardiac events (MACE). "
-                       "No further cardiac testing generally needed.",
+                detail="No RCRI risk factors present. Very low risk of major adverse cardiac events (MACE). No further cardiac testing generally needed.",
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.VERY_LOW,
                 stage="Class I",
@@ -242,13 +241,12 @@ class RcriCalculator(BaseCalculator):
                     "Assess functional capacity (METs)",
                     "No preoperative cardiac testing needed",
                     "Standard perioperative monitoring",
-                )
+                ),
             )
         elif score == 1:
             return Interpretation(
                 summary=f"RCRI Class II: Low cardiac risk ({risk_percentage}%)",
-                detail="One RCRI risk factor present. Low but measurable risk of MACE. "
-                       "Consider functional capacity before testing.",
+                detail="One RCRI risk factor present. Low but measurable risk of MACE. Consider functional capacity before testing.",
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="Class II",
@@ -262,13 +260,12 @@ class RcriCalculator(BaseCalculator):
                     "Evaluate functional capacity",
                     "Optimize medications if not already done",
                     "Proceed with surgery if functional capacity adequate",
-                )
+                ),
             )
         elif score == 2:
             return Interpretation(
                 summary=f"RCRI Class III: Elevated cardiac risk ({risk_percentage}%)",
-                detail="Two RCRI risk factors present. Elevated risk of MACE. "
-                       "Functional capacity assessment critical; consider testing if poor or unknown.",
+                detail="Two RCRI risk factors present. Elevated risk of MACE. Functional capacity assessment critical; consider testing if poor or unknown.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Class III",
@@ -288,13 +285,12 @@ class RcriCalculator(BaseCalculator):
                     "Functional capacity assessment",
                     "Cardiology consultation if indicated",
                     "Consider preoperative stress testing",
-                )
+                ),
             )
         else:  # score >= 3
             return Interpretation(
                 summary=f"RCRI Class IV: High cardiac risk ({risk_percentage}%)",
-                detail=f"{score} RCRI risk factors present. High risk of major adverse cardiac events. "
-                       "Multidisciplinary decision-making recommended.",
+                detail=f"{score} RCRI risk factors present. High risk of major adverse cardiac events. Multidisciplinary decision-making recommended.",
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.HIGH,
                 stage="Class IV",
@@ -317,5 +313,5 @@ class RcriCalculator(BaseCalculator):
                     "Functional or pharmacologic stress testing",
                     "Multidisciplinary surgical planning",
                     "Detailed informed consent discussion",
-                )
+                ),
             )

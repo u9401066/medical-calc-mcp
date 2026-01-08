@@ -76,7 +76,7 @@ class PittBacteremiaCalculator(BaseCalculator):
                     "cardiac_arrest",
                     "mental_status",
                 ],
-                output_type="Score 0-14 with mortality risk stratification"
+                output_type="Score 0-14 with mortality risk stratification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -209,8 +209,7 @@ class PittBacteremiaCalculator(BaseCalculator):
             risk_level = RiskLevel.LOW
             summary = f"Pitt Bacteremia Score {score}: Low risk (5-10% mortality)"
             detail = (
-                "Low Pitt Score. Continue appropriate antibiotic therapy based on cultures/sensitivities. "
-                "Monitor for clinical improvement within 48-72 hours."
+                "Low Pitt Score. Continue appropriate antibiotic therapy based on cultures/sensitivities. Monitor for clinical improvement within 48-72 hours."
             )
             recommendations = [
                 "Continue appropriate antibiotic therapy",

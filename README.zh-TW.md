@@ -8,7 +8,7 @@
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1540%2B%20passed-brightgreen.svg)](#-開發指南)
+[![Tests](https://img.shields.io/badge/tests-1721%20passed-brightgreen.svg)](#-開發指南)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-架構)
@@ -691,7 +691,7 @@ LowLevelKey(
 
 ---
 
-### 計算器 (75 個工具)
+### 計算器 (91 個工具)
 
 #### 🏥 麻醉科 / 術前評估
 

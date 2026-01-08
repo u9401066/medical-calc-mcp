@@ -14,12 +14,7 @@ from typing import Any, Optional
 class AuthenticationError(Exception):
     """Exception raised when authentication fails."""
 
-    def __init__(
-        self,
-        message: str = "Authentication failed",
-        error_code: str = "AUTH_FAILED",
-        details: Optional[str] = None
-    ):
+    def __init__(self, message: str = "Authentication failed", error_code: str = "AUTH_FAILED", details: Optional[str] = None):
         super().__init__(message)
         self.error_code = error_code
         self.details = details
@@ -28,6 +23,7 @@ class AuthenticationError(Exception):
 @dataclass
 class AuthResult:
     """Result of authentication attempt."""
+
     authenticated: bool
     api_key_id: Optional[str] = None  # Masked key identifier
     error: Optional[str] = None
@@ -57,12 +53,7 @@ class APIAuthenticator:
         key = auth.extract_key_from_headers(headers)
     """
 
-    def __init__(
-        self,
-        api_keys: Optional[list[str]] = None,
-        header_name: str = "X-API-Key",
-        query_param: str = "api_key"
-    ):
+    def __init__(self, api_keys: Optional[list[str]] = None, header_name: str = "X-API-Key", query_param: str = "api_key"):
         """
         Initialize authenticator.
 
@@ -158,27 +149,15 @@ class APIAuthenticator:
         """
         if not api_key:
             raise AuthenticationError(
-                message="API key is required",
-                error_code="MISSING_API_KEY",
-                details="Provide API key via X-API-Key header or api_key parameter"
+                message="API key is required", error_code="MISSING_API_KEY", details="Provide API key via X-API-Key header or api_key parameter"
             )
 
         if not self.is_valid(api_key):
-            raise AuthenticationError(
-                message="Invalid API key",
-                error_code="INVALID_API_KEY",
-                details="The provided API key is not valid"
-            )
+            raise AuthenticationError(message="Invalid API key", error_code="INVALID_API_KEY", details="The provided API key is not valid")
 
-        return AuthResult(
-            authenticated=True,
-            api_key_id=self._mask_key(api_key)
-        )
+        return AuthResult(authenticated=True, api_key_id=self._mask_key(api_key))
 
-    def extract_key_from_headers(
-        self,
-        headers: dict[str, str]
-    ) -> Optional[str]:
+    def extract_key_from_headers(self, headers: dict[str, str]) -> Optional[str]:
         """
         Extract API key from HTTP headers.
 
@@ -212,10 +191,7 @@ class APIAuthenticator:
 
         return None
 
-    def extract_key_from_query(
-        self,
-        query_params: dict[str, str]
-    ) -> Optional[str]:
+    def extract_key_from_query(self, query_params: dict[str, str]) -> Optional[str]:
         """
         Extract API key from query parameters.
 
@@ -227,11 +203,7 @@ class APIAuthenticator:
         """
         return query_params.get(self.query_param)
 
-    def extract_key(
-        self,
-        headers: Optional[dict[str, str]] = None,
-        query_params: Optional[dict[str, str]] = None
-    ) -> Optional[str]:
+    def extract_key(self, headers: Optional[dict[str, str]] = None, query_params: Optional[dict[str, str]] = None) -> Optional[str]:
         """
         Extract API key from headers or query parameters.
 

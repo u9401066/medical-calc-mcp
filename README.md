@@ -8,46 +8,47 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-124%20passed-brightgreen.svg)](#-development)
+[![Tests](https://img.shields.io/badge/tests-1721%20passed-brightgreen.svg)](#-development)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
-[![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-architecture)
+[![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#architecture)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ---
 
 ## 📖 Table of Contents
 
-- [Features](#-features)
-- [Why This Project?](#-why-this-project)
-- [Research Framework](#-research-framework) 🔬 NEW
-- [Architecture](#-architecture)
-- [Quick Start](#-quick-start)
-- [Deployment Modes](#-deployment-modes) 🚀 NEW
-- [Agent Integration](#-agent-integration) 🤖 NEW
-- [Docker Deployment](#-docker-deployment) 🐳
-- [HTTPS Deployment](#-https-deployment) 🔒 NEW
-- [REST API](#-rest-api) 🌐 NEW
-- [Security](#-security) 🔐 NEW
-- [Tool Discovery](#-tool-discovery)
-- [Available Tools](#-available-tools)
-  - [Quick Navigation](#-quick-navigation)
-  - [Anesthesiology](#-anesthesiology--preoperative)
-  - [Critical Care](#-critical-care--icu)
-  - [Pediatrics](#-pediatrics)
-  - [Nephrology](#-nephrology)
-  - [Pulmonology](#-pulmonology)
-  - [Cardiology](#-cardiology)
-  - [Hematology](#-hematology)
-  - [Emergency Medicine](#-emergency-medicine)
-  - [Hepatology](#-hepatology)
-  - [Acid-Base / Metabolic](#-acid-base--metabolic)
-  - [Discovery Tools](#-discovery-tools)
-  - [Prompts](#-prompts)
-- [Usage Examples](#-usage-examples)
-- [References](#-references)
-- [Development](#-development)
-- [Deployment Guide](docs/DEPLOYMENT.md) 📘
+- [Features](#features)
+- [Why This Project?](#why-this-project)
+- [Research Framework](#research-framework)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Deployment Modes](#deployment-modes)
+- [Agent Integration](#agent-integration)
+- [Docker Deployment](#docker-deployment)
+- [HTTPS Deployment](#https-deployment)
+- [REST API](#rest-api)
+- [Security](#security)
+- [Tool Discovery](#tool-discovery)
+- [Available Tools](#available-tools)
+  - [Quick Navigation](#quick-navigation)
+  - [Anesthesiology](#anesthesiology--preoperative)
+  - [Critical Care](#critical-care--icu)
+  - [Pediatrics](#pediatrics)
+  - [Nephrology](#nephrology)
+  - [Pulmonology](#pulmonology)
+  - [Cardiology](#cardiology)
+  - [Hematology](#hematology)
+  - [Emergency Medicine](#emergency-medicine)
+  - [Hepatology](#hepatology)
+  - [Acid-Base / Metabolic](#acid-base--metabolic)
+  - [Discovery Tools](#discovery-tools)
+  - [Prompts](#prompts)
+- [Usage Examples](#usage-examples)
+- [References](#references)
+- [Development](#development)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Clinical Guidelines Review](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)
 - [Roadmap](ROADMAP.md)
 
 ---
@@ -55,11 +56,11 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 ## 🎯 Features
 
 - **🔌 MCP Native Integration**: Built with FastMCP SDK for seamless AI agent integration
-- **🔍 Intelligent Tool Discovery**: Two-level key system (Low/High Level) for smart tool selection
+- **🔍 Intelligent Tool Discovery**: Two-level key system + Tool Relation Graph (Hypergraph) for smart tool selection
 - **🛡️ Smart Parameter Matching**: Alias support, fuzzy matching, and typo tolerance
 - **⚠️ Boundary Validation**: Literature-backed clinical range checking with automatic warnings
 - **🏗️ Clean DDD Architecture**: Onion architecture with clear separation of concerns
-- **📚 Evidence-Based**: All formulas cite original peer-reviewed research papers (Vancouver style)
+- **📚 Evidence-Based**: All 91 calculators cite peer-reviewed research (100% coverage, Vancouver style)
 - **🔒 Type Safe**: Full Python type hints with dataclass entities
 - **🌐 Bilingual**: Chinese/English documentation and tool descriptions
 
@@ -90,11 +91,11 @@ This project provides:
 
 We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy:
 
-1.  **Domain Specification**: Human experts define the target medical specialty or clinical domain.
-2.  **AI-Driven Search**: AI agents perform comprehensive searches for the latest clinical guidelines and consensus.
-3.  **Guideline Extraction**: Systematically identify recommended scoring systems and calculations mentioned in those guidelines.
-4.  **Source Validation**: Trace back to original peer-reviewed primary papers to verify exact formulas and coefficients.
-5.  **Implementation**: Develop validated calculation tools with precise parameters and evidence-based interpretations.
+1. **Domain Specification**: Human experts define the target medical specialty or clinical domain.
+2. **AI-Driven Search**: AI agents perform comprehensive searches for the latest clinical guidelines and consensus.
+3. **Guideline Extraction**: Systematically identify recommended scoring systems and calculations mentioned in those guidelines.
+4. **Source Validation**: Trace back to original peer-reviewed primary papers to verify exact formulas and coefficients.
+5. **Implementation**: Develop validated calculation tools with precise parameters and evidence-based interpretations.
 
 ---
 
@@ -105,7 +106,7 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 ### Academic Positioning
 
 | Challenge | Traditional LLM | Our Solution |
-|-----------|-----------------|--------------|
+| --------- | --------------- | ------------ |
 | **Calculation Accuracy** | ~50% (MedCalc-Bench) | >95% via validated formulas |
 | **Parameter Extraction** | Vocabulary mismatch | ParamMatcher (60+ aliases) |
 | **Safety Guardrails** | No clinical constraints | BoundaryValidator (PMID-backed) |
@@ -141,7 +142,7 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 ### 🏆 Levels of Academic Value
 
 | Level | Contribution | Scholarly Focus |
-|-------|--------------|-----------------|
+| ----- | ------------ | --------------- |
 | **L1** | **Validated Symbolic Engine** | Extends LLM with deterministic precision |
 | **L2** | **Hierarchical Tool Discovery** | Solves RAG precision in high-stakes domains |
 | **L3** | **Robust Semantic Extraction** | Resolves the "Vocabulary Mismatch" problem |
@@ -940,34 +941,60 @@ uv lock
 
 ## 🔍 Tool Discovery
 
-The **Two-Level Key System** is the core innovation of this project:
+The **Two-Level Key System** combined with **Tool Relation Graph** is the core innovation of this project:
 
 ### Discovery Philosophy
 
-When an AI agent needs a medical calculator, it uses **Hierarchical Navigation**:
+When an AI agent needs a medical calculator, it uses **Unified Discovery**:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Path A: Specialty-based                                     │
-│  ① list_specialties() → ["critical_care", "anesthesiology"]│
-│  ② list_by_specialty("anesthesiology") → [tool_id, ...]    │
-│  ③ get_calculator_info("rcri") → params, references        │
-│  ④ calculate("rcri", {...params})                           │
+│  discover() - Unified Entry Point (v3.0)                     │
+├─────────────────────────────────────────────────────────────┤
+│  Path A: Explore All Categories                              │
+│  ① discover() → {specialties: [...], contexts: [...]}       │
+│  ② discover(by="specialty", value="critical_care")          │
+│  ③ get_tool_schema("sofa_score") → params, references       │
+│  ④ calculate("sofa_score", {...params})                      │
 ├─────────────────────────────────────────────────────────────┤
 │  Path B: Context-based                                       │
-│  ① list_contexts() → ["preoperative_assessment", ...]      │
-│  ② list_by_context("preoperative_assessment") → [tools]    │
-│  ③ get_calculator_info("asa_physical_status")              │
-│  ④ calculate("asa_physical_status", {...params})            │
+│  ① discover(by="context", value="preoperative_assessment")  │
+│  ② get_tool_schema("rcri") → params, param_sources          │
+│  ③ calculate("rcri", {...params})                            │
 ├─────────────────────────────────────────────────────────────┤
-│  Path C: Quick Search (Quick keyword search)                 │
-│  ① search_calculators("sepsis") → [sofa_score, qsofa, ...] │
-│  ② get_calculator_info("sofa_score")                        │
-│  ③ calculate("sofa_score", {...params})                     │
+│  Path C: Keyword Search                                      │
+│  ① discover(by="keyword", value="sepsis")                    │
+│  ② get_tool_schema("qsofa_score")                            │
+│  ③ calculate("qsofa_score", {...params})                     │
+├─────────────────────────────────────────────────────────────┤
+│  Path D: Graph-based Discovery                               │
+│  ① get_related_tools("sofa_score") → [qsofa, apache_ii...]  │
+│  ② find_tools_by_params(["creatinine", "age"]) → [tools...] │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 **Every step returns `next_step` hints, so the Agent never gets lost!**
+
+### Tool Relation Graph (Hypergraph)
+
+The **ToolRelationGraph** connects tools based on:
+
+| Relation Type | Weight | Example |
+|---------------|--------|---------|
+| `SHARED_PARAM` | 0.2 | SOFA ↔ APACHE II (both use creatinine) |
+| `SAME_SPECIALTY` | 0.3 | SOFA ↔ qSOFA (both Critical Care) |
+| `SAME_CONTEXT` | 0.2 | RCRI ↔ ASA (both Preoperative Assessment) |
+
+```python
+# Find related tools via graph traversal
+get_related_tools("sofa_score")
+# → [{"tool_id": "qsofa_score", "similarity": 0.85},
+#    {"tool_id": "apache_ii", "similarity": 0.72}, ...]
+
+# Reverse lookup: "I have these values, what can I calculate?"
+find_tools_by_params(["creatinine", "bilirubin", "inr"])
+# → [meld_score, child_pugh, ...]
+```
 
 ### Unified Calculate Interface (v2.0)
 
@@ -990,9 +1017,9 @@ calculate(
 ```
 
 **Benefits:**
-- 🎯 **Token Efficient**: Only 10 tools instead of 75+ in context
-- 🔍 **Discovery First**: Use discovery tools to find the right calculator
-- 📖 **Self-Documenting**: `get_calculator_info()` shows exact params needed
+- 🎯 **Token Efficient**: Only 6 tools instead of 75+ in context
+- 🔍 **Discovery First**: Use discover() to find the right calculator
+- 📖 **Self-Documenting**: `get_tool_schema()` shows exact params needed
 
 ### Low Level Key (Precise Selection)
 
@@ -1043,17 +1070,18 @@ This means:
 - Search "critical care" → Returns SOFA, APACHE II, RASS, GCS, CAM-ICU, ...
 - Search "organ dysfunction" → Returns SOFA, ...
 
-### Discovery MCP Tools
+### Consolidated MCP Tools (v3.0)
 
-| Tool | Purpose |
-|------|---------|
-| `search_calculators(keyword)` | Keyword search |
-| `list_by_specialty(specialty)` | Filter by medical specialty |
-| `list_by_context(context)` | Filter by clinical context |
-| `list_calculators()` | List all available calculators |
-| `get_calculator_info(tool_id)` | Get full metadata for a tool |
-| `list_specialties()` | List available specialties |
-| `list_contexts()` | List available clinical contexts |
+| Layer | Tool | Purpose |
+|-------|------|---------|
+| **High-Level** | `discover(by, value, limit)` | Unified discovery (specialty/context/keyword/all) |
+| **High-Level** | `get_related_tools(tool_id)` | Graph-based related tool discovery |
+| **High-Level** | `find_tools_by_params(params)` | Reverse lookup by available parameters |
+| **Low-Level** | `get_tool_schema(tool_id)` | Full metadata + param schemas + references |
+| **Low-Level** | `calculate(tool_id, params)` | Execute single calculation |
+| **Low-Level** | `calculate_batch(calculations)` | Batch calculations with cross-analysis |
+
+**Total: 6 tools** (consolidated from 12 in v2.0)
 
 ### Example: AI Agent Workflow
 
@@ -1481,6 +1509,24 @@ uv run python examples/clinical_workflows.py
 ## 📜 References
 
 All calculators cite original peer-reviewed research. See [references/README.md](references/README.md) for complete citations.
+
+### 📋 Guideline Mapping
+
+We systematically map our calculators to clinical guidelines:
+
+> **[2020-2025 Clinical Guideline Review](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)**
+>
+> - 75 calculators validated against SCCM, ESC, AHA/ACC, ESGE guidelines
+> - Evidence traceable to original publications (PMID citations)
+> - Updated 2026-01-08 with PubMed MCP verification
+
+| Guideline | Year | Key Tools | Status |
+|-----------|------|-----------|--------|
+| ESGE NVUGIH | 2021 | Glasgow-Blatchford, AIMS65 | ✅ |
+| Phoenix Pediatric Sepsis | 2024 | pSOFA (Phoenix) | ✅ |
+| ESC AF Guidelines | 2024 | CHA₂DS₂-VA, HAS-BLED | ✅ |
+| AHA/ACC Perioperative | 2024 | RCRI | ✅ |
+| ISBI Burns | 2016 | Parkland, TBSA | ✅ |
 
 ### Citation Format
 

@@ -68,9 +68,9 @@ class TimiStemiCalculator(BaseCalculator):
                     "killip_class",
                     "weight_lt_67kg",
                     "anterior_ste_or_lbbb",
-                    "time_to_treatment_gt_4h"
+                    "time_to_treatment_gt_4h",
                 ],
-                output_type="TIMI STEMI score (0-14) with 30-day mortality risk"
+                output_type="TIMI STEMI score (0-14) with 30-day mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -99,30 +99,38 @@ class TimiStemiCalculator(BaseCalculator):
                     "How high risk is this MI?",
                 ),
                 icd10_codes=(
-                    "I21.0",   # STEMI of anterior wall
-                    "I21.1",   # STEMI of inferior wall
-                    "I21.2",   # STEMI of other sites
-                    "I21.3",   # STEMI of unspecified site
+                    "I21.0",  # STEMI of anterior wall
+                    "I21.1",  # STEMI of inferior wall
+                    "I21.2",  # STEMI of other sites
+                    "I21.3",  # STEMI of unspecified site
                 ),
                 keywords=(
-                    "TIMI", "STEMI", "ST-elevation", "myocardial infarction",
-                    "heart attack", "MI", "mortality", "risk score",
-                    "reperfusion", "thrombolysis", "PCI",
-                )
+                    "TIMI",
+                    "STEMI",
+                    "ST-elevation",
+                    "myocardial infarction",
+                    "heart attack",
+                    "MI",
+                    "mortality",
+                    "risk score",
+                    "reperfusion",
+                    "thrombolysis",
+                    "PCI",
+                ),
             ),
             references=(
                 Reference(
                     citation="Morrow DA, Antman EM, Charlesworth A, et al. "
-                             "TIMI risk score for ST-elevation myocardial infarction: "
-                             "A convenient, bedside, clinical score for risk assessment at presentation. "
-                             "Circulation. 2000;102(17):2031-2037.",
+                    "TIMI risk score for ST-elevation myocardial infarction: "
+                    "A convenient, bedside, clinical score for risk assessment at presentation. "
+                    "Circulation. 2000;102(17):2031-2037.",
                     doi="10.1161/01.cir.102.17.2031",
                     pmid="11044416",
-                    year=2000
+                    year=2000,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -134,7 +142,7 @@ class TimiStemiCalculator(BaseCalculator):
         killip_class: int,
         weight_lt_67kg: bool,
         anterior_ste_or_lbbb: bool,
-        time_to_treatment_gt_4h: bool
+        time_to_treatment_gt_4h: bool,
     ) -> ScoreResult:
         """
         Calculate TIMI Risk Score for STEMI.
@@ -178,11 +186,7 @@ class TimiStemiCalculator(BaseCalculator):
         time_points = 1 if time_to_treatment_gt_4h else 0
 
         # Total score
-        score = (
-            age_points + dm_htn_angina_points + sbp_points +
-            hr_points + killip_points + weight_points +
-            anterior_lbbb_points + time_points
-        )
+        score = age_points + dm_htn_angina_points + sbp_points + hr_points + killip_points + weight_points + anterior_lbbb_points + time_points
 
         # Get mortality risk
         mortality_30day = self._get_mortality_risk(score)
@@ -205,7 +209,7 @@ class TimiStemiCalculator(BaseCalculator):
                 "killip_class": killip_class,
                 "weight_lt_67kg": weight_lt_67kg,
                 "anterior_ste_or_lbbb": anterior_ste_or_lbbb,
-                "time_to_treatment_gt_4h": time_to_treatment_gt_4h
+                "time_to_treatment_gt_4h": time_to_treatment_gt_4h,
             },
             calculation_details={
                 "total_score": score,
@@ -218,12 +222,12 @@ class TimiStemiCalculator(BaseCalculator):
                     "killip_class": killip_points,
                     "weight_lt_67kg": weight_points,
                     "anterior_ste_or_lbbb": anterior_lbbb_points,
-                    "time_to_treatment_gt_4h": time_points
+                    "time_to_treatment_gt_4h": time_points,
                 },
                 "mortality_30day": f"{mortality_30day}%",
-                "killip_class": killip_class
+                "killip_class": killip_class,
             },
-            notes=self._get_notes(score, killip_class)
+            notes=self._get_notes(score, killip_class),
         )
 
     def _get_mortality_risk(self, score: int) -> float:
@@ -232,27 +236,13 @@ class TimiStemiCalculator(BaseCalculator):
 
         Data from InTIME-II trial substudy (Morrow 2000).
         """
-        mortality_table = {
-            0: 0.8,
-            1: 1.6,
-            2: 2.2,
-            3: 4.4,
-            4: 7.3,
-            5: 12.4,
-            6: 16.1,
-            7: 23.4,
-            8: 26.8
-        }
+        mortality_table = {0: 0.8, 1: 1.6, 2: 2.2, 3: 4.4, 4: 7.3, 5: 12.4, 6: 16.1, 7: 23.4, 8: 26.8}
 
         if score > 8:
             return 35.9
         return mortality_table.get(score, 35.9)
 
-    def _get_interpretation(
-        self,
-        score: int,
-        mortality: float
-    ) -> Interpretation:
+    def _get_interpretation(self, score: int, mortality: float) -> Interpretation:
         """Get clinical interpretation based on score"""
 
         if score <= 2:
@@ -274,7 +264,7 @@ class TimiStemiCalculator(BaseCalculator):
                     "Cardiac catheterization",
                     "Post-MI risk stratification",
                     "Cardiac rehabilitation referral",
-                )
+                ),
             )
         elif score <= 4:
             return Interpretation(
@@ -299,7 +289,7 @@ class TimiStemiCalculator(BaseCalculator):
                     "Urgent cardiac catheterization",
                     "Echocardiography to assess LV function",
                     "Optimize medical therapy",
-                )
+                ),
             )
         elif score <= 6:
             return Interpretation(
@@ -325,7 +315,7 @@ class TimiStemiCalculator(BaseCalculator):
                     "Multidisciplinary team (cardiology, cardiac surgery)",
                     "Early goals of care discussion if deteriorating",
                     "Family notification of serious condition",
-                )
+                ),
             )
         else:  # score > 6
             return Interpretation(
@@ -352,7 +342,7 @@ class TimiStemiCalculator(BaseCalculator):
                     "Aggressive resuscitation if appropriate",
                     "Palliative care consultation if prognosis poor",
                     "Document advance directives",
-                )
+                ),
             )
 
     def _get_notes(self, score: int, killip_class: int) -> list[str]:
@@ -363,18 +353,11 @@ class TimiStemiCalculator(BaseCalculator):
         ]
 
         if killip_class >= 3:
-            notes.append(
-                "Killip III-IV: Consider mechanical circulatory support"
-            )
+            notes.append("Killip III-IV: Consider mechanical circulatory support")
 
         if score >= 5:
-            notes.append(
-                "High-risk: Multidisciplinary approach recommended"
-            )
+            notes.append("High-risk: Multidisciplinary approach recommended")
 
-        notes.append(
-            "Door-to-balloon time <90 min remains critical"
-        )
+        notes.append("Door-to-balloon time <90 min remains critical")
 
         return notes
-

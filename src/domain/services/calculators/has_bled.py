@@ -73,7 +73,7 @@ class HasBledCalculator(BaseCalculator):
                     "drugs_antiplatelet_nsaid",
                     "alcohol_excess",
                 ],
-                output_type="Score 0-9 with annual major bleeding risk and recommendations"
+                output_type="Score 0-9 with annual major bleeding risk and recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -117,31 +117,31 @@ class HasBledCalculator(BaseCalculator):
                     "warfarin bleeding",
                     "DOAC bleeding",
                     "stroke vs bleeding",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Pisters R, Lane DA, Nieuwlaat R, et al. A novel user-friendly "
-                             "score (HAS-BLED) to assess 1-year risk of major bleeding in "
-                             "patients with atrial fibrillation: the Euro Heart Survey. "
-                             "Chest. 2010;138(5):1093-1100.",
+                    "score (HAS-BLED) to assess 1-year risk of major bleeding in "
+                    "patients with atrial fibrillation: the Euro Heart Survey. "
+                    "Chest. 2010;138(5):1093-1100.",
                     doi="10.1378/chest.10-0134",
                     pmid="20299623",
                     year=2010,
                 ),
                 Reference(
                     citation="Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC "
-                             "Guidelines for the management of atrial fibrillation developed "
-                             "in collaboration with EACTS. Eur Heart J. 2024;45(36):3314-3414.",
+                    "Guidelines for the management of atrial fibrillation developed "
+                    "in collaboration with EACTS. Eur Heart J. 2024;45(36):3314-3414.",
                     doi="10.1093/eurheartj/ehae176",
                     pmid="39217497",
                     year=2024,
                 ),
                 Reference(
                     citation="Lip GYH, Lane DA. Assessing bleeding risk in atrial fibrillation "
-                             "with the HAS-BLED score: balancing simplicity, practicality, and "
-                             "predictive value in bleeding-risk assessment. Clin Cardiol. "
-                             "2010;33(9):E4-E5.",
+                    "with the HAS-BLED score: balancing simplicity, practicality, and "
+                    "predictive value in bleeding-risk assessment. Clin Cardiol. "
+                    "2010;33(9):E4-E5.",
                     doi="10.1002/clc.20823",
                     pmid="20842654",
                     year=2010,
@@ -309,10 +309,12 @@ class HasBledCalculator(BaseCalculator):
             ]
 
             if modifiable_factors:
-                recommendations.extend([
-                    "Modifiable risk factors identified:",
-                    *[f"  • {f}" for f in modifiable_factors],
-                ])
+                recommendations.extend(
+                    [
+                        "Modifiable risk factors identified:",
+                        *[f"  • {f}" for f in modifiable_factors],
+                    ]
+                )
 
             next_steps = [
                 "Address all modifiable bleeding risk factors",
@@ -333,9 +335,7 @@ class HasBledCalculator(BaseCalculator):
                 f"and close monitoring. Address all modifiable factors before/during anticoagulation."
             )
         if renal or liver:
-            warnings.append(
-                "Renal or hepatic dysfunction present - may affect anticoagulant choice and dosing."
-            )
+            warnings.append("Renal or hepatic dysfunction present - may affect anticoagulant choice and dosing.")
 
         return Interpretation(
             summary=summary,

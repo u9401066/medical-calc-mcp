@@ -65,7 +65,7 @@ class Chads2VascCalculator(BaseCalculator):
                     "age_65_to_74",
                     "female_sex",
                 ],
-                output_type="Score 0-9 with annual stroke risk and anticoagulation recommendation"
+                output_type="Score 0-9 with annual stroke risk and anticoagulation recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -110,22 +110,22 @@ class Chads2VascCalculator(BaseCalculator):
                     "stroke prevention AF",
                     "DOAC indication",
                     "warfarin indication",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk "
-                             "stratification for predicting stroke and thromboembolism in atrial "
-                             "fibrillation using a novel risk factor-based approach: the euro "
-                             "heart survey on atrial fibrillation. Chest. 2010;137(2):263-272.",
+                    "stratification for predicting stroke and thromboembolism in atrial "
+                    "fibrillation using a novel risk factor-based approach: the euro "
+                    "heart survey on atrial fibrillation. Chest. 2010;137(2):263-272.",
                     doi="10.1378/chest.09-1584",
                     pmid="19762550",
                     year=2010,
                 ),
                 Reference(
                     citation="Hindricks G, Potpara T, Dagres N, et al. 2020 ESC Guidelines for "
-                             "the diagnosis and management of atrial fibrillation developed in "
-                             "collaboration with EACTS. Eur Heart J. 2021;42(5):373-498.",
+                    "the diagnosis and management of atrial fibrillation developed in "
+                    "collaboration with EACTS. Eur Heart J. 2021;42(5):373-498.",
                     doi="10.1093/eurheartj/ehaa612",
                     pmid="32860505",
                     year=2020,
@@ -267,10 +267,7 @@ class Chads2VascCalculator(BaseCalculator):
             severity = Severity.MODERATE if score <= 4 else Severity.SEVERE
             risk_level = RiskLevel.INTERMEDIATE if score <= 4 else RiskLevel.HIGH
             summary = f"CHA₂DS₂-VASc = {score}: {'High' if score > 4 else 'Moderate'} risk ({annual_risk} annual stroke risk)"
-            detail = (
-                f"Significant stroke risk. Annual ischemic stroke rate is approximately {annual_risk}. "
-                f"Oral anticoagulation is recommended."
-            )
+            detail = f"Significant stroke risk. Annual ischemic stroke rate is approximately {annual_risk}. Oral anticoagulation is recommended."
             recommendations = [
                 "Oral anticoagulation (OAC) is recommended",
                 "DOACs preferred over warfarin (except mechanical valves, moderate-severe MS)",
@@ -286,7 +283,6 @@ class Chads2VascCalculator(BaseCalculator):
             if score >= 6:
                 recommendations.append("Very high stroke risk - ensure compliance with anticoagulation")
 
-
         return Interpretation(
             summary=summary,
             severity=severity,
@@ -296,7 +292,5 @@ class Chads2VascCalculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=(
-                "High stroke risk - anticoagulation essential",
-            ) if score >= 4 else tuple(),
+            warnings=("High stroke risk - anticoagulation essential",) if score >= 4 else tuple(),
         )

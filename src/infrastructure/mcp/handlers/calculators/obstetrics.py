@@ -18,13 +18,7 @@ def register_obstetrics_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     """Register obstetrics calculator tools"""
 
     @mcp.tool()
-    def calculate_bishop_score(
-        dilation_cm: int,
-        effacement_percent: int,
-        station: int,
-        consistency: str,
-        position: str
-    ) -> dict[str, Any]:
+    def calculate_bishop_score(dilation_cm: int, effacement_percent: int, station: int, consistency: str, position: str) -> dict[str, Any]:
         """
         🤰 Bishop Score: 子宮頸成熟度評估 (Cervical Ripening Assessment)
 
@@ -58,13 +52,7 @@ def register_obstetrics_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         Returns:
             Bishop Score、子宮頸成熟度、引產建議
         """
-        params = {
-            "dilation_cm": dilation_cm,
-            "effacement_percent": effacement_percent,
-            "station": station,
-            "consistency": consistency,
-            "position": position
-        }
+        params = {"dilation_cm": dilation_cm, "effacement_percent": effacement_percent, "station": station, "consistency": consistency, "position": position}
         return use_case.execute(CalculateRequest(tool_id="bishop_score", params=params)).to_dict()
 
     @mcp.tool()
@@ -82,7 +70,7 @@ def register_obstetrics_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         plantar_surface: int,
         breast: int,
         eye_ear: int,
-        genitals: int
+        genitals: int,
     ) -> dict[str, Any]:
         """
         👶 New Ballard Score: 新生兒胎齡評估 (Gestational Age Assessment)
@@ -142,6 +130,6 @@ def register_obstetrics_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
             "plantar_surface": plantar_surface,
             "breast": breast,
             "eye_ear": eye_ear,
-            "genitals": genitals
+            "genitals": genitals,
         }
         return use_case.execute(CalculateRequest(tool_id="ballard_score", params=params)).to_dict()

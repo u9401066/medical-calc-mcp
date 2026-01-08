@@ -16,7 +16,6 @@ Reference:
     PMID: 22378855
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
@@ -67,7 +66,7 @@ class AcefIiScoreCalculator(BaseCalculator):
                 name="ACEF II Score",
                 purpose="Predict cardiac surgery mortality risk",
                 input_params=["age", "lvef", "creatinine", "emergency"],
-                output_type="ACEF II score with mortality risk"
+                output_type="ACEF II score with mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -97,9 +96,17 @@ class AcefIiScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("Z95.1", "I25.1", "I35.0"),
                 keywords=(
-                    "ACEF", "ACEF II", "cardiac surgery", "mortality", "risk",
-                    "CABG", "valve", "EuroSCORE", "STS score",
-                    "preoperative", "risk stratification",
+                    "ACEF",
+                    "ACEF II",
+                    "cardiac surgery",
+                    "mortality",
+                    "risk",
+                    "CABG",
+                    "valve",
+                    "EuroSCORE",
+                    "STS score",
+                    "preoperative",
+                    "risk stratification",
                 ),
             ),
             references=self._get_references(),

@@ -61,11 +61,8 @@ class StopBangCalculator(BaseCalculator):
                 tool_id="stop_bang",
                 name="STOP-BANG Questionnaire",
                 purpose="Screen for obstructive sleep apnea risk in surgical patients",
-                input_params=[
-                    "snoring", "tired", "observed_apnea", "high_blood_pressure",
-                    "bmi_over_35", "age_over_50", "neck_over_40cm", "male_gender"
-                ],
-                output_type="OSA risk score (0-8) with risk stratification"
+                input_params=["snoring", "tired", "observed_apnea", "high_blood_pressure", "bmi_over_35", "age_over_50", "neck_over_40cm", "male_gender"],
+                output_type="OSA risk score (0-8) with risk stratification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -100,31 +97,40 @@ class StopBangCalculator(BaseCalculator):
                     "R06.83",  # Snoring
                 ),
                 keywords=(
-                    "STOP-BANG", "OSA", "sleep apnea", "snoring", "apnea",
-                    "preoperative", "screening", "BMI", "neck circumference",
-                    "obstructive", "hypopnea", "AHI",
-                )
+                    "STOP-BANG",
+                    "OSA",
+                    "sleep apnea",
+                    "snoring",
+                    "apnea",
+                    "preoperative",
+                    "screening",
+                    "BMI",
+                    "neck circumference",
+                    "obstructive",
+                    "hypopnea",
+                    "AHI",
+                ),
             ),
             references=(
                 Reference(
                     citation="Chung F, Yegneswaran B, Liao P, et al. "
-                             "STOP questionnaire: a tool to screen patients for obstructive sleep apnea. "
-                             "Anesthesiology. 2008;108(5):812-821.",
+                    "STOP questionnaire: a tool to screen patients for obstructive sleep apnea. "
+                    "Anesthesiology. 2008;108(5):812-821.",
                     doi="10.1097/ALN.0b013e31816d83e4",
                     pmid="18431116",
-                    year=2008
+                    year=2008,
                 ),
                 Reference(
                     citation="Chung F, Abdullah HR, Liao P. "
-                             "STOP-Bang Questionnaire: A Practical Approach to Screen for "
-                             "Obstructive Sleep Apnea. Chest. 2016;149(3):631-638.",
+                    "STOP-Bang Questionnaire: A Practical Approach to Screen for "
+                    "Obstructive Sleep Apnea. Chest. 2016;149(3):631-638.",
                     doi="10.1378/chest.15-0903",
                     pmid="26378880",
-                    year=2016
+                    year=2016,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -136,7 +142,7 @@ class StopBangCalculator(BaseCalculator):
         bmi_over_35: bool,
         age_over_50: bool,
         neck_over_40cm: bool,
-        male_gender: bool
+        male_gender: bool,
     ) -> ScoreResult:
         """
         Calculate STOP-BANG Score.
@@ -155,24 +161,14 @@ class StopBangCalculator(BaseCalculator):
             ScoreResult with OSA risk stratification
         """
         # Calculate score
-        score = sum([
-            snoring,
-            tired,
-            observed_apnea,
-            high_blood_pressure,
-            bmi_over_35,
-            age_over_50,
-            neck_over_40cm,
-            male_gender
-        ])
+        score = sum([snoring, tired, observed_apnea, high_blood_pressure, bmi_over_35, age_over_50, neck_over_40cm, male_gender])
 
         # Check for high-risk BANG criteria
         bang_criteria_met = sum([bmi_over_35, neck_over_40cm, male_gender])
         stop_score = sum([snoring, tired, observed_apnea, high_blood_pressure])
 
         # Determine risk level with special high-risk criteria
-        high_risk_by_criteria = (stop_score >= 2 and
-                                 (male_gender or bmi_over_35 or neck_over_40cm))
+        high_risk_by_criteria = stop_score >= 2 and (male_gender or bmi_over_35 or neck_over_40cm)
 
         # Get interpretation
         interpretation = self._get_interpretation(score, high_risk_by_criteria)
@@ -211,16 +207,16 @@ class StopBangCalculator(BaseCalculator):
                 "bmi_over_35": bmi_over_35,
                 "age_over_50": age_over_50,
                 "neck_over_40cm": neck_over_40cm,
-                "male_gender": male_gender
+                "male_gender": male_gender,
             },
             calculation_details={
                 "score": score,
                 "stop_score": stop_score,
                 "bang_criteria_count": bang_criteria_met,
                 "criteria_present": criteria_present,
-                "high_risk_by_bang_criteria": high_risk_by_criteria
+                "high_risk_by_bang_criteria": high_risk_by_criteria,
             },
-            notes=self._get_notes(score, high_risk_by_criteria)
+            notes=self._get_notes(score, high_risk_by_criteria),
         )
 
     def _get_interpretation(self, score: int, high_risk_by_criteria: bool) -> Interpretation:
@@ -242,7 +238,7 @@ class StopBangCalculator(BaseCalculator):
                 next_steps=(
                     "Proceed with standard perioperative care",
                     "No routine sleep study needed",
-                )
+                ),
             )
         elif score <= 4 and not high_risk_by_criteria:
             return Interpretation(
@@ -262,15 +258,14 @@ class StopBangCalculator(BaseCalculator):
                     "Discuss OSA risks with patient",
                     "Consider sleep medicine referral if symptomatic",
                     "Plan for careful postoperative monitoring",
-                )
+                ),
             )
         else:
             # High risk (score ≥5 OR score ≥2 with BANG criteria)
             osa_probability = self._get_osa_probability(score)
             return Interpretation(
                 summary=f"High Risk for OSA ({osa_probability}% probability of moderate-severe OSA)",
-                detail=f"STOP-BANG score {score}/8. High probability of moderate-to-severe OSA. "
-                       f"Perioperative precautions strongly recommended.",
+                detail=f"STOP-BANG score {score}/8. High probability of moderate-to-severe OSA. Perioperative precautions strongly recommended.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.HIGH,
                 stage="High Risk",
@@ -295,17 +290,13 @@ class StopBangCalculator(BaseCalculator):
                     "Ensure CPAP compliance if already diagnosed",
                     "Document OSA risk in anesthetic plan",
                     "Alert postoperative nursing staff",
-                )
+                ),
             )
 
     def _get_osa_probability(self, score: int) -> int:
         """Estimate probability of moderate-severe OSA based on score"""
         # Based on Chung et al. validation studies
-        probability_map = {
-            0: 10, 1: 15, 2: 25,
-            3: 35, 4: 50,
-            5: 60, 6: 70, 7: 80, 8: 90
-        }
+        probability_map = {0: 10, 1: 15, 2: 25, 3: 35, 4: 50, 5: 60, 6: 70, 7: 80, 8: 90}
         return probability_map.get(score, 50)
 
     def _get_notes(self, score: int, high_risk: bool) -> list[str]:
@@ -316,16 +307,20 @@ class StopBangCalculator(BaseCalculator):
         ]
 
         if score >= 3 or high_risk:
-            notes.extend([
-                "High-risk patients: consider CPAP trial preoperatively",
-                "Outpatient surgery may require extended observation period",
-                "Regional anesthesia preferred when feasible",
-            ])
+            notes.extend(
+                [
+                    "High-risk patients: consider CPAP trial preoperatively",
+                    "Outpatient surgery may require extended observation period",
+                    "Regional anesthesia preferred when feasible",
+                ]
+            )
 
         if score >= 5:
-            notes.extend([
-                "Score ≥5: 60-70% probability of moderate-severe OSA (AHI ≥15)",
-                "Consider formal sleep study if major surgery planned",
-            ])
+            notes.extend(
+                [
+                    "Score ≥5: 60-70% probability of moderate-severe OSA (AHI ≥15)",
+                    "Consider formal sleep study if major surgery planned",
+                ]
+            )
 
         return notes

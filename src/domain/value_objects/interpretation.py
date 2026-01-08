@@ -69,5 +69,5 @@ class Interpretation:
             "stage_description": self.stage_description,
             "recommendations": list(self.recommendations),
             "warnings": list(self.warnings),
-            "next_steps": list(self.next_steps)
+            "next_steps": list(self.next_steps),
         }

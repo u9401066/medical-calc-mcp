@@ -3,29 +3,29 @@ Calculator Handler
 
 MCP tool handlers for calculator operations.
 
-NEW DESIGN (v2.0): 單一 calculate() 工具 + Discovery 工具
-======================================================
-原先 75 個獨立的 calculate_xxx() 工具已被整合為一個通用的 calculate() 函數，
-這大幅減少了 token 消耗，同時保持完整的計算功能。
+v3.0 CONSOLIDATED DESIGN (保持 High-Level / Low-Level 分層):
+============================================================
 
-工作流程:
-1. 使用 discovery 工具找到需要的計算器 (list_by_specialty, search_calculators 等)
-2. 使用 get_calculator_info(tool_id) 查看參數
-3. 使用 calculate(tool_id, params) 執行計算
+LOW-LEVEL TOOLS (計算執行層) - 3 個:
+├── get_tool_schema()    - 取得工具詳情 + 參數 Schema + 來源提示
+├── calculate()          - 單一工具計算
+└── calculate_batch()    - 批次計算多工具
 
-NEW in v2.1:
-- calculate_batch: 批次計算多個工具，減少 round-trip
-- get_calculation_schema: 取得參數 schema 和來源提示
+這些工具執行實際計算:
+1. get_tool_schema: 提供完整的參數資訊和來源提示 (整併自 get_calculator_info + get_calculation_schema)
+2. calculate: 執行單一計算
+3. calculate_batch: 批次執行多個計算，含跨工具分析
 
-OLD DESIGN (已註解): 每個計算器有獨立的 MCP tool
+整併說明:
+- get_calculator_info() + get_calculation_schema() → get_tool_schema()
 """
 
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from ....application.dto import CalculateRequest
-from ....application.use_cases import CalculateUseCase
+from ....application.dto import CalculateRequest, DiscoveryMode, DiscoveryRequest
+from ....application.use_cases import CalculateUseCase, DiscoveryUseCase
 from ....domain.registry.tool_registry import ToolRegistry
 from ....infrastructure.logging import get_logger
 
@@ -58,19 +58,21 @@ class CalculatorHandler:
     """
     Handler for calculator-related MCP tools.
 
-    NEW DESIGN: 單一 calculate() 工具 + 批次計算 + Schema
-    ===================================================
-    - calculate(tool_id, params) - 通用計算函數，支援所有 75+ 計算器
-    - calculate_batch(calculations) - 批次計算多個工具
-    - get_calculation_schema(tool_id) - 取得參數 schema 和來源提示
+    v3.0: Consolidated Low-Level Tools
+    ==================================
+    - get_tool_schema(tool_id) - 工具詳情 + 參數 Schema + 來源提示
+    - calculate(tool_id, params) - 單一計算
+    - calculate_batch(calculations) - 批次計算
 
-    舊設計的 75 個獨立工具已註解，可在需要時恢復。
+    整併自:
+    - get_calculator_info() + get_calculation_schema() → get_tool_schema()
     """
 
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
         self._mcp = mcp
         self._registry = registry
         self._use_case = CalculateUseCase(registry)
+        self._discovery_use_case = DiscoveryUseCase(registry)
         self._logger = get_logger()
 
         # Register the unified calculate tool
@@ -196,9 +198,7 @@ class CalculatorHandler:
         # ====================================================================
 
         @self._mcp.tool()
-        def calculate_batch(
-            calculations: list[dict[str, Any]]
-        ) -> dict[str, Any]:
+        def calculate_batch(calculations: list[dict[str, Any]]) -> dict[str, Any]:
             """
             🧮 批次計算多個工具 - 減少 round-trip，提高效率
 
@@ -286,93 +286,98 @@ class CalculatorHandler:
                     "failed": sum(1 for r in results if not r["success"]),
                 },
                 "cross_analysis": cross_analysis,
-                "note": "cross_analysis 是事實陳述，非臨床建議。Agent 應根據臨床情境做判斷。"
+                "note": "cross_analysis 是事實陳述，非臨床建議。Agent 應根據臨床情境做判斷。",
             }
 
         # ====================================================================
-        # NEW: Schema + Source Mapping (v2.1)
+        # LOW-LEVEL TOOL 3: Get Tool Schema (整併自 get_calculator_info + get_calculation_schema)
         # ====================================================================
 
         @self._mcp.tool()
-        def get_calculation_schema(tool_id: str) -> dict[str, Any]:
+        def get_tool_schema(tool_id: str, include_references: bool = True, include_param_sources: bool = True) -> dict[str, Any]:
             """
-            📋 取得計算器的完整 Schema 和參數來源提示
+            📋 取得工具完整資訊 + 參數 Schema + 來源提示 (Low-Level)
 
-            提供結構化的參數資訊，幫助 Agent:
-            1. 驗證參數是否完整
-            2. 了解每個參數的臨床意義
-            3. 知道參數通常從哪裡取得
+            整併了原本的 get_calculator_info 和 get_calculation_schema，
+            提供 Agent 執行計算所需的所有資訊:
+
+            1. **工具基本資訊**: 名稱、用途、專科、情境
+            2. **參數 Schema**: 每個參數的類型、單位、正常範圍
+            3. **來源提示**: 參數通常從哪裡取得 (Parameter Provenance)
+            4. **參考文獻**: PMID/DOI (100% 覆蓋率，Vancouver style)
 
             Args:
-                tool_id: 計算器 ID
+                tool_id: 計算器 ID (從 discover() 取得)
+                include_references: 是否包含參考文獻 (預設 True)
+                    - True: 包含完整參考文獻 (citation, PMID, DOI)
+                    - False: 省略以節省 tokens
+                include_param_sources: 是否包含參數來源提示 (預設 True)
+                    - True: 包含 clinical_hint, common_sources, normal_range
+                    - False: 只返回基本 type/unit
 
             Returns:
-                - tool_id: 工具 ID
-                - name: 工具名稱
-                - required_params: 必要參數列表
-                - optional_params: 選填參數列表
-                - param_schemas: 每個參數的詳細資訊
-                    - type: 資料類型
-                    - description: 說明
-                    - clinical_hint: 臨床提示
-                    - normal_range: 正常範圍
-                    - common_sources: 常見資料來源
+                完整的工具資訊，包含:
+                - tool_id, name, purpose
+                - specialties, contexts (High-Level 分類)
+                - required_params (必要參數列表)
+                - param_schemas (每個參數的詳細 Schema)
+                - references (參考文獻，若 include_references=True)
 
             **Example:**
-            ```
-            get_calculation_schema("ckd_epi_2021")
+            ```python
+            # 完整資訊 (預設)
+            get_tool_schema("ckd_epi_2021")
+
+            # 只要基本資訊 (節省 tokens)
+            get_tool_schema("ckd_epi_2021", include_references=False, include_param_sources=False)
             ```
 
-            **Returns:**
-            ```json
-            {
-              "param_schemas": {
-                "serum_creatinine": {
-                  "type": "number",
-                  "unit": "mg/dL",
-                  "description": "Serum creatinine level",
-                  "clinical_hint": "From basic metabolic panel",
-                  "normal_range": [0.6, 1.2],
-                  "common_sources": ["BMP", "CMP", "Renal panel"]
-                }
-              }
-            }
-            ```
-
-            💡 Parameter Provenance: 幫助 Agent 知道去哪裡找數據
+            ⏭️ 下一步: calculate(tool_id, params) 執行計算
             """
             calculator = self._registry.get_calculator(tool_id)
             if not calculator:
-                return {
-                    "success": False,
-                    "error": f"Calculator '{tool_id}' not found",
-                    "hint": "Use search_calculators() or list_calculators() to find tools"
-                }
+                return {"success": False, "error": f"找不到工具: {tool_id}", "hint": "使用 discover(by='keyword', value='關鍵字') 搜尋工具"}
 
             metadata = calculator.metadata
             low_level = metadata.low_level
+            high_level = metadata.high_level
 
             # Build parameter schemas with source mapping
-            param_schemas = _build_param_schemas(calculator)
+            if include_param_sources:
+                param_schemas = _build_param_schemas(calculator)
+            else:
+                # Minimal schema (just type info)
+                param_schemas = {param: {"type": "number", "required": True} for param in low_level.input_params}
 
-            return {
+            result: dict[str, Any] = {
                 "success": True,
                 "tool_id": tool_id,
                 "name": low_level.name,
                 "purpose": low_level.purpose,
+                # High-Level 分類資訊
+                "clinical_context": {
+                    "specialties": [s.value for s in high_level.specialties],
+                    "contexts": [c.value for c in high_level.clinical_contexts],
+                    "conditions": list(high_level.conditions) if high_level.conditions else [],
+                },
+                # Low-Level 參數資訊
                 "required_params": list(low_level.input_params),
-                "optional_params": [],  # TODO: Extract from calculator
                 "param_schemas": param_schemas,
                 "output": {
                     "type": low_level.output_type,
-                    "unit": calculator.unit if hasattr(calculator, 'unit') else "",
                 },
-                "clinical_context": {
-                    "specialties": [s.value for s in metadata.high_level.specialties],
-                    "contexts": [c.value for c in metadata.high_level.clinical_contexts],
-                },
-                "next_step": f"calculate('{tool_id}', {{...params}})"
+                # 導航
+                "next_step": f"calculate('{tool_id}', {{...params}})",
             }
+
+            # 參考文獻 (可選)
+            if include_references:
+                request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id=tool_id)
+                discovery_response = self._discovery_use_case.execute(request)
+                if discovery_response.tool_detail and discovery_response.tool_detail.references:
+                    result["references"] = discovery_response.tool_detail.references
+
+            return result
 
         # ====================================================================
         # OLD DESIGN: 75 個獨立工具 (已註解以節省 token)
@@ -438,127 +443,121 @@ class CalculatorHandler:
 # Helper Functions for Batch Calculation and Schema
 # =============================================================================
 
+
 def _generate_cross_analysis(scores: dict[str, Any]) -> list[dict[str, str]]:
     """
     Generate fact-based cross-analysis of multiple scores.
-    
+
     This is NOT clinical reasoning - just factual statements based on
     established criteria from clinical guidelines.
-    
+
     Args:
         scores: Dictionary of tool_id -> score value
-        
+
     Returns:
         List of factual observations
     """
     analysis: list[dict[str, str]] = []
-    
+
     # Sepsis-3 criteria
     qsofa = scores.get("qsofa_score")
     sofa = scores.get("sofa_score")
     if qsofa is not None and sofa is not None:
         if qsofa >= 2 and sofa >= 2:
-            analysis.append({
-                "observation": "qSOFA ≥ 2 且 SOFA ≥ 2",
-                "criteria": "Sepsis-3",
-                "fact": "符合 Sepsis-3 定義標準 (疑似感染 + 器官功能障礙)",
-                "reference": "Singer M, et al. JAMA 2016"
-            })
+            analysis.append(
+                {
+                    "observation": "qSOFA ≥ 2 且 SOFA ≥ 2",
+                    "criteria": "Sepsis-3",
+                    "fact": "符合 Sepsis-3 定義標準 (疑似感染 + 器官功能障礙)",
+                    "reference": "Singer M, et al. JAMA 2016",
+                }
+            )
         elif qsofa >= 2:
-            analysis.append({
-                "observation": "qSOFA ≥ 2",
-                "criteria": "Sepsis-3",
-                "fact": "qSOFA 陽性，建議進一步評估 SOFA",
-                "reference": "Singer M, et al. JAMA 2016"
-            })
-    
+            analysis.append(
+                {"observation": "qSOFA ≥ 2", "criteria": "Sepsis-3", "fact": "qSOFA 陽性，建議進一步評估 SOFA", "reference": "Singer M, et al. JAMA 2016"}
+            )
+
     # RCRI cardiac risk
     rcri = scores.get("rcri")
     if rcri is not None:
         if rcri >= 3:
-            analysis.append({
-                "observation": f"RCRI = {rcri}",
-                "criteria": "Lee Index",
-                "fact": "RCRI Class IV: 高心臟風險 (>11% MACE)",
-                "reference": "Lee TH, et al. Circulation 1999"
-            })
+            analysis.append(
+                {
+                    "observation": f"RCRI = {rcri}",
+                    "criteria": "Lee Index",
+                    "fact": "RCRI Class IV: 高心臟風險 (>11% MACE)",
+                    "reference": "Lee TH, et al. Circulation 1999",
+                }
+            )
         elif rcri >= 2:
-            analysis.append({
-                "observation": f"RCRI = {rcri}",
-                "criteria": "Lee Index",
-                "fact": "RCRI Class III: 中等心臟風險 (6.6% MACE)",
-                "reference": "Lee TH, et al. Circulation 1999"
-            })
-    
+            analysis.append(
+                {
+                    "observation": f"RCRI = {rcri}",
+                    "criteria": "Lee Index",
+                    "fact": "RCRI Class III: 中等心臟風險 (6.6% MACE)",
+                    "reference": "Lee TH, et al. Circulation 1999",
+                }
+            )
+
     # CHA2DS2-VASc for AF stroke risk
     chads = scores.get("chads2_vasc")
     if chads is not None:
         if chads >= 2:
-            analysis.append({
-                "observation": f"CHA₂DS₂-VASc = {chads}",
-                "criteria": "ESC AF Guidelines",
-                "fact": "分數 ≥ 2: 根據 ESC 指引，建議考慮抗凝治療",
-                "reference": "Lip GY, et al. Chest 2010"
-            })
-    
+            analysis.append(
+                {
+                    "observation": f"CHA₂DS₂-VASc = {chads}",
+                    "criteria": "ESC AF Guidelines",
+                    "fact": "分數 ≥ 2: 根據 ESC 指引，建議考慮抗凝治療",
+                    "reference": "Lip GY, et al. Chest 2010",
+                }
+            )
+
     # GCS severity
     gcs = scores.get("glasgow_coma_scale")
     if gcs is not None:
         if gcs <= 8:
-            analysis.append({
-                "observation": f"GCS = {gcs}",
-                "criteria": "Teasdale-Jennett",
-                "fact": "GCS ≤ 8: 符合重度意識障礙標準",
-                "reference": "Teasdale G, Lancet 1974"
-            })
-    
+            analysis.append(
+                {"observation": f"GCS = {gcs}", "criteria": "Teasdale-Jennett", "fact": "GCS ≤ 8: 符合重度意識障礙標準", "reference": "Teasdale G, Lancet 1974"}
+            )
+
     # eGFR staging
     egfr = scores.get("ckd_epi_2021")
     if egfr is not None:
         if egfr < 15:
-            analysis.append({
-                "observation": f"eGFR = {egfr} mL/min/1.73m²",
-                "criteria": "KDIGO CKD",
-                "fact": "eGFR < 15: CKD G5 (腎衰竭)",
-                "reference": "KDIGO 2012"
-            })
+            analysis.append(
+                {"observation": f"eGFR = {egfr} mL/min/1.73m²", "criteria": "KDIGO CKD", "fact": "eGFR < 15: CKD G5 (腎衰竭)", "reference": "KDIGO 2012"}
+            )
         elif egfr < 30:
-            analysis.append({
-                "observation": f"eGFR = {egfr} mL/min/1.73m²",
-                "criteria": "KDIGO CKD",
-                "fact": "eGFR 15-29: CKD G4 (重度下降)",
-                "reference": "KDIGO 2012"
-            })
-    
+            analysis.append(
+                {"observation": f"eGFR = {egfr} mL/min/1.73m²", "criteria": "KDIGO CKD", "fact": "eGFR 15-29: CKD G4 (重度下降)", "reference": "KDIGO 2012"}
+            )
+
     # NEWS2 escalation
     news2 = scores.get("news2_score")
     if news2 is not None:
         if news2 >= 7:
-            analysis.append({
-                "observation": f"NEWS2 = {news2}",
-                "criteria": "RCP 2017",
-                "fact": "NEWS2 ≥ 7: 符合緊急呼叫標準 (Red alert)",
-                "reference": "Royal College of Physicians 2017"
-            })
-    
+            analysis.append(
+                {
+                    "observation": f"NEWS2 = {news2}",
+                    "criteria": "RCP 2017",
+                    "fact": "NEWS2 ≥ 7: 符合緊急呼叫標準 (Red alert)",
+                    "reference": "Royal College of Physicians 2017",
+                }
+            )
+
     if not analysis:
-        analysis.append({
-            "observation": "無特殊交叉分析",
-            "criteria": "-",
-            "fact": "各項分數獨立，無特定跨工具標準適用",
-            "reference": "-"
-        })
-    
+        analysis.append({"observation": "無特殊交叉分析", "criteria": "-", "fact": "各項分數獨立，無特定跨工具標準適用", "reference": "-"})
+
     return analysis
 
 
 def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
     """
     Build detailed parameter schemas with source mapping.
-    
+
     Args:
         calculator: Calculator instance
-        
+
     Returns:
         Dictionary of param_name -> schema details
     """
@@ -637,7 +636,6 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
             "normal_range": [3.5, 5.0],
             "common_sources": ["LFT", "CMP"],
         },
-        
         # Vital signs
         "heart_rate": {
             "type": "number",
@@ -679,7 +677,6 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
             "normal_range": [95, 100],
             "common_sources": ["Pulse oximeter", "Vital signs"],
         },
-        
         # Blood gas
         "pao2_fio2_ratio": {
             "type": "number",
@@ -713,7 +710,6 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
             "normal_range": [22, 26],
             "common_sources": ["ABG", "BMP"],
         },
-        
         # Demographics
         "age": {
             "type": "number",
@@ -747,7 +743,6 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
             "normal_range": [50, 250],
             "common_sources": ["Nursing assessment"],
         },
-        
         # Scores
         "gcs_score": {
             "type": "number",
@@ -758,10 +753,10 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
             "common_sources": ["Neurological assessment", "calculate_gcs"],
         },
     }
-    
+
     # Get required params from calculator
     param_names = list(calculator.metadata.low_level.input_params)
-    
+
     schemas: dict[str, dict[str, Any]] = {}
     for param in param_names:
         if param in PARAM_SOURCES:
@@ -775,5 +770,5 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
                 "clinical_hint": "See calculator documentation",
                 "common_sources": ["Clinical assessment"],
             }
-    
+
     return schemas

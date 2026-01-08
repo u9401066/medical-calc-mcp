@@ -25,17 +25,10 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
     @mcp.tool()
     def calculate_bsa(
-        weight_kg: Annotated[float, Field(
-            gt=0, le=500,
-            description="體重 Weight | Unit: kg | Range: 1-500"
-        )],
-        height_cm: Annotated[float, Field(
-            gt=0, le=250,
-            description="身高 Height | Unit: cm | Range: 50-250"
-        )],
+        weight_kg: Annotated[float, Field(gt=0, le=500, description="體重 Weight | Unit: kg | Range: 1-500")],
+        height_cm: Annotated[float, Field(gt=0, le=250, description="身高 Height | Unit: cm | Range: 50-250")],
         formula: Annotated[
-            Literal["mosteller", "dubois", "haycock", "boyd"],
-            Field(description="計算公式 Formula | Options: mosteller (default), dubois, haycock, boyd")
+            Literal["mosteller", "dubois", "haycock", "boyd"], Field(description="計算公式 Formula | Options: mosteller (default), dubois, haycock, boyd")
         ] = "mosteller",
     ) -> dict[str, Any]:
         """
@@ -70,33 +63,18 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "weight_kg": weight_kg,
                 "height_cm": height_cm,
                 "formula": formula,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_cockcroft_gault(
-        age: Annotated[int, Field(
-            ge=18, le=120,
-            description="年齡 Age | Unit: years | Range: 18-120"
-        )],
-        weight_kg: Annotated[float, Field(
-            gt=0, le=300,
-            description="體重 Weight | Unit: kg | Range: 30-300 (actual body weight)"
-        )],
-        creatinine_mg_dl: Annotated[float, Field(
-            gt=0, le=20,
-            description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.2-20"
-        )],
-        sex: Annotated[
-            Literal["male", "female"],
-            Field(description="性別 Sex | Options: male, female")
-        ],
-        height_cm: Annotated[Optional[float], Field(
-            default=None, gt=0, le=250,
-            description="身高 Height (cm) | For IBW calculation in obesity"
-        )] = None,
+        age: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
+        weight_kg: Annotated[float, Field(gt=0, le=300, description="體重 Weight | Unit: kg | Range: 30-300 (actual body weight)")],
+        creatinine_mg_dl: Annotated[float, Field(gt=0, le=20, description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.2-20")],
+        sex: Annotated[Literal["male", "female"], Field(description="性別 Sex | Options: male, female")],
+        height_cm: Annotated[Optional[float], Field(default=None, gt=0, le=250, description="身高 Height (cm) | For IBW calculation in obesity")] = None,
     ) -> dict[str, Any]:
         """
         💊 Cockcroft-Gault: 肌酸酐清除率 (CrCl)
@@ -138,25 +116,18 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "creatinine_mg_dl": creatinine_mg_dl,
                 "sex": sex,
                 "height_cm": height_cm,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_corrected_calcium(
-        calcium_mg_dl: Annotated[float, Field(
-            gt=0, le=16,
-            description="血清總鈣 Total serum calcium | Unit: mg/dL | Range: 4-16"
-        )],
-        albumin_g_dl: Annotated[float, Field(
-            gt=0, le=6,
-            description="血清白蛋白 Serum albumin | Unit: g/dL | Range: 1.0-6.0"
-        )],
-        normal_albumin: Annotated[float, Field(
-            default=4.0, gt=0, le=6,
-            description="正常白蛋白參考值 Normal albumin reference | Unit: g/dL | Default: 4.0"
-        )] = 4.0,
+        calcium_mg_dl: Annotated[float, Field(gt=0, le=16, description="血清總鈣 Total serum calcium | Unit: mg/dL | Range: 4-16")],
+        albumin_g_dl: Annotated[float, Field(gt=0, le=6, description="血清白蛋白 Serum albumin | Unit: g/dL | Range: 1.0-6.0")],
+        normal_albumin: Annotated[
+            float, Field(default=4.0, gt=0, le=6, description="正常白蛋白參考值 Normal albumin reference | Unit: g/dL | Default: 4.0")
+        ] = 4.0,
     ) -> dict[str, Any]:
         """
         🦴 Corrected Calcium: 白蛋白校正鈣
@@ -192,28 +163,17 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "calcium_mg_dl": calcium_mg_dl,
                 "albumin_g_dl": albumin_g_dl,
                 "normal_albumin": normal_albumin,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_parkland_formula(
-        weight_kg: Annotated[float, Field(
-            gt=0, le=300,
-            description="體重 Weight | Unit: kg | Range: 5-300"
-        )],
-        tbsa_percent: Annotated[float, Field(
-            gt=0, le=100,
-            description="燒傷面積 TBSA% | Unit: % | Range: 1-100 (use Rule of 9s or Lund-Browder)"
-        )],
-        hours_since_burn: Annotated[float, Field(
-            ge=0, le=24,
-            description="燒傷後經過時間 Hours since burn | Unit: hours | Range: 0-24"
-        )] = 0,
-        is_pediatric: Annotated[bool, Field(
-            description="兒童病患 Pediatric patient (adjusts urine output targets)"
-        )] = False,
+        weight_kg: Annotated[float, Field(gt=0, le=300, description="體重 Weight | Unit: kg | Range: 5-300")],
+        tbsa_percent: Annotated[float, Field(gt=0, le=100, description="燒傷面積 TBSA% | Unit: % | Range: 1-100 (use Rule of 9s or Lund-Browder)")],
+        hours_since_burn: Annotated[float, Field(ge=0, le=24, description="燒傷後經過時間 Hours since burn | Unit: hours | Range: 0-24")] = 0,
+        is_pediatric: Annotated[bool, Field(description="兒童病患 Pediatric patient (adjusts urine output targets)")] = False,
     ) -> dict[str, Any]:
         """
         🔥 Parkland Formula: 燒傷液體復甦
@@ -253,7 +213,7 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "tbsa_percent": tbsa_percent,
                 "hours_since_burn": hours_since_burn,
                 "is_pediatric": is_pediatric,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

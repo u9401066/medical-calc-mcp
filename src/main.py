@@ -35,11 +35,7 @@ import sys
 from pathlib import Path
 
 # Configure logging to stderr IMMEDIATELY to avoid interfering with MCP stdio transport
-logging.basicConfig(
-    level=os.environ.get("LOG_LEVEL", "INFO"),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    stream=sys.stderr
-)
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"), format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 # Ensure the project root is in the path for proper imports
@@ -91,26 +87,12 @@ Claude Desktop Configuration (for SSE mode):
       }
     }
   }
-        """
+        """,
     )
 
-    parser.add_argument(
-        "--mode", "-m",
-        choices=["stdio", "sse", "http"],
-        default=os.environ.get("MCP_MODE", "stdio"),
-        help="Transport mode (default: stdio)"
-    )
-    parser.add_argument(
-        "--host", "-H",
-        default=os.environ.get("MCP_HOST", "0.0.0.0"),
-        help="Host to bind for SSE/HTTP mode (default: 0.0.0.0)"
-    )
-    parser.add_argument(
-        "--port", "-p",
-        type=int,
-        default=int(os.environ.get("MCP_PORT", "8000")),
-        help="Port to bind for SSE/HTTP mode (default: 8000)"
-    )
+    parser.add_argument("--mode", "-m", choices=["stdio", "sse", "http"], default=os.environ.get("MCP_MODE", "stdio"), help="Transport mode (default: stdio)")
+    parser.add_argument("--host", "-H", default=os.environ.get("MCP_HOST", "0.0.0.0"), help="Host to bind for SSE/HTTP mode (default: 0.0.0.0)")
+    parser.add_argument("--port", "-p", type=int, default=int(os.environ.get("MCP_PORT", "8000")), help="Port to bind for SSE/HTTP mode (default: 8000)")
 
     args = parser.parse_args()
 

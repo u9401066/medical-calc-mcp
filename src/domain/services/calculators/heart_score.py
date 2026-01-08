@@ -61,7 +61,7 @@ class HeartScoreCalculator(BaseCalculator):
                     "risk_factors_score",
                     "troponin_score",
                 ],
-                output_type="Score 0-10 with MACE risk and disposition recommendation"
+                output_type="Score 0-10 with MACE risk and disposition recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -104,20 +104,19 @@ class HeartScoreCalculator(BaseCalculator):
                     "cardiac event prediction",
                     "troponin",
                     "emergency chest pain",
-                )
+                ),
             ),
             references=(
                 Reference(
-                    citation="Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: "
-                             "value of the HEART score. Neth Heart J. 2008;16(6):191-196.",
+                    citation="Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: value of the HEART score. Neth Heart J. 2008;16(6):191-196.",
                     doi="10.1007/BF03086144",
                     pmid="18665203",
                     year=2008,
                 ),
                 Reference(
                     citation="Backus BE, Six AJ, Kelder JC, et al. A prospective validation of "
-                             "the HEART score for chest pain patients at the emergency department. "
-                             "Int J Cardiol. 2013;168(3):2153-2158.",
+                    "the HEART score for chest pain patients at the emergency department. "
+                    "Int J Cardiol. 2013;168(3):2153-2158.",
                     doi="10.1016/j.ijcard.2013.01.255",
                     pmid="23465250",
                     year=2013,
@@ -247,10 +246,7 @@ class HeartScoreCalculator(BaseCalculator):
             risk_level = RiskLevel.HIGH
             mace_risk = "50-65%"
             summary = f"HEART Score = {score}: High risk ({mace_risk} 6-week MACE)"
-            detail = (
-                f"High risk for major adverse cardiac events. The 6-week MACE rate "
-                f"is approximately {mace_risk}. Urgent intervention is likely needed."
-            )
+            detail = f"High risk for major adverse cardiac events. The 6-week MACE rate is approximately {mace_risk}. Urgent intervention is likely needed."
             recommendations = [
                 "Admit to cardiac care unit",
                 "Early invasive strategy strongly recommended",
@@ -273,7 +269,5 @@ class HeartScoreCalculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=(
-                "High MACE risk - urgent cardiac evaluation required",
-            ) if score >= 7 else tuple(),
+            warnings=("High MACE risk - urgent cardiac evaluation required",) if score >= 7 else tuple(),
         )

@@ -50,11 +50,8 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                 tool_id="iss",
                 name="Injury Severity Score (ISS)",
                 purpose="Calculate anatomic injury severity for trauma patients",
-                input_params=[
-                    "head_neck_ais", "face_ais", "chest_ais",
-                    "abdomen_ais", "extremity_ais", "external_ais"
-                ],
-                output_type="ISS (1-75) with mortality prediction"
+                input_params=["head_neck_ais", "face_ais", "chest_ais", "abdomen_ais", "extremity_ais", "external_ais"],
+                output_type="ISS (1-75) with mortality prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -63,10 +60,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                     Specialty.CRITICAL_CARE,
                     Specialty.TRAUMA,
                 ),
-                conditions=(
-                    "Trauma", "Polytrauma", "Multiple Injuries",
-                    "Blunt Trauma", "Penetrating Trauma"
-                ),
+                conditions=("Trauma", "Polytrauma", "Multiple Injuries", "Blunt Trauma", "Penetrating Trauma"),
                 clinical_contexts=(
                     ClinicalContext.EMERGENCY,
                     ClinicalContext.PROGNOSIS,
@@ -80,25 +74,31 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("T07",),
                 keywords=(
-                    "ISS", "Injury Severity Score", "trauma severity",
-                    "AIS", "Abbreviated Injury Scale", "polytrauma",
-                    "trauma registry", "injury severity", "major trauma"
-                )
+                    "ISS",
+                    "Injury Severity Score",
+                    "trauma severity",
+                    "AIS",
+                    "Abbreviated Injury Scale",
+                    "polytrauma",
+                    "trauma registry",
+                    "injury severity",
+                    "major trauma",
+                ),
             ),
             references=(
                 Reference(
                     citation="Baker SP, O'Neill B, Haddon W Jr, Long WB. The injury severity score: a method for describing patients with multiple injuries and evaluating emergency care. J Trauma. 1974;14(3):187-196.",
                     pmid="4814394",
-                    year=1974
+                    year=1974,
                 ),
                 Reference(
                     citation="Copes WS, Champion HR, Sacco WJ, et al. The Injury Severity Score revisited. J Trauma. 1988;28(1):69-77.",
                     pmid="3123707",
-                    year=1988
+                    year=1988,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -151,9 +151,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
         if 6 in ais_values.values():
             iss = 75
             unsurvivable_regions = [r for r, a in ais_values.items() if a == 6]
-            components = [
-                f"{r}: AIS 6 (Unsurvivable)" for r in unsurvivable_regions
-            ]
+            components = [f"{r}: AIS 6 (Unsurvivable)" for r in unsurvivable_regions]
             components.append("ISS automatically = 75 (maximum)")
 
             return ScoreResult(
@@ -201,10 +199,7 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                     "components": components,
                 },
                 formula_used="ISS = 75 (automatic for any AIS 6)",
-                notes=[
-                    "AIS 6 = unsurvivable injury",
-                    "Focus on comfort care or heroic measures based on clinical context"
-                ],
+                notes=["AIS 6 = unsurvivable injury", "Focus on comfort care or heroic measures based on clinical context"],
             )
 
         # Get three highest AIS scores
@@ -212,20 +207,13 @@ class InjurySeverityScoreCalculator(BaseCalculator):
         top_three = ais_list[:3]
 
         # Calculate ISS = sum of squares of top 3
-        iss = sum(a ** 2 for a in top_three)
+        iss = sum(a**2 for a in top_three)
 
         # Build components
         components = []
         sorted_regions = sorted(ais_values.items(), key=lambda x: x[1], reverse=True)
 
-        ais_labels = {
-            0: "No injury",
-            1: "Minor",
-            2: "Moderate",
-            3: "Serious",
-            4: "Severe",
-            5: "Critical"
-        }
+        ais_labels = {0: "No injury", 1: "Minor", 2: "Moderate", 3: "Serious", 4: "Severe", 5: "Critical"}
 
         top_three_regions = []
         for i, (region, ais) in enumerate(sorted_regions):
@@ -409,8 +397,5 @@ class InjurySeverityScoreCalculator(BaseCalculator):
                 "components": components,
             },
             formula_used="ISS = sum of squares of 3 highest AIS",
-            notes=[
-                "ISS >15 = major trauma; ISS >25 = severe trauma",
-                "Consider TRISS calculation for survival probability if combined with RTS"
-            ],
+            notes=["ISS >15 = major trauma; ISS >25 = severe trauma", "Consider TRISS calculation for survival probability if combined with RTS"],
         )

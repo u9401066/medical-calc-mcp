@@ -60,13 +60,22 @@ class Sofa2ScoreCalculator(BaseCalculator):
                 name="SOFA-2 Score (2025 Update)",
                 purpose="Assess organ dysfunction with updated 2025 thresholds based on 3.3M patients",
                 input_params=[
-                    "gcs_score", "receiving_sedation_or_delirium_drugs",
-                    "pao2_fio2_ratio", "advanced_ventilatory_support", "on_ecmo",
-                    "map_value", "norepinephrine_epinephrine_dose",
-                    "bilirubin", "creatinine", "urine_output_6h", "urine_output_12h",
-                    "urine_output_24h", "on_rrt", "platelets"
+                    "gcs_score",
+                    "receiving_sedation_or_delirium_drugs",
+                    "pao2_fio2_ratio",
+                    "advanced_ventilatory_support",
+                    "on_ecmo",
+                    "map_value",
+                    "norepinephrine_epinephrine_dose",
+                    "bilirubin",
+                    "creatinine",
+                    "urine_output_6h",
+                    "urine_output_12h",
+                    "urine_output_24h",
+                    "on_rrt",
+                    "platelets",
                 ],
-                output_type="SOFA-2 score (0-24) with mortality prediction"
+                output_type="SOFA-2 score (0-24) with mortality prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -105,32 +114,44 @@ class Sofa2ScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("A41", "R65.20", "R65.21", "J96", "N17", "K72"),
                 keywords=(
-                    "SOFA-2", "SOFA2", "SOFA 2", "sepsis", "organ failure",
-                    "organ dysfunction", "ICU", "mortality", "sequential organ failure",
-                    "Sepsis-3", "infection", "critical care", "ECMO", "RRT",
-                    "2025", "updated SOFA",
-                )
+                    "SOFA-2",
+                    "SOFA2",
+                    "SOFA 2",
+                    "sepsis",
+                    "organ failure",
+                    "organ dysfunction",
+                    "ICU",
+                    "mortality",
+                    "sequential organ failure",
+                    "Sepsis-3",
+                    "infection",
+                    "critical care",
+                    "ECMO",
+                    "RRT",
+                    "2025",
+                    "updated SOFA",
+                ),
             ),
             references=(
                 Reference(
                     citation="Ranzani OT, Singer M, Salluh JIF, et al. Development and Validation "
-                             "of the Sequential Organ Failure Assessment (SOFA)-2 Score. "
-                             "JAMA. Published Online October 29, 2025.",
+                    "of the Sequential Organ Failure Assessment (SOFA)-2 Score. "
+                    "JAMA. Published Online October 29, 2025.",
                     doi="10.1001/jama.2025.20516",
                     pmid="39476328",
-                    year=2025
+                    year=2025,
                 ),
                 Reference(
                     citation="Vincent JL, Moreno R, Takala J, et al. The SOFA (Sepsis-related "
-                             "Organ Failure Assessment) score to describe organ dysfunction/failure. "
-                             "Intensive Care Med. 1996;22(7):707-710. [Original SOFA score]",
+                    "Organ Failure Assessment) score to describe organ dysfunction/failure. "
+                    "Intensive Care Med. 1996;22(7):707-710. [Original SOFA score]",
                     doi="10.1007/BF01709751",
                     pmid="8844239",
-                    year=1996
+                    year=1996,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -177,20 +198,11 @@ class Sofa2ScoreCalculator(BaseCalculator):
         resp_score = self._respiratory_score(pao2_fio2_ratio, advanced_ventilatory_support, on_ecmo)
         cardio_score = self._cardiovascular_score(map_value, norepinephrine_epinephrine_dose)
         liver_score = self._liver_score(bilirubin)
-        kidney_score = self._kidney_score(
-            creatinine,
-            urine_output_6h,
-            urine_output_12h,
-            urine_output_24h,
-            on_rrt
-        )
+        kidney_score = self._kidney_score(creatinine, urine_output_6h, urine_output_12h, urine_output_24h, on_rrt)
         hemostasis_score = self._hemostasis_score(platelets)
 
         # Total SOFA-2 score
-        total_score = (
-            brain_score + resp_score + cardio_score +
-            liver_score + kidney_score + hemostasis_score
-        )
+        total_score = brain_score + resp_score + cardio_score + liver_score + kidney_score + hemostasis_score
 
         # Get interpretation
         interpretation = self._get_interpretation(total_score)
@@ -228,10 +240,7 @@ class Sofa2ScoreCalculator(BaseCalculator):
                 "total": total_score,
                 "sofa_version": "SOFA-2 (2025)",
             },
-            formula_used=(
-                "SOFA-2 = Brain + Respiratory + Cardiovascular + Liver + Kidney + Hemostasis "
-                "(each 0-4, total 0-24)"
-            )
+            formula_used=("SOFA-2 = Brain + Respiratory + Cardiovascular + Liver + Kidney + Hemostasis (each 0-4, total 0-24)"),
         )
 
     def _brain_score(self, gcs: int, on_sedation_delirium_drugs: bool) -> int:
@@ -249,19 +258,14 @@ class Sofa2ScoreCalculator(BaseCalculator):
             return 1 if on_sedation_delirium_drugs else 0
         elif gcs >= 13:  # 13-14
             return 1
-        elif gcs >= 9:   # 9-12
+        elif gcs >= 9:  # 9-12
             return 2
-        elif gcs >= 6:   # 6-8
+        elif gcs >= 6:  # 6-8
             return 3
-        else:            # 3-5
+        else:  # 3-5
             return 4
 
-    def _respiratory_score(
-        self,
-        pao2_fio2: float,
-        advanced_support: bool,
-        on_ecmo: bool
-    ) -> int:
+    def _respiratory_score(self, pao2_fio2: float, advanced_support: bool, on_ecmo: bool) -> int:
         """
         Calculate Respiratory component (PaO2/FiO2)
 
@@ -282,16 +286,12 @@ class Sofa2ScoreCalculator(BaseCalculator):
             return 1
         elif pao2_fio2 > 150:  # ≤ 225
             return 2
-        elif pao2_fio2 > 75:   # ≤ 150
+        elif pao2_fio2 > 75:  # ≤ 150
             return 3 if advanced_support else 2
-        else:                   # ≤ 75
+        else:  # ≤ 75
             return 4 if advanced_support else 3
 
-    def _cardiovascular_score(
-        self,
-        map_value: Optional[float],
-        ne_epi_dose: Optional[float]
-    ) -> int:
+    def _cardiovascular_score(self, map_value: Optional[float], ne_epi_dose: Optional[float]) -> int:
         """
         Calculate Cardiovascular component
 
@@ -340,14 +340,7 @@ class Sofa2ScoreCalculator(BaseCalculator):
         else:  # > 12.0
             return 4
 
-    def _kidney_score(
-        self,
-        creatinine: float,
-        uo_6h: Optional[float],
-        uo_12h: Optional[float],
-        uo_24h: Optional[float],
-        on_rrt: bool
-    ) -> int:
+    def _kidney_score(self, creatinine: float, uo_6h: Optional[float], uo_12h: Optional[float], uo_24h: Optional[float], on_rrt: bool) -> int:
         """
         Calculate Kidney component (Creatinine and/or Urine Output)
 
@@ -382,12 +375,7 @@ class Sofa2ScoreCalculator(BaseCalculator):
         else:  # > 3.5
             return 3
 
-    def _urine_output_score(
-        self,
-        uo_6h: Optional[float],
-        uo_12h: Optional[float],
-        uo_24h: Optional[float]
-    ) -> int:
+    def _urine_output_score(self, uo_6h: Optional[float], uo_12h: Optional[float], uo_24h: Optional[float]) -> int:
         """
         Score based on urine output.
 
@@ -427,11 +415,11 @@ class Sofa2ScoreCalculator(BaseCalculator):
             return 0
         elif platelets > 100:  # ≤ 150
             return 1
-        elif platelets > 80:   # ≤ 100
+        elif platelets > 80:  # ≤ 100
             return 2
-        elif platelets > 50:   # ≤ 80
+        elif platelets > 50:  # ≤ 80
             return 3
-        else:                   # ≤ 50
+        else:  # ≤ 50
             return 4
 
     def _get_interpretation(self, score: int) -> Interpretation:
@@ -470,10 +458,7 @@ class Sofa2ScoreCalculator(BaseCalculator):
         # Sepsis interpretation
         sepsis_note = ""
         if score >= 2:
-            sepsis_note = (
-                "SOFA-2 ≥2 indicates significant organ dysfunction. "
-                "Consistent with Sepsis-3 criteria in suspected infection. "
-            )
+            sepsis_note = "SOFA-2 ≥2 indicates significant organ dysfunction. Consistent with Sepsis-3 criteria in suspected infection. "
 
         return Interpretation(
             summary=f"SOFA-2 Score {score}: {summary}",
@@ -487,7 +472,7 @@ class Sofa2ScoreCalculator(BaseCalculator):
             stage_description=summary,
             recommendations=self._get_recommendations(score),
             warnings=self._get_warnings(score),
-            next_steps=self._get_next_steps(score)
+            next_steps=self._get_next_steps(score),
         )
 
     def _get_recommendations(self, score: int) -> tuple[str, ...]:

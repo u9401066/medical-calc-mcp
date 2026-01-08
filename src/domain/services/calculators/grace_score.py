@@ -71,9 +71,8 @@ class GraceScoreCalculator(BaseCalculator):
                 tool_id="grace_score",
                 name="GRACE Score",
                 purpose="Stratify mortality risk in acute coronary syndrome",
-                input_params=["age", "heart_rate", "systolic_bp", "creatinine", "killip_class",
-                             "cardiac_arrest", "st_deviation", "elevated_markers"],
-                output_type="GRACE score with mortality risk"
+                input_params=["age", "heart_rate", "systolic_bp", "creatinine", "killip_class", "cardiac_arrest", "st_deviation", "elevated_markers"],
+                output_type="GRACE score with mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -105,9 +104,16 @@ class GraceScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("I21", "I20.0", "I24.9"),
                 keywords=(
-                    "GRACE", "acute coronary syndrome", "ACS", "STEMI", "NSTEMI",
-                    "unstable angina", "mortality", "risk stratification",
-                    "myocardial infarction", "MI",
+                    "GRACE",
+                    "acute coronary syndrome",
+                    "ACS",
+                    "STEMI",
+                    "NSTEMI",
+                    "unstable angina",
+                    "mortality",
+                    "risk stratification",
+                    "myocardial infarction",
+                    "MI",
                 ),
             ),
             references=self._get_references(),
@@ -194,8 +200,7 @@ class GraceScoreCalculator(BaseCalculator):
         marker_points = 14 if elevated_markers else 0
 
         # Total GRACE score
-        grace_score = (age_points + hr_points + sbp_points + cr_points +
-                       killip_points + arrest_points + st_points + marker_points)
+        grace_score = age_points + hr_points + sbp_points + cr_points + killip_points + arrest_points + st_points + marker_points
 
         # Generate interpretation
         interpretation = self._interpret_grace(grace_score, killip_class, cardiac_arrest)
@@ -307,10 +312,10 @@ class GraceScoreCalculator(BaseCalculator):
     def _get_killip_points(self, killip: int) -> int:
         """Get points for Killip class."""
         killip_points = {
-            1: 0,    # No CHF
-            2: 20,   # Rales/JVD/S3
-            3: 39,   # Pulmonary edema
-            4: 59,   # Cardiogenic shock
+            1: 0,  # No CHF
+            2: 20,  # Rales/JVD/S3
+            3: 39,  # Pulmonary edema
+            4: 59,  # Cardiogenic shock
         }
         return killip_points.get(killip, 0)
 

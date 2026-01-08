@@ -8,7 +8,6 @@ Each calculator inherits from BaseCalculator and provides:
 - Calculate method returning ScoreResult
 """
 
-
 from ..base import BaseCalculator
 from .aa_gradient import AaGradientCalculator
 from .abcd2 import Abcd2Calculator
@@ -56,11 +55,20 @@ from .cpis import CpisCalculator
 
 # Phase 6: Pulmonology
 from .curb65 import Curb65Calculator
+from .das28 import DAS28Calculator
 from .delta_ratio import DeltaRatioCalculator
+
+# Phase 21: Oncology & Geriatrics (Guideline-Recommended)
+from .ecog_ps import ECOGPerformanceStatusCalculator
+
+# Phase 19: Guideline-Recommended Missing Tools (2025)
+from .euroscore_ii import EuroSCOREIICalculator
 from .fib4_index import Fib4IndexCalculator
 from .fisher_grade import FisherGradeCalculator
+from .four_at_delirium import FourATCalculator
 from .four_score import FourScoreCalculator
 from .four_ts_hit import FourTsHitCalculator
+from .frax import FRAXCalculator
 from .free_water_deficit import FreeWaterDeficitCalculator
 from .gcs import GlasgowComaScaleCalculator
 
@@ -69,16 +77,23 @@ from .glasgow_blatchford import GlasgowBlatchfordCalculator
 from .grace_score import GraceScoreCalculator
 from .has_bled import HasBledCalculator  # Phase 8: 2024 ESC recommended
 from .heart_score import HeartScoreCalculator
+from .hfa_peff import HFAPEFFCalculator
 
 # Phase 14: Extended Neurology (SAH & ICH)
 from .hunt_hess import HuntHessCalculator
+
+# Phase 20: ICU & Cardiac (Existing Guideline Gaps)
+from .icdsc import ICDSCCalculator
 from .ich_score import IchScoreCalculator
 
 # Phase 11: Upcoming Calculators (All Completed)
 from .ideal_body_weight import IdealBodyWeightCalculator
 from .iss import InjurySeverityScoreCalculator
+from .karnofsky import KarnofskyPerformanceScaleCalculator
 from .kdigo_aki import KdigoAkiCalculator
+from .lille_model import LilleModelCalculator
 from .mabl import MablCalculator
+from .maddrey_df import MaddreyDFCalculator
 from .mallampati_score import MallampatiScoreCalculator
 
 # Phase 16: Infectious Disease (Guideline-Recommended)
@@ -87,10 +102,15 @@ from .mascc_score import MasccScoreCalculator
 # Phase 6: Hepatology
 from .meld_score import MeldScoreCalculator
 from .modified_rankin_scale import ModifiedRankinScaleCalculator
+from .murray_score import MurrayLungInjuryScoreCalculator
 from .news_score import NewsScoreCalculator
 
 # Phase 12: Neurology
 from .nihss import NihssCalculator
+
+# Phase 22: Nutrition & Rheumatology (Guideline-Recommended)
+from .nrs_2002 import NRS2002Calculator
+from .nutric_score import NUTRICScoreCalculator
 from .osmolar_gap import OsmolarGapCalculator
 from .parkland_formula import ParklandFormulaCalculator
 
@@ -108,6 +128,10 @@ from .rass import RassCalculator
 from .rcri import RcriCalculator
 from .rockall_score import RockallScoreCalculator
 from .rox_index import RoxIndexCalculator
+from .rts import RevisedTraumaScoreCalculator
+
+# Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
+from .score2 import SCORE2Calculator
 from .shock_index import ShockIndexCalculator
 from .sofa2_score import Sofa2ScoreCalculator  # SOFA-2 (JAMA 2025)
 
@@ -120,6 +144,7 @@ from .tbsa import TbsaCalculator
 # Phase 13: Additional Scores
 from .timi_stemi import TimiStemiCalculator
 from .transfusion_calc import TransfusionCalculator
+from .triss import TRISSCalculator
 
 # Phase 6: Emergency Medicine
 from .wells_dvt import WellsDvtCalculator
@@ -131,12 +156,10 @@ from .winters_formula import WintersFormulaCalculator
 __all__ = [
     # Nephrology
     "CkdEpi2021Calculator",
-
     # Anesthesiology / Preoperative
     "AsaPhysicalStatusCalculator",
     "MallampatiScoreCalculator",
     "RcriCalculator",
-
     # Critical Care / ICU
     "ApacheIiCalculator",
     "RassCalculator",
@@ -146,53 +169,41 @@ __all__ = [
     "NewsScoreCalculator",
     "GlasgowComaScaleCalculator",
     "CamIcuCalculator",
-
     # Pediatric & Anesthesia
     "PediatricDosingCalculator",
     "MablCalculator",
     "TransfusionCalculator",
-
     # Pulmonology
     "Curb65Calculator",
-
     # Cardiology
     "Chads2VascCalculator",
     "Chads2VaCalculator",  # 2024 ESC
     "HeartScoreCalculator",
     "HasBledCalculator",  # 2024 ESC recommended
-
     # Emergency Medicine
     "WellsDvtCalculator",
     "WellsPeCalculator",
-
     # Hepatology
     "MeldScoreCalculator",
     "ChildPughCalculator",  # Phase 8
-
     # Nephrology (additional)
     "KdigoAkiCalculator",  # Phase 8
-
     # Surgery/Perioperative
     "CapriniVteCalculator",
-
     # Pulmonology (additional)
     "PsiPortCalculator",
-
     # Phase 9: Acid-Base & Electrolytes
     "AnionGapCalculator",
     "DeltaRatioCalculator",
     "CorrectedSodiumCalculator",
-
     # Phase 9b: Additional Acid-Base Calculators
     "WintersFormulaCalculator",
     "OsmolarGapCalculator",
     "FreeWaterDeficitCalculator",
-
     # Phase 10: High-Priority Tools
     "CorrectedQtCalculator",
     "AaGradientCalculator",
     "ShockIndexCalculator",
-
     # Phase 11: Upcoming Calculators (All Completed)
     "IdealBodyWeightCalculator",
     "PfRatioCalculator",
@@ -200,57 +211,69 @@ __all__ = [
     "GraceScoreCalculator",
     "FourTsHitCalculator",
     "AcefIiScoreCalculator",
-
     # Phase 12: Additional Anesthesiology Tools
     "ApfelPonvCalculator",
     "StopBangCalculator",
     "AldreteScoreCalculator",
-
     # Phase 12: Neurology
     "NihssCalculator",
     "Abcd2Calculator",
     "ModifiedRankinScaleCalculator",
-
     # Phase 13: Additional Scores
     "TimiStemiCalculator",
     "RockallScoreCalculator",
     "Fib4IndexCalculator",
-
     # Phase 14: Extended Neurology (SAH & ICH)
     "HuntHessCalculator",
     "FisherGradeCalculator",
     "FourScoreCalculator",
     "IchScoreCalculator",
-
     # Phase 14: General Tools
     "BodySurfaceAreaCalculator",
     "CockcroftGaultCalculator",
     "CorrectedCalciumCalculator",
     "ParklandFormulaCalculator",
-
     # Phase 15: Pediatric Scores (Guideline-Recommended)
     "APGARScoreCalculator",
     "PEWSCalculator",
     "PediatricSOFACalculator",
     "PIM3Calculator",
     "PediatricGCSCalculator",
-
     # Phase 16: Infectious Disease (Guideline-Recommended)
     "MasccScoreCalculator",
     "PittBacteremiaCalculator",
     "CentorScoreCalculator",
     "CpisCalculator",
-
     # Phase 17: Obstetrics & Neonatology (Classic Tools)
     "BishopScoreCalculator",
     "BallardScoreCalculator",
-
     # Phase 18: High-Priority GI Bleeding & Trauma Tools
     "GlasgowBlatchfordCalculator",
     "AIMS65Calculator",
     "TbsaCalculator",
     "InjurySeverityScoreCalculator",
     "SimplifiedPESICalculator",
+    # Phase 19: Guideline-Recommended Missing Tools (2025)
+    "RevisedTraumaScoreCalculator",
+    "TRISSCalculator",
+    "MaddreyDFCalculator",
+    "LilleModelCalculator",
+    "EuroSCOREIICalculator",
+    # Phase 20: ICU & Cardiac (Existing Guideline Gaps)
+    "ICDSCCalculator",
+    "MurrayLungInjuryScoreCalculator",
+    "HFAPEFFCalculator",
+    # Phase 21: Oncology & Geriatrics (Guideline-Recommended)
+    "ECOGPerformanceStatusCalculator",
+    "KarnofskyPerformanceScaleCalculator",
+    "FourATCalculator",
+    # Phase 22: Nutrition & Rheumatology (Guideline-Recommended)
+    "NRS2002Calculator",
+    "DAS28Calculator",
+    "NUTRICScoreCalculator",
+    # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
+    "SCORE2Calculator",
+    "FRAXCalculator",
 ]
 
 
@@ -352,4 +375,25 @@ CALCULATORS: list[type[BaseCalculator]] = [
     TbsaCalculator,
     InjurySeverityScoreCalculator,
     SimplifiedPESICalculator,
+    # Phase 19: Guideline-Recommended Missing Tools (2025)
+    RevisedTraumaScoreCalculator,
+    TRISSCalculator,
+    MaddreyDFCalculator,
+    LilleModelCalculator,
+    EuroSCOREIICalculator,
+    # Phase 20: ICU & Cardiac (Existing Guideline Gaps)
+    ICDSCCalculator,
+    MurrayLungInjuryScoreCalculator,
+    HFAPEFFCalculator,
+    # Phase 21: Oncology & Geriatrics (Guideline-Recommended)
+    ECOGPerformanceStatusCalculator,
+    KarnofskyPerformanceScaleCalculator,
+    FourATCalculator,
+    # Phase 22: Nutrition & Rheumatology (Guideline-Recommended)
+    NRS2002Calculator,
+    DAS28Calculator,
+    NUTRICScoreCalculator,
+    # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
+    SCORE2Calculator,
+    FRAXCalculator,
 ]

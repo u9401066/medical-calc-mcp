@@ -18,36 +18,18 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
     @mcp.tool()
     def calculate_wells_dvt(
-        active_cancer: Annotated[bool, Field(
-            description="活動性癌症 Active cancer (treatment ongoing, within 6 months, or palliative)"
-        )],
-        paralysis_paresis_or_recent_cast: Annotated[bool, Field(
-            description="癱瘓/輕癱/近期石膏 Paralysis, paresis, or recent plaster cast of leg"
-        )],
-        bedridden_or_major_surgery: Annotated[bool, Field(
-            description="臥床>3天或12週內大手術 Recently bedridden >3 days or major surgery within 12 weeks"
-        )],
-        tenderness_along_deep_veins: Annotated[bool, Field(
-            description="深靜脈走向壓痛 Localized tenderness along the deep venous system"
-        )],
-        entire_leg_swollen: Annotated[bool, Field(
-            description="整條腿腫脹 Entire leg swollen"
-        )],
-        calf_swelling_gt_3cm: Annotated[bool, Field(
-            description="小腿周徑差>3cm Calf swelling >3 cm compared to asymptomatic leg"
-        )],
-        pitting_edema: Annotated[bool, Field(
-            description="凹陷性水腫 Pitting edema confined to symptomatic leg"
-        )],
-        collateral_superficial_veins: Annotated[bool, Field(
-            description="側支淺靜脈 Collateral superficial veins (non-varicose)"
-        )],
-        previous_dvt: Annotated[bool, Field(
-            description="曾有 DVT 病史 Previously documented DVT"
-        )],
-        alternative_diagnosis_likely: Annotated[bool, Field(
-            description="其他診斷可能性相當或更高 Alternative diagnosis at least as likely as DVT (-2 points)"
-        )],
+        active_cancer: Annotated[bool, Field(description="活動性癌症 Active cancer (treatment ongoing, within 6 months, or palliative)")],
+        paralysis_paresis_or_recent_cast: Annotated[bool, Field(description="癱瘓/輕癱/近期石膏 Paralysis, paresis, or recent plaster cast of leg")],
+        bedridden_or_major_surgery: Annotated[bool, Field(description="臥床>3天或12週內大手術 Recently bedridden >3 days or major surgery within 12 weeks")],
+        tenderness_along_deep_veins: Annotated[bool, Field(description="深靜脈走向壓痛 Localized tenderness along the deep venous system")],
+        entire_leg_swollen: Annotated[bool, Field(description="整條腿腫脹 Entire leg swollen")],
+        calf_swelling_gt_3cm: Annotated[bool, Field(description="小腿周徑差>3cm Calf swelling >3 cm compared to asymptomatic leg")],
+        pitting_edema: Annotated[bool, Field(description="凹陷性水腫 Pitting edema confined to symptomatic leg")],
+        collateral_superficial_veins: Annotated[bool, Field(description="側支淺靜脈 Collateral superficial veins (non-varicose)")],
+        previous_dvt: Annotated[bool, Field(description="曾有 DVT 病史 Previously documented DVT")],
+        alternative_diagnosis_likely: Annotated[
+            bool, Field(description="其他診斷可能性相當或更高 Alternative diagnosis at least as likely as DVT (-2 points)")
+        ],
     ) -> dict[str, Any]:
         """
         🦵 Wells DVT: 深靜脈血栓機率評估
@@ -94,34 +76,20 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "collateral_superficial_veins": collateral_superficial_veins,
                 "previous_dvt": previous_dvt,
                 "alternative_diagnosis_likely": alternative_diagnosis_likely,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_wells_pe(
-        clinical_signs_dvt: Annotated[bool, Field(
-            description="DVT 臨床症狀/徵象 Clinical signs/symptoms of DVT (leg swelling, pain with palpation) (+3)"
-        )],
-        pe_most_likely_diagnosis: Annotated[bool, Field(
-            description="PE 為最可能或同等可能的診斷 PE is #1 diagnosis or equally likely (+3)"
-        )],
-        heart_rate_gt_100: Annotated[bool, Field(
-            description="心率 >100 bpm Heart rate >100 bpm (+1.5)"
-        )],
-        immobilization_or_surgery: Annotated[bool, Field(
-            description="臥床≥3天或4週內手術 Immobilization ≥3 days or surgery in past 4 weeks (+1.5)"
-        )],
-        previous_dvt_pe: Annotated[bool, Field(
-            description="曾有 DVT/PE 病史 Previous DVT or PE (+1.5)"
-        )],
-        hemoptysis: Annotated[bool, Field(
-            description="咳血 Hemoptysis (+1)"
-        )],
-        malignancy: Annotated[bool, Field(
-            description="活動性惡性腫瘤 Active malignancy (treatment ongoing, within 6 months, or palliative) (+1)"
-        )],
+        clinical_signs_dvt: Annotated[bool, Field(description="DVT 臨床症狀/徵象 Clinical signs/symptoms of DVT (leg swelling, pain with palpation) (+3)")],
+        pe_most_likely_diagnosis: Annotated[bool, Field(description="PE 為最可能或同等可能的診斷 PE is #1 diagnosis or equally likely (+3)")],
+        heart_rate_gt_100: Annotated[bool, Field(description="心率 >100 bpm Heart rate >100 bpm (+1.5)")],
+        immobilization_or_surgery: Annotated[bool, Field(description="臥床≥3天或4週內手術 Immobilization ≥3 days or surgery in past 4 weeks (+1.5)")],
+        previous_dvt_pe: Annotated[bool, Field(description="曾有 DVT/PE 病史 Previous DVT or PE (+1.5)")],
+        hemoptysis: Annotated[bool, Field(description="咳血 Hemoptysis (+1)")],
+        malignancy: Annotated[bool, Field(description="活動性惡性腫瘤 Active malignancy (treatment ongoing, within 6 months, or palliative) (+1)")],
     ) -> dict[str, Any]:
         """
         🫁 Wells PE: 肺栓塞機率評估
@@ -162,28 +130,20 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "previous_dvt_pe": previous_dvt_pe,
                 "hemoptysis": hemoptysis,
                 "malignancy": malignancy,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_shock_index(
-        heart_rate: Annotated[float, Field(
-            ge=20, le=300,
-            description="心率 Heart rate | Unit: bpm | Range: 20-300"
-        )],
-        systolic_bp: Annotated[float, Field(
-            ge=30, le=300,
-            description="收縮壓 Systolic blood pressure | Unit: mmHg | Range: 30-300"
-        )],
-        diastolic_bp: Annotated[Optional[float], Field(
-            ge=20, le=200,
-            description="舒張壓 Diastolic BP (optional, for Modified SI) | Unit: mmHg | Range: 20-200"
-        )] = None,
+        heart_rate: Annotated[float, Field(ge=20, le=300, description="心率 Heart rate | Unit: bpm | Range: 20-300")],
+        systolic_bp: Annotated[float, Field(ge=30, le=300, description="收縮壓 Systolic blood pressure | Unit: mmHg | Range: 30-300")],
+        diastolic_bp: Annotated[
+            Optional[float], Field(ge=20, le=200, description="舒張壓 Diastolic BP (optional, for Modified SI) | Unit: mmHg | Range: 20-200")
+        ] = None,
         patient_type: Annotated[
-            Literal["adult", "pediatric", "obstetric"],
-            Field(description="病患類型 Patient type | Options: adult, pediatric, obstetric")
+            Literal["adult", "pediatric", "obstetric"], Field(description="病患類型 Patient type | Options: adult, pediatric, obstetric")
         ] = "adult",
     ) -> dict[str, Any]:
         """
@@ -232,7 +192,7 @@ def register_emergency_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "systolic_bp": systolic_bp,
                 "diastolic_bp": diastolic_bp,
                 "patient_type": patient_type,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

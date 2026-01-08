@@ -50,6 +50,7 @@ from typing import Any, Optional
 
 class EvidenceLevel(Enum):
     """證據等級 (GRADE system)"""
+
     A = "A"  # 高品質 - RCT, Meta-analysis
     B = "B"  # 中品質 - Observational studies
     C = "C"  # 低品質 - Case series, Expert opinion
@@ -58,10 +59,11 @@ class EvidenceLevel(Enum):
 
 class ValidationSeverity(Enum):
     """驗證結果嚴重程度"""
-    PASS = "pass"           # 通過驗證
-    WARNING = "warning"     # 警告 (超出臨床常見範圍但在生理可能範圍內)
-    ERROR = "error"         # 錯誤 (超出生理可能範圍)
-    CRITICAL = "critical"   # 嚴重錯誤 (完全不可能的值)
+
+    PASS = "pass"  # 通過驗證
+    WARNING = "warning"  # 警告 (超出臨床常見範圍但在生理可能範圍內)
+    ERROR = "error"  # 錯誤 (超出生理可能範圍)
+    CRITICAL = "critical"  # 嚴重錯誤 (完全不可能的值)
 
 
 @dataclass(frozen=True)
@@ -71,9 +73,10 @@ class BoundaryReference:
 
     每個邊界定義都必須有可追溯的文獻支持。
     """
-    source: str              # 來源名稱 (教科書/指引)
-    citation: str            # 完整引用格式
-    year: int                # 出版年份
+
+    source: str  # 來源名稱 (教科書/指引)
+    citation: str  # 完整引用格式
+    year: int  # 出版年份
     level_of_evidence: EvidenceLevel = EvidenceLevel.C
     pmid: Optional[str] = None
     doi: Optional[str] = None
@@ -108,11 +111,12 @@ class BoundarySpec:
         - warning: 0.2 - 15.0 mg/dL (超出需確認)
         - clinical: 0.5 - 5.0 mg/dL (常見值)
     """
+
     # 識別資訊
-    param_name: str               # 參數名稱 (snake_case)
-    display_name: str             # 顯示名稱 (中英文)
-    unit: str                     # 單位
-    data_type: type = float       # 資料型態 (int, float, bool, str)
+    param_name: str  # 參數名稱 (snake_case)
+    display_name: str  # 顯示名稱 (中英文)
+    unit: str  # 單位
+    data_type: type = float  # 資料型態 (int, float, bool, str)
 
     # 生理極限 (超出=錯誤)
     physiological_min: Optional[float] = None
@@ -142,20 +146,12 @@ class BoundarySpec:
         """
         # None 值由其他驗證處理
         if value is None:
-            return ValidationResult(
-                param_name=self.param_name,
-                value=value,
-                severity=ValidationSeverity.PASS,
-                message="Value is None (optional parameter)"
-            )
+            return ValidationResult(param_name=self.param_name, value=value, severity=ValidationSeverity.PASS, message="Value is None (optional parameter)")
 
         # 型態檢查
         if not isinstance(value, (int, float)):
             return ValidationResult(
-                param_name=self.param_name,
-                value=value,
-                severity=ValidationSeverity.ERROR,
-                message=f"Expected numeric type, got {type(value).__name__}"
+                param_name=self.param_name, value=value, severity=ValidationSeverity.ERROR, message=f"Expected numeric type, got {type(value).__name__}"
             )
 
         numeric_value = float(value)
@@ -167,7 +163,7 @@ class BoundarySpec:
                 value=value,
                 severity=ValidationSeverity.CRITICAL,
                 message=f"{self.display_name} = {value} {self.unit} is below physiological minimum ({self.physiological_min} {self.unit})",
-                boundary_spec=self
+                boundary_spec=self,
             )
 
         if self.physiological_max is not None and numeric_value > self.physiological_max:
@@ -176,7 +172,7 @@ class BoundarySpec:
                 value=value,
                 severity=ValidationSeverity.CRITICAL,
                 message=f"{self.display_name} = {value} {self.unit} exceeds physiological maximum ({self.physiological_max} {self.unit})",
-                boundary_spec=self
+                boundary_spec=self,
             )
 
         # 檢查警告閾值
@@ -186,7 +182,7 @@ class BoundarySpec:
                 value=value,
                 severity=ValidationSeverity.WARNING,
                 message=f"{self.display_name} = {value} {self.unit} is unusually low (typical range: ≥{self.warning_min} {self.unit}). Please verify.",
-                boundary_spec=self
+                boundary_spec=self,
             )
 
         if self.warning_max is not None and numeric_value > self.warning_max:
@@ -195,16 +191,10 @@ class BoundarySpec:
                 value=value,
                 severity=ValidationSeverity.WARNING,
                 message=f"{self.display_name} = {value} {self.unit} is unusually high (typical range: ≤{self.warning_max} {self.unit}). Please verify.",
-                boundary_spec=self
+                boundary_spec=self,
             )
 
-        return ValidationResult(
-            param_name=self.param_name,
-            value=value,
-            severity=ValidationSeverity.PASS,
-            message="OK",
-            boundary_spec=self
-        )
+        return ValidationResult(param_name=self.param_name, value=value, severity=ValidationSeverity.PASS, message="OK", boundary_spec=self)
 
     def to_pydantic_field_kwargs(self) -> dict[str, Any]:
         """
@@ -253,26 +243,22 @@ class BoundarySpec:
         ]
 
         if self.physiological_min is not None or self.physiological_max is not None:
-            lines.append(
-                f"| Physiological | {self.physiological_min or '-'} | {self.physiological_max or '-'} |"
-            )
+            lines.append(f"| Physiological | {self.physiological_min or '-'} | {self.physiological_max or '-'} |")
 
         if self.warning_min is not None or self.warning_max is not None:
-            lines.append(
-                f"| Warning | {self.warning_min or '-'} | {self.warning_max or '-'} |"
-            )
+            lines.append(f"| Warning | {self.warning_min or '-'} | {self.warning_max or '-'} |")
 
         if self.clinical_min is not None or self.clinical_max is not None:
-            lines.append(
-                f"| Clinical (typical) | {self.clinical_min or '-'} | {self.clinical_max or '-'} |"
-            )
+            lines.append(f"| Clinical (typical) | {self.clinical_min or '-'} | {self.clinical_max or '-'} |")
 
         if self.reference:
-            lines.extend([
-                "",
-                f"**Reference:** {self.reference.citation}",
-                f"**Evidence Level:** {self.reference.level_of_evidence.value}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"**Reference:** {self.reference.citation}",
+                    f"**Evidence Level:** {self.reference.level_of_evidence.value}",
+                ]
+            )
             if self.reference.pmid:
                 lines.append(f"**PMID:** {self.reference.pmid}")
 
@@ -282,6 +268,7 @@ class BoundarySpec:
 @dataclass
 class ValidationResult:
     """驗證結果"""
+
     param_name: str
     value: Any
     severity: ValidationSeverity
@@ -319,7 +306,7 @@ HARRISON_REFERENCE = BoundaryReference(
     citation="Loscalzo J, et al. Harrison's Principles of Internal Medicine. 21st ed. McGraw-Hill; 2022.",
     year=2022,
     level_of_evidence=EvidenceLevel.C,
-    notes="Standard internal medicine textbook"
+    notes="Standard internal medicine textbook",
 )
 
 # UpToDate
@@ -329,7 +316,7 @@ UPTODATE_REFERENCE = BoundaryReference(
     year=2025,
     level_of_evidence=EvidenceLevel.C,
     url="https://www.uptodate.com",
-    notes="Continuously updated clinical decision support"
+    notes="Continuously updated clinical decision support",
 )
 
 # KDIGO Guidelines
@@ -339,7 +326,7 @@ KDIGO_REFERENCE = BoundaryReference(
     year=2024,
     level_of_evidence=EvidenceLevel.A,
     pmid="38490803",
-    doi="10.1016/j.kint.2023.10.018"
+    doi="10.1016/j.kint.2023.10.018",
 )
 
 # Sepsis-3 Definitions
@@ -349,7 +336,7 @@ SEPSIS3_REFERENCE = BoundaryReference(
     year=2016,
     level_of_evidence=EvidenceLevel.A,
     pmid="26903338",
-    doi="10.1001/jama.2016.0287"
+    doi="10.1001/jama.2016.0287",
 )
 
 # PADIS Guidelines
@@ -359,7 +346,7 @@ PADIS_REFERENCE = BoundaryReference(
     year=2018,
     level_of_evidence=EvidenceLevel.A,
     pmid="30113379",
-    doi="10.1097/CCM.0000000000003299"
+    doi="10.1097/CCM.0000000000003299",
 )
 
 
@@ -377,95 +364,89 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         display_name="體溫 Temperature",
         unit="°C",
         data_type=float,
-        physiological_min=25.0,   # 極低體溫仍可存活 (復溫後)
-        physiological_max=45.0,   # >45°C 通常致命
-        warning_min=32.0,         # <32°C 嚴重低體溫
-        warning_max=42.0,         # >42°C 嚴重高熱
-        clinical_min=36.0,        # 正常範圍
+        physiological_min=25.0,  # 極低體溫仍可存活 (復溫後)
+        physiological_max=45.0,  # >45°C 通常致命
+        warning_min=32.0,  # <32°C 嚴重低體溫
+        warning_max=42.0,  # >42°C 嚴重高熱
+        clinical_min=36.0,  # 正常範圍
         clinical_max=38.5,
         reference=HARRISON_REFERENCE,
-        description="Core body temperature"
+        description="Core body temperature",
     ),
-
     "heart_rate": BoundarySpec(
         param_name="heart_rate",
         display_name="心率 Heart Rate",
         unit="bpm",
         data_type=int,
-        physiological_min=20,     # 嚴重心搏過緩 (需pace)
-        physiological_max=300,    # VT/VF 仍可量到
-        warning_min=40,           # 需要評估
-        warning_max=180,          # 可能血流動力學不穩
-        clinical_min=60,          # 正常範圍
+        physiological_min=20,  # 嚴重心搏過緩 (需pace)
+        physiological_max=300,  # VT/VF 仍可量到
+        warning_min=40,  # 需要評估
+        warning_max=180,  # 可能血流動力學不穩
+        clinical_min=60,  # 正常範圍
         clinical_max=100,
         reference=HARRISON_REFERENCE,
         description="Heart rate in beats per minute",
-        aliases=["hr", "pulse"]
+        aliases=["hr", "pulse"],
     ),
-
     "respiratory_rate": BoundarySpec(
         param_name="respiratory_rate",
         display_name="呼吸速率 Respiratory Rate",
         unit="breaths/min",
         data_type=int,
-        physiological_min=0,      # 呼吸停止
-        physiological_max=70,     # 嚴重呼吸窘迫
-        warning_min=8,            # 呼吸抑制
-        warning_max=40,           # 呼吸窘迫
-        clinical_min=12,          # 正常範圍
+        physiological_min=0,  # 呼吸停止
+        physiological_max=70,  # 嚴重呼吸窘迫
+        warning_min=8,  # 呼吸抑制
+        warning_max=40,  # 呼吸窘迫
+        clinical_min=12,  # 正常範圍
         clinical_max=20,
         reference=HARRISON_REFERENCE,
         description="Respiratory rate",
-        aliases=["rr"]
+        aliases=["rr"],
     ),
-
     "systolic_bp": BoundarySpec(
         param_name="systolic_bp",
         display_name="收縮壓 Systolic BP",
         unit="mmHg",
         data_type=int,
-        physiological_min=30,     # 嚴重休克 (CPR中可能測到)
-        physiological_max=300,    # 高血壓急症
-        warning_min=70,           # 低血壓
-        warning_max=200,          # 高血壓
-        clinical_min=90,          # 正常範圍
+        physiological_min=30,  # 嚴重休克 (CPR中可能測到)
+        physiological_max=300,  # 高血壓急症
+        warning_min=70,  # 低血壓
+        warning_max=200,  # 高血壓
+        clinical_min=90,  # 正常範圍
         clinical_max=140,
         reference=HARRISON_REFERENCE,
         description="Systolic blood pressure",
-        aliases=["sbp"]
+        aliases=["sbp"],
     ),
-
     "mean_arterial_pressure": BoundarySpec(
         param_name="mean_arterial_pressure",
         display_name="平均動脈壓 MAP",
         unit="mmHg",
         data_type=float,
-        physiological_min=20,     # 嚴重休克
-        physiological_max=200,    # 高血壓急症
-        warning_min=55,           # 器官灌流不足
-        warning_max=150,          # 高血壓
-        clinical_min=65,          # Sepsis target
+        physiological_min=20,  # 嚴重休克
+        physiological_max=200,  # 高血壓急症
+        warning_min=55,  # 器官灌流不足
+        warning_max=150,  # 高血壓
+        clinical_min=65,  # Sepsis target
         clinical_max=100,
         reference=SEPSIS3_REFERENCE,
         description="Mean arterial pressure",
-        aliases=["map"]
+        aliases=["map"],
     ),
-
     "spo2": BoundarySpec(
         param_name="spo2",
         display_name="血氧飽和度 SpO2",
         unit="%",
         data_type=int,
-        physiological_min=40,     # 最低可量測
-        physiological_max=100,    # 最高 100%
-        warning_min=88,           # 低血氧
-        warning_max=100,          # 正常
-        clinical_min=94,          # 一般目標
+        physiological_min=40,  # 最低可量測
+        physiological_max=100,  # 最高 100%
+        warning_min=88,  # 低血氧
+        warning_max=100,  # 正常
+        clinical_min=94,  # 一般目標
         clinical_max=100,
         reference=HARRISON_REFERENCE,
-        description="Peripheral oxygen saturation"
+        description="Peripheral oxygen saturation",
     ),
-
     # =========================================================================
     # Laboratory Values - Renal (腎功能)
     # =========================================================================
@@ -474,32 +455,30 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         display_name="血清肌酐 Creatinine",
         unit="mg/dL",
         data_type=float,
-        physiological_min=0.1,    # 極低 (可能是稀釋)
-        physiological_max=30.0,   # ESRD 可達此值
-        warning_min=0.3,          # 極低需確認
-        warning_max=15.0,         # 非常高
-        clinical_min=0.6,         # 正常範圍
+        physiological_min=0.1,  # 極低 (可能是稀釋)
+        physiological_max=30.0,  # ESRD 可達此值
+        warning_min=0.3,  # 極低需確認
+        warning_max=15.0,  # 非常高
+        clinical_min=0.6,  # 正常範圍
         clinical_max=1.3,
         reference=KDIGO_REFERENCE,
         description="Serum creatinine",
-        aliases=["creatinine", "cr", "scr"]
+        aliases=["creatinine", "cr", "scr"],
     ),
-
     "bun": BoundarySpec(
         param_name="bun",
         display_name="血尿素氮 BUN",
         unit="mg/dL",
         data_type=float,
-        physiological_min=1,      # 極低
-        physiological_max=200,    # ESRD
-        warning_min=5,            # 低
-        warning_max=100,          # 高
-        clinical_min=7,           # 正常範圍
+        physiological_min=1,  # 極低
+        physiological_max=200,  # ESRD
+        warning_min=5,  # 低
+        warning_max=100,  # 高
+        clinical_min=7,  # 正常範圍
         clinical_max=20,
         reference=HARRISON_REFERENCE,
-        description="Blood urea nitrogen"
+        description="Blood urea nitrogen",
     ),
-
     # =========================================================================
     # Laboratory Values - Hematology (血液學)
     # =========================================================================
@@ -508,49 +487,46 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         display_name="血紅素 Hemoglobin",
         unit="g/dL",
         data_type=float,
-        physiological_min=2.0,    # 嚴重貧血 (仍可存活)
-        physiological_max=25.0,   # 紅血球增多症
-        warning_min=6.0,          # 嚴重貧血
-        warning_max=20.0,         # 高
-        clinical_min=12.0,        # 正常範圍 (女)
-        clinical_max=17.5,        # 正常範圍 (男)
+        physiological_min=2.0,  # 嚴重貧血 (仍可存活)
+        physiological_max=25.0,  # 紅血球增多症
+        warning_min=6.0,  # 嚴重貧血
+        warning_max=20.0,  # 高
+        clinical_min=12.0,  # 正常範圍 (女)
+        clinical_max=17.5,  # 正常範圍 (男)
         reference=HARRISON_REFERENCE,
         description="Hemoglobin concentration",
-        aliases=["hgb", "hb"]
+        aliases=["hgb", "hb"],
     ),
-
     "hematocrit": BoundarySpec(
         param_name="hematocrit",
         display_name="血球容積比 Hematocrit",
         unit="%",
         data_type=float,
-        physiological_min=10,     # 嚴重貧血
-        physiological_max=70,     # 紅血球增多症
-        warning_min=20,           # 嚴重貧血
-        warning_max=60,           # 高
-        clinical_min=36,          # 正常範圍 (女)
-        clinical_max=52,          # 正常範圍 (男)
+        physiological_min=10,  # 嚴重貧血
+        physiological_max=70,  # 紅血球增多症
+        warning_min=20,  # 嚴重貧血
+        warning_max=60,  # 高
+        clinical_min=36,  # 正常範圍 (女)
+        clinical_max=52,  # 正常範圍 (男)
         reference=HARRISON_REFERENCE,
         description="Hematocrit",
-        aliases=["hct"]
+        aliases=["hct"],
     ),
-
     "platelets": BoundarySpec(
         param_name="platelets",
         display_name="血小板 Platelets",
         unit="×10³/µL",
         data_type=float,
-        physiological_min=0,      # 可能是 ITP
-        physiological_max=2000,   # 血小板增多症
-        warning_min=20,           # 嚴重血小板低下
-        warning_max=1000,         # 血小板增多
-        clinical_min=150,         # 正常範圍
+        physiological_min=0,  # 可能是 ITP
+        physiological_max=2000,  # 血小板增多症
+        warning_min=20,  # 嚴重血小板低下
+        warning_max=1000,  # 血小板增多
+        clinical_min=150,  # 正常範圍
         clinical_max=400,
         reference=HARRISON_REFERENCE,
         description="Platelet count",
-        aliases=["plt"]
+        aliases=["plt"],
     ),
-
     # =========================================================================
     # Laboratory Values - Liver (肝功能)
     # =========================================================================
@@ -560,15 +536,14 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         unit="mg/dL",
         data_type=float,
         physiological_min=0,
-        physiological_max=60,     # 嚴重肝衰竭
+        physiological_max=60,  # 嚴重肝衰竭
         warning_min=0,
-        warning_max=20,           # 非常高
-        clinical_min=0.1,         # 正常範圍
+        warning_max=20,  # 非常高
+        clinical_min=0.1,  # 正常範圍
         clinical_max=1.2,
         reference=HARRISON_REFERENCE,
-        description="Total bilirubin"
+        description="Total bilirubin",
     ),
-
     # =========================================================================
     # Demographics (人口學)
     # =========================================================================
@@ -577,32 +552,30 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         display_name="年齡 Age",
         unit="years",
         data_type=int,
-        physiological_min=0,      # 新生兒
-        physiological_max=120,    # 最高齡
+        physiological_min=0,  # 新生兒
+        physiological_max=120,  # 最高齡
         warning_min=0,
         warning_max=120,
-        clinical_min=18,          # 成人
+        clinical_min=18,  # 成人
         clinical_max=100,
         reference=HARRISON_REFERENCE,
-        description="Patient age in years"
+        description="Patient age in years",
     ),
-
     "weight_kg": BoundarySpec(
         param_name="weight_kg",
         display_name="體重 Weight",
         unit="kg",
         data_type=float,
-        physiological_min=0.5,    # 極早產兒
-        physiological_max=500,    # 病態肥胖
-        warning_min=2.0,          # 新生兒
-        warning_max=300,          # 肥胖
-        clinical_min=40,          # 成人正常
+        physiological_min=0.5,  # 極早產兒
+        physiological_max=500,  # 病態肥胖
+        warning_min=2.0,  # 新生兒
+        warning_max=300,  # 肥胖
+        clinical_min=40,  # 成人正常
         clinical_max=120,
         reference=HARRISON_REFERENCE,
         description="Body weight in kilograms",
-        aliases=["weight", "wt"]
+        aliases=["weight", "wt"],
     ),
-
     # =========================================================================
     # Oxygenation (氧合)
     # =========================================================================
@@ -611,31 +584,29 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         display_name="吸入氧濃度 FiO2",
         unit="",
         data_type=float,
-        physiological_min=0.21,   # Room air
-        physiological_max=1.0,    # 100% O2
+        physiological_min=0.21,  # Room air
+        physiological_max=1.0,  # 100% O2
         warning_min=0.21,
         warning_max=1.0,
         clinical_min=0.21,
-        clinical_max=0.6,         # 避免氧毒性
+        clinical_max=0.6,  # 避免氧毒性
         reference=HARRISON_REFERENCE,
-        description="Fraction of inspired oxygen (0.21-1.0)"
+        description="Fraction of inspired oxygen (0.21-1.0)",
     ),
-
     "pao2_fio2_ratio": BoundarySpec(
         param_name="pao2_fio2_ratio",
         display_name="PaO2/FiO2 比值",
         unit="mmHg",
         data_type=float,
-        physiological_min=20,     # 嚴重 ARDS
-        physiological_max=700,    # 最高 (100% O2 時)
-        warning_min=60,           # 嚴重低血氧
+        physiological_min=20,  # 嚴重 ARDS
+        physiological_max=700,  # 最高 (100% O2 時)
+        warning_min=60,  # 嚴重低血氧
         warning_max=500,
-        clinical_min=300,         # 輕度 ARDS 閾值
-        clinical_max=500,         # 正常
+        clinical_min=300,  # 輕度 ARDS 閾值
+        clinical_max=500,  # 正常
         reference=SEPSIS3_REFERENCE,
-        description="PaO2/FiO2 ratio (P/F ratio)"
+        description="PaO2/FiO2 ratio (P/F ratio)",
     ),
-
     # =========================================================================
     # Scores (評分)
     # =========================================================================
@@ -644,29 +615,28 @@ CLINICAL_BOUNDARIES: dict[str, BoundarySpec] = {
         display_name="GCS 昏迷指數",
         unit="",
         data_type=int,
-        physiological_min=3,      # 最低 (E1V1M1)
-        physiological_max=15,     # 最高 (E4V5M6)
+        physiological_min=3,  # 最低 (E1V1M1)
+        physiological_max=15,  # 最高 (E4V5M6)
         warning_min=3,
         warning_max=15,
         clinical_min=3,
         clinical_max=15,
         reference=HARRISON_REFERENCE,
-        description="Glasgow Coma Scale (3-15)"
+        description="Glasgow Coma Scale (3-15)",
     ),
-
     "rass_score": BoundarySpec(
         param_name="rass_score",
         display_name="RASS 鎮靜評估",
         unit="",
         data_type=int,
-        physiological_min=-5,     # 無法喚醒
-        physiological_max=4,      # 具攻擊性
+        physiological_min=-5,  # 無法喚醒
+        physiological_max=4,  # 具攻擊性
         warning_min=-5,
         warning_max=4,
-        clinical_min=-2,          # 目標範圍
+        clinical_min=-2,  # 目標範圍
         clinical_max=0,
         reference=PADIS_REFERENCE,
-        description="Richmond Agitation-Sedation Scale (-5 to +4)"
+        description="Richmond Agitation-Sedation Scale (-5 to +4)",
     ),
 }
 
@@ -733,20 +703,11 @@ class BoundaryRegistry:
         spec = self.get_boundary(param_name)
 
         if spec is None:
-            return ValidationResult(
-                param_name=param_name,
-                value=value,
-                severity=ValidationSeverity.PASS,
-                message=f"No boundary defined for '{param_name}'"
-            )
+            return ValidationResult(param_name=param_name, value=value, severity=ValidationSeverity.PASS, message=f"No boundary defined for '{param_name}'")
 
         return spec.validate(value)
 
-    def validate_all(
-        self,
-        params: dict[str, Any],
-        fail_fast: bool = False
-    ) -> list[ValidationResult]:
+    def validate_all(self, params: dict[str, Any], fail_fast: bool = False) -> list[ValidationResult]:
         """
         Validate multiple parameters
 

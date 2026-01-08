@@ -54,7 +54,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                 name="Modified Rankin Scale (mRS)",
                 purpose="Assess disability and dependence after stroke",
                 input_params=["mrs_score"],
-                output_type="mRS grade (0-6) with functional status classification"
+                output_type="mRS grade (0-6) with functional status classification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -84,42 +84,43 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                     "Can the patient live independently?",
                 ),
                 icd10_codes=(
-                    "I63",    # Cerebral infarction
-                    "I61",    # Intracerebral hemorrhage
-                    "I64",    # Stroke, not specified
-                    "G81",    # Hemiplegia
+                    "I63",  # Cerebral infarction
+                    "I61",  # Intracerebral hemorrhage
+                    "I64",  # Stroke, not specified
+                    "G81",  # Hemiplegia
                 ),
                 keywords=(
-                    "mRS", "Rankin", "modified Rankin scale", "disability",
-                    "stroke outcome", "functional status", "dependence",
-                    "favorable outcome", "handicap",
-                )
+                    "mRS",
+                    "Rankin",
+                    "modified Rankin scale",
+                    "disability",
+                    "stroke outcome",
+                    "functional status",
+                    "dependence",
+                    "favorable outcome",
+                    "handicap",
+                ),
             ),
             references=(
                 Reference(
                     citation="van Swieten JC, Koudstaal PJ, Visser MC, Schouten HJ, van Gijn J. "
-                             "Interobserver agreement for the assessment of handicap in stroke patients. "
-                             "Stroke. 1988;19(5):604-607.",
+                    "Interobserver agreement for the assessment of handicap in stroke patients. "
+                    "Stroke. 1988;19(5):604-607.",
                     doi="10.1161/01.str.19.5.604",
                     pmid="3363593",
-                    year=1988
+                    year=1988,
                 ),
                 Reference(
-                    citation="Rankin J. Cerebral vascular accidents in patients over the age of 60. "
-                             "II. Prognosis. "
-                             "Scott Med J. 1957;2(5):200-215.",
+                    citation="Rankin J. Cerebral vascular accidents in patients over the age of 60. II. Prognosis. Scott Med J. 1957;2(5):200-215.",
                     pmid="13432835",
-                    year=1957
+                    year=1957,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
-    def calculate(
-        self,
-        mrs_score: Literal[0, 1, 2, 3, 4, 5, 6]
-    ) -> ScoreResult:
+    def calculate(self, mrs_score: Literal[0, 1, 2, 3, 4, 5, 6]) -> ScoreResult:
         """
         Record Modified Rankin Scale assessment.
 
@@ -153,17 +154,15 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
             references=list(self.references),
             tool_id=self.tool_id,
             tool_name=self.name,
-            raw_inputs={
-                "mrs_score": mrs_score
-            },
+            raw_inputs={"mrs_score": mrs_score},
             calculation_details={
                 "mrs_grade": mrs_score,
                 "favorable_outcome": favorable_outcome,
                 "independent": independent,
                 "ambulatory": ambulatory,
-                "category": self._get_category(mrs_score)
+                "category": self._get_category(mrs_score),
             },
-            notes=self._get_notes(mrs_score)
+            notes=self._get_notes(mrs_score),
         )
 
     def _get_category(self, score: int) -> str:
@@ -175,7 +174,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
             3: "Moderate disability",
             4: "Moderately severe disability",
             5: "Severe disability",
-            6: "Dead"
+            6: "Dead",
         }
         return categories.get(score, "Unknown")
 
@@ -198,13 +197,12 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                 next_steps=(
                     "Maintain healthy lifestyle",
                     "Medication adherence for secondary prevention",
-                )
+                ),
             )
         elif score == 1:
             return Interpretation(
                 summary="mRS 1: No Significant Disability",
-                detail="No significant disability despite symptoms. "
-                       "Able to carry out all usual duties and activities.",
+                detail="No significant disability despite symptoms. Able to carry out all usual duties and activities.",
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.LOW,
                 stage="Favorable Outcome",
@@ -217,13 +215,12 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                 next_steps=(
                     "Outpatient neurology follow-up",
                     "Consider driving assessment if relevant",
-                )
+                ),
             )
         elif score == 2:
             return Interpretation(
                 summary="mRS 2: Slight Disability",
-                detail="Slight disability. Unable to carry out all previous activities, "
-                       "but able to look after own affairs without assistance.",
+                detail="Slight disability. Unable to carry out all previous activities, but able to look after own affairs without assistance.",
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="Favorable Outcome",
@@ -237,7 +234,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                 next_steps=(
                     "Outpatient rehabilitation",
                     "Support for lifestyle modifications",
-                )
+                ),
             )
         elif score == 3:
             return Interpretation(
@@ -262,13 +259,12 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                     "Inpatient rehabilitation or day program",
                     "Home safety assessment",
                     "Social work consultation",
-                )
+                ),
             )
         elif score == 4:
             return Interpretation(
                 summary="mRS 4: Moderately Severe Disability",
-                detail="Moderately severe disability. Unable to walk without assistance "
-                       "and unable to attend to own bodily needs without assistance.",
+                detail="Moderately severe disability. Unable to walk without assistance and unable to attend to own bodily needs without assistance.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.HIGH,
                 stage="Poor Outcome",
@@ -290,13 +286,12 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                     "Rehabilitation placement",
                     "Family meeting for care planning",
                     "Consider long-term care options",
-                )
+                ),
             )
         elif score == 5:
             return Interpretation(
                 summary="mRS 5: Severe Disability",
-                detail="Severe disability. Bedridden, incontinent, and requires "
-                       "constant nursing care and attention.",
+                detail="Severe disability. Bedridden, incontinent, and requires constant nursing care and attention.",
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.VERY_HIGH,
                 stage="Very Poor Outcome",
@@ -318,7 +313,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                     "Family meeting for goals of care",
                     "Consider advance directives",
                     "Palliative care involvement",
-                )
+                ),
             )
         else:  # score == 6
             return Interpretation(
@@ -329,7 +324,7 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
                 stage="Death",
                 stage_description="mRS 6",
                 recommendations=(),
-                next_steps=()
+                next_steps=(),
             )
 
     def _get_notes(self, score: int) -> list[str]:
@@ -342,18 +337,11 @@ class ModifiedRankinScaleCalculator(BaseCalculator):
         if score <= 2:
             notes.append("Patient achieved favorable functional outcome (mRS 0-2)")
         elif score == 3:
-            notes.append(
-                "Ambulatory but not independent - often a gray zone in treatment trials"
-            )
+            notes.append("Ambulatory but not independent - often a gray zone in treatment trials")
         elif score >= 4:
-            notes.append(
-                "Dependent for basic needs - consider rehabilitation potential and goals of care"
-            )
+            notes.append("Dependent for basic needs - consider rehabilitation potential and goals of care")
 
         if score >= 3:
-            notes.append(
-                "Consider structured mRS assessment (rankin focused assessment) for consistency"
-            )
+            notes.append("Consider structured mRS assessment (rankin focused assessment) for consistency")
 
         return notes
-

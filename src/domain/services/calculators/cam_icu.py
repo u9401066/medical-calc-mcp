@@ -29,7 +29,6 @@ Guideline:
     PMID: 30113379
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -64,11 +63,8 @@ class CamIcuCalculator(BaseCalculator):
                 tool_id="cam_icu",
                 name="CAM-ICU (Confusion Assessment Method for ICU)",
                 purpose="Screen for delirium in ICU patients",
-                input_params=[
-                    "rass_score", "acute_onset_fluctuation",
-                    "inattention", "altered_loc", "disorganized_thinking"
-                ],
-                output_type="Delirium status (Positive/Negative/Unable to Assess)"
+                input_params=["rass_score", "acute_onset_fluctuation", "inattention", "altered_loc", "disorganized_thinking"],
+                output_type="Delirium status (Positive/Negative/Unable to Assess)",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -103,41 +99,48 @@ class CamIcuCalculator(BaseCalculator):
                 ),
                 icd10_codes=("F05", "R41.0", "R41.82"),
                 keywords=(
-                    "CAM-ICU", "delirium", "confusion", "ICU delirium",
-                    "altered mental status", "encephalopathy", "inattention",
-                    "acute confusion", "screening", "PADIS",
-                )
+                    "CAM-ICU",
+                    "delirium",
+                    "confusion",
+                    "ICU delirium",
+                    "altered mental status",
+                    "encephalopathy",
+                    "inattention",
+                    "acute confusion",
+                    "screening",
+                    "PADIS",
+                ),
             ),
             references=(
                 Reference(
                     citation="Ely EW, Inouye SK, Bernard GR, et al. Delirium in mechanically "
-                             "ventilated patients: validity and reliability of the confusion "
-                             "assessment method for the intensive care unit (CAM-ICU). "
-                             "JAMA. 2001;286(21):2703-2710.",
+                    "ventilated patients: validity and reliability of the confusion "
+                    "assessment method for the intensive care unit (CAM-ICU). "
+                    "JAMA. 2001;286(21):2703-2710.",
                     doi="10.1001/jama.286.21.2703",
                     pmid="11730446",
-                    year=2001
+                    year=2001,
                 ),
                 Reference(
                     citation="Inouye SK, van Dyck CH, Alessi CA, et al. Clarifying confusion: "
-                             "the confusion assessment method. A new method for detection of "
-                             "delirium. Ann Intern Med. 1990;113(12):941-948.",
+                    "the confusion assessment method. A new method for detection of "
+                    "delirium. Ann Intern Med. 1990;113(12):941-948.",
                     doi="10.7326/0003-4819-113-12-941",
                     pmid="2240918",
-                    year=1990
+                    year=1990,
                 ),
                 Reference(
                     citation="Devlin JW, Skrobik Y, Gélinas C, et al. Clinical Practice Guidelines "
-                             "for the Prevention and Management of Pain, Agitation/Sedation, "
-                             "Delirium, Immobility, and Sleep Disruption in Adult Patients in the "
-                             "ICU. Crit Care Med. 2018;46(9):e825-e873.",
+                    "for the Prevention and Management of Pain, Agitation/Sedation, "
+                    "Delirium, Immobility, and Sleep Disruption in Adult Patients in the "
+                    "ICU. Crit Care Med. 2018;46(9):e825-e873.",
                     doi="10.1097/CCM.0000000000003299",
                     pmid="30113379",
-                    year=2018
+                    year=2018,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -189,9 +192,7 @@ class CamIcuCalculator(BaseCalculator):
         cam_icu_positive = feature_1 and feature_2 and (feature_3 or feature_4)
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            cam_icu_positive, feature_1, feature_2, feature_3, feature_4, rass_score
-        )
+        interpretation = self._get_interpretation(cam_icu_positive, feature_1, feature_2, feature_3, feature_4, rass_score)
 
         return ScoreResult(
             value=1 if cam_icu_positive else 0,
@@ -208,29 +209,22 @@ class CamIcuCalculator(BaseCalculator):
                 "disorganized_thinking_errors": disorganized_thinking_errors,
             },
             calculation_details={
-                "feature_1_acute_onset": {
-                    "present": feature_1,
-                    "description": "Acute change or fluctuating course"
-                },
+                "feature_1_acute_onset": {"present": feature_1, "description": "Acute change or fluctuating course"},
                 "feature_2_inattention": {
                     "present": feature_2,
                     "errors": inattention_score,
-                    "description": f"ASE errors: {inattention_score} (≥3 = inattention)"
+                    "description": f"ASE errors: {inattention_score} (≥3 = inattention)",
                 },
-                "feature_3_altered_loc": {
-                    "present": feature_3,
-                    "rass": rass_score,
-                    "description": f"RASS {rass_score} (≠0 = altered LOC)"
-                },
+                "feature_3_altered_loc": {"present": feature_3, "rass": rass_score, "description": f"RASS {rass_score} (≠0 = altered LOC)"},
                 "feature_4_disorganized_thinking": {
                     "present": feature_4,
                     "errors": disorganized_thinking_errors,
-                    "description": f"Errors: {disorganized_thinking_errors} (≥2 = positive)"
+                    "description": f"Errors: {disorganized_thinking_errors} (≥2 = positive)",
                 },
                 "algorithm": "Feature 1 AND Feature 2 AND (Feature 3 OR Feature 4)",
                 "result": "POSITIVE (Delirium)" if cam_icu_positive else "NEGATIVE (No Delirium)",
             },
-            formula_used="CAM-ICU+ = (Acute onset/Fluctuation) AND (Inattention) AND (Altered LOC OR Disorganized Thinking)"
+            formula_used="CAM-ICU+ = (Acute onset/Fluctuation) AND (Inattention) AND (Altered LOC OR Disorganized Thinking)",
         )
 
     def _comatose_result(self, rass_score: int) -> ScoreResult:
@@ -240,8 +234,7 @@ class CamIcuCalculator(BaseCalculator):
             unit=Unit.BINARY,
             interpretation=Interpretation(
                 summary="CAM-ICU: Unable to Assess - Patient Comatose",
-                detail=f"Patient has RASS of {rass_score}, indicating coma or deep sedation. "
-                       f"CAM-ICU cannot be performed. Reassess when RASS ≥ -3.",
+                detail=f"Patient has RASS of {rass_score}, indicating coma or deep sedation. CAM-ICU cannot be performed. Reassess when RASS ≥ -3.",
                 severity=Severity.CRITICAL,
                 stage="Comatose",
                 stage_description="Unable to assess - too sedated or comatose",
@@ -259,7 +252,7 @@ class CamIcuCalculator(BaseCalculator):
                     "Continue monitoring sedation level",
                     "Daily sedation interruption trial if appropriate",
                     "Reassess CAM-ICU when RASS improves to -3 or better",
-                )
+                ),
             ),
             references=list(self.references),
             tool_id=self.tool_id,
@@ -270,18 +263,10 @@ class CamIcuCalculator(BaseCalculator):
                 "arousable": False,
                 "result": "UNABLE TO ASSESS - COMATOSE",
             },
-            formula_used="CAM-ICU requires RASS ≥ -3"
+            formula_used="CAM-ICU requires RASS ≥ -3",
         )
 
-    def _get_interpretation(
-        self,
-        positive: bool,
-        f1: bool,
-        f2: bool,
-        f3: bool,
-        f4: bool,
-        rass: int
-    ) -> Interpretation:
+    def _get_interpretation(self, positive: bool, f1: bool, f2: bool, f3: bool, f4: bool, rass: int) -> Interpretation:
         """Get interpretation based on CAM-ICU result"""
 
         features_present = []
@@ -308,9 +293,9 @@ class CamIcuCalculator(BaseCalculator):
             return Interpretation(
                 summary=f"CAM-ICU POSITIVE: Delirium Present ({subtype})",
                 detail=f"Patient meets criteria for delirium. Features present: {features_text}. "
-                       f"RASS {rass} suggests {subtype}. "
-                       f"Delirium is associated with increased mortality, longer ICU stay, "
-                       f"and long-term cognitive impairment.",
+                f"RASS {rass} suggests {subtype}. "
+                f"Delirium is associated with increased mortality, longer ICU stay, "
+                f"and long-term cognitive impairment.",
                 severity=Severity.MODERATE,
                 stage="Positive",
                 stage_description="Delirium present",
@@ -338,14 +323,14 @@ class CamIcuCalculator(BaseCalculator):
                     "Optimize sleep-wake cycle",
                     "Early mobilization if safe",
                     "Reassess CAM-ICU every shift",
-                )
+                ),
             )
         else:
             return Interpretation(
                 summary="CAM-ICU NEGATIVE: No Delirium Detected",
                 detail=f"Patient does not currently meet criteria for delirium. "
-                       f"Features present: {features_text}. "
-                       f"Continue routine screening as delirium can develop at any time.",
+                f"Features present: {features_text}. "
+                f"Continue routine screening as delirium can develop at any time.",
                 severity=Severity.NORMAL,
                 stage="Negative",
                 stage_description="No delirium detected",
@@ -362,5 +347,5 @@ class CamIcuCalculator(BaseCalculator):
                     "Continue CAM-ICU screening every shift",
                     "Maintain prevention bundle",
                     "Monitor for changes in mental status",
-                )
+                ),
             )

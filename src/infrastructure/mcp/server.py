@@ -121,9 +121,7 @@ class MedicalCalculatorServer:
         # Build auto-discovery indexes after all tools are registered
         # This enables intelligent tool discovery without ML dependencies
         self._registry.build_discovery_indexes()
-        logger.info(
-            f"Auto-discovery indexes built: {self._registry.get_discovery_statistics()}"
-        )
+        logger.info(f"Auto-discovery indexes built: {self._registry.get_discovery_statistics()}")
 
     def _init_handlers(self) -> None:
         """Initialize all MCP handlers"""
@@ -203,6 +201,7 @@ class MedicalCalculatorServer:
 # Lazy initialization to avoid import order issues
 _server: Optional[MedicalCalculatorServer] = None
 
+
 def get_server() -> MedicalCalculatorServer:
     """Get or create the server instance"""
     global _server
@@ -210,15 +209,18 @@ def get_server() -> MedicalCalculatorServer:
         _server = MedicalCalculatorServer()
     return _server
 
+
 # Export the mcp instance for FastMCP compatibility
 # This is accessed after module is fully loaded
 def _get_mcp() -> FastMCP:
     return get_server().mcp
 
+
 # For backward compatibility - lazy property
 class _McpProxy:
     def __getattr__(self, name: str) -> Any:
         return getattr(get_server().mcp, name)
+
 
 mcp = _McpProxy()
 
@@ -226,6 +228,7 @@ mcp = _McpProxy()
 # =============================================================================
 # Entry Point
 # =============================================================================
+
 
 def main() -> None:
     """Run the MCP server"""

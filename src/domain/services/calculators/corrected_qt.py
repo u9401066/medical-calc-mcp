@@ -87,7 +87,7 @@ class CorrectedQtCalculator(BaseCalculator):
                 name="Corrected QT Interval (QTc)",
                 purpose="Calculate heart-rate corrected QT interval for arrhythmia risk",
                 input_params=["qt_interval", "heart_rate", "sex", "formula"],
-                output_type="QTc (ms) with risk assessment"
+                output_type="QTc (ms) with risk assessment",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -122,8 +122,16 @@ class CorrectedQtCalculator(BaseCalculator):
                 ),
                 icd10_codes=("I45.81", "R94.31", "I49.9"),
                 keywords=(
-                    "QTc", "QT interval", "corrected QT", "Bazett", "Fridericia",
-                    "QT prolongation", "Torsades", "TdP", "arrhythmia", "ECG",
+                    "QTc",
+                    "QT interval",
+                    "corrected QT",
+                    "Bazett",
+                    "Fridericia",
+                    "QT prolongation",
+                    "Torsades",
+                    "TdP",
+                    "arrhythmia",
+                    "ECG",
                 ),
             ),
             references=self._get_references(),
@@ -184,7 +192,7 @@ class CorrectedQtCalculator(BaseCalculator):
             qtc = qt_interval / math.sqrt(rr_interval)
             formula_used = "QTc = QT / √RR (Bazett)"
         elif formula == "fridericia":
-            qtc = qt_interval / (rr_interval ** (1/3))
+            qtc = qt_interval / (rr_interval ** (1 / 3))
             formula_used = "QTc = QT / ∛RR (Fridericia)"
         elif formula == "framingham":
             qtc = qt_interval + 154 * (1 - rr_interval)
@@ -260,9 +268,7 @@ class CorrectedQtCalculator(BaseCalculator):
                 "Avoid adding additional QT-prolonging agents",
                 "Consider ECG monitoring if starting new medications",
             )
-            warnings = (
-                "Borderline QT prolongation - use caution with QT-prolonging drugs",
-            )
+            warnings = ("Borderline QT prolongation - use caution with QT-prolonging drugs",)
         elif qtc <= 500:
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE

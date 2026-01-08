@@ -60,11 +60,8 @@ class TransfusionCalculator(BaseCalculator):
                 tool_id="transfusion_calc",
                 name="Transfusion Volume Calculator",
                 purpose="Calculate blood product volume needed for target Hct/Hgb/Plt",
-                input_params=[
-                    "weight_kg", "current_hematocrit", "target_hematocrit",
-                    "product_type", "patient_type"
-                ],
-                output_type="Required transfusion volume in mL"
+                input_params=["weight_kg", "current_hematocrit", "target_hematocrit", "product_type", "patient_type"],
+                output_type="Required transfusion volume in mL",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -98,44 +95,51 @@ class TransfusionCalculator(BaseCalculator):
                 ),
                 icd10_codes=("D62", "D64.9", "D69.6"),
                 keywords=(
-                    "transfusion", "PRBC", "packed red cells", "blood products",
-                    "hematocrit", "hemoglobin", "platelets", "FFP",
-                    "transfusion volume", "blood transfusion",
-                )
+                    "transfusion",
+                    "PRBC",
+                    "packed red cells",
+                    "blood products",
+                    "hematocrit",
+                    "hemoglobin",
+                    "platelets",
+                    "FFP",
+                    "transfusion volume",
+                    "blood transfusion",
+                ),
             ),
             references=(
                 Reference(
                     citation="Roseff SD, Luban NL, Manno CS. Guidelines for assessing appropriateness "
-                             "of pediatric transfusion. Transfusion. 2002;42(11):1398-1413.",
+                    "of pediatric transfusion. Transfusion. 2002;42(11):1398-1413.",
                     doi="10.1046/j.1537-2995.2002.00208.x",
                     pmid="12421212",
-                    year=2002
+                    year=2002,
                 ),
                 Reference(
                     citation="New HV, Berryman J, Bolton-Maggs PH, et al. Guidelines on transfusion "
-                             "for fetuses, neonates and older children. Br J Haematol. 2016;175(5):784-828.",
+                    "for fetuses, neonates and older children. Br J Haematol. 2016;175(5):784-828.",
                     doi="10.1111/bjh.14233",
                     pmid="27861734",
-                    year=2016
+                    year=2016,
                 ),
                 Reference(
                     citation="Carson JL, Stanworth SJ, Dennis JA, et al. Transfusion thresholds for "
-                             "guiding red blood cell transfusion. Cochrane Database Syst Rev. 2021;12:CD002042.",
+                    "guiding red blood cell transfusion. Cochrane Database Syst Rev. 2021;12:CD002042.",
                     doi="10.1002/14651858.CD002042.pub5",
                     pmid="34932836",
-                    year=2021
+                    year=2021,
                 ),
                 Reference(
                     citation="Cote CJ, Lerman J, Anderson BJ. A Practice of Anesthesia for "
-                             "Infants and Children. 6th ed. Philadelphia: Elsevier; 2019. "
-                             "Chapter 10: Blood Conservation.",
+                    "Infants and Children. 6th ed. Philadelphia: Elsevier; 2019. "
+                    "Chapter 10: Blood Conservation.",
                     doi=None,
                     pmid=None,
-                    year=2019
+                    year=2019,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -204,10 +208,7 @@ class TransfusionCalculator(BaseCalculator):
             return self._calculate_cryo_dose(weight_kg=weight_kg)
 
         else:
-            raise ValueError(
-                f"Unknown product type: {product_type}. "
-                f"Available: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate"
-            )
+            raise ValueError(f"Unknown product type: {product_type}. Available: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate")
 
     def _calculate_rbc_transfusion(
         self,
@@ -269,7 +270,7 @@ class TransfusionCalculator(BaseCalculator):
 
         interpretation = Interpretation(
             summary=f"Transfuse {volume_needed:.0f} mL {product['name']} (~{units_needed:.1f} units)",
-            detail=f"Raise Hct from {current_hematocrit:.1f}% to {target_hematocrit:.1f}%. EBV: {ebv:.0f} mL. {volume_needed/weight_kg:.1f} mL/kg.",
+            detail=f"Raise Hct from {current_hematocrit:.1f}% to {target_hematocrit:.1f}%. EBV: {ebv:.0f} mL. {volume_needed / weight_kg:.1f} mL/kg.",
             severity=Severity.NORMAL,
             recommendations=(f"Give {volume_needed:.0f} mL to raise Hct from {current_hematocrit:.1f}% to {target_hematocrit:.1f}%",),
             warnings=tuple(warnings),
@@ -286,7 +287,7 @@ class TransfusionCalculator(BaseCalculator):
                 "volume_ml": round(volume_needed, 0),
                 "units_needed": round(units_needed, 1),
                 "ml_per_kg": round(volume_needed / weight_kg, 1),
-            }
+            },
         )
 
     def _calculate_platelet_transfusion(

@@ -72,5 +72,5 @@ class Reference:
             "pmcid": self.pmcid,
             "year": self.year,
             "url": self.url or self.doi_url or self.pubmed_url,
-            "level_of_evidence": self.level_of_evidence
+            "level_of_evidence": self.level_of_evidence,
         }

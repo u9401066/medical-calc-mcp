@@ -51,7 +51,7 @@ class SecurityConfig:
     auth_enabled: bool = False
     auth_api_keys: list[str] = field(default_factory=list)
     auth_header_name: str = "X-API-Key"  # HTTP header for API key
-    auth_query_param: str = "api_key"    # Query parameter alternative
+    auth_query_param: str = "api_key"  # Query parameter alternative
 
     # Logging Configuration
     log_requests: bool = False  # Log all requests for audit
@@ -65,6 +65,7 @@ class SecurityConfig:
         Returns:
             SecurityConfig with values from environment or defaults
         """
+
         def parse_bool(value: Optional[str], default: bool = False) -> bool:
             if value is None:
                 return default
@@ -85,34 +86,18 @@ class SecurityConfig:
 
         return cls(
             # Rate Limiting
-            rate_limit_enabled=parse_bool(
-                os.getenv("SECURITY_RATE_LIMIT_ENABLED"), False
-            ),
-            rate_limit_requests_per_minute=parse_int(
-                os.getenv("SECURITY_RATE_LIMIT_RPM"), 60
-            ),
-            rate_limit_burst=parse_int(
-                os.getenv("SECURITY_RATE_LIMIT_BURST"), 10
-            ),
-            rate_limit_by_ip=parse_bool(
-                os.getenv("SECURITY_RATE_LIMIT_BY_IP"), True
-            ),
+            rate_limit_enabled=parse_bool(os.getenv("SECURITY_RATE_LIMIT_ENABLED"), False),
+            rate_limit_requests_per_minute=parse_int(os.getenv("SECURITY_RATE_LIMIT_RPM"), 60),
+            rate_limit_burst=parse_int(os.getenv("SECURITY_RATE_LIMIT_BURST"), 10),
+            rate_limit_by_ip=parse_bool(os.getenv("SECURITY_RATE_LIMIT_BY_IP"), True),
             # Authentication
-            auth_enabled=parse_bool(
-                os.getenv("SECURITY_AUTH_ENABLED"), False
-            ),
-            auth_api_keys=parse_list(
-                os.getenv("SECURITY_API_KEYS")
-            ),
+            auth_enabled=parse_bool(os.getenv("SECURITY_AUTH_ENABLED"), False),
+            auth_api_keys=parse_list(os.getenv("SECURITY_API_KEYS")),
             auth_header_name=os.getenv("SECURITY_AUTH_HEADER", "X-API-Key"),
             auth_query_param=os.getenv("SECURITY_AUTH_PARAM", "api_key"),
             # Logging
-            log_requests=parse_bool(
-                os.getenv("SECURITY_LOG_REQUESTS"), False
-            ),
-            log_auth_failures=parse_bool(
-                os.getenv("SECURITY_LOG_AUTH_FAILURES"), True
-            ),
+            log_requests=parse_bool(os.getenv("SECURITY_LOG_REQUESTS"), False),
+            log_auth_failures=parse_bool(os.getenv("SECURITY_LOG_AUTH_FAILURES"), True),
         )
 
     def is_security_enabled(self) -> bool:
@@ -129,20 +114,13 @@ class SecurityConfig:
         warnings = []
 
         if self.auth_enabled and not self.auth_api_keys:
-            warnings.append(
-                "Authentication is enabled but no API keys are configured. "
-                "Set SECURITY_API_KEYS environment variable."
-            )
+            warnings.append("Authentication is enabled but no API keys are configured. Set SECURITY_API_KEYS environment variable.")
 
         if self.rate_limit_enabled and self.rate_limit_requests_per_minute < 1:
-            warnings.append(
-                "Rate limit requests per minute must be at least 1."
-            )
+            warnings.append("Rate limit requests per minute must be at least 1.")
 
         if self.rate_limit_burst < 1:
-            warnings.append(
-                "Rate limit burst must be at least 1."
-            )
+            warnings.append("Rate limit burst must be at least 1.")
 
         return warnings
 

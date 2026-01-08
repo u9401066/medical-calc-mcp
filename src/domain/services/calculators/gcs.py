@@ -18,7 +18,6 @@ Reference (40-year update):
     PMID: 25030516
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -53,7 +52,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                 name="Glasgow Coma Scale (GCS)",
                 purpose="Assess level of consciousness and brain injury severity",
                 input_params=["eye_response", "verbal_response", "motor_response"],
-                output_type="GCS score (3-15) with injury classification"
+                output_type="GCS score (3-15) with injury classification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -87,29 +86,36 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                 ),
                 icd10_codes=("S06", "R40.20", "R40.21", "R40.22", "R40.23", "R40.24"),
                 keywords=(
-                    "GCS", "Glasgow Coma Scale", "consciousness", "coma",
-                    "brain injury", "TBI", "mental status", "neurological",
-                    "head injury", "intubation", "airway",
-                )
+                    "GCS",
+                    "Glasgow Coma Scale",
+                    "consciousness",
+                    "coma",
+                    "brain injury",
+                    "TBI",
+                    "mental status",
+                    "neurological",
+                    "head injury",
+                    "intubation",
+                    "airway",
+                ),
             ),
             references=(
                 Reference(
-                    citation="Teasdale G, Jennett B. Assessment of coma and impaired consciousness. "
-                             "A practical scale. Lancet. 1974;2(7872):81-84.",
+                    citation="Teasdale G, Jennett B. Assessment of coma and impaired consciousness. A practical scale. Lancet. 1974;2(7872):81-84.",
                     doi="10.1016/s0140-6736(74)91639-0",
                     pmid="4136544",
-                    year=1974
+                    year=1974,
                 ),
                 Reference(
                     citation="Teasdale G, Maas A, Lecky F, et al. The Glasgow Coma Scale at 40 years: "
-                             "standing the test of time. Lancet Neurol. 2014;13(8):844-854.",
+                    "standing the test of time. Lancet Neurol. 2014;13(8):844-854.",
                     doi="10.1016/S1474-4422(14)70120-6",
                     pmid="25030516",
-                    year=2014
+                    year=2014,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -161,9 +167,7 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         gcs_notation = f"E{eye_response}V{'T' if is_intubated else verbal_response}M{motor_response}"
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            total_score, eye_response, verbal_response, motor_response, is_intubated
-        )
+        interpretation = self._get_interpretation(total_score, eye_response, verbal_response, motor_response, is_intubated)
 
         return ScoreResult(
             value=total_score,
@@ -179,23 +183,17 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                 "is_intubated": is_intubated,
             },
             calculation_details={
-                "eye_response": {
-                    "score": eye_response,
-                    "description": self._get_eye_description(eye_response)
-                },
+                "eye_response": {"score": eye_response, "description": self._get_eye_description(eye_response)},
                 "verbal_response": {
                     "score": verbal_response,
                     "description": self._get_verbal_description(verbal_response),
-                    "note": "Intubated - verbal cannot be assessed" if is_intubated else None
+                    "note": "Intubated - verbal cannot be assessed" if is_intubated else None,
                 },
-                "motor_response": {
-                    "score": motor_response,
-                    "description": self._get_motor_description(motor_response)
-                },
+                "motor_response": {"score": motor_response, "description": self._get_motor_description(motor_response)},
                 "notation": gcs_notation,
                 "total": total_score,
             },
-            formula_used="GCS = Eye (1-4) + Verbal (1-5) + Motor (1-6)"
+            formula_used="GCS = Eye (1-4) + Verbal (1-5) + Motor (1-6)",
         )
 
     def _get_eye_description(self, score: int) -> str:
@@ -228,21 +226,14 @@ class GlasgowComaScaleCalculator(BaseCalculator):
         }
         return descriptions.get(score, "Unknown")
 
-    def _get_interpretation(
-        self,
-        total: int,
-        eye: int,
-        verbal: int,
-        motor: int,
-        intubated: bool
-    ) -> Interpretation:
+    def _get_interpretation(self, total: int, eye: int, verbal: int, motor: int, intubated: bool) -> Interpretation:
         """Get interpretation based on GCS score"""
 
         if total <= 8:
             return Interpretation(
                 summary=f"GCS {total}: Severe brain injury / Coma",
                 detail="GCS ≤ 8 indicates coma. Patient cannot follow commands and has "
-                       "severely impaired consciousness. Airway protection is typically required.",
+                "severely impaired consciousness. Airway protection is typically required.",
                 severity=Severity.CRITICAL,
                 stage="Severe",
                 stage_description="Severe brain injury / Coma",
@@ -264,13 +255,12 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                     "Neurosurgery consult",
                     "ICP monitoring consideration",
                     "Frequent neuro checks",
-                )
+                ),
             )
         elif total <= 12:
             return Interpretation(
                 summary=f"GCS {total}: Moderate brain injury",
-                detail="GCS 9-12 indicates moderate brain injury. Patient may follow simple "
-                       "commands but has impaired consciousness.",
+                detail="GCS 9-12 indicates moderate brain injury. Patient may follow simple commands but has impaired consciousness.",
                 severity=Severity.SEVERE,
                 stage="Moderate",
                 stage_description="Moderate brain injury",
@@ -290,13 +280,12 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                     "Consider ICU/step-down admission",
                     "Neuroimaging if indicated",
                     "Watch for signs of herniation",
-                )
+                ),
             )
         elif total <= 14:
             return Interpretation(
                 summary=f"GCS {total}: Mild brain injury",
-                detail="GCS 13-14 indicates mild brain injury. Patient is conscious but may "
-                       "be confused or have minor neurological deficits.",
+                detail="GCS 13-14 indicates mild brain injury. Patient is conscious but may be confused or have minor neurological deficits.",
                 severity=Severity.MILD,
                 stage="Mild",
                 stage_description="Mild brain injury",
@@ -314,13 +303,12 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                     "Serial GCS assessments every 2-4 hours",
                     "Consider CT based on Canadian/New Orleans criteria",
                     "Discharge with instructions if appropriate",
-                )
+                ),
             )
         else:  # GCS 15
             return Interpretation(
                 summary=f"GCS {total}: Normal consciousness",
-                detail="GCS 15 indicates normal level of consciousness. Patient is fully alert "
-                       "and oriented with normal responses.",
+                detail="GCS 15 indicates normal level of consciousness. Patient is fully alert and oriented with normal responses.",
                 severity=Severity.NORMAL,
                 stage="Normal",
                 stage_description="Normal consciousness",
@@ -332,5 +320,5 @@ class GlasgowComaScaleCalculator(BaseCalculator):
                 next_steps=(
                     "Continue routine care",
                     "Evaluate for other pathology if clinically concerning",
-                )
+                ),
             )

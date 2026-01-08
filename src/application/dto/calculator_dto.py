@@ -17,6 +17,7 @@ class CalculateRequest:
         tool_id: The calculator to use
         params: Dictionary of input parameters
     """
+
     tool_id: str
     params: dict[str, Any]
 
@@ -24,6 +25,7 @@ class CalculateRequest:
 @dataclass
 class ReferenceDTO:
     """Reference information"""
+
     citation: str
     doi: Optional[str] = None
     pmid: Optional[str] = None
@@ -33,6 +35,7 @@ class ReferenceDTO:
 @dataclass
 class InterpretationDTO:
     """Interpretation of calculation result"""
+
     summary: str
     severity: Optional[str] = None
     recommendation: Optional[str] = None
@@ -44,6 +47,7 @@ class CalculateResponse:
     """
     Response DTO for calculation.
     """
+
     success: bool
     tool_id: str
     score_name: str

@@ -14,7 +14,6 @@ Reference:
     PMID: 6774200
 """
 
-
 from typing import Optional
 
 from ...entities.score_result import ScoreResult
@@ -69,7 +68,7 @@ class WintersFormulaCalculator(BaseCalculator):
                 name="Winter's Formula",
                 purpose="Predict expected PaCO₂ in metabolic acidosis",
                 input_params=["hco3", "actual_paco2"],
-                output_type="Expected PaCO₂ range with compensation assessment"
+                output_type="Expected PaCO₂ range with compensation assessment",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -101,8 +100,14 @@ class WintersFormulaCalculator(BaseCalculator):
                 ),
                 icd10_codes=("E87.2", "R79.89"),
                 keywords=(
-                    "Winter's formula", "Winters", "expected PaCO2", "respiratory compensation",
-                    "metabolic acidosis", "mixed disorder", "ABG", "acid-base",
+                    "Winter's formula",
+                    "Winters",
+                    "expected PaCO2",
+                    "respiratory compensation",
+                    "metabolic acidosis",
+                    "mixed disorder",
+                    "ABG",
+                    "acid-base",
                 ),
             ),
             references=self._get_references(),
@@ -156,9 +161,7 @@ class WintersFormulaCalculator(BaseCalculator):
             expected_lower = 10
 
         # Generate interpretation
-        interpretation = self._interpret_compensation(
-            hco3, expected_paco2, expected_lower, expected_upper, actual_paco2
-        )
+        interpretation = self._interpret_compensation(hco3, expected_paco2, expected_lower, expected_upper, actual_paco2)
 
         # Build calculation details
         details = {

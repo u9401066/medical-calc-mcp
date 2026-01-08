@@ -198,7 +198,7 @@ class DiscoveryResult:
 class EnrichedHighLevelKey:
     """
     Auto-enriched HighLevelKey with extracted metadata.
-    
+
     Contains both original (manual) and extracted (auto) fields.
     """
 
@@ -235,15 +235,15 @@ class EnrichedHighLevelKey:
 class AutoDiscoveryEngine:
     """
     Lightweight auto-discovery engine for medical calculators.
-    
+
     Automatically enriches tool metadata by extracting:
     1. Conditions from docstrings (regex patterns)
     2. Keywords from parameter names and docstrings
     3. Clinical questions from context templates
     4. Clinical domains from parameter types
-    
+
     Then builds multi-dimensional inverted indexes for fast search.
-    
+
     Zero external dependencies - pure Python stdlib only.
     """
 
@@ -267,7 +267,7 @@ class AutoDiscoveryEngine:
     def build_from_registry(self, registry: ToolRegistry) -> None:
         """
         Build discovery indexes from registry.
-        
+
         Called once at server startup. Extracts and indexes all metadata.
         """
         self._clear()
@@ -303,7 +303,7 @@ class AutoDiscoveryEngine:
     def _enrich_tool(self, calc: BaseCalculator) -> EnrichedHighLevelKey:
         """
         Extract additional metadata from a calculator.
-        
+
         Returns EnrichedHighLevelKey with both manual and auto-extracted fields.
         """
         high_key = calc.high_level_key
@@ -321,9 +321,7 @@ class AutoDiscoveryEngine:
         extracted_keywords = self._extract_keywords(full_doc, low_key.input_params)
 
         # 3. Generate clinical questions from context
-        extracted_questions = self._generate_questions(
-            high_key.clinical_contexts, extracted_conditions
-        )
+        extracted_questions = self._generate_questions(high_key.clinical_contexts, extracted_conditions)
 
         # 4. Extract clinical domains from parameters
         extracted_domains = self._extract_domains(low_key.input_params)
@@ -353,9 +351,7 @@ class AutoDiscoveryEngine:
 
         return conditions
 
-    def _extract_keywords(
-        self, text: str, params: list[str]
-    ) -> set[str]:
+    def _extract_keywords(self, text: str, params: list[str]) -> set[str]:
         """Extract keywords from text and parameter names."""
         keywords: set[str] = set()
 
@@ -382,9 +378,25 @@ class AutoDiscoveryEngine:
 
         # Filter stopwords
         stopwords = {
-            "the", "and", "for", "with", "from", "this", "that", "have",
-            "been", "were", "will", "would", "could", "should", "using",
-            "based", "calculate", "assessment", "score",
+            "the",
+            "and",
+            "for",
+            "with",
+            "from",
+            "this",
+            "that",
+            "have",
+            "been",
+            "were",
+            "will",
+            "would",
+            "could",
+            "should",
+            "using",
+            "based",
+            "calculate",
+            "assessment",
+            "score",
         }
         keywords -= stopwords
 
@@ -484,9 +496,7 @@ class AutoDiscoveryEngine:
             related.sort(key=lambda x: x[1], reverse=True)
             self._related_tools[tool_id] = related[:10]
 
-    def _compute_similarity(
-        self, e1: EnrichedHighLevelKey, e2: EnrichedHighLevelKey
-    ) -> float:
+    def _compute_similarity(self, e1: EnrichedHighLevelKey, e2: EnrichedHighLevelKey) -> float:
         """Compute similarity between two enriched keys."""
         score = 0.0
 
@@ -529,14 +539,14 @@ class AutoDiscoveryEngine:
     def search(self, query: str, limit: int = 10) -> list[DiscoveryResult]:
         """
         Search for tools matching a natural language query.
-        
+
         Searches across all dimensions:
         - Conditions
         - Keywords
         - Domains
         - Parameters
         - Question words
-        
+
         Returns ranked results with match reasons.
         """
         if not self._is_built:
@@ -588,21 +598,15 @@ class AutoDiscoveryEngine:
                     add_score(tool_id, 0.5, f"question:{word}")
 
         # Build and sort results
-        results = [
-            DiscoveryResult(tool_id=tid, score=score, match_reasons=reasons)
-            for tid, (score, reasons) in scores.items()
-            if score > 0
-        ]
+        results = [DiscoveryResult(tool_id=tid, score=score, match_reasons=reasons) for tid, (score, reasons) in scores.items() if score > 0]
         results.sort(key=lambda x: x.score, reverse=True)
 
         return results[:limit]
 
-    def get_related_tools(
-        self, tool_id: str, limit: int = 5
-    ) -> list[tuple[str, float]]:
+    def get_related_tools(self, tool_id: str, limit: int = 5) -> list[tuple[str, float]]:
         """
         Get tools related to the given tool.
-        
+
         Returns list of (tool_id, similarity_score) tuples,
         sorted by similarity (highest first).
         """
@@ -614,9 +618,9 @@ class AutoDiscoveryEngine:
     def find_tools_by_params(self, params: list[str]) -> list[str]:
         """
         Find tools that use the given parameters.
-        
+
         Useful for: "I have creatinine and age, what can I calculate?"
-        
+
         Returns tool IDs sorted by number of matching parameters.
         """
         if not self._is_built:

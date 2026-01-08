@@ -47,7 +47,7 @@ class CkdEpi2021Calculator(BaseCalculator):
                 name="CKD-EPI 2021 (Creatinine, without race)",
                 purpose="Calculate estimated glomerular filtration rate (eGFR)",
                 input_params=["age", "sex", "serum_creatinine"],
-                output_type="eGFR (mL/min/1.73m²)"
+                output_type="eGFR (mL/min/1.73m²)",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -79,30 +79,31 @@ class CkdEpi2021Calculator(BaseCalculator):
                 ),
                 icd10_codes=("N18.1", "N18.2", "N18.3", "N18.4", "N18.5", "N18.6", "N18.9"),
                 keywords=(
-                    "GFR", "eGFR", "creatinine", "kidney", "renal",
-                    "CKD", "chronic kidney disease", "kidney function",
-                )
+                    "GFR",
+                    "eGFR",
+                    "creatinine",
+                    "kidney",
+                    "renal",
+                    "CKD",
+                    "chronic kidney disease",
+                    "kidney function",
+                ),
             ),
             references=(
                 Reference(
                     citation="Inker LA, Eneanya ND, Coresh J, et al. New Creatinine- and "
-                             "Cystatin C-Based Equations to Estimate GFR without Race. "
-                             "N Engl J Med. 2021;385(19):1737-1749.",
+                    "Cystatin C-Based Equations to Estimate GFR without Race. "
+                    "N Engl J Med. 2021;385(19):1737-1749.",
                     doi="10.1056/NEJMoa2102953",
                     pmid="34554658",
-                    year=2021
+                    year=2021,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
-    def calculate(
-        self,
-        age: int,
-        sex: Literal["male", "female"],
-        serum_creatinine: float
-    ) -> ScoreResult:
+    def calculate(self, age: int, sex: Literal["male", "female"], serum_creatinine: float) -> ScoreResult:
         """
         Calculate eGFR using CKD-EPI 2021 equation.
 
@@ -135,13 +136,7 @@ class CkdEpi2021Calculator(BaseCalculator):
         # Calculate eGFR
         scr_kappa = serum_creatinine / kappa
 
-        egfr = (
-            142
-            * (min(scr_kappa, 1) ** alpha)
-            * (max(scr_kappa, 1) ** -1.200)
-            * (0.9938 ** age)
-            * sex_coefficient
-        )
+        egfr = 142 * (min(scr_kappa, 1) ** alpha) * (max(scr_kappa, 1) ** -1.200) * (0.9938**age) * sex_coefficient
 
         # Round to 1 decimal place
         egfr = round(egfr, 1)
@@ -156,18 +151,9 @@ class CkdEpi2021Calculator(BaseCalculator):
             references=list(self.references),
             tool_id=self.tool_id,
             tool_name=self.name,
-            raw_inputs={
-                "age": age,
-                "sex": sex,
-                "serum_creatinine": serum_creatinine
-            },
-            calculation_details={
-                "equation": "CKD-EPI 2021 (without race)",
-                "kappa": kappa,
-                "alpha": alpha,
-                "sex_coefficient": sex_coefficient
-            },
-            formula_used="eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^Age × sex_coef"
+            raw_inputs={"age": age, "sex": sex, "serum_creatinine": serum_creatinine},
+            calculation_details={"equation": "CKD-EPI 2021 (without race)", "kappa": kappa, "alpha": alpha, "sex_coefficient": sex_coefficient},
+            formula_used="eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^Age × sex_coef",
         )
 
     def _get_interpretation(self, egfr: float) -> Interpretation:
@@ -176,8 +162,7 @@ class CkdEpi2021Calculator(BaseCalculator):
         if egfr >= 90:
             return Interpretation(
                 summary="Normal or high kidney function (G1)",
-                detail="eGFR ≥90 indicates normal kidney function. "
-                       "If no other markers of kidney damage, CKD is not present.",
+                detail="eGFR ≥90 indicates normal kidney function. If no other markers of kidney damage, CKD is not present.",
                 severity=Severity.NORMAL,
                 stage="G1",
                 stage_description="Normal or high GFR",
@@ -189,13 +174,12 @@ class CkdEpi2021Calculator(BaseCalculator):
                 next_steps=(
                     "Check for other markers of kidney damage (proteinuria, hematuria)",
                     "Address cardiovascular risk factors",
-                )
+                ),
             )
         elif egfr >= 60:
             return Interpretation(
                 summary="Mildly decreased kidney function (G2)",
-                detail="eGFR 60-89 indicates mildly decreased kidney function. "
-                       "CKD diagnosis requires additional markers of kidney damage.",
+                detail="eGFR 60-89 indicates mildly decreased kidney function. CKD diagnosis requires additional markers of kidney damage.",
                 severity=Severity.MILD,
                 stage="G2",
                 stage_description="Mildly decreased GFR",
@@ -207,13 +191,12 @@ class CkdEpi2021Calculator(BaseCalculator):
                 next_steps=(
                     "Check urine albumin-to-creatinine ratio",
                     "Review medication list for nephrotoxins",
-                )
+                ),
             )
         elif egfr >= 45:
             return Interpretation(
                 summary="Mildly to moderately decreased kidney function (G3a)",
-                detail="eGFR 45-59 indicates CKD Stage G3a. "
-                       "Referral to nephrology may be considered.",
+                detail="eGFR 45-59 indicates CKD Stage G3a. Referral to nephrology may be considered.",
                 severity=Severity.MILD,
                 stage="G3a",
                 stage_description="Mildly to moderately decreased GFR",
@@ -223,19 +206,16 @@ class CkdEpi2021Calculator(BaseCalculator):
                     "Avoid NSAIDs and nephrotoxic agents",
                     "Consider nephrology referral",
                 ),
-                warnings=(
-                    "Some medications require dose adjustment",
-                ),
+                warnings=("Some medications require dose adjustment",),
                 next_steps=(
                     "Calculate drug doses based on eGFR",
                     "Check for anemia and mineral bone disease",
-                )
+                ),
             )
         elif egfr >= 30:
             return Interpretation(
                 summary="Moderately to severely decreased kidney function (G3b)",
-                detail="eGFR 30-44 indicates CKD Stage G3b. "
-                       "Nephrology referral is recommended.",
+                detail="eGFR 30-44 indicates CKD Stage G3b. Nephrology referral is recommended.",
                 severity=Severity.MODERATE,
                 stage="G3b",
                 stage_description="Moderately to severely decreased GFR",
@@ -253,13 +233,12 @@ class CkdEpi2021Calculator(BaseCalculator):
                     "Refer to nephrology",
                     "Check PTH, calcium, phosphorus, vitamin D",
                     "Check hemoglobin for anemia",
-                )
+                ),
             )
         elif egfr >= 15:
             return Interpretation(
                 summary="Severely decreased kidney function (G4)",
-                detail="eGFR 15-29 indicates CKD Stage G4. "
-                       "Prepare for possible renal replacement therapy.",
+                detail="eGFR 15-29 indicates CKD Stage G4. Prepare for possible renal replacement therapy.",
                 severity=Severity.SEVERE,
                 stage="G4",
                 stage_description="Severely decreased GFR",
@@ -278,13 +257,12 @@ class CkdEpi2021Calculator(BaseCalculator):
                     "Discuss dialysis and transplant options",
                     "Consider AV fistula creation if hemodialysis planned",
                     "Vaccinate for hepatitis B",
-                )
+                ),
             )
         else:
             return Interpretation(
                 summary="Kidney failure (G5)",
-                detail="eGFR <15 indicates kidney failure. "
-                       "Renal replacement therapy may be needed.",
+                detail="eGFR <15 indicates kidney failure. Renal replacement therapy may be needed.",
                 severity=Severity.CRITICAL,
                 stage="G5",
                 stage_description="Kidney failure",
@@ -303,5 +281,5 @@ class CkdEpi2021Calculator(BaseCalculator):
                     "Initiate dialysis if symptomatic uremia",
                     "Complete transplant workup if candidate",
                     "Optimize conservative management if not dialysis candidate",
-                )
+                ),
             )

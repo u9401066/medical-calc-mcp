@@ -107,11 +107,16 @@ class PIM3Calculator(BaseCalculator):
                 name="Pediatric Index of Mortality 3 (PIM3)",
                 purpose="Predict PICU mortality for quality benchmarking",
                 input_params=[
-                    "systolic_bp", "pupillary_reaction", "mechanical_ventilation",
-                    "base_excess", "elective_admission", "recovery_post_procedure",
-                    "cardiac_bypass", "diagnosis_category"
+                    "systolic_bp",
+                    "pupillary_reaction",
+                    "mechanical_ventilation",
+                    "base_excess",
+                    "elective_admission",
+                    "recovery_post_procedure",
+                    "cardiac_bypass",
+                    "diagnosis_category",
                 ],
-                output_type="Predicted mortality probability (%)"
+                output_type="Predicted mortality probability (%)",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -136,12 +141,12 @@ class PIM3Calculator(BaseCalculator):
                     citation="Straney L, et al. PIM3: An Updated Model for Predicting Mortality in PICU. Pediatr Crit Care Med. 2013;14(7):673-681.",
                     doi="10.1097/PCC.0b013e31829760cf",
                     pmid="23863821",
-                    year=2013
+                    year=2013,
                 ),
                 Reference(
                     citation="Slater A, Shann F, Pearson G; PIM Study Group. PIM2: a revised version. Intensive Care Med. 2003;29(2):278-285.",
                     pmid="12541154",
-                    year=2003
+                    year=2003,
                 ),
             ),
         )
@@ -158,7 +163,7 @@ class PIM3Calculator(BaseCalculator):
         high_risk_diagnosis: bool = False,
         low_risk_diagnosis: bool = False,
         very_high_risk_diagnosis: bool = False,
-        diagnosis_name: Optional[str] = None
+        diagnosis_name: Optional[str] = None,
     ) -> ScoreResult:
         """
         Calculate PIM3 predicted mortality.
@@ -221,7 +226,7 @@ class PIM3Calculator(BaseCalculator):
 
         # Systolic BP (squared, scaled)
         sbp_scaled = systolic_bp / 100
-        logit += self.COEFFICIENTS["sbp_squared"] * (sbp_scaled ** 2)
+        logit += self.COEFFICIENTS["sbp_squared"] * (sbp_scaled**2)
 
         # Recovery post-procedure
         if recovery_post_procedure:
@@ -293,9 +298,8 @@ class PIM3Calculator(BaseCalculator):
                 + (f"Protective factors: {', '.join(protective_factors)}" if protective_factors else "")
             ),
             recommendations=(
-                "PIM3 is for PICU quality benchmarking, not individual prognosis. "
-                "Standardized mortality ratio (SMR) = observed/expected deaths.",
-            )
+                "PIM3 is for PICU quality benchmarking, not individual prognosis. Standardized mortality ratio (SMR) = observed/expected deaths.",
+            ),
         )
 
         details = {
@@ -314,7 +318,7 @@ class PIM3Calculator(BaseCalculator):
                 "bypass": cardiac_bypass,
             },
             "note": "For quality benchmarking only. Do not use for individual patient decisions.",
-            "next_step": "Calculate SMR = observed deaths / sum of predicted probabilities"
+            "next_step": "Calculate SMR = observed deaths / sum of predicted probabilities",
         }
 
         return ScoreResult(
@@ -337,5 +341,5 @@ class PIM3Calculator(BaseCalculator):
                 "very_high_risk_diagnosis": very_high_risk_diagnosis,
                 "diagnosis_name": diagnosis_name,
             },
-            calculation_details=details
+            calculation_details=details,
         )

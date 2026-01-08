@@ -77,7 +77,7 @@ class CockcroftGaultCalculator(BaseCalculator):
                 name="Cockcroft-Gault Creatinine Clearance",
                 purpose="Calculate creatinine clearance for drug dosing adjustments",
                 input_params=["age", "weight_kg", "creatinine_mg_dl", "sex", "height_cm"],
-                output_type="CrCl (mL/min) with dosing recommendations"
+                output_type="CrCl (mL/min) with dosing recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -116,19 +116,13 @@ class CockcroftGaultCalculator(BaseCalculator):
             ),
             references=(
                 Reference(
-                    citation=(
-                        "Cockcroft DW, Gault MH. Prediction of creatinine clearance from "
-                        "serum creatinine. Nephron. 1976;16(1):31-41."
-                    ),
+                    citation=("Cockcroft DW, Gault MH. Prediction of creatinine clearance from serum creatinine. Nephron. 1976;16(1):31-41."),
                     doi="10.1159/000180580",
                     pmid="1244564",
                     year=1976,
                 ),
                 Reference(
-                    citation=(
-                        "FDA Guidance for Industry: Pharmacokinetics in Patients with "
-                        "Impaired Renal Function. 2020."
-                    ),
+                    citation=("FDA Guidance for Industry: Pharmacokinetics in Patients with Impaired Renal Function. 2020."),
                     year=2020,
                 ),
                 Reference(
@@ -238,10 +232,7 @@ class CockcroftGaultCalculator(BaseCalculator):
             if adjbw is not None:
                 calc_details["adjbw_kg"] = round(adjbw, 1)
                 calc_details["crcl_adjbw"] = round(crcl_adjbw, 1) if crcl_adjbw else None
-                calc_details["obesity_note"] = (
-                    f"ABW ({weight_kg:.1f} kg) > 130% IBW ({ibw:.1f} kg). "
-                    f"Using adjusted body weight for dosing."
-                )
+                calc_details["obesity_note"] = f"ABW ({weight_kg:.1f} kg) > 130% IBW ({ibw:.1f} kg). Using adjusted body weight for dosing."
 
         calc_details["dosing_category"] = self._get_dosing_category(primary_crcl)
 
@@ -255,13 +246,7 @@ class CockcroftGaultCalculator(BaseCalculator):
             calculation_details=calc_details,
         )
 
-    def _calculate_crcl(
-        self,
-        age: int,
-        weight: float,
-        creatinine: float,
-        sex: str
-    ) -> float:
+    def _calculate_crcl(self, age: int, weight: float, creatinine: float, sex: str) -> float:
         """Calculate CrCl using Cockcroft-Gault formula"""
         crcl = ((140 - age) * weight) / (72 * creatinine)
         if sex == "female":
@@ -342,9 +327,7 @@ class CockcroftGaultCalculator(BaseCalculator):
         return Interpretation(
             summary=f"CrCl: {crcl:.1f} mL/min - {stage}",
             detail=(
-                f"Creatinine Clearance (Cockcroft-Gault): {crcl:.1f} mL/min. "
-                f"{stage}.{weight_note} "
-                f"FDA recommends Cockcroft-Gault for drug dosing adjustments."
+                f"Creatinine Clearance (Cockcroft-Gault): {crcl:.1f} mL/min. {stage}.{weight_note} FDA recommends Cockcroft-Gault for drug dosing adjustments."
             ),
             severity=severity,
             stage=stage,
@@ -355,7 +338,9 @@ class CockcroftGaultCalculator(BaseCalculator):
                 "May underestimate GFR in elderly or malnourished",
                 "Not validated for acute kidney injury",
                 "Different drugs use different CrCl thresholds - check labeling",
-            ) if crcl < 60 else (
+            )
+            if crcl < 60
+            else (
                 "This is NOT the same as CKD-EPI eGFR",
                 "Many drug labels specifically require CG-CrCl",
             ),

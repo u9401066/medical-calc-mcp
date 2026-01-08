@@ -58,7 +58,7 @@ class CorrectedSodiumCalculator(BaseCalculator):
                 name="Corrected Sodium for Hyperglycemia",
                 purpose="Calculate true sodium level corrected for hyperglycemic dilution",
                 input_params=["measured_sodium", "glucose", "formula (optional)"],
-                output_type="Corrected Sodium (mEq/L)"
+                output_type="Corrected Sodium (mEq/L)",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -92,29 +92,33 @@ class CorrectedSodiumCalculator(BaseCalculator):
                 ),
                 icd10_codes=("E10.10", "E11.10", "E11.00", "E87.1", "E13.00"),
                 keywords=(
-                    "corrected sodium", "hyperglycemia", "DKA", "HHS",
-                    "pseudohyponatremia", "sodium correction", "glucose",
+                    "corrected sodium",
+                    "hyperglycemia",
+                    "DKA",
+                    "HHS",
+                    "pseudohyponatremia",
+                    "sodium correction",
+                    "glucose",
                     "dilutional hyponatremia",
-                )
+                ),
             ),
             references=(
                 Reference(
-                    citation="Katz MA. Hyperglycemia-induced hyponatremia—calculation of expected "
-                             "serum sodium depression. N Engl J Med. 1973;289(16):843-844.",
+                    citation="Katz MA. Hyperglycemia-induced hyponatremia—calculation of expected serum sodium depression. N Engl J Med. 1973;289(16):843-844.",
                     doi="10.1056/NEJM197310182891607",
                     pmid="4763428",
-                    year=1973
+                    year=1973,
                 ),
                 Reference(
                     citation="Hillier TA, Abbott RD, Barrett EJ. Hyponatremia: evaluating the "
-                             "correction factor for hyperglycemia. Am J Med. 1999;106(4):399-403.",
+                    "correction factor for hyperglycemia. Am J Med. 1999;106(4):399-403.",
                     doi="10.1016/S0002-9343(99)00055-8",
                     pmid="10225241",
-                    year=1999
+                    year=1999,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -166,12 +170,7 @@ class CorrectedSodiumCalculator(BaseCalculator):
         sodium_correction = round(sodium_correction, 1)
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            measured_sodium,
-            corrected_sodium,
-            sodium_correction,
-            glucose_mgdl
-        )
+        interpretation = self._get_interpretation(measured_sodium, corrected_sodium, sodium_correction, glucose_mgdl)
 
         return ScoreResult(
             value=corrected_sodium,
@@ -194,16 +193,10 @@ class CorrectedSodiumCalculator(BaseCalculator):
                 "corrected_sodium": corrected_sodium,
                 "formula_used": formula,
             },
-            formula_used=f"Corrected Na = Measured Na + {correction_factor} × ((Glucose - 100) / 100)"
+            formula_used=f"Corrected Na = Measured Na + {correction_factor} × ((Glucose - 100) / 100)",
         )
 
-    def _get_interpretation(
-        self,
-        measured_na: float,
-        corrected_na: float,
-        correction: float,
-        glucose: float
-    ) -> Interpretation:
+    def _get_interpretation(self, measured_na: float, corrected_na: float, correction: float, glucose: float) -> Interpretation:
         """Get clinical interpretation based on corrected sodium"""
 
         # Determine glucose severity
@@ -232,9 +225,9 @@ class CorrectedSodiumCalculator(BaseCalculator):
             return Interpretation(
                 summary=f"True Hyponatremia: Corrected Na = {corrected_na} mEq/L ({na_status})",
                 detail=f"After correcting for {glucose_severity} (glucose {glucose} mg/dL), "
-                       f"the patient has true hyponatremia. Measured Na: {measured_na}, "
-                       f"Correction: +{correction} mEq/L. "
-                       f"The hyponatremia is NOT solely due to hyperglycemia.",
+                f"the patient has true hyponatremia. Measured Na: {measured_na}, "
+                f"Correction: +{correction} mEq/L. "
+                f"The hyponatremia is NOT solely due to hyperglycemia.",
                 severity=severity,
                 stage=na_status.title(),
                 stage_description=f"True {na_status}",
@@ -247,14 +240,14 @@ class CorrectedSodiumCalculator(BaseCalculator):
                 warnings=(
                     "True hyponatremia present - not just dilutional from glucose",
                     "Risk of overcorrection as glucose normalizes",
-                ) if corrected_na < 125 else (
-                    "True hyponatremia present",
-                ),
+                )
+                if corrected_na < 125
+                else ("True hyponatremia present",),
                 next_steps=(
                     "Calculate free water excess",
                     "Plan fluid strategy accounting for both glucose and Na",
                     "Frequent electrolyte monitoring (q2-4h)",
-                )
+                ),
             )
         elif corrected_na > 145:
             # Hypernatremia
@@ -271,9 +264,9 @@ class CorrectedSodiumCalculator(BaseCalculator):
             return Interpretation(
                 summary=f"Hypernatremia: Corrected Na = {corrected_na} mEq/L ({na_status})",
                 detail=f"After correcting for {glucose_severity} (glucose {glucose} mg/dL), "
-                       f"the patient has hypernatremia. Measured Na: {measured_na}, "
-                       f"Correction: +{correction} mEq/L. "
-                       f"This indicates significant free water deficit.",
+                f"the patient has hypernatremia. Measured Na: {measured_na}, "
+                f"Correction: +{correction} mEq/L. "
+                f"This indicates significant free water deficit.",
                 severity=severity,
                 stage=na_status.title(),
                 stage_description=na_status,
@@ -292,16 +285,16 @@ class CorrectedSodiumCalculator(BaseCalculator):
                     "Calculate free water deficit",
                     "Plan fluid resuscitation with appropriate Na content",
                     "Frequent monitoring (q2-4h)",
-                )
+                ),
             )
         else:
             # Normal corrected sodium
             return Interpretation(
                 summary=f"Normal Corrected Sodium: {corrected_na} mEq/L",
                 detail=f"After correcting for {glucose_severity} (glucose {glucose} mg/dL), "
-                       f"sodium is within normal range. Measured Na: {measured_na}, "
-                       f"Correction: +{correction} mEq/L. "
-                       f"The low measured sodium is primarily due to hyperglycemic dilution.",
+                f"sodium is within normal range. Measured Na: {measured_na}, "
+                f"Correction: +{correction} mEq/L. "
+                f"The low measured sodium is primarily due to hyperglycemic dilution.",
                 severity=Severity.NORMAL if correction < 5 else Severity.MILD,
                 stage="Normal (corrected)",
                 stage_description="Normal sodium after correction",
@@ -315,5 +308,5 @@ class CorrectedSodiumCalculator(BaseCalculator):
                     "Treat underlying hyperglycemia (insulin, fluids)",
                     "Sodium should normalize with glucose correction",
                     "Recheck electrolytes in 2-4 hours",
-                )
+                ),
             )

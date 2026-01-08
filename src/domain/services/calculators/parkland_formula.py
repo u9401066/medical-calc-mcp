@@ -25,7 +25,6 @@ References:
     PMID: 20018449
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -82,7 +81,7 @@ class ParklandFormulaCalculator(BaseCalculator):
                 name="Parkland Formula (Burn Resuscitation)",
                 purpose="Calculate crystalloid fluid requirements for burn resuscitation",
                 input_params=["weight_kg", "tbsa_percent", "hours_since_burn"],
-                output_type="Fluid volume (mL) with infusion rate (mL/hr)"
+                output_type="Fluid volume (mL) with infusion rate (mL/hr)",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -114,33 +113,26 @@ class ParklandFormulaCalculator(BaseCalculator):
                 ),
                 icd10_codes=(
                     "T20-T32",  # Burns
-                    "T31",      # Burns classified by extent
+                    "T31",  # Burns classified by extent
                 ),
             ),
             references=(
                 Reference(
                     citation=(
-                        "Baxter CR, Shires T. Physiological response to crystalloid "
-                        "resuscitation of severe burns. Ann N Y Acad Sci. 1968;150(3):874-894."
+                        "Baxter CR, Shires T. Physiological response to crystalloid resuscitation of severe burns. Ann N Y Acad Sci. 1968;150(3):874-894."
                     ),
                     doi="10.1111/j.1749-6632.1968.tb14738.x",
                     pmid="4973463",
                     year=1968,
                 ),
                 Reference(
-                    citation=(
-                        "ISBI Practice Guidelines Committee. ISBI Practice Guidelines for "
-                        "Burn Care. Burns. 2016;42(5):953-1021."
-                    ),
+                    citation=("ISBI Practice Guidelines Committee. ISBI Practice Guidelines for Burn Care. Burns. 2016;42(5):953-1021."),
                     doi="10.1016/j.burns.2016.05.013",
                     pmid="27542292",
                     year=2016,
                 ),
                 Reference(
-                    citation=(
-                        "Greenhalgh DG. Burn resuscitation: The results of the ISBI/ABA "
-                        "survey. Burns. 2010;36(2):176-182."
-                    ),
+                    citation=("Greenhalgh DG. Burn resuscitation: The results of the ISBI/ABA survey. Burns. 2010;36(2):176-182."),
                     doi="10.1016/j.burns.2009.09.004",
                     pmid="20018449",
                     year=2010,
@@ -249,9 +241,7 @@ class ParklandFormulaCalculator(BaseCalculator):
             severity_category = "Minor burn"
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            total_24hr, tbsa_percent, weight_kg, is_pediatric
-        )
+        interpretation = self._get_interpretation(total_24hr, tbsa_percent, weight_kg, is_pediatric)
 
         return ScoreResult(
             tool_id=self.tool_id,
@@ -294,13 +284,7 @@ class ParklandFormulaCalculator(BaseCalculator):
             },
         )
 
-    def _get_interpretation(
-        self,
-        total_fluid: float,
-        tbsa: float,
-        weight: float,
-        is_pediatric: bool
-    ) -> Interpretation:
+    def _get_interpretation(self, total_fluid: float, tbsa: float, weight: float, is_pediatric: bool) -> Interpretation:
         """Generate interpretation based on burn severity and fluid needs"""
 
         # Classify severity
@@ -335,18 +319,22 @@ class ParklandFormulaCalculator(BaseCalculator):
         ]
 
         if tbsa >= 20:
-            base_recommendations.extend([
-                "Insert Foley catheter for strict I/O monitoring",
-                "Place 2 large-bore IVs (through burn if necessary)",
-                "Consider central line if peripheral access difficult",
-            ])
+            base_recommendations.extend(
+                [
+                    "Insert Foley catheter for strict I/O monitoring",
+                    "Place 2 large-bore IVs (through burn if necessary)",
+                    "Consider central line if peripheral access difficult",
+                ]
+            )
 
         if tbsa >= 40:
-            base_recommendations.extend([
-                "Anticipate fluid creep - volumes often exceed Parkland",
-                "Monitor for compartment syndrome (abdominal, extremity)",
-                "Early intubation if inhalation injury suspected",
-            ])
+            base_recommendations.extend(
+                [
+                    "Anticipate fluid creep - volumes often exceed Parkland",
+                    "Monitor for compartment syndrome (abdominal, extremity)",
+                    "Early intubation if inhalation injury suspected",
+                ]
+            )
 
         return Interpretation(
             summary=f"Parkland: {round(total_fluid)} mL/24hr - {burn_severity}",

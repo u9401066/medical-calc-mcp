@@ -57,7 +57,7 @@ class AnionGapCalculator(BaseCalculator):
                 name="Anion Gap",
                 purpose="Calculate serum anion gap for metabolic acidosis differential diagnosis",
                 input_params=["sodium", "chloride", "bicarbonate", "albumin (optional)"],
-                output_type="Anion Gap (mEq/L) with differential diagnosis"
+                output_type="Anion Gap (mEq/L) with differential diagnosis",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -92,27 +92,32 @@ class AnionGapCalculator(BaseCalculator):
                 ),
                 icd10_codes=("E87.2", "E10.10", "E11.10", "E87.4"),
                 keywords=(
-                    "anion gap", "AG", "metabolic acidosis", "HAGMA", "NAGMA",
-                    "DKA", "lactic acidosis", "acid-base", "MUDPILES",
-                )
+                    "anion gap",
+                    "AG",
+                    "metabolic acidosis",
+                    "HAGMA",
+                    "NAGMA",
+                    "DKA",
+                    "lactic acidosis",
+                    "acid-base",
+                    "MUDPILES",
+                ),
             ),
             references=(
                 Reference(
-                    citation="Kraut JA, Madias NE. Serum anion gap: its uses and limitations "
-                             "in clinical medicine. Clin J Am Soc Nephrol. 2007;2(1):162-174.",
+                    citation="Kraut JA, Madias NE. Serum anion gap: its uses and limitations in clinical medicine. Clin J Am Soc Nephrol. 2007;2(1):162-174.",
                     doi="10.2215/CJN.03020906",
                     pmid="17699401",
-                    year=2007
+                    year=2007,
                 ),
                 Reference(
-                    citation="Figge J, Jabor A, Kazda A, Fencl V. Anion gap and hypoalbuminemia. "
-                             "Crit Care Med. 1998;26(11):1807-1810.",
+                    citation="Figge J, Jabor A, Kazda A, Fencl V. Anion gap and hypoalbuminemia. Crit Care Med. 1998;26(11):1807-1810.",
                     pmid="9824071",
-                    year=1998
+                    year=1998,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -183,11 +188,7 @@ class AnionGapCalculator(BaseCalculator):
 
         # Determine interpretation
         ag_for_interpretation = corrected_ag if corrected_ag is not None else anion_gap
-        interpretation = self._get_interpretation(
-            ag_for_interpretation,
-            normal_range,
-            corrected_ag is not None
-        )
+        interpretation = self._get_interpretation(ag_for_interpretation, normal_range, corrected_ag is not None)
 
         return ScoreResult(
             value=corrected_ag if corrected_ag is not None else anion_gap,
@@ -205,15 +206,10 @@ class AnionGapCalculator(BaseCalculator):
                 "potassium": potassium,
             },
             calculation_details=calc_details,
-            formula_used=formula_used
+            formula_used=formula_used,
         )
 
-    def _get_interpretation(
-        self,
-        ag: float,
-        normal_range: tuple[int, int],
-        is_corrected: bool
-    ) -> Interpretation:
+    def _get_interpretation(self, ag: float, normal_range: tuple[int, int], is_corrected: bool) -> Interpretation:
         """Get clinical interpretation based on anion gap value"""
 
         ag_type = "Corrected AG" if is_corrected else "Anion Gap"
@@ -233,8 +229,8 @@ class AnionGapCalculator(BaseCalculator):
             return Interpretation(
                 summary=f"High Anion Gap Metabolic Acidosis (HAGMA) - {ag_type}: {ag} mEq/L",
                 detail=f"{severity_desc} anion gap suggests accumulation of unmeasured anions. "
-                       f"Consider MUDPILES: Methanol, Uremia, DKA/Ketoacidosis, "
-                       f"Propylene glycol, INH/Iron, Lactic acidosis, Ethylene glycol, Salicylates.",
+                f"Consider MUDPILES: Methanol, Uremia, DKA/Ketoacidosis, "
+                f"Propylene glycol, INH/Iron, Lactic acidosis, Ethylene glycol, Salicylates.",
                 severity=severity,
                 stage="HAGMA",
                 stage_description="High Anion Gap Metabolic Acidosis",
@@ -248,19 +244,21 @@ class AnionGapCalculator(BaseCalculator):
                 warnings=(
                     "High AG may indicate serious underlying condition",
                     "Urgent workup and treatment may be needed",
-                ) if ag > 20 else (),
+                )
+                if ag > 20
+                else (),
                 next_steps=(
                     "Calculate Delta Ratio (ΔAG/ΔHCO₃⁻) to detect mixed disorders",
                     "Obtain arterial blood gas if not already done",
                     "Address underlying cause",
-                )
+                ),
             )
         elif ag < normal_range[0]:
             # Low anion gap
             return Interpretation(
                 summary=f"Low Anion Gap - {ag_type}: {ag} mEq/L",
                 detail="Low anion gap may be seen with hypoalbuminemia (if not corrected), "
-                       "paraproteinemia (multiple myeloma), lithium toxicity, or laboratory error.",
+                "paraproteinemia (multiple myeloma), lithium toxicity, or laboratory error.",
                 severity=Severity.MILD,
                 stage="Low AG",
                 stage_description="Low Anion Gap",
@@ -273,16 +271,16 @@ class AnionGapCalculator(BaseCalculator):
                 next_steps=(
                     "Investigate cause of low anion gap",
                     "Use albumin-corrected AG if hypoalbuminemia present",
-                )
+                ),
             )
         else:
             # Normal anion gap
             return Interpretation(
                 summary=f"Normal Anion Gap - {ag_type}: {ag} mEq/L",
                 detail="Normal anion gap. If metabolic acidosis is present, consider "
-                       "Normal Anion Gap Metabolic Acidosis (NAGMA) causes: "
-                       "GI bicarbonate loss (diarrhea), renal tubular acidosis (RTA), "
-                       "or dilutional acidosis (large volume NS resuscitation).",
+                "Normal Anion Gap Metabolic Acidosis (NAGMA) causes: "
+                "GI bicarbonate loss (diarrhea), renal tubular acidosis (RTA), "
+                "or dilutional acidosis (large volume NS resuscitation).",
                 severity=Severity.NORMAL,
                 stage="Normal",
                 stage_description="Normal Anion Gap",
@@ -295,5 +293,5 @@ class AnionGapCalculator(BaseCalculator):
                     "If HCO₃⁻ low with normal AG: calculate urine anion gap",
                     "UAG positive (>0): RTA",
                     "UAG negative (<0): GI loss (diarrhea)",
-                )
+                ),
             )

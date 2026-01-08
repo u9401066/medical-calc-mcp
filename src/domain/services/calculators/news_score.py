@@ -66,11 +66,8 @@ class NewsScoreCalculator(BaseCalculator):
                 tool_id="news2_score",
                 name="NEWS2 (National Early Warning Score 2)",
                 purpose="Detect clinical deterioration and trigger appropriate clinical response",
-                input_params=[
-                    "respiratory_rate", "spo2", "on_supplemental_o2",
-                    "temperature", "systolic_bp", "heart_rate", "consciousness"
-                ],
-                output_type="NEWS2 score (0-20) with clinical response recommendations"
+                input_params=["respiratory_rate", "spo2", "on_supplemental_o2", "temperature", "systolic_bp", "heart_rate", "consciousness"],
+                output_type="NEWS2 score (0-20) with clinical response recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -102,32 +99,39 @@ class NewsScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("R65.10", "R65.11", "R65.20", "R65.21"),
                 keywords=(
-                    "NEWS", "NEWS2", "early warning score", "deterioration",
-                    "track and trigger", "vital signs", "monitoring",
-                    "clinical response", "escalation", "sepsis screening",
-                )
+                    "NEWS",
+                    "NEWS2",
+                    "early warning score",
+                    "deterioration",
+                    "track and trigger",
+                    "vital signs",
+                    "monitoring",
+                    "clinical response",
+                    "escalation",
+                    "sepsis screening",
+                ),
             ),
             references=(
                 Reference(
                     citation="Royal College of Physicians. National Early Warning Score (NEWS) 2: "
-                             "Standardising the assessment of acute-illness severity in the NHS. "
-                             "Updated report of a working party. London: RCP, 2017.",
+                    "Standardising the assessment of acute-illness severity in the NHS. "
+                    "Updated report of a working party. London: RCP, 2017.",
                     doi=None,
                     pmid=None,
-                    year=2017
+                    year=2017,
                 ),
                 Reference(
                     citation="Smith GB, Prytherch DR, Meredith P, et al. The ability of the National "
-                             "Early Warning Score (NEWS) to discriminate patients at risk of early "
-                             "cardiac arrest, unanticipated intensive care unit admission, and death. "
-                             "Resuscitation. 2013;84(4):465-470.",
+                    "Early Warning Score (NEWS) to discriminate patients at risk of early "
+                    "cardiac arrest, unanticipated intensive care unit admission, and death. "
+                    "Resuscitation. 2013;84(4):465-470.",
                     doi="10.1016/j.resuscitation.2012.12.016",
                     pmid="23295778",
-                    year=2013
+                    year=2013,
                 ),
             ),
             version="2.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -223,7 +227,7 @@ class NewsScoreCalculator(BaseCalculator):
                 "total": total_score,
                 "extreme_single_parameter": extreme_single_parameter,
             },
-            formula_used="NEWS2 = RR + SpO2 + Air + Temp + SBP + HR + AVPU"
+            formula_used="NEWS2 = RR + SpO2 + Air + Temp + SBP + HR + AVPU",
         )
 
     def _respiratory_rate_score(self, rr: int) -> int:
@@ -327,14 +331,14 @@ class NewsScoreCalculator(BaseCalculator):
                 next_steps=(
                     "Document observations",
                     "Continue current care plan",
-                )
+                ),
             )
         elif score <= 4:
             severity = Severity.MODERATE if extreme_single else Severity.MILD
             return Interpretation(
                 summary=f"NEWS2 {score}: {'Low-Medium' if not extreme_single else 'Medium'} clinical risk",
                 detail=f"Score indicates {'mild' if not extreme_single else 'concerning'} deviation from normal. "
-                       f"{'A single parameter is at extreme value, requiring urgent review.' if extreme_single else ''}",
+                f"{'A single parameter is at extreme value, requiring urgent review.' if extreme_single else ''}",
                 severity=severity,
                 stage="Low-Medium" if not extreme_single else "Medium",
                 stage_description="Low-medium clinical risk" if not extreme_single else "Single parameter extreme",
@@ -343,13 +347,11 @@ class NewsScoreCalculator(BaseCalculator):
                     "Increase monitoring frequency to minimum 4-6 hourly",
                     "Urgent review if single extreme parameter" if extreme_single else "Consider if escalation needed",
                 ),
-                warnings=(
-                    "Single extreme parameter detected - requires urgent review",
-                ) if extreme_single else (),
+                warnings=("Single extreme parameter detected - requires urgent review",) if extreme_single else (),
                 next_steps=(
                     "Registered nurse to decide if escalation of care needed",
                     "Consider ward-based urgent response if extreme single parameter",
-                )
+                ),
             )
         elif score <= 6:
             return Interpretation(
@@ -364,14 +366,12 @@ class NewsScoreCalculator(BaseCalculator):
                     "Continuous monitoring",
                     "Clinician to decide if escalation of care needed",
                 ),
-                warnings=(
-                    "Patient at risk of deterioration",
-                ),
+                warnings=("Patient at risk of deterioration",),
                 next_steps=(
                     "Urgent clinical review within 30 minutes",
                     "Clinician to assess and determine escalation",
                     "Consider sepsis if infection suspected",
-                )
+                ),
             )
         else:  # score >= 7
             return Interpretation(
@@ -396,5 +396,5 @@ class NewsScoreCalculator(BaseCalculator):
                     "Alert critical care/outreach team",
                     "Prepare for possible resuscitation",
                     "Consider ICU transfer",
-                )
+                ),
             )

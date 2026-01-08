@@ -83,7 +83,7 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                 name="Body Surface Area (BSA)",
                 purpose="Calculate BSA for chemotherapy dosing, cardiac indexing, and burn assessment",
                 input_params=["height_cm", "weight_kg", "formula"],
-                output_type="BSA (m²) with multiple formula results"
+                output_type="BSA (m²) with multiple formula results",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -120,7 +120,7 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                 icd10_codes=(
                     "C00-C96",  # Malignant neoplasms
                     "T20-T32",  # Burns
-                    "I50",      # Heart failure
+                    "I50",  # Heart failure
                 ),
             ),
             references=(
@@ -134,10 +134,7 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                     year=1916,
                 ),
                 Reference(
-                    citation=(
-                        "Mosteller RD. Simplified calculation of body-surface area. "
-                        "N Engl J Med. 1987;317(17):1098."
-                    ),
+                    citation=("Mosteller RD. Simplified calculation of body-surface area. N Engl J Med. 1987;317(17):1098."),
                     doi="10.1056/NEJM198710223171717",
                     pmid="3657876",
                     year=1987,
@@ -187,12 +184,12 @@ class BodySurfaceAreaCalculator(BaseCalculator):
 
         # Calculate BSA using all formulas
         bsa_mosteller = math.sqrt((height_cm * weight_kg) / 3600)
-        bsa_dubois = 0.007184 * (weight_kg ** 0.425) * (height_cm ** 0.725)
-        bsa_haycock = 0.024265 * (weight_kg ** 0.5378) * (height_cm ** 0.3964)
+        bsa_dubois = 0.007184 * (weight_kg**0.425) * (height_cm**0.725)
+        bsa_haycock = 0.024265 * (weight_kg**0.5378) * (height_cm**0.3964)
 
         # Boyd formula - corrected formula
         log_weight = math.log10(weight_kg)
-        bsa_boyd = 0.03330 * (weight_kg ** (0.6157 - 0.0188 * log_weight)) * (height_cm ** 0.3)
+        bsa_boyd = 0.03330 * (weight_kg ** (0.6157 - 0.0188 * log_weight)) * (height_cm**0.3)
 
         # Select primary result based on chosen formula
         formula_map = {
@@ -281,7 +278,9 @@ class BodySurfaceAreaCalculator(BaseCalculator):
                 "BSA may overestimate drug clearance in obese patients",
                 "Some protocols cap BSA at 2.0 m² for dosing",
                 "Different formulas may give slightly different results",
-            ) if bsa > 2.0 else (),
+            )
+            if bsa > 2.0
+            else (),
             next_steps=(
                 "Apply to chemotherapy protocol dosing",
                 "Calculate cardiac index if hemodynamic assessment needed",

@@ -68,7 +68,7 @@ class QsofaScoreCalculator(BaseCalculator):
                 name="qSOFA Score (Quick SOFA)",
                 purpose="Bedside screening for patients at risk of poor outcomes from sepsis",
                 input_params=["respiratory_rate", "systolic_bp", "altered_mentation"],
-                output_type="qSOFA score (0-3) with risk assessment"
+                output_type="qSOFA score (0-3) with risk assessment",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -99,40 +99,48 @@ class QsofaScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("A41", "R65.20", "R65.21"),
                 keywords=(
-                    "qSOFA", "quick SOFA", "sepsis screening", "sepsis",
-                    "infection", "early warning", "bedside", "Sepsis-3",
-                    "triage", "emergency", "ward",
-                )
+                    "qSOFA",
+                    "quick SOFA",
+                    "sepsis screening",
+                    "sepsis",
+                    "infection",
+                    "early warning",
+                    "bedside",
+                    "Sepsis-3",
+                    "triage",
+                    "emergency",
+                    "ward",
+                ),
             ),
             references=(
                 Reference(
                     citation="Singer M, Deutschman CS, Seymour CW, et al. The Third International "
-                             "Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). "
-                             "JAMA. 2016;315(8):801-810.",
+                    "Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). "
+                    "JAMA. 2016;315(8):801-810.",
                     doi="10.1001/jama.2016.0287",
                     pmid="26903338",
-                    year=2016
+                    year=2016,
                 ),
                 Reference(
                     citation="Seymour CW, Liu VX, Iwashyna TJ, et al. Assessment of Clinical "
-                             "Criteria for Sepsis: For the Third International Consensus "
-                             "Definitions for Sepsis and Septic Shock (Sepsis-3). "
-                             "JAMA. 2016;315(8):762-774.",
+                    "Criteria for Sepsis: For the Third International Consensus "
+                    "Definitions for Sepsis and Septic Shock (Sepsis-3). "
+                    "JAMA. 2016;315(8):762-774.",
                     doi="10.1001/jama.2016.0288",
                     pmid="26903335",
-                    year=2016
+                    year=2016,
                 ),
                 Reference(
                     citation="Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: "
-                             "International Guidelines for Management of Sepsis and Septic Shock 2021. "
-                             "Crit Care Med. 2021;49(11):e1063-e1143.",
+                    "International Guidelines for Management of Sepsis and Septic Shock 2021. "
+                    "Crit Care Med. 2021;49(11):e1063-e1143.",
                     doi="10.1097/CCM.0000000000005337",
                     pmid="34605781",
-                    year=2021
+                    year=2021,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -174,9 +182,7 @@ class QsofaScoreCalculator(BaseCalculator):
         score = int(rr_criteria) + int(sbp_criteria) + int(ams_criteria)
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            score, rr_criteria, sbp_criteria, ams_criteria
-        )
+        interpretation = self._get_interpretation(score, rr_criteria, sbp_criteria, ams_criteria)
 
         return ScoreResult(
             value=score,
@@ -197,16 +203,10 @@ class QsofaScoreCalculator(BaseCalculator):
                 "altered_mentation_criteria": f"GCS <15: {'Met' if ams_criteria else 'Not met'} (GCS {gcs_score})",
                 "total_score": score,
             },
-            formula_used="qSOFA = (RR ≥22) + (SBP ≤100) + (Altered mentation)"
+            formula_used="qSOFA = (RR ≥22) + (SBP ≤100) + (Altered mentation)",
         )
 
-    def _get_interpretation(
-        self,
-        score: int,
-        rr_met: bool,
-        sbp_met: bool,
-        ams_met: bool
-    ) -> Interpretation:
+    def _get_interpretation(self, score: int, rr_met: bool, sbp_met: bool, ams_met: bool) -> Interpretation:
         """Get interpretation based on qSOFA score"""
 
         criteria_met = []
@@ -223,10 +223,10 @@ class QsofaScoreCalculator(BaseCalculator):
             return Interpretation(
                 summary=f"qSOFA {score}/3: Positive - High risk for poor outcome",
                 detail=f"Criteria met: {criteria_text}. "
-                       f"qSOFA ≥2 in suspected infection is associated with increased "
-                       f"mortality. However, per SSC 2021 guidelines, qSOFA should NOT be "
-                       f"used as a single screening tool. Further evaluation with full SOFA "
-                       f"and clinical assessment is recommended.",
+                f"qSOFA ≥2 in suspected infection is associated with increased "
+                f"mortality. However, per SSC 2021 guidelines, qSOFA should NOT be "
+                f"used as a single screening tool. Further evaluation with full SOFA "
+                f"and clinical assessment is recommended.",
                 severity=Severity.MODERATE if score == 2 else Severity.SEVERE,
                 stage=f"qSOFA {score}",
                 stage_description="Positive screen for sepsis risk",
@@ -248,15 +248,15 @@ class QsofaScoreCalculator(BaseCalculator):
                     "Administer antibiotics within 1 hour if sepsis suspected",
                     "Begin fluid resuscitation (30 mL/kg crystalloid)",
                     "Reassess frequently",
-                )
+                ),
             )
         elif score == 1:
             return Interpretation(
                 summary=f"qSOFA {score}/3: Borderline - Monitor closely",
                 detail=f"Criteria met: {criteria_text}. "
-                       f"A single qSOFA criterion does not meet threshold, but patient "
-                       f"should be monitored for clinical deterioration. Consider other "
-                       f"screening tools (NEWS, MEWS) and clinical judgment.",
+                f"A single qSOFA criterion does not meet threshold, but patient "
+                f"should be monitored for clinical deterioration. Consider other "
+                f"screening tools (NEWS, MEWS) and clinical judgment.",
                 severity=Severity.MILD,
                 stage=f"qSOFA {score}",
                 stage_description="Below threshold but abnormal",
@@ -266,21 +266,19 @@ class QsofaScoreCalculator(BaseCalculator):
                     "Reassess qSOFA if clinical condition changes",
                     "Maintain high clinical suspicion for infection",
                 ),
-                warnings=(
-                    "Single criterion abnormal - watch for deterioration",
-                ),
+                warnings=("Single criterion abnormal - watch for deterioration",),
                 next_steps=(
                     "Repeat vital signs in 1-2 hours",
                     "Consider lactate if infection suspected",
                     "Document clinical trajectory",
-                )
+                ),
             )
         else:  # score == 0
             return Interpretation(
                 summary=f"qSOFA {score}/3: Negative - Low risk by this score",
                 detail="No qSOFA criteria met. Low risk for poor outcome by this score. "
-                       "However, qSOFA has LOW SENSITIVITY and should not be used to rule "
-                       "out sepsis. Clinical judgment and other assessment tools remain essential.",
+                "However, qSOFA has LOW SENSITIVITY and should not be used to rule "
+                "out sepsis. Clinical judgment and other assessment tools remain essential.",
                 severity=Severity.NORMAL,
                 stage=f"qSOFA {score}",
                 stage_description="No criteria met",
@@ -290,11 +288,9 @@ class QsofaScoreCalculator(BaseCalculator):
                     "Consider NEWS or MEWS as complementary assessment",
                     "Re-evaluate if clinical condition changes",
                 ),
-                warnings=(
-                    "Low qSOFA does NOT rule out sepsis (low sensitivity)",
-                ),
+                warnings=("Low qSOFA does NOT rule out sepsis (low sensitivity)",),
                 next_steps=(
                     "Continue routine monitoring",
                     "Reassess if clinical concern persists",
-                )
+                ),
             )

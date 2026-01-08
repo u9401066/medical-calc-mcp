@@ -76,7 +76,7 @@ class WellsDvtCalculator(BaseCalculator):
                     "previous_dvt",
                     "alternative_diagnosis_likely",
                 ],
-                output_type="Score with DVT probability and diagnostic recommendations"
+                output_type="Score with DVT probability and diagnostic recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -119,21 +119,21 @@ class WellsDvtCalculator(BaseCalculator):
                     "leg swelling",
                     "venous ultrasound",
                     "VTE workup",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Wells PS, Anderson DR, Bormanis J, et al. Value of assessment of "
-                             "pretest probability of deep-vein thrombosis in clinical management. "
-                             "Lancet. 1997;350(9094):1795-1798.",
+                    "pretest probability of deep-vein thrombosis in clinical management. "
+                    "Lancet. 1997;350(9094):1795-1798.",
                     doi="10.1016/S0140-6736(97)08140-3",
                     pmid="9428249",
                     year=1997,
                 ),
                 Reference(
                     citation="Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in "
-                             "the diagnosis of suspected deep-vein thrombosis. N Engl J Med. "
-                             "2003;349(13):1227-1235.",
+                    "the diagnosis of suspected deep-vein thrombosis. N Engl J Med. "
+                    "2003;349(13):1227-1235.",
                     doi="10.1056/NEJMoa023153",
                     pmid="14507948",
                     year=2003,
@@ -225,10 +225,7 @@ class WellsDvtCalculator(BaseCalculator):
             dvt_probability = "~10%"
             category = "DVT Unlikely"
             summary = f"Wells DVT = {score}: {category} ({dvt_probability} probability)"
-            detail = (
-                f"Low pretest probability of DVT (approximately {dvt_probability}). "
-                f"D-dimer can be used to rule out DVT if negative."
-            )
+            detail = f"Low pretest probability of DVT (approximately {dvt_probability}). D-dimer can be used to rule out DVT if negative."
             recommendations = [
                 "Order high-sensitivity D-dimer",
                 "If D-dimer negative: DVT effectively ruled out",
@@ -254,10 +251,7 @@ class WellsDvtCalculator(BaseCalculator):
 
             category = "DVT Likely"
             summary = f"Wells DVT = {score}: {category} ({dvt_probability} probability)"
-            detail = (
-                f"Elevated pretest probability of DVT (approximately {dvt_probability}). "
-                f"Compression ultrasound is recommended as first-line test."
-            )
+            detail = f"Elevated pretest probability of DVT (approximately {dvt_probability}). Compression ultrasound is recommended as first-line test."
             recommendations = [
                 "Order compression ultrasound (proximal leg veins)",
                 "D-dimer alone cannot exclude DVT at this probability",
@@ -290,7 +284,5 @@ class WellsDvtCalculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=(
-                "High probability of DVT - consider empiric anticoagulation",
-            ) if score >= 3 else tuple(),
+            warnings=("High probability of DVT - consider empiric anticoagulation",) if score >= 3 else tuple(),
         )

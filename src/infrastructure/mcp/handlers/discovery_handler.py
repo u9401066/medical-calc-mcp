@@ -3,16 +3,24 @@ Discovery Handler
 
 MCP tool handlers for tool discovery operations.
 
-Hierarchical Navigation Design:
-==============================
-Path A: Specialty-based
-  list_specialties() → list_by_specialty("X") → calculate_X(...)
+v3.0 CONSOLIDATED DESIGN (保持 High-Level / Low-Level 分層):
+============================================================
 
-Path B: Context-based
-  list_contexts() → list_by_context("X") → calculate_X(...)
+HIGH-LEVEL TOOLS (Agent 決策層) - 3 個:
+├── discover()           - 統一的工具發現入口
+├── get_related_tools()  - 語義關聯推薦
+└── find_tools_by_params() - 反向參數查找
 
-Path C: Direct (if tool_id known)
-  get_calculator_info("X") → calculate_X(...)
+這些工具幫助 Agent:
+1. 理解有哪些分類 (專科、情境)
+2. 在分類中找到合適的工具
+3. 發現相關工具和參數匹配
+
+整併說明:
+- list_specialties() + list_contexts() + list_calculators() → discover(by="all")
+- list_by_specialty() + list_by_context() → discover(by="specialty/context")
+- search_calculators() → discover(by="keyword")
+- get_calculator_info() → 移至 calculator_handler 的 get_tool_schema()
 """
 
 from typing import Any
@@ -28,7 +36,8 @@ class DiscoveryHandler:
     """
     Handler for discovery-related MCP tools.
 
-    Provides hierarchical navigation for finding calculators.
+    v3.0: Consolidated to 3 high-level tools while maintaining
+    the high-level / low-level separation.
     """
 
     def __init__(self, mcp: FastMCP, registry: ToolRegistry):
@@ -43,259 +52,165 @@ class DiscoveryHandler:
         """Register all discovery tools with MCP"""
 
         # ================================================================
-        # STEP 1: Entry Points (選擇導航路徑)
+        # HIGH-LEVEL TOOL 1: Unified Discovery
         # ================================================================
 
         @self._mcp.tool()
-        def list_specialties() -> dict[str, Any]:
+        def discover(by: str = "all", value: str | None = None, limit: int = 20) -> dict[str, Any]:
             """
-            📋 Step 1A: 列出所有可用的醫學專科
+            🔍 統一的工具發現入口 (High-Level)
 
-            這是專科導航的起點。取得專科清單後，
-            使用 list_by_specialty(specialty) 查看該專科的工具。
-
-            Returns:
-                available_specialties: 專科清單及各專科的工具數量
-
-            ⏭️ 下一步: 選擇一個專科，呼叫 list_by_specialty("專科名稱")
-
-            Example flow:
-                1. list_specialties() → 得到 ["critical_care", "anesthesiology", ...]
-                2. list_by_specialty("anesthesiology") → 得到工具清單
-                3. get_calculator_info("rcri") → 查看參數
-                4. calculate("rcri", {...}) → 執行計算
-            """
-            request = DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
-            response = self._use_case.execute(request)
-            result = response.to_dict()
-            result["next_step"] = "呼叫 list_by_specialty(specialty) 查看該專科的工具"
-            result["example"] = "list_by_specialty('critical_care')"
-            return result
-
-        @self._mcp.tool()
-        def list_contexts() -> dict[str, Any]:
-            """
-            📋 Step 1B: 列出所有可用的臨床情境
-
-            這是情境導航的起點。取得情境清單後，
-            使用 list_by_context(context) 查看該情境適用的工具。
-
-            Returns:
-                available_contexts: 臨床情境清單及各情境的工具數量
-
-            ⏭️ 下一步: 選擇一個情境，呼叫 list_by_context("情境名稱")
-
-            Example flow:
-                1. list_contexts() → 得到 ["preoperative_assessment", "icu_management", ...]
-                2. list_by_context("preoperative_assessment") → 得到工具清單
-                3. get_calculator_info("asa_physical_status") → 查看參數
-                4. calculate("asa_physical_status", {...}) → 執行計算
-            """
-            request = DiscoveryRequest(mode=DiscoveryMode.LIST_CONTEXTS)
-            response = self._use_case.execute(request)
-            result = response.to_dict()
-            result["next_step"] = "呼叫 list_by_context(context) 查看該情境的工具"
-            result["example"] = "list_by_context('preoperative_assessment')"
-            return result
-
-        @self._mcp.tool()
-        def list_calculators(limit: int = 50) -> dict[str, Any]:
-            """
-            📋 列出所有可用的醫學計算工具
-
-            直接列出所有工具，適合快速瀏覽或已知大概要找什麼。
+            幫助 Agent 找到合適的醫學計算器。支援多種發現模式。
 
             Args:
-                limit: 最多回傳幾個結果 (預設 50)
-
-            Returns:
-                所有計算器的清單，包含 tool_id, name, purpose
-
-            ⏭️ 下一步:
-                - 找到想用的工具後，呼叫 get_calculator_info(tool_id) 查看參數
-                - 然後呼叫 calculate(tool_id, params) 進行計算
-            """
-            request = DiscoveryRequest(
-                mode=DiscoveryMode.LIST_ALL,
-                limit=limit
-            )
-            response = self._use_case.execute(request)
-            result = response.to_dict()
-            result["next_step"] = "呼叫 get_calculator_info(tool_id) 查看工具詳情，然後使用 calculate(tool_id, params)"
-            return result
-
-        # ================================================================
-        # STEP 2: Filter by Category (依分類篩選)
-        # ================================================================
-
-        @self._mcp.tool()
-        def list_by_specialty(specialty: str, limit: int = 20) -> dict[str, Any]:
-            """
-            📋 Step 2A: 列出指定專科的所有工具
-
-            Args:
-                specialty: 專科名稱 (從 list_specialties 取得)
+                by: 發現模式
+                    - "all": 列出所有分類 (專科和臨床情境) - 預設
+                    - "specialty": 依專科篩選工具
+                    - "context": 依臨床情境篩選工具
+                    - "keyword": 關鍵字搜尋
+                    - "tools": 列出所有工具
+                value: 篩選值 (當 by 不是 "all" 或 "tools" 時必填)
                 limit: 最多回傳幾個結果
 
             Returns:
-                該專科的計算工具清單 (tool_id, name, purpose)
+                根據模式返回不同內容:
+                - all: 可用的專科和情境清單
+                - specialty/context: 該分類下的工具清單
+                - keyword: 匹配的工具清單
+                - tools: 所有工具清單
 
-            ⏭️ 下一步:
-                - get_calculator_info(tool_id) - 查看工具的詳細參數說明
-                - calculate(tool_id, params) - 執行計算
+            **Examples:**
 
-            ⏮️ 上一步: list_specialties() 查看所有專科
+            ```python
+            # 查看所有分類 (起點)
+            discover()
+            # → {"specialties": [...], "contexts": [...]}
+
+            # 依專科篩選
+            discover(by="specialty", value="critical_care")
+            # → {"tools": [{"tool_id": "sofa_score", ...}, ...]}
+
+            # 依臨床情境篩選
+            discover(by="context", value="preoperative_assessment")
+            # → {"tools": [{"tool_id": "rcri", ...}, ...]}
+
+            # 關鍵字搜尋
+            discover(by="keyword", value="sepsis")
+            # → {"tools": [{"tool_id": "qsofa_score", ...}, ...]}
+
+            # 列出所有工具
+            discover(by="tools", limit=50)
+            # → {"tools": [...], "count": 75}
+            ```
+
+            ⏭️ 下一步: 找到工具後，使用 get_tool_schema(tool_id) 查看參數
             """
-            request = DiscoveryRequest(
-                mode=DiscoveryMode.BY_SPECIALTY,
-                specialty=specialty,
-                limit=limit
-            )
-            response = self._use_case.execute(request)
-            result = response.to_dict()
+            # Route to appropriate discovery mode
+            if by == "all":
+                # List all specialties and contexts
+                spec_request = DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
+                spec_response = self._use_case.execute(spec_request)
 
-            if result.get("success"):
-                result["next_step"] = "選擇 tool_id，呼叫 get_calculator_info(tool_id)，然後 calculate(tool_id, params)"
-                result["previous_step"] = "list_specialties()"
-                # Add example
-                if result.get("tools") and len(result["tools"]) > 0:
-                    example_id = result["tools"][0]["tool_id"]
-                    result["example"] = f"get_calculator_info('{example_id}')"
-            else:
-                result["hint"] = "請先呼叫 list_specialties() 查看可用的專科名稱"
+                ctx_request = DiscoveryRequest(mode=DiscoveryMode.LIST_CONTEXTS)
+                ctx_response = self._use_case.execute(ctx_request)
 
-            return result
-
-        @self._mcp.tool()
-        def list_by_context(context: str, limit: int = 20) -> dict[str, Any]:
-            """
-            📋 Step 2B: 列出指定臨床情境的所有工具
-
-            Args:
-                context: 臨床情境 (從 list_contexts 取得)
-                limit: 最多回傳幾個結果
-
-            Returns:
-                該情境的計算工具清單 (tool_id, name, purpose)
-
-            ⏭️ 下一步:
-                - get_calculator_info(tool_id) - 查看工具的詳細參數說明
-                - calculate(tool_id, params) - 執行計算
-
-            ⏮️ 上一步: list_contexts() 查看所有臨床情境
-            """
-            request = DiscoveryRequest(
-                mode=DiscoveryMode.BY_CONTEXT,
-                context=context,
-                limit=limit
-            )
-            response = self._use_case.execute(request)
-            result = response.to_dict()
-
-            if result.get("success"):
-                result["next_step"] = "選擇 tool_id，呼叫 get_calculator_info(tool_id)，然後 calculate(tool_id, params)"
-                result["previous_step"] = "list_contexts()"
-                if result.get("tools") and len(result["tools"]) > 0:
-                    example_id = result["tools"][0]["tool_id"]
-                    result["example"] = f"get_calculator_info('{example_id}')"
-            else:
-                result["hint"] = "請先呼叫 list_contexts() 查看可用的情境名稱"
-
-            return result
-
-        # ================================================================
-        # STEP 3: Get Tool Details (取得工具詳情)
-        # ================================================================
-
-        @self._mcp.tool()
-        def get_calculator_info(tool_id: str) -> dict[str, Any]:
-            """
-            📖 Step 3: 取得計算器的詳細資訊
-
-            查看特定計算器的完整說明，包括：
-            - 所有輸入參數及其說明
-            - 適用的臨床情境和疾病
-            - 參考文獻 (PMID/DOI)
-
-            Args:
-                tool_id: 計算器 ID (從 list_by_specialty 或 list_by_context 取得)
-
-            Returns:
-                計算器的完整 metadata 和參數說明
-
-            ⏭️ 下一步: 使用對應的 calculate_xxx(...) 函數進行計算
-
-            Example:
-                get_calculator_info("rcri")
-                → 得到 RCRI 的參數說明
-                → 呼叫 calculate("rcri", {"high_risk_surgery": True, ...})
-            """
-            request = DiscoveryRequest(
-                mode=DiscoveryMode.GET_INFO,
-                tool_id=tool_id
-            )
-            response = self._use_case.execute(request)
-            result = response.to_dict()
-
-            if result.get("success"):
-                result["next_step"] = f"使用 calculate('{tool_id}', params) 進行計算"
-                result["navigation"] = {
-                    "back_to_specialties": "list_specialties()",
-                    "back_to_contexts": "list_contexts()",
-                    "list_all": "list_calculators()"
+                return {
+                    "success": True,
+                    "mode": "all",
+                    "specialties": {
+                        "available": spec_response.available_specialties,
+                        "count": len(spec_response.available_specialties),
+                    },
+                    "contexts": {
+                        "available": ctx_response.available_contexts,
+                        "count": len(ctx_response.available_contexts),
+                    },
+                    "next_step": "discover(by='specialty', value='專科名稱') 或 discover(by='context', value='情境名稱')",
+                    "examples": [
+                        "discover(by='specialty', value='critical_care')",
+                        "discover(by='context', value='preoperative_assessment')",
+                        "discover(by='keyword', value='sepsis')",
+                    ],
                 }
 
-            return result
+            elif by == "specialty":
+                if not value:
+                    return {"success": False, "error": "specialty 模式需要提供 value 參數", "hint": "先呼叫 discover() 查看可用的專科名稱"}
+                request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty=value, limit=limit)
+                response = self._use_case.execute(request)
+                result = response.to_dict()
 
-        # ================================================================
-        # OPTIONAL: Quick Search (快速搜尋 - 已知關鍵字時使用)
-        # ================================================================
+                if result.get("success"):
+                    result["filter"] = {"by": "specialty", "value": value}
+                    result["next_step"] = "get_tool_schema(tool_id) 查看參數，然後 calculate(tool_id, params)"
+                    if result.get("tools") and len(result["tools"]) > 0:
+                        result["example"] = f"get_tool_schema('{result['tools'][0]['tool_id']}')"
+                else:
+                    result["hint"] = "呼叫 discover() 查看可用的專科名稱"
 
-        @self._mcp.tool()
-        def search_calculators(
-            keyword: str,
-            limit: int = 10
-        ) -> dict[str, Any]:
-            """
-            🔍 快速搜尋 (已知關鍵字時使用)
+                return result
 
-            用關鍵字直接搜尋工具。適合已經知道要找什麼的情況。
+            elif by == "context":
+                if not value:
+                    return {"success": False, "error": "context 模式需要提供 value 參數", "hint": "先呼叫 discover() 查看可用的情境名稱"}
+                request = DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context=value, limit=limit)
+                response = self._use_case.execute(request)
+                result = response.to_dict()
 
-            Args:
-                keyword: 搜尋關鍵字
-                    Examples: "sofa", "rcri", "gcs", "sepsis", "cardiac"
-                limit: 最多回傳幾個結果
+                if result.get("success"):
+                    result["filter"] = {"by": "context", "value": value}
+                    result["next_step"] = "get_tool_schema(tool_id) 查看參數，然後 calculate(tool_id, params)"
+                    if result.get("tools") and len(result["tools"]) > 0:
+                        result["example"] = f"get_tool_schema('{result['tools'][0]['tool_id']}')"
+                else:
+                    result["hint"] = "呼叫 discover() 查看可用的情境名稱"
 
-            Returns:
-                匹配的工具清單
+                return result
 
-            💡 不確定關鍵字？建議使用階層導航:
-                - list_specialties() → list_by_specialty()
-                - list_contexts() → list_by_context()
-            """
-            request = DiscoveryRequest(
-                mode=DiscoveryMode.SEARCH,
-                query=keyword,
-                limit=limit
-            )
-            response = self._use_case.execute(request)
-            result = response.to_dict()
+            elif by == "keyword":
+                if not value:
+                    return {"success": False, "error": "keyword 模式需要提供 value 參數", "hint": "提供搜尋關鍵字，例如 'sepsis', 'cardiac', 'renal'"}
+                request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query=value, limit=limit)
+                response = self._use_case.execute(request)
+                result = response.to_dict()
 
-            if result.get("count", 0) == 0:
-                result["hint"] = "找不到結果？試試 list_specialties() 或 list_contexts() 瀏覽"
+                if result.get("count", 0) == 0:
+                    result["hint"] = "找不到結果？試試 discover() 瀏覽分類"
+                else:
+                    result["next_step"] = "get_tool_schema(tool_id) 查看參數"
+
+                result["filter"] = {"by": "keyword", "value": value}
+                return result
+
+            elif by == "tools":
+                request = DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=limit)
+                response = self._use_case.execute(request)
+                result = response.to_dict()
+                result["next_step"] = "get_tool_schema(tool_id) 查看工具詳情"
+                return result
+
             else:
-                result["next_step"] = "選擇 tool_id，呼叫 get_calculator_info(tool_id) 查看詳情"
-
-            return result
+                return {
+                    "success": False,
+                    "error": f"未知的 by 參數: {by}",
+                    "valid_values": ["all", "specialty", "context", "keyword", "tools"],
+                    "examples": [
+                        "discover()  # 列出所有分類",
+                        "discover(by='specialty', value='critical_care')",
+                        "discover(by='context', value='preoperative_assessment')",
+                        "discover(by='keyword', value='sepsis')",
+                        "discover(by='tools')  # 列出所有工具",
+                    ],
+                }
 
         # ================================================================
-        # INTELLIGENT DISCOVERY (無 ML 依賴的智能發現)
+        # HIGH-LEVEL TOOL 2: Related Tools (Semantic Discovery)
         # ================================================================
 
         @self._mcp.tool()
         def get_related_tools(tool_id: str, limit: int = 5) -> dict[str, Any]:
             """
-            🔗 取得相關工具
+            🔗 取得相關工具 (High-Level 語義發現)
 
             基於共享參數和專科自動發現相關工具。
             純 Python 算法，無 ML 依賴。
@@ -307,30 +222,36 @@ class DiscoveryHandler:
             Returns:
                 相關工具清單及相似度分數
 
-            Example:
-                get_related_tools("sofa")
-                → 得到 ["qsofa", "apache_ii", "news2", ...]
+            **Example:**
+            ```python
+            get_related_tools("sofa_score")
+            # → {"related_tools": [
+            #      {"tool_id": "qsofa_score", "similarity": 0.85},
+            #      {"tool_id": "apache_ii", "similarity": 0.72},
+            #      ...
+            #    ]}
+            ```
+
+            💡 相關性基於: 共享參數、相同專科、相同臨床情境
             """
             related = self._registry.get_related_tools(tool_id, limit)
 
             if not related:
-                return {
-                    "success": False,
-                    "error": f"找不到工具: {tool_id}",
-                    "hint": "請先使用 search_calculators() 或 list_by_specialty() 找到工具"
-                }
+                return {"success": False, "error": f"找不到工具: {tool_id}", "hint": "請先使用 discover(by='keyword', value='關鍵字') 找到工具"}
 
             # Enrich with metadata
             tools = []
             for rel_id, score in related:
                 calc = self._registry.get_calculator(rel_id)
                 if calc:
-                    tools.append({
-                        "tool_id": rel_id,
-                        "name": calc.metadata.low_level.name,
-                        "purpose": calc.metadata.low_level.purpose,
-                        "similarity": round(score, 3),
-                    })
+                    tools.append(
+                        {
+                            "tool_id": rel_id,
+                            "name": calc.metadata.low_level.name,
+                            "purpose": calc.metadata.low_level.purpose,
+                            "similarity": round(score, 3),
+                        }
+                    )
 
             return {
                 "success": True,
@@ -338,13 +259,17 @@ class DiscoveryHandler:
                 "related_tools": tools,
                 "count": len(tools),
                 "note": "相關性基於: 共享參數、相同專科、相同臨床情境",
-                "next_step": "呼叫 get_calculator_info(tool_id) 查看詳情，然後 calculate(tool_id, params)"
+                "next_step": "get_tool_schema(tool_id) 查看詳情，然後 calculate(tool_id, params)",
             }
+
+        # ================================================================
+        # HIGH-LEVEL TOOL 3: Reverse Parameter Lookup
+        # ================================================================
 
         @self._mcp.tool()
         def find_tools_by_params(params: list[str]) -> dict[str, Any]:
             """
-            🔍 根據已有參數找工具
+            🔍 根據已有參數找工具 (High-Level 反向查找)
 
             「我有這些數值，可以計算什麼？」
 
@@ -357,19 +282,22 @@ class DiscoveryHandler:
             Returns:
                 可使用這些參數的工具清單
 
-            Example:
-                find_tools_by_params(["age", "creatinine", "bilirubin"])
-                → 得到 ["meld_score", "child_pugh", "ckd_epi_2021", ...]
+            **Example:**
+            ```python
+            find_tools_by_params(["age", "creatinine", "bilirubin"])
+            # → {"tools": [
+            #      {"tool_id": "meld_score", "input_params": [...]},
+            #      {"tool_id": "ckd_epi_2021", "input_params": [...]},
+            #      ...
+            #    ]}
+            ```
+
+            💡 適合場景: 已有病患數據，想知道能計算哪些評分
             """
             results = self._registry.find_tools_by_params(params)
 
             if not results:
-                return {
-                    "success": True,
-                    "tools": [],
-                    "count": 0,
-                    "hint": "沒有找到匹配的工具。試試更多參數或不同的參數名稱。"
-                }
+                return {"success": True, "tools": [], "count": 0, "input_params": params, "hint": "沒有找到匹配的工具。試試更多參數或不同的參數名稱。"}
 
             tools = [
                 {
@@ -381,10 +309,4 @@ class DiscoveryHandler:
                 for m in results[:10]  # Limit to 10
             ]
 
-            return {
-                "success": True,
-                "input_params": params,
-                "tools": tools,
-                "count": len(tools),
-                "next_step": "呼叫 get_calculator_info(tool_id) 查看完整參數需求"
-            }
+            return {"success": True, "input_params": params, "tools": tools, "count": len(tools), "next_step": "get_tool_schema(tool_id) 查看完整參數需求"}

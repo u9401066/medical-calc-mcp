@@ -67,7 +67,7 @@ class CentorScoreCalculator(BaseCalculator):
                     "absence_of_cough",
                     "age_group",
                 ],
-                output_type="Score -1 to 5 with GAS probability and management recommendation"
+                output_type="Score -1 to 5 with GAS probability and management recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(

@@ -99,10 +99,7 @@ class EnumRule(ValidationRule):
 
         if not self.case_sensitive and isinstance(value, str):
             check_value = value.lower()
-            check_against = tuple(
-                v.lower() if isinstance(v, str) else v
-                for v in self.allowed_values
-            )
+            check_against = tuple(v.lower() if isinstance(v, str) else v for v in self.allowed_values)
 
         if check_value not in check_against:
             return False, f"Value '{value}' not in allowed values: {self.allowed_values}"
@@ -181,6 +178,7 @@ class CustomRule(ValidationRule):
 # =============================================================================
 # Composite Rules
 # =============================================================================
+
 
 @dataclass
 class CompositeRule(ValidationRule):

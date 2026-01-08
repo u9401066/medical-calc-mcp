@@ -56,7 +56,7 @@ class Curb65Calculator(BaseCalculator):
                     "sbp_lt_90_or_dbp_lte_60",
                     "age_gte_65",
                 ],
-                output_type="Score 0-5 with mortality risk and disposition recommendation"
+                output_type="Score 0-5 with mortality risk and disposition recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -100,23 +100,23 @@ class Curb65Calculator(BaseCalculator):
                     "pneumonia mortality",
                     "respiratory infection severity",
                     "admission decision pneumonia",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Lim WS, van der Eerden MM, Laing R, et al. Defining community "
-                             "acquired pneumonia severity on presentation to hospital: an "
-                             "international derivation and validation study. Thorax. "
-                             "2003;58(5):377-382.",
+                    "acquired pneumonia severity on presentation to hospital: an "
+                    "international derivation and validation study. Thorax. "
+                    "2003;58(5):377-382.",
                     doi="10.1136/thorax.58.5.377",
                     pmid="12728155",
                     year=2003,
                 ),
                 Reference(
                     citation="Mandell LA, Wunderink RG, Anzueto A, et al. Infectious Diseases "
-                             "Society of America/American Thoracic Society consensus guidelines "
-                             "on the management of community-acquired pneumonia in adults. "
-                             "Clin Infect Dis. 2007;44 Suppl 2:S27-72.",
+                    "Society of America/American Thoracic Society consensus guidelines "
+                    "on the management of community-acquired pneumonia in adults. "
+                    "Clin Infect Dis. 2007;44 Suppl 2:S27-72.",
                     doi="10.1086/511159",
                     pmid="17278083",
                     year=2007,
@@ -148,13 +148,15 @@ class Curb65Calculator(BaseCalculator):
             ScoreResult with score, mortality risk, and disposition recommendation
         """
         # Calculate score
-        score = sum([
-            1 if confusion else 0,
-            1 if bun_gt_19_or_urea_gt_7 else 0,
-            1 if respiratory_rate_gte_30 else 0,
-            1 if sbp_lt_90_or_dbp_lte_60 else 0,
-            1 if age_gte_65 else 0,
-        ])
+        score = sum(
+            [
+                1 if confusion else 0,
+                1 if bun_gt_19_or_urea_gt_7 else 0,
+                1 if respiratory_rate_gte_30 else 0,
+                1 if sbp_lt_90_or_dbp_lte_60 else 0,
+                1 if age_gte_65 else 0,
+            ]
+        )
 
         # Determine risk level and recommendations
         interpretation = self._interpret_score(score)
@@ -198,10 +200,7 @@ class Curb65Calculator(BaseCalculator):
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
             summary = f"CURB-65 = {score}: Low risk ({mortality} 30-day mortality)"
-            detail = (
-                f"Low severity pneumonia. The 30-day mortality rate for CURB-65 score "
-                f"of {score} is approximately {mortality}."
-            )
+            detail = f"Low severity pneumonia. The 30-day mortality rate for CURB-65 score of {score} is approximately {mortality}."
             recommendations = [
                 "Consider outpatient treatment if clinically appropriate",
                 "Oral antibiotics per local guidelines",
@@ -241,10 +240,7 @@ class Curb65Calculator(BaseCalculator):
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
             summary = f"CURB-65 = {score}: High risk ({mortality} 30-day mortality)"
-            detail = (
-                f"Severe pneumonia with high mortality risk ({mortality}). "
-                f"Hospital admission is strongly recommended."
-            )
+            detail = f"Severe pneumonia with high mortality risk ({mortality}). Hospital admission is strongly recommended."
 
             if score >= 4:
                 recommendations = [
@@ -283,7 +279,5 @@ class Curb65Calculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=tuple() if score < 3 else (
-                "High mortality risk - prompt treatment essential",
-            ),
+            warnings=tuple() if score < 3 else ("High mortality risk - prompt treatment essential",),
         )

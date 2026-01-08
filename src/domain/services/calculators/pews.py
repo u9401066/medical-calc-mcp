@@ -81,11 +81,8 @@ class PEWSCalculator(BaseCalculator):
                 tool_id="pews",
                 name="Pediatric Early Warning Score (PEWS)",
                 purpose="Identify hospitalized children at risk of clinical deterioration",
-                input_params=[
-                    "behavior_score", "cardiovascular_score", "respiratory_score",
-                    "age_group", "heart_rate", "respiratory_rate", "spo2"
-                ],
-                output_type="PEWS score (0-9) with escalation guidance"
+                input_params=["behavior_score", "cardiovascular_score", "respiratory_score", "age_group", "heart_rate", "respiratory_rate", "spo2"],
+                output_type="PEWS score (0-9) with escalation guidance",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -112,13 +109,13 @@ class PEWSCalculator(BaseCalculator):
                     citation="Parshuram CS, et al. Development and initial validation of the Bedside PEWS. Crit Care. 2009;13(4):R135.",
                     doi="10.1186/cc7998",
                     pmid="19678924",
-                    year=2009
+                    year=2009,
                 ),
                 Reference(
                     citation="Chapman SM, et al. The value of paediatric early warning scores: A systematic review. Pediatrics. 2017;140(6):e20164154.",
                     doi="10.1542/peds.2016-4154",
                     pmid="29167378",
-                    year=2017
+                    year=2017,
                 ),
             ),
         )
@@ -132,7 +129,7 @@ class PEWSCalculator(BaseCalculator):
         heart_rate: Optional[int] = None,
         respiratory_rate: Optional[int] = None,
         spo2: Optional[float] = None,
-        supplemental_oxygen: bool = False
+        supplemental_oxygen: bool = False,
     ) -> ScoreResult:
         """
         Calculate PEWS score.
@@ -164,11 +161,7 @@ class PEWSCalculator(BaseCalculator):
             ScoreResult with PEWS score and escalation guidance
         """
         # Validate component scores
-        for name, value in [
-            ("behavior_score", behavior_score),
-            ("cardiovascular_score", cardiovascular_score),
-            ("respiratory_score", respiratory_score)
-        ]:
+        for name, value in [("behavior_score", behavior_score), ("cardiovascular_score", cardiovascular_score), ("respiratory_score", respiratory_score)]:
             if not isinstance(value, int) or value < 0 or value > 3:
                 raise ValueError(f"{name} must be 0, 1, 2, or 3")
 
@@ -238,11 +231,11 @@ class PEWSCalculator(BaseCalculator):
             summary=f"PEWS {total_score}: {risk_level}",
             detail=(
                 f"Component scores: Behavior={behavior_score}, CV={cardiovascular_score}, "
-                f"Resp={respiratory_score}" +
-                (", +2 for O2" if supplemental_oxygen else "") +
-                (f"\nVital sign concerns: {'; '.join(vs_context)}" if vs_context else "")
+                f"Resp={respiratory_score}"
+                + (", +2 for O2" if supplemental_oxygen else "")
+                + (f"\nVital sign concerns: {'; '.join(vs_context)}" if vs_context else "")
             ),
-            recommendations=(f"{escalation}. {action}",)
+            recommendations=(f"{escalation}. {action}",),
         )
 
         details = {
@@ -253,7 +246,7 @@ class PEWSCalculator(BaseCalculator):
             "escalation_action": escalation,
             "vital_sign_concerns": vs_context if vs_context else None,
             "age_group": age_group,
-            "next_step": self._get_next_step(total_score)
+            "next_step": self._get_next_step(total_score),
         }
 
         return ScoreResult(
@@ -273,7 +266,7 @@ class PEWSCalculator(BaseCalculator):
                 "spo2": spo2,
                 "supplemental_oxygen": supplemental_oxygen,
             },
-            calculation_details=details
+            calculation_details=details,
         )
 
     def _get_next_step(self, score: int) -> str:

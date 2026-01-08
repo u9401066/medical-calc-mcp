@@ -17,7 +17,6 @@ from typing import Any
 from ...domain.entities.score_result import ScoreResult
 from ...domain.registry.tool_registry import ToolRegistry
 from ...domain.services.param_matcher import (
-    ParamMatcher,
     generate_param_template,
     get_param_matcher,
 )
@@ -28,7 +27,6 @@ from ...domain.validation import (
 )
 from ...domain.validation.boundaries import (
     ValidationSeverity,
-    ValidationResult as BoundaryValidationResult,
     get_boundary_registry,
 )
 from ..dto import (
@@ -106,10 +104,7 @@ class CalculateUseCase:
                     score_name="",
                     result=None,
                     unit="",
-                    error=(
-                        f"Validation error: {validation_result.get_error_message()}. "
-                        f"Use get_calculator_info('{request.tool_id}') for parameters."
-                    )
+                    error=(f"Validation error: {validation_result.get_error_message()}. Use get_calculator_info('{request.tool_id}') for parameters."),
                 )
 
             # Step 4: Execute calculation with matched params
@@ -120,10 +115,7 @@ class CalculateUseCase:
 
             # Add match details if any aliasing occurred
             if match_result.match_details:
-                aliased = {
-                    k: v for k, v in match_result.match_details.items()
-                    if k != v
-                }
+                aliased = {k: v for k, v in match_result.match_details.items() if k != v}
                 if aliased and response.component_scores is not None:
                     response.component_scores["_param_mapping"] = aliased
 
@@ -140,8 +132,7 @@ class CalculateUseCase:
                 score_name="",
                 result=None,
                 unit="",
-                error=f"Calculation error: {str(e)}. "
-                      f"Please check input values and try again."
+                error=f"Calculation error: {str(e)}. Please check input values and try again.",
             )
 
     def _tool_not_found_response(self, tool_id: str) -> CalculateResponse:
@@ -149,12 +140,13 @@ class CalculateUseCase:
         available = self._registry.list_all_ids()
         # Find similar tool IDs
         from difflib import get_close_matches
+
         suggestions = get_close_matches(tool_id, available, n=3, cutoff=0.6)
 
         error = f"Calculator '{tool_id}' not found."
         if suggestions:
             error += f" Did you mean: {', '.join(suggestions)}?"
-        error += f" Use list_calculators() or search_calculators() to find available tools."
+        error += " Use list_calculators() or search_calculators() to find available tools."
 
         return CalculateResponse(
             success=False,
@@ -178,9 +170,7 @@ class CalculateUseCase:
         error_parts = []
 
         if match_result.missing_required:
-            error_parts.append(
-                f"Missing required parameters: {', '.join(match_result.missing_required)}"
-            )
+            error_parts.append(f"Missing required parameters: {', '.join(match_result.missing_required)}")
 
         if match_result.unmatched_provided:
             unmatched_str = ", ".join(match_result.unmatched_provided)
@@ -289,13 +279,15 @@ class CalculateUseCase:
                 warnings.append(warning_entry)
             elif boundary_result.severity == ValidationSeverity.CRITICAL:
                 # Critical values get special treatment
-                warnings.append({
-                    "parameter": boundary_result.param_name,
-                    "value": boundary_result.value,
-                    "severity": "CRITICAL",
-                    "message": f"⚠️ CRITICAL: {boundary_result.message}",
-                    "action_required": True,
-                })
+                warnings.append(
+                    {
+                        "parameter": boundary_result.param_name,
+                        "value": boundary_result.value,
+                        "severity": "CRITICAL",
+                        "message": f"⚠️ CRITICAL: {boundary_result.message}",
+                        "action_required": True,
+                    }
+                )
 
         return warnings
 
@@ -332,11 +324,7 @@ class CalculateUseCase:
         # Validate only safe parameters
         return self._validator.validate(params, optional=safe_params)
 
-    def _get_parameter_hint_from_error(
-        self,
-        error_msg: str,
-        params: dict[str, Any]
-    ) -> str:
+    def _get_parameter_hint_from_error(self, error_msg: str, params: dict[str, Any]) -> str:
         """Get parameter hints based on error message using Domain hints"""
         error_lower = error_msg.lower()
         param_names = list(params.keys())
@@ -390,19 +378,11 @@ class CalculateUseCase:
                 summary=result.interpretation.summary,
                 severity=result.interpretation.severity.value if result.interpretation.severity else None,
                 recommendation=recommendation_text,
-                details=details
+                details=details,
             )
 
         # Build references
-        references = [
-            ReferenceDTO(
-                citation=ref.citation,
-                doi=ref.doi,
-                pmid=ref.pmid,
-                year=ref.year
-            )
-            for ref in (result.references or [])
-        ]
+        references = [ReferenceDTO(citation=ref.citation, doi=ref.doi, pmid=ref.pmid, year=ref.year) for ref in (result.references or [])]
 
         # Build component_scores with boundary warnings
         component_scores = result.calculation_details.copy() if result.calculation_details else {}
@@ -417,5 +397,5 @@ class CalculateUseCase:
             unit=str(result.unit) if result.unit else "",
             interpretation=interpretation,
             component_scores=component_scores,
-            references=references
+            references=references,
         )

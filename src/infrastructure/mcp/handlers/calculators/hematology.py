@@ -20,19 +20,23 @@ def register_hematology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     def calculate_4ts_hit(
         thrombocytopenia_score: Annotated[
             Literal[0, 1, 2],
-            Field(description="血小板下降 Thrombocytopenia | Options: 0=<30% fall or nadir <10K, 1=30-50% fall or nadir 10-19K, 2=>50% fall and nadir ≥20K")
+            Field(description="血小板下降 Thrombocytopenia | Options: 0=<30% fall or nadir <10K, 1=30-50% fall or nadir 10-19K, 2=>50% fall and nadir ≥20K"),
         ],
         timing_score: Annotated[
             Literal[0, 1, 2],
-            Field(description="時序 Timing of platelet fall | Options: 0=<4d without recent heparin, 1=consistent (5-10d or >10d) or unclear, 2=clear onset 5-10d or ≤1d with recent heparin")
+            Field(
+                description="時序 Timing of platelet fall | Options: 0=<4d without recent heparin, 1=consistent (5-10d or >10d) or unclear, 2=clear onset 5-10d or ≤1d with recent heparin"
+            ),
         ],
         thrombosis_score: Annotated[
             Literal[0, 1, 2],
-            Field(description="血栓 Thrombosis | Options: 0=None, 1=Progressive/recurrent/suspected, 2=New confirmed thrombosis or skin necrosis")
+            Field(description="血栓 Thrombosis | Options: 0=None, 1=Progressive/recurrent/suspected, 2=New confirmed thrombosis or skin necrosis"),
         ],
         other_causes_score: Annotated[
             Literal[0, 1, 2],
-            Field(description="其他原因 Other causes for thrombocytopenia | Options: 0=Definite other cause, 1=Possible other cause, 2=No other cause apparent")
+            Field(
+                description="其他原因 Other causes for thrombocytopenia | Options: 0=Definite other cause, 1=Possible other cause, 2=No other cause apparent"
+            ),
         ],
     ) -> dict[str, Any]:
         """
@@ -79,7 +83,7 @@ def register_hematology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "timing": timing_score,
                 "thrombosis": thrombosis_score,
                 "other_causes": other_causes_score,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

@@ -8,7 +8,7 @@ This module provides structured logging capabilities:
 
 Usage:
     from src.infrastructure.logging import get_logger
-    
+
     logger = get_logger()
     with logger.log_tool_call("sofa_score", params) as ctx:
         result = calculate(...)
@@ -16,10 +16,10 @@ Usage:
 """
 
 from .tool_usage_logger import (
-    ToolUsageLogger,
-    ToolUsageEvent,
-    SessionStats,
     LogLevel,
+    SessionStats,
+    ToolUsageEvent,
+    ToolUsageLogger,
     get_logger,
 )
 

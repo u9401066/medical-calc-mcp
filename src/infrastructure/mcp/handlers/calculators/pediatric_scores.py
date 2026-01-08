@@ -24,14 +24,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
     # APGAR Score
     # ========================================
     @mcp.tool()
-    def calculate_apgar_score(
-        appearance: int,
-        pulse: int,
-        grimace: int,
-        activity: int,
-        respiration: int,
-        assessment_time: str = "1_minute"
-    ) -> dict[str, Any]:
+    def calculate_apgar_score(appearance: int, pulse: int, grimace: int, activity: int, respiration: int, assessment_time: str = "1_minute") -> dict[str, Any]:
         """
         👶 APGAR Score: 新生兒評估量表
 
@@ -68,7 +61,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
             "grimace": grimace,
             "activity": activity,
             "respiration": respiration,
-            "assessment_time": assessment_time
+            "assessment_time": assessment_time,
         }
         return use_case.execute(CalculateRequest(tool_id="apgar_score", params=params)).to_dict()
 
@@ -84,7 +77,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
         heart_rate: Optional[int] = None,
         respiratory_rate: Optional[int] = None,
         spo2: Optional[float] = None,
-        supplemental_oxygen: bool = False
+        supplemental_oxygen: bool = False,
     ) -> dict[str, Any]:
         """
         🚨 PEWS: 兒童早期預警評分 (Pediatric Early Warning Score)
@@ -127,7 +120,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
             "heart_rate": heart_rate,
             "respiratory_rate": respiratory_rate,
             "spo2": spo2,
-            "supplemental_oxygen": supplemental_oxygen
+            "supplemental_oxygen": supplemental_oxygen,
         }
         return use_case.execute(CalculateRequest(tool_id="pews", params=params)).to_dict()
 
@@ -145,7 +138,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
         map_value: Optional[float] = None,
         vasopressor_type: Optional[str] = None,
         vasopressor_dose: Optional[float] = None,
-        on_mechanical_ventilation: bool = False
+        on_mechanical_ventilation: bool = False,
     ) -> dict[str, Any]:
         """
         🏥 pSOFA: 兒童器官衰竭評估 (Pediatric SOFA)
@@ -193,7 +186,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
             "map_value": map_value,
             "vasopressor_type": vasopressor_type,
             "vasopressor_dose": vasopressor_dose,
-            "on_mechanical_ventilation": on_mechanical_ventilation
+            "on_mechanical_ventilation": on_mechanical_ventilation,
         }
         return use_case.execute(CalculateRequest(tool_id="pediatric_sofa", params=params)).to_dict()
 
@@ -211,7 +204,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
         cardiac_bypass: bool = False,
         high_risk_diagnosis: bool = False,
         low_risk_diagnosis: bool = False,
-        very_high_risk_diagnosis: bool = False
+        very_high_risk_diagnosis: bool = False,
     ) -> dict[str, Any]:
         """
         📊 PIM3: 兒童死亡指數第三版 (Pediatric Index of Mortality 3)
@@ -260,7 +253,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
             "cardiac_bypass": cardiac_bypass,
             "high_risk_diagnosis": high_risk_diagnosis,
             "low_risk_diagnosis": low_risk_diagnosis,
-            "very_high_risk_diagnosis": very_high_risk_diagnosis
+            "very_high_risk_diagnosis": very_high_risk_diagnosis,
         }
         return use_case.execute(CalculateRequest(tool_id="pim3", params=params)).to_dict()
 
@@ -269,11 +262,7 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
     # ========================================
     @mcp.tool()
     def calculate_pediatric_gcs(
-        eye_response: int,
-        verbal_response: int,
-        motor_response: int,
-        age_group: str = "child",
-        intubated: bool = False
+        eye_response: int, verbal_response: int, motor_response: int, age_group: str = "child", intubated: bool = False
     ) -> dict[str, Any]:
         """
         🧠 Pediatric GCS: 兒童格拉斯哥昏迷指數
@@ -312,6 +301,6 @@ def register_pediatric_score_tools(mcp: FastMCP, use_case: CalculateUseCase) -> 
             "verbal_response": verbal_response,
             "motor_response": motor_response,
             "age_group": age_group,
-            "intubated": intubated
+            "intubated": intubated,
         }
         return use_case.execute(CalculateRequest(tool_id="pediatric_gcs", params=params)).to_dict()

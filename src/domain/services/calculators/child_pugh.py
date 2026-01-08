@@ -77,7 +77,7 @@ class ChildPughCalculator(BaseCalculator):
                     "ascites",
                     "encephalopathy_grade",
                 ],
-                output_type="Score 5-15 with Class A/B/C and survival estimates"
+                output_type="Score 5-15 with Class A/B/C and survival estimates",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -117,7 +117,7 @@ class ChildPughCalculator(BaseCalculator):
                     "K74.69",  # Other cirrhosis of liver
                     "K70.30",  # Alcoholic cirrhosis of liver without ascites
                     "K70.31",  # Alcoholic cirrhosis of liver with ascites
-                    "K76.6",   # Portal hypertension
+                    "K76.6",  # Portal hypertension
                 ),
                 keywords=(
                     "Child-Pugh",
@@ -130,29 +130,29 @@ class ChildPughCalculator(BaseCalculator):
                     "compensated cirrhosis",
                     "decompensated cirrhosis",
                     "liver function score",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Pugh RNH, Murray-Lyon IM, Dawson JL, et al. Transection of "
-                             "the oesophagus for bleeding oesophageal varices. "
-                             "Br J Surg. 1973;60(8):646-649.",
+                    "the oesophagus for bleeding oesophageal varices. "
+                    "Br J Surg. 1973;60(8):646-649.",
                     doi="10.1002/bjs.1800600817",
                     pmid="4541913",
                     year=1973,
                 ),
                 Reference(
                     citation="Child CG, Turcotte JG. Surgery and portal hypertension. "
-                             "In: Child CG, ed. The Liver and Portal Hypertension. "
-                             "Philadelphia: Saunders; 1964:50-64.",
+                    "In: Child CG, ed. The Liver and Portal Hypertension. "
+                    "Philadelphia: Saunders; 1964:50-64.",
                     year=1964,
                 ),
                 Reference(
                     citation="Cholongitas E, Papatheodoridis GV, Vangeli M, et al. "
-                             "Systematic review: The model for end-stage liver disease - "
-                             "should it replace Child-Pugh's classification for assessing "
-                             "prognosis in cirrhosis? Aliment Pharmacol Ther. "
-                             "2005;22(11-12):1079-1089.",
+                    "Systematic review: The model for end-stage liver disease - "
+                    "should it replace Child-Pugh's classification for assessing "
+                    "prognosis in cirrhosis? Aliment Pharmacol Ther. "
+                    "2005;22(11-12):1079-1089.",
                     doi="10.1111/j.1365-2036.2005.02691.x",
                     pmid="16305721",
                     year=2005,
@@ -200,18 +200,13 @@ class ChildPughCalculator(BaseCalculator):
         encephalopathy_score = self._score_encephalopathy(encephalopathy_normalized)
 
         # Total score
-        total_score = (
-            bilirubin_score + albumin_score + inr_score +
-            ascites_score + encephalopathy_score
-        )
+        total_score = bilirubin_score + albumin_score + inr_score + ascites_score + encephalopathy_score
 
         # Determine class
         child_class = self._determine_class(total_score)
 
         # Generate interpretation
-        interpretation = self._interpret_score(
-            total_score, child_class, ascites_normalized, encephalopathy_normalized
-        )
+        interpretation = self._interpret_score(total_score, child_class, ascites_normalized, encephalopathy_normalized)
 
         # Component details
         components = {
@@ -260,8 +255,7 @@ class ChildPughCalculator(BaseCalculator):
             return "none"
         elif ascites_lower in ("mild", "slight", "controlled", "diuretic-controlled", "1"):
             return "mild"
-        elif ascites_lower in ("moderate", "moderate_severe", "moderate-severe",
-                               "severe", "refractory", "tense", "2", "3"):
+        elif ascites_lower in ("moderate", "moderate_severe", "moderate-severe", "severe", "refractory", "tense", "2", "3"):
             return "moderate_severe"
         else:
             # Default to none if unrecognized
@@ -461,9 +455,7 @@ class ChildPughCalculator(BaseCalculator):
             )
         if child_class == "C":
             warnings.append(
-                "Class C cirrhosis carries high short-term mortality. "
-                "Consider transplant urgently if candidate. "
-                "Ensure goals of care are documented."
+                "Class C cirrhosis carries high short-term mortality. Consider transplant urgently if candidate. Ensure goals of care are documented."
             )
 
         return Interpretation(

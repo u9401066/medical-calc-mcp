@@ -81,7 +81,7 @@ class AaGradientCalculator(BaseCalculator):
                 name="Alveolar-arterial (A-a) Oxygen Gradient",
                 purpose="Calculate A-a gradient to evaluate hypoxemia etiology",
                 input_params=["pao2", "paco2", "fio2", "age", "atmospheric_pressure"],
-                output_type="A-a gradient (mmHg) with interpretation"
+                output_type="A-a gradient (mmHg) with interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -117,9 +117,18 @@ class AaGradientCalculator(BaseCalculator):
                 ),
                 icd10_codes=("R09.02", "J96.90", "J96.00"),
                 keywords=(
-                    "A-a gradient", "alveolar-arterial gradient", "PAO2", "PaO2",
-                    "hypoxemia", "oxygen gradient", "gas exchange", "respiratory failure",
-                    "ABG", "arterial blood gas", "V/Q mismatch", "shunt",
+                    "A-a gradient",
+                    "alveolar-arterial gradient",
+                    "PAO2",
+                    "PaO2",
+                    "hypoxemia",
+                    "oxygen gradient",
+                    "gas exchange",
+                    "respiratory failure",
+                    "ABG",
+                    "arterial blood gas",
+                    "V/Q mismatch",
+                    "shunt",
                 ),
             ),
             references=self._get_references(),
@@ -235,13 +244,7 @@ class AaGradientCalculator(BaseCalculator):
             formula_used="A-a gradient = PAO₂ - PaO₂, where PAO₂ = FiO₂ × (Patm - PH₂O) - (PaCO₂ / RQ)",
         )
 
-    def _interpret_aa_gradient(
-        self,
-        aa_gradient: float,
-        age: Optional[int],
-        fio2: float,
-        expected_aa: Optional[float]
-    ) -> Interpretation:
+    def _interpret_aa_gradient(self, aa_gradient: float, age: Optional[int], fio2: float, expected_aa: Optional[float]) -> Interpretation:
         """Generate interpretation based on A-a gradient."""
         recommendations: tuple[str, ...]
         warnings: tuple[str, ...]
@@ -335,9 +338,7 @@ class AaGradientCalculator(BaseCalculator):
                     "Evaluate need for advanced respiratory support",
                 )
 
-            warnings = (
-                "Elevated A-a gradient indicates parenchymal lung disease or V/Q abnormality",
-            )
+            warnings = ("Elevated A-a gradient indicates parenchymal lung disease or V/Q abnormality",)
             ddx_category = "Elevated A-a: V/Q mismatch, Shunt, or Diffusion defect"
 
         return Interpretation(

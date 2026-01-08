@@ -20,65 +20,86 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     @mcp.tool()
     def calculate_nihss(
         loc: Annotated[
-            Literal[0, 1, 2, 3],
-            Field(description="1a. 意識程度 Level of Consciousness | Options: 0=清醒Alert, 1=嗜睡Drowsy, 2=昏迷Stuporous, 3=深度昏迷Coma")
+            Literal[0, 1, 2, 3], Field(description="1a. 意識程度 Level of Consciousness | Options: 0=清醒Alert, 1=嗜睡Drowsy, 2=昏迷Stuporous, 3=深度昏迷Coma")
         ],
         loc_questions: Annotated[
             Literal[0, 1, 2],
-            Field(description="1b. 意識問題-月份年齡 LOC Questions (month, age) | Options: 0=兩者皆正確Both correct, 1=一個正確One correct, 2=皆錯誤Neither correct")
+            Field(
+                description="1b. 意識問題-月份年齡 LOC Questions (month, age) | Options: 0=兩者皆正確Both correct, 1=一個正確One correct, 2=皆錯誤Neither correct"
+            ),
         ],
         loc_commands: Annotated[
             Literal[0, 1, 2],
-            Field(description="1c. 意識指令-眨眼握拳 LOC Commands (blink, squeeze) | Options: 0=兩者皆行Both obey, 1=一個執行One obeys, 2=皆不行Neither obeys")
+            Field(description="1c. 意識指令-眨眼握拳 LOC Commands (blink, squeeze) | Options: 0=兩者皆行Both obey, 1=一個執行One obeys, 2=皆不行Neither obeys"),
         ],
         best_gaze: Annotated[
             Literal[0, 1, 2],
-            Field(description="2. 凝視 Best Gaze (horizontal eye movement) | Options: 0=正常Normal, 1=部分凝視麻痺Partial gaze palsy, 2=強制偏視Forced deviation")
+            Field(
+                description="2. 凝視 Best Gaze (horizontal eye movement) | Options: 0=正常Normal, 1=部分凝視麻痺Partial gaze palsy, 2=強制偏視Forced deviation"
+            ),
         ],
         visual_fields: Annotated[
             Literal[0, 1, 2, 3],
-            Field(description="3. 視野 Visual Fields | Options: 0=無缺損No visual loss, 1=部分偏盲Partial hemianopia, 2=完全偏盲Complete hemianopia, 3=雙側偏盲Bilateral hemianopia")
+            Field(
+                description="3. 視野 Visual Fields | Options: 0=無缺損No visual loss, 1=部分偏盲Partial hemianopia, 2=完全偏盲Complete hemianopia, 3=雙側偏盲Bilateral hemianopia"
+            ),
         ],
         facial_palsy: Annotated[
             Literal[0, 1, 2, 3],
-            Field(description="4. 顏面麻痺 Facial Palsy | Options: 0=正常對稱Normal symmetric, 1=輕度Minor paralysis, 2=部分麻痺Partial paralysis, 3=完全麻痺Complete paralysis")
+            Field(
+                description="4. 顏面麻痺 Facial Palsy | Options: 0=正常對稱Normal symmetric, 1=輕度Minor paralysis, 2=部分麻痺Partial paralysis, 3=完全麻痺Complete paralysis"
+            ),
         ],
         motor_arm_left: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="5a. 左上肢運動 Motor Arm Left (hold 10 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement")
+            Field(
+                description="5a. 左上肢運動 Motor Arm Left (hold 10 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement"
+            ),
         ],
         motor_arm_right: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="5b. 右上肢運動 Motor Arm Right (hold 10 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement")
+            Field(
+                description="5b. 右上肢運動 Motor Arm Right (hold 10 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement"
+            ),
         ],
         motor_leg_left: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="6a. 左下肢運動 Motor Leg Left (hold 5 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement")
+            Field(
+                description="6a. 左下肢運動 Motor Leg Left (hold 5 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement"
+            ),
         ],
         motor_leg_right: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="6b. 右下肢運動 Motor Leg Right (hold 5 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement")
+            Field(
+                description="6b. 右下肢運動 Motor Leg Right (hold 5 sec) | Options: 0=無下垂No drift, 1=下垂Drift, 2=無法抵抗重力Some effort against gravity, 3=無法舉起No effort against gravity, 4=完全癱瘓No movement"
+            ),
         ],
         limb_ataxia: Annotated[
             Literal[0, 1, 2],
-            Field(description="7. 肢體運動失調 Limb Ataxia (finger-nose, heel-shin) | Options: 0=無失調Absent, 1=單肢失調Present in 1 limb, 2=雙肢失調Present in 2+ limbs")
+            Field(
+                description="7. 肢體運動失調 Limb Ataxia (finger-nose, heel-shin) | Options: 0=無失調Absent, 1=單肢失調Present in 1 limb, 2=雙肢失調Present in 2+ limbs"
+            ),
         ],
         sensory: Annotated[
             Literal[0, 1, 2],
-            Field(description="8. 感覺 Sensory (pinprick) | Options: 0=正常Normal, 1=輕中度減退Mild-moderate loss, 2=嚴重或完全喪失Severe or total loss")
+            Field(description="8. 感覺 Sensory (pinprick) | Options: 0=正常Normal, 1=輕中度減退Mild-moderate loss, 2=嚴重或完全喪失Severe or total loss"),
         ],
         best_language: Annotated[
             Literal[0, 1, 2, 3],
-            Field(description="9. 語言 Best Language (naming, reading, describing) | Options: 0=無失語No aphasia, 1=輕中度失語Mild-moderate aphasia, 2=嚴重失語Severe aphasia, 3=啞默或全失語Mute/global aphasia")
+            Field(
+                description="9. 語言 Best Language (naming, reading, describing) | Options: 0=無失語No aphasia, 1=輕中度失語Mild-moderate aphasia, 2=嚴重失語Severe aphasia, 3=啞默或全失語Mute/global aphasia"
+            ),
         ],
         dysarthria: Annotated[
             Literal[0, 1, 2],
-            Field(description="10. 構音障礙 Dysarthria (speech clarity) | Options: 0=正常Normal, 1=輕中度Mild-moderate, 2=嚴重或無法言語Severe/mute")
+            Field(description="10. 構音障礙 Dysarthria (speech clarity) | Options: 0=正常Normal, 1=輕中度Mild-moderate, 2=嚴重或無法言語Severe/mute"),
         ],
         extinction_inattention: Annotated[
             Literal[0, 1, 2],
-            Field(description="11. 忽略/消失現象 Extinction and Inattention | Options: 0=無異常No abnormality, 1=一種感覺忽略Inattention in 1 modality, 2=嚴重忽略Profound inattention in 2+ modalities")
-        ]
+            Field(
+                description="11. 忽略/消失現象 Extinction and Inattention | Options: 0=無異常No abnormality, 1=一種感覺忽略Inattention in 1 modality, 2=嚴重忽略Profound inattention in 2+ modalities"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         🧠 NIHSS: 美國國家衛生研究院中風量表 (NIH Stroke Scale)
@@ -136,34 +157,27 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "sensory": sensory,
                 "best_language": best_language,
                 "dysarthria": dysarthria,
-                "extinction_inattention": extinction_inattention
-            }
+                "extinction_inattention": extinction_inattention,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_abcd2(
-        age_gte_60: Annotated[
-            bool,
-            Field(description="A - 年齡 ≥60歲 Age ≥60 years")
-        ],
-        bp_gte_140_90: Annotated[
-            bool,
-            Field(description="B - 血壓 ≥140/90 mmHg Blood pressure ≥140/90 at initial evaluation")
-        ],
+        age_gte_60: Annotated[bool, Field(description="A - 年齡 ≥60歲 Age ≥60 years")],
+        bp_gte_140_90: Annotated[bool, Field(description="B - 血壓 ≥140/90 mmHg Blood pressure ≥140/90 at initial evaluation")],
         clinical_features: Annotated[
             Literal["none", "speech_only", "unilateral_weakness"],
-            Field(description="C - 臨床表現 Clinical features | Options: none=無明顯症狀, speech_only=僅語言障礙Speech disturbance only, unilateral_weakness=單側肢體無力Unilateral weakness (±speech)")
+            Field(
+                description="C - 臨床表現 Clinical features | Options: none=無明顯症狀, speech_only=僅語言障礙Speech disturbance only, unilateral_weakness=單側肢體無力Unilateral weakness (±speech)"
+            ),
         ],
         duration_minutes: Annotated[
             Literal["lt_10", "10_to_59", "gte_60"],
-            Field(description="D1 - 症狀持續時間 Duration of symptoms | Options: lt_10=<10分鐘, 10_to_59=10-59分鐘, gte_60=≥60分鐘")
+            Field(description="D1 - 症狀持續時間 Duration of symptoms | Options: lt_10=<10分鐘, 10_to_59=10-59分鐘, gte_60=≥60分鐘"),
         ],
-        diabetes: Annotated[
-            bool,
-            Field(description="D2 - 糖尿病史 History of diabetes mellitus")
-        ]
+        diabetes: Annotated[bool, Field(description="D2 - 糖尿病史 History of diabetes mellitus")],
     ) -> dict[str, Any]:
         """
         🧠 ABCD2 Score: TIA 後短期中風風險評估
@@ -210,8 +224,8 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "bp_gte_140_90": bp_gte_140_90,
                 "clinical_features": clinical_features,
                 "duration_minutes": duration_minutes,
-                "diabetes": diabetes
-            }
+                "diabetes": diabetes,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -220,8 +234,10 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     def calculate_modified_rankin_scale(
         mrs_score: Annotated[
             Literal[0, 1, 2, 3, 4, 5, 6],
-            Field(description="mRS 分數 Modified Rankin Scale grade | Options: 0=無症狀No symptoms, 1=無明顯失能No significant disability, 2=輕度失能Slight disability, 3=中度失能Moderate disability, 4=中重度失能Moderately severe disability, 5=重度失能Severe disability, 6=死亡Dead")
-        ]
+            Field(
+                description="mRS 分數 Modified Rankin Scale grade | Options: 0=無症狀No symptoms, 1=無明顯失能No significant disability, 2=輕度失能Slight disability, 3=中度失能Moderate disability, 4=中重度失能Moderately severe disability, 5=重度失能Severe disability, 6=死亡Dead"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         🧠 Modified Rankin Scale (mRS): 中風後失能評估量表
@@ -256,12 +272,7 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         Returns:
             mRS 分級、功能狀態分類、是否達良好預後
         """
-        request = CalculateRequest(
-            tool_id="modified_rankin_scale",
-            params={
-                "mrs_score": mrs_score
-            }
-        )
+        request = CalculateRequest(tool_id="modified_rankin_scale", params={"mrs_score": mrs_score})
         response = use_case.execute(request)
         return response.to_dict()
 
@@ -271,8 +282,10 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     def calculate_hunt_hess(
         grade: Annotated[
             Literal[1, 2, 3, 4, 5],
-            Field(description="Hunt & Hess 分級 Grade | Options: 1=無症狀/輕微頭痛Asymptomatic/minimal headache, 2=中重度頭痛/腦膜刺激/腦神經麻痺Moderate-severe headache/nuchal rigidity/CN palsy, 3=嗜睡/意識混亂/輕微局部缺損Drowsy/confused/mild focal deficit, 4=昏迷/中重度偏癱/去大腦僵直Stupor/moderate-severe hemiparesis/early decerebrate, 5=深度昏迷/去大腦僵直/瀕死Deep coma/decerebrate rigidity/moribund")
-        ]
+            Field(
+                description="Hunt & Hess 分級 Grade | Options: 1=無症狀/輕微頭痛Asymptomatic/minimal headache, 2=中重度頭痛/腦膜刺激/腦神經麻痺Moderate-severe headache/nuchal rigidity/CN palsy, 3=嗜睡/意識混亂/輕微局部缺損Drowsy/confused/mild focal deficit, 4=昏迷/中重度偏癱/去大腦僵直Stupor/moderate-severe hemiparesis/early decerebrate, 5=深度昏迷/去大腦僵直/瀕死Deep coma/decerebrate rigidity/moribund"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         🧠 Hunt & Hess Scale: 蛛網膜下腔出血嚴重度分級
@@ -306,31 +319,16 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         Returns:
             Hunt & Hess 分級 (I-V)、手術死亡率、手術時機建議
         """
-        request = CalculateRequest(
-            tool_id="hunt_hess",
-            params={"grade": grade}
-        )
+        request = CalculateRequest(tool_id="hunt_hess", params={"grade": grade})
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_fisher_grade(
-        thick_sah: Annotated[
-            bool,
-            Field(description="厚層 SAH Thick subarachnoid hemorrhage (≥1mm layer on CT)")
-        ],
-        ivh_present: Annotated[
-            bool,
-            Field(description="腦室內出血 Intraventricular hemorrhage (IVH) present")
-        ] = False,
-        no_blood: Annotated[
-            bool,
-            Field(description="無出血 No blood visible on CT")
-        ] = False,
-        use_modified: Annotated[
-            bool,
-            Field(description="使用Modified Fisher Use Modified Fisher Scale (recommended, default=True)")
-        ] = True
+        thick_sah: Annotated[bool, Field(description="厚層 SAH Thick subarachnoid hemorrhage (≥1mm layer on CT)")],
+        ivh_present: Annotated[bool, Field(description="腦室內出血 Intraventricular hemorrhage (IVH) present")] = False,
+        no_blood: Annotated[bool, Field(description="無出血 No blood visible on CT")] = False,
+        use_modified: Annotated[bool, Field(description="使用Modified Fisher Use Modified Fisher Scale (recommended, default=True)")] = True,
     ) -> dict[str, Any]:
         """
         🧠 Fisher Grade / Modified Fisher Scale: SAH 血管痙攣風險預測
@@ -371,13 +369,7 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
             Fisher Grade、血管痙攣風險、監測建議
         """
         request = CalculateRequest(
-            tool_id="fisher_grade",
-            params={
-                "thick_sah": thick_sah,
-                "ivh_present": ivh_present,
-                "no_blood": no_blood,
-                "use_modified": use_modified
-            }
+            tool_id="fisher_grade", params={"thick_sah": thick_sah, "ivh_present": ivh_present, "no_blood": no_blood, "use_modified": use_modified}
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -386,20 +378,28 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     def calculate_four_score(
         eye_response: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="E - 眼睛反應 Eye response | Options: 4=眼睛張開追視或眨眼服從Tracking/blinking to command, 3=眼睛張開不追視Open but not tracking, 2=閉眼大聲呼喚張開Closed, open to loud voice, 1=閉眼痛刺激張開Closed, open to pain, 0=閉眼痛刺激無反應Remain closed with pain")
+            Field(
+                description="E - 眼睛反應 Eye response | Options: 4=眼睛張開追視或眨眼服從Tracking/blinking to command, 3=眼睛張開不追視Open but not tracking, 2=閉眼大聲呼喚張開Closed, open to loud voice, 1=閉眼痛刺激張開Closed, open to pain, 0=閉眼痛刺激無反應Remain closed with pain"
+            ),
         ],
         motor_response: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="M - 運動反應 Motor response | Options: 4=比讚/握拳/比V手勢Thumbs up/fist/peace sign, 3=定位痛刺激Localizing to pain, 2=屈曲反應Flexion to pain, 1=伸展反應Extension to pain, 0=無反應或肌陣攣No response or myoclonus")
+            Field(
+                description="M - 運動反應 Motor response | Options: 4=比讚/握拳/比V手勢Thumbs up/fist/peace sign, 3=定位痛刺激Localizing to pain, 2=屈曲反應Flexion to pain, 1=伸展反應Extension to pain, 0=無反應或肌陣攣No response or myoclonus"
+            ),
         ],
         brainstem_reflexes: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="B - 腦幹反射 Brainstem reflexes | Options: 4=瞳孔和角膜反射皆存在Pupil AND corneal present, 3=一側瞳孔散大固定One pupil wide and fixed, 2=瞳孔或角膜反射消失Pupil OR corneal absent, 1=瞳孔和角膜反射皆消失Pupil AND corneal absent, 0=瞳孔角膜咳嗽反射皆消失All reflexes absent")
+            Field(
+                description="B - 腦幹反射 Brainstem reflexes | Options: 4=瞳孔和角膜反射皆存在Pupil AND corneal present, 3=一側瞳孔散大固定One pupil wide and fixed, 2=瞳孔或角膜反射消失Pupil OR corneal absent, 1=瞳孔和角膜反射皆消失Pupil AND corneal absent, 0=瞳孔角膜咳嗽反射皆消失All reflexes absent"
+            ),
         ],
         respiration: Annotated[
             Literal[0, 1, 2, 3, 4],
-            Field(description="R - 呼吸 Respiration | Options: 4=未插管規則呼吸Not intubated regular, 3=未插管潮式呼吸Not intubated Cheyne-Stokes, 2=未插管不規則呼吸Not intubated irregular, 1=插管呼吸高於呼吸器設定Intubated breathes above vent, 0=呼吸等於呼吸器設定或呼吸暫停Breathes at vent rate or apnea")
-        ]
+            Field(
+                description="R - 呼吸 Respiration | Options: 4=未插管規則呼吸Not intubated regular, 3=未插管潮式呼吸Not intubated Cheyne-Stokes, 2=未插管不規則呼吸Not intubated irregular, 1=插管呼吸高於呼吸器設定Intubated breathes above vent, 0=呼吸等於呼吸器設定或呼吸暫停Breathes at vent rate or apnea"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         🧠 FOUR Score: 全面無反應量表 (Full Outline of UnResponsiveness)
@@ -455,38 +455,18 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         """
         request = CalculateRequest(
             tool_id="four_score",
-            params={
-                "eye_response": eye_response,
-                "motor_response": motor_response,
-                "brainstem_reflexes": brainstem_reflexes,
-                "respiration": respiration
-            }
+            params={"eye_response": eye_response, "motor_response": motor_response, "brainstem_reflexes": brainstem_reflexes, "respiration": respiration},
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_ich_score(
-        gcs_score: Annotated[
-            int,
-            Field(description="GCS 分數 Glasgow Coma Scale score | Range: 3-15", ge=3, le=15)
-        ],
-        ich_volume_ml: Annotated[
-            float,
-            Field(description="ICH 體積 ICH volume by ABC/2 method | Unit: mL | Range: ≥0", ge=0)
-        ],
-        ivh_present: Annotated[
-            bool,
-            Field(description="腦室內出血 Intraventricular hemorrhage (IVH) present on CT")
-        ],
-        infratentorial: Annotated[
-            bool,
-            Field(description="幕下起源 Infratentorial origin (posterior fossa: cerebellum, brainstem)")
-        ],
-        age: Annotated[
-            int,
-            Field(description="年齡 Age | Unit: years | Range: 0-120", ge=0, le=120)
-        ]
+        gcs_score: Annotated[int, Field(description="GCS 分數 Glasgow Coma Scale score | Range: 3-15", ge=3, le=15)],
+        ich_volume_ml: Annotated[float, Field(description="ICH 體積 ICH volume by ABC/2 method | Unit: mL | Range: ≥0", ge=0)],
+        ivh_present: Annotated[bool, Field(description="腦室內出血 Intraventricular hemorrhage (IVH) present on CT")],
+        infratentorial: Annotated[bool, Field(description="幕下起源 Infratentorial origin (posterior fossa: cerebellum, brainstem)")],
+        age: Annotated[int, Field(description="年齡 Age | Unit: years | Range: 0-120", ge=0, le=120)],
     ) -> dict[str, Any]:
         """
         🧠 ICH Score: 腦內出血預後評估量表
@@ -538,13 +518,7 @@ def register_neurology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         """
         request = CalculateRequest(
             tool_id="ich_score",
-            params={
-                "gcs_score": gcs_score,
-                "ich_volume_ml": ich_volume_ml,
-                "ivh_present": ivh_present,
-                "infratentorial": infratentorial,
-                "age": age
-            }
+            params={"gcs_score": gcs_score, "ich_volume_ml": ich_volume_ml, "ivh_present": ivh_present, "infratentorial": infratentorial, "age": age},
         )
         response = use_case.execute(request)
         return response.to_dict()

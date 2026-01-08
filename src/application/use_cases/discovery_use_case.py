@@ -70,43 +70,23 @@ class DiscoveryUseCase:
                 return self._list_contexts()
 
             else:
-                return DiscoveryResponse(
-                    mode=request.mode,
-                    success=False,
-                    count=0,
-                    error=f"Unknown discovery mode: {request.mode}"
-                )
+                return DiscoveryResponse(mode=request.mode, success=False, count=0, error=f"Unknown discovery mode: {request.mode}")
 
         except Exception as e:
-            return DiscoveryResponse(
-                mode=request.mode,
-                success=False,
-                count=0,
-                error=str(e)
-            )
+            return DiscoveryResponse(mode=request.mode, success=False, count=0, error=str(e))
 
     def _search(self, query: str, limit: int) -> DiscoveryResponse:
         """Free text search"""
         results = self._registry.search(query, limit=limit)
         tools = [self._to_summary(meta) for meta in results]
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.SEARCH,
-            success=True,
-            count=len(tools),
-            tools=tools,
-            query=query
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.SEARCH, success=True, count=len(tools), tools=tools, query=query)
 
     def _by_specialty(self, specialty_str: Optional[str], limit: int) -> DiscoveryResponse:
         """Filter by specialty"""
         if not specialty_str:
             return DiscoveryResponse(
-                mode=DiscoveryMode.BY_SPECIALTY,
-                success=False,
-                count=0,
-                error="Specialty is required",
-                available_specialties=self._get_available_specialties()
+                mode=DiscoveryMode.BY_SPECIALTY, success=False, count=0, error="Specialty is required", available_specialties=self._get_available_specialties()
             )
 
         # Try to match specialty
@@ -117,29 +97,19 @@ class DiscoveryUseCase:
                 success=False,
                 count=0,
                 error=f"Unknown specialty: {specialty_str}",
-                available_specialties=self._get_available_specialties()
+                available_specialties=self._get_available_specialties(),
             )
 
         results = self._registry.list_by_specialty(specialty)
         tools = [self._to_summary(meta) for meta in results[:limit]]
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.BY_SPECIALTY,
-            success=True,
-            count=len(tools),
-            tools=tools,
-            query=specialty_str
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.BY_SPECIALTY, success=True, count=len(tools), tools=tools, query=specialty_str)
 
     def _by_context(self, context_str: Optional[str], limit: int) -> DiscoveryResponse:
         """Filter by clinical context"""
         if not context_str:
             return DiscoveryResponse(
-                mode=DiscoveryMode.BY_CONTEXT,
-                success=False,
-                count=0,
-                error="Context is required",
-                available_contexts=self._get_available_contexts()
+                mode=DiscoveryMode.BY_CONTEXT, success=False, count=0, error="Context is required", available_contexts=self._get_available_contexts()
             )
 
         # Try to match context
@@ -150,104 +120,57 @@ class DiscoveryUseCase:
                 success=False,
                 count=0,
                 error=f"Unknown context: {context_str}",
-                available_contexts=self._get_available_contexts()
+                available_contexts=self._get_available_contexts(),
             )
 
         results = self._registry.list_by_context(context)
         tools = [self._to_summary(meta) for meta in results[:limit]]
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.BY_CONTEXT,
-            success=True,
-            count=len(tools),
-            tools=tools,
-            query=context_str
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.BY_CONTEXT, success=True, count=len(tools), tools=tools, query=context_str)
 
     def _by_condition(self, condition: Optional[str], limit: int) -> DiscoveryResponse:
         """Filter by condition/disease"""
         if not condition:
-            return DiscoveryResponse(
-                mode=DiscoveryMode.BY_CONDITION,
-                success=False,
-                count=0,
-                error="Condition is required"
-            )
+            return DiscoveryResponse(mode=DiscoveryMode.BY_CONDITION, success=False, count=0, error="Condition is required")
 
         # Use search with condition as query
         results = self._registry.search(condition, limit=limit)
         tools = [self._to_summary(meta) for meta in results]
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.BY_CONDITION,
-            success=True,
-            count=len(tools),
-            tools=tools,
-            query=condition
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.BY_CONDITION, success=True, count=len(tools), tools=tools, query=condition)
 
     def _list_all(self, limit: int) -> DiscoveryResponse:
         """List all tools"""
         results = self._registry.list_all()
         tools = [self._to_summary(meta) for meta in results[:limit]]
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.LIST_ALL,
-            success=True,
-            count=len(tools),
-            tools=tools
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.LIST_ALL, success=True, count=len(tools), tools=tools)
 
     def _get_info(self, tool_id: Optional[str]) -> DiscoveryResponse:
         """Get detailed info for specific tool"""
         if not tool_id:
-            return DiscoveryResponse(
-                mode=DiscoveryMode.GET_INFO,
-                success=False,
-                count=0,
-                error="tool_id is required"
-            )
+            return DiscoveryResponse(mode=DiscoveryMode.GET_INFO, success=False, count=0, error="tool_id is required")
 
         metadata = self._registry.get(tool_id)
         if metadata is None:
             available = [m.low_level.tool_id for m in self._registry.list_all()]
-            return DiscoveryResponse(
-                mode=DiscoveryMode.GET_INFO,
-                success=False,
-                count=0,
-                error=f"Tool '{tool_id}' not found. Available: {available}"
-            )
+            return DiscoveryResponse(mode=DiscoveryMode.GET_INFO, success=False, count=0, error=f"Tool '{tool_id}' not found. Available: {available}")
 
         detail = self._to_detail(metadata)
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.GET_INFO,
-            success=True,
-            count=1,
-            tool_detail=detail
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.GET_INFO, success=True, count=1, tool_detail=detail)
 
     def _list_specialties(self) -> DiscoveryResponse:
         """List all available specialties"""
         specialties = self._get_available_specialties()
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.LIST_SPECIALTIES,
-            success=True,
-            count=len(specialties),
-            available_specialties=specialties
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.LIST_SPECIALTIES, success=True, count=len(specialties), available_specialties=specialties)
 
     def _list_contexts(self) -> DiscoveryResponse:
         """List all available clinical contexts"""
         contexts = self._get_available_contexts()
 
-        return DiscoveryResponse(
-            mode=DiscoveryMode.LIST_CONTEXTS,
-            success=True,
-            count=len(contexts),
-            available_contexts=contexts
-        )
+        return DiscoveryResponse(mode=DiscoveryMode.LIST_CONTEXTS, success=True, count=len(contexts), available_contexts=contexts)
 
     # Helper methods
 
@@ -259,7 +182,7 @@ class DiscoveryUseCase:
             purpose=metadata.low_level.purpose,
             specialties=[s.value for s in metadata.high_level.specialties],
             input_params=metadata.low_level.input_params,
-            output_type=metadata.low_level.output_type
+            output_type=metadata.low_level.output_type,
         )
 
     def _to_detail(self, metadata: ToolMetadata) -> ToolDetailDTO:
@@ -286,7 +209,7 @@ class DiscoveryUseCase:
                 for ref in metadata.references
             ],
             version=metadata.version,
-            validation_status=metadata.validation_status
+            validation_status=metadata.validation_status,
         )
 
     def _get_available_specialties(self) -> list[str]:

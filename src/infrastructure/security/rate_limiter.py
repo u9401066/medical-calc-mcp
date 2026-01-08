@@ -14,12 +14,7 @@ from typing import Any, Optional
 class RateLimitExceeded(Exception):
     """Exception raised when rate limit is exceeded."""
 
-    def __init__(
-        self,
-        message: str = "Rate limit exceeded",
-        retry_after: Optional[float] = None,
-        client_id: Optional[str] = None
-    ):
+    def __init__(self, message: str = "Rate limit exceeded", retry_after: Optional[float] = None, client_id: Optional[str] = None):
         super().__init__(message)
         self.retry_after = retry_after
         self.client_id = client_id
@@ -36,8 +31,9 @@ class TokenBucket:
     - Requests are rejected when no tokens available
     - Bucket has maximum capacity (burst size)
     """
+
     capacity: float  # Maximum tokens (burst size)
-    tokens: float    # Current available tokens
+    tokens: float  # Current available tokens
     refill_rate: float  # Tokens per second
     last_update: float = field(default_factory=time.time)
 
@@ -110,7 +106,7 @@ class RateLimiter:
         requests_per_minute: int = 60,
         burst: int = 10,
         per_client: bool = True,
-        cleanup_interval: float = 300.0  # 5 minutes
+        cleanup_interval: float = 300.0,  # 5 minutes
     ):
         """
         Initialize rate limiter.
@@ -135,11 +131,7 @@ class RateLimiter:
         self._last_cleanup = time.time()
 
         # Global bucket (used when per_client=False)
-        self._global_bucket = TokenBucket(
-            capacity=float(burst),
-            tokens=float(burst),
-            refill_rate=self.refill_rate
-        )
+        self._global_bucket = TokenBucket(capacity=float(burst), tokens=float(burst), refill_rate=self.refill_rate)
 
     def _get_bucket(self, client_id: str) -> TokenBucket:
         """Get or create token bucket for client."""
@@ -148,11 +140,7 @@ class RateLimiter:
 
         with self._lock:
             if client_id not in self._buckets:
-                self._buckets[client_id] = TokenBucket(
-                    capacity=float(self.burst),
-                    tokens=float(self.burst),
-                    refill_rate=self.refill_rate
-                )
+                self._buckets[client_id] = TokenBucket(capacity=float(self.burst), tokens=float(self.burst), refill_rate=self.refill_rate)
             return self._buckets[client_id]
 
     def is_allowed(self, client_id: str = "global") -> bool:
@@ -183,11 +171,7 @@ class RateLimiter:
 
         if not bucket.consume():
             retry_after = bucket.time_until_available()
-            raise RateLimitExceeded(
-                message=f"Rate limit exceeded. Try again in {retry_after:.1f} seconds.",
-                retry_after=retry_after,
-                client_id=client_id
-            )
+            raise RateLimitExceeded(message=f"Rate limit exceeded. Try again in {retry_after:.1f} seconds.", retry_after=retry_after, client_id=client_id)
 
     def get_remaining(self, client_id: str = "global") -> int:
         """
@@ -233,7 +217,8 @@ class RateLimiter:
 
             # Remove buckets that are full (inactive clients)
             inactive = [
-                client_id for client_id, bucket in self._buckets.items()
+                client_id
+                for client_id, bucket in self._buckets.items()
                 if bucket.tokens >= bucket.capacity * 0.99  # Nearly full = inactive
             ]
 

@@ -28,7 +28,7 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
         fungal_infection: bool,
         dehydration: bool,
         outpatient_status: bool,
-        age_under_60: bool
+        age_under_60: bool,
     ) -> dict[str, Any]:
         """
         🦠 MASCC Score: 發燒性嗜中性球低下風險評估 (Febrile Neutropenia Risk)
@@ -63,7 +63,7 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
             "fungal_infection": fungal_infection,
             "dehydration": dehydration,
             "outpatient_status": outpatient_status,
-            "age_under_60": age_under_60
+            "age_under_60": age_under_60,
         }
         return use_case.execute(CalculateRequest(tool_id="mascc_score", params=params)).to_dict()
 
@@ -73,7 +73,7 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
         hypotension: Literal["none", "hypotension", "vasopressor_use"],
         mechanical_ventilation: bool,
         cardiac_arrest: bool,
-        mental_status: Literal["alert", "disoriented", "stupor_or_coma"]
+        mental_status: Literal["alert", "disoriented", "stupor_or_coma"],
     ) -> dict[str, Any]:
         """
         🦠 Pitt Bacteremia Score: 菌血症預後評估
@@ -103,17 +103,13 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
             "hypotension": hypotension,
             "mechanical_ventilation": mechanical_ventilation,
             "cardiac_arrest": cardiac_arrest,
-            "mental_status": mental_status
+            "mental_status": mental_status,
         }
         return use_case.execute(CalculateRequest(tool_id="pitt_bacteremia", params=params)).to_dict()
 
     @mcp.tool()
     def calculate_centor_score(
-        tonsillar_exudates: bool,
-        tender_anterior_cervical_lymphadenopathy: bool,
-        fever_history: bool,
-        absence_of_cough: bool,
-        age_years: int
+        tonsillar_exudates: bool, tender_anterior_cervical_lymphadenopathy: bool, fever_history: bool, absence_of_cough: bool, age_years: int
     ) -> dict[str, Any]:
         """
         🦠 Centor Score (Modified McIsaac): 鏈球菌咽炎風險評估
@@ -146,7 +142,7 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
             "tender_anterior_cervical_lymphadenopathy": tender_anterior_cervical_lymphadenopathy,
             "fever_history": fever_history,
             "absence_of_cough": absence_of_cough,
-            "age_years": age_years
+            "age_years": age_years,
         }
         return use_case.execute(CalculateRequest(tool_id="centor_score", params=params)).to_dict()
 
@@ -157,7 +153,7 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
         tracheal_secretions: Literal["absent", "non_purulent", "purulent"],
         pao2_fio2_ratio: Literal["gt_240_or_ards", "lte_240_no_ards"],
         chest_xray: Literal["no_infiltrate", "diffuse", "localized"],
-        culture: Literal["negative", "positive"]
+        culture: Literal["negative", "positive"],
     ) -> dict[str, Any]:
         """
         🦠 CPIS: 臨床肺部感染評分 (Clinical Pulmonary Infection Score)
@@ -189,6 +185,6 @@ def register_infectious_disease_tools(mcp: FastMCP, use_case: CalculateUseCase) 
             "tracheal_secretions": tracheal_secretions,
             "pao2_fio2_ratio": pao2_fio2_ratio,
             "chest_xray": chest_xray,
-            "culture": culture
+            "culture": culture,
         }
         return use_case.execute(CalculateRequest(tool_id="cpis", params=params)).to_dict()

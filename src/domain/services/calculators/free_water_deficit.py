@@ -76,7 +76,7 @@ class FreeWaterDeficitCalculator(BaseCalculator):
                 name="Free Water Deficit",
                 purpose="Calculate free water deficit for hypernatremia treatment",
                 input_params=["current_sodium", "target_sodium", "weight_kg", "patient_type"],
-                output_type="Free water deficit (L) with correction rate guidance"
+                output_type="Free water deficit (L) with correction rate guidance",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -107,9 +107,15 @@ class FreeWaterDeficitCalculator(BaseCalculator):
                 ),
                 icd10_codes=("E87.0",),
                 keywords=(
-                    "free water deficit", "hypernatremia", "sodium correction",
-                    "dehydration", "diabetes insipidus", "hyperosmolality",
-                    "fluid replacement", "D5W", "electrolyte",
+                    "free water deficit",
+                    "hypernatremia",
+                    "sodium correction",
+                    "dehydration",
+                    "diabetes insipidus",
+                    "hyperosmolality",
+                    "fluid replacement",
+                    "D5W",
+                    "electrolyte",
                 ),
             ),
             references=self._get_references(),
@@ -201,10 +207,7 @@ class FreeWaterDeficitCalculator(BaseCalculator):
         infusion_rate_ml_hr = round(infusion_rate_ml_hr, 0)
 
         # Generate interpretation
-        interpretation = self._interpret_deficit(
-            current_sodium, target_sodium, free_water_deficit,
-            rate_per_24h, safe_correction, correction_time_hours
-        )
+        interpretation = self._interpret_deficit(current_sodium, target_sodium, free_water_deficit, rate_per_24h, safe_correction, correction_time_hours)
 
         # Build calculation details
         details = {

@@ -27,8 +27,6 @@ Clinical Notes:
 - Grade 3-4: Consider aggressive vasospasm monitoring/prophylaxis
 """
 
-
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -74,7 +72,7 @@ class FisherGradeCalculator(BaseCalculator):
                 name="Fisher Grade (Modified Fisher Scale)",
                 purpose="Predict vasospasm risk in subarachnoid hemorrhage based on CT findings",
                 input_params=["thick_sah", "ivh_present", "use_modified"],
-                output_type="Fisher Grade (0-4) with vasospasm risk prediction"
+                output_type="Fisher Grade (0-4) with vasospasm risk prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -104,32 +102,39 @@ class FisherGradeCalculator(BaseCalculator):
                 ),
                 icd10_codes=("I60", "I60.9", "G45.8"),
                 keywords=(
-                    "Fisher", "Fisher Grade", "Modified Fisher", "SAH",
-                    "subarachnoid", "vasospasm", "CT grading", "IVH",
-                    "intraventricular hemorrhage", "delayed ischemia",
-                )
+                    "Fisher",
+                    "Fisher Grade",
+                    "Modified Fisher",
+                    "SAH",
+                    "subarachnoid",
+                    "vasospasm",
+                    "CT grading",
+                    "IVH",
+                    "intraventricular hemorrhage",
+                    "delayed ischemia",
+                ),
             ),
             references=(
                 Reference(
                     citation="Fisher CM, Kistler JP, Davis JM. Relation of cerebral "
-                             "vasospasm to subarachnoid hemorrhage visualized by "
-                             "computerized tomographic scanning. "
-                             "Neurosurgery. 1980;6(1):1-9.",
+                    "vasospasm to subarachnoid hemorrhage visualized by "
+                    "computerized tomographic scanning. "
+                    "Neurosurgery. 1980;6(1):1-9.",
                     doi="10.1227/00006123-198001000-00001",
                     pmid="7354892",
-                    year=1980
+                    year=1980,
                 ),
                 Reference(
                     citation="Frontera JA, Claassen J, Schmidt JM, et al. Prediction "
-                             "of symptomatic vasospasm after subarachnoid hemorrhage: "
-                             "the modified Fisher scale. Neurosurgery. 2006;59(1):21-27.",
+                    "of symptomatic vasospasm after subarachnoid hemorrhage: "
+                    "the modified Fisher scale. Neurosurgery. 2006;59(1):21-27.",
                     doi="10.1227/01.NEU.0000218821.34014.1B",
                     pmid="16823296",
-                    year=2006
+                    year=2006,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -181,9 +186,7 @@ class FisherGradeCalculator(BaseCalculator):
             },
         )
 
-    def _calculate_modified_fisher(
-        self, thick_sah: bool, ivh_present: bool, no_blood: bool
-    ) -> int:
+    def _calculate_modified_fisher(self, thick_sah: bool, ivh_present: bool, no_blood: bool) -> int:
         """Calculate Modified Fisher Grade (0-4)"""
         if no_blood:
             return 0
@@ -193,9 +196,7 @@ class FisherGradeCalculator(BaseCalculator):
         else:  # thin SAH
             return 2 if ivh_present else 1
 
-    def _calculate_original_fisher(
-        self, thick_sah: bool, ivh_present: bool, no_blood: bool
-    ) -> int:
+    def _calculate_original_fisher(self, thick_sah: bool, ivh_present: bool, no_blood: bool) -> int:
         """Calculate Original Fisher Grade (1-4)"""
         if no_blood:
             return 1
@@ -211,9 +212,7 @@ class FisherGradeCalculator(BaseCalculator):
         # Grade 2: Thin SAH
         return 2
 
-    def _describe_ct_findings(
-        self, thick_sah: bool, ivh_present: bool, no_blood: bool
-    ) -> str:
+    def _describe_ct_findings(self, thick_sah: bool, ivh_present: bool, no_blood: bool) -> str:
         """Describe CT findings in plain text"""
         if no_blood:
             return "No subarachnoid blood detected on CT"
@@ -261,8 +260,7 @@ class FisherGradeCalculator(BaseCalculator):
         if grade == 0:
             return Interpretation(
                 summary="Modified Fisher Grade 0 - No SAH on CT",
-                detail="No subarachnoid blood detected on CT. If clinical suspicion "
-                       "remains high, lumbar puncture is indicated.",
+                detail="No subarachnoid blood detected on CT. If clinical suspicion remains high, lumbar puncture is indicated.",
                 severity=Severity.NORMAL,
                 stage="Grade 0",
                 stage_description="No SAH detected",
@@ -278,8 +276,7 @@ class FisherGradeCalculator(BaseCalculator):
         elif grade == 1:
             return Interpretation(
                 summary="Modified Fisher Grade 1 - Thin SAH without IVH",
-                detail="Thin layer of subarachnoid blood (<1mm) without intraventricular "
-                       "hemorrhage. Lower vasospasm risk (12-20%).",
+                detail="Thin layer of subarachnoid blood (<1mm) without intraventricular hemorrhage. Lower vasospasm risk (12-20%).",
                 severity=Severity.MILD,
                 stage="Grade 1",
                 stage_description="Thin SAH, no IVH - lower vasospasm risk",
@@ -298,8 +295,7 @@ class FisherGradeCalculator(BaseCalculator):
         elif grade == 2:
             return Interpretation(
                 summary="Modified Fisher Grade 2 - Thin SAH with IVH",
-                detail="Thin subarachnoid hemorrhage with intraventricular extension. "
-                       "Moderate vasospasm risk (21-27%). May require EVD.",
+                detail="Thin subarachnoid hemorrhage with intraventricular extension. Moderate vasospasm risk (21-27%). May require EVD.",
                 severity=Severity.MODERATE,
                 stage="Grade 2",
                 stage_description="Thin SAH with IVH - moderate risk",
@@ -322,8 +318,7 @@ class FisherGradeCalculator(BaseCalculator):
         elif grade == 3:
             return Interpretation(
                 summary="Modified Fisher Grade 3 - Thick SAH without IVH",
-                detail="Thick layer of subarachnoid hemorrhage (≥1mm) without IVH. "
-                       "High vasospasm risk (30-40%). Aggressive monitoring required.",
+                detail="Thick layer of subarachnoid hemorrhage (≥1mm) without IVH. High vasospasm risk (30-40%). Aggressive monitoring required.",
                 severity=Severity.SEVERE,
                 stage="Grade 3",
                 stage_description="Thick SAH, no IVH - high vasospasm risk",
@@ -348,8 +343,7 @@ class FisherGradeCalculator(BaseCalculator):
         else:  # grade 4
             return Interpretation(
                 summary="Modified Fisher Grade 4 - Thick SAH with IVH",
-                detail="Thick subarachnoid hemorrhage with intraventricular extension. "
-                       "Highest vasospasm risk (40-50%). Intensive monitoring essential.",
+                detail="Thick subarachnoid hemorrhage with intraventricular extension. Highest vasospasm risk (40-50%). Intensive monitoring essential.",
                 severity=Severity.CRITICAL,
                 stage="Grade 4",
                 stage_description="Thick SAH with IVH - highest vasospasm risk",
@@ -378,8 +372,7 @@ class FisherGradeCalculator(BaseCalculator):
         if grade == 1:
             return Interpretation(
                 summary="Original Fisher Grade 1 - No blood detected",
-                detail="No subarachnoid blood on CT. If SAH suspected, "
-                       "lumbar puncture is indicated.",
+                detail="No subarachnoid blood on CT. If SAH suspected, lumbar puncture is indicated.",
                 severity=Severity.NORMAL,
                 stage="Grade 1",
                 stage_description="No SAH on CT",
@@ -414,15 +407,12 @@ class FisherGradeCalculator(BaseCalculator):
                     "Early aneurysm securing",
                     "Aggressive vasospasm surveillance",
                 ),
-                warnings=(
-                    "High vasospasm risk (33-40%)",
-                ),
+                warnings=("High vasospasm risk (33-40%)",),
             )
         else:  # grade 4
             return Interpretation(
                 summary="Original Fisher Grade 4 - ICH/IVH with diffuse or no SAH",
-                detail="Intracerebral or intraventricular extension with diffuse "
-                       "or minimal subarachnoid blood.",
+                detail="Intracerebral or intraventricular extension with diffuse or minimal subarachnoid blood.",
                 severity=Severity.SEVERE,
                 stage="Grade 4",
                 stage_description="ICH/IVH present",

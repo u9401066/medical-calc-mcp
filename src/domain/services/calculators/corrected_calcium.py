@@ -23,7 +23,6 @@ References:
     PMID: 19059239
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -77,7 +76,7 @@ class CorrectedCalciumCalculator(BaseCalculator):
                 name="Albumin-Corrected Calcium",
                 purpose="Correct total calcium for hypoalbuminemia",
                 input_params=["calcium_mg_dl", "albumin_g_dl"],
-                output_type="Corrected calcium (mg/dL) with interpretation"
+                output_type="Corrected calcium (mg/dL) with interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -114,9 +113,9 @@ class CorrectedCalciumCalculator(BaseCalculator):
                 icd10_codes=(
                     "E83.51",  # Hypocalcemia
                     "E83.52",  # Hypercalcemia
-                    "E44",     # Protein-calorie malnutrition
-                    "K74",     # Cirrhosis
-                    "N04",     # Nephrotic syndrome
+                    "E44",  # Protein-calorie malnutrition
+                    "K74",  # Cirrhosis
+                    "N04",  # Nephrotic syndrome
                 ),
             ),
             references=(
@@ -131,10 +130,7 @@ class CorrectedCalciumCalculator(BaseCalculator):
                     year=1973,
                 ),
                 Reference(
-                    citation=(
-                        "Bushinsky DA, Monk RD. Electrolyte quintet: Calcium. "
-                        "Lancet. 1998;352(9124):306-311."
-                    ),
+                    citation=("Bushinsky DA, Monk RD. Electrolyte quintet: Calcium. Lancet. 1998;352(9124):306-311."),
                     doi="10.1016/S0140-6736(97)12331-5",
                     pmid="9690425",
                     year=1998,
@@ -186,9 +182,7 @@ class CorrectedCalciumCalculator(BaseCalculator):
         corrected_ca = calcium_mg_dl + correction
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            calcium_mg_dl, albumin_g_dl, corrected_ca
-        )
+        interpretation = self._get_interpretation(calcium_mg_dl, albumin_g_dl, corrected_ca)
 
         return ScoreResult(
             tool_id=self.tool_id,
@@ -215,12 +209,7 @@ class CorrectedCalciumCalculator(BaseCalculator):
             },
         )
 
-    def _get_interpretation(
-        self,
-        measured_ca: float,
-        albumin: float,
-        corrected_ca: float
-    ) -> Interpretation:
+    def _get_interpretation(self, measured_ca: float, albumin: float, corrected_ca: float) -> Interpretation:
         """Generate interpretation based on corrected calcium value"""
         recommendations: tuple[str, ...]
         warnings: tuple[str, ...]
@@ -316,10 +305,7 @@ class CorrectedCalciumCalculator(BaseCalculator):
 
         hypoalb_note = ""
         if hypoalb and correction_direction == "up":
-            hypoalb_note = (
-                f" Measured calcium ({measured_ca} mg/dL) was falsely low due to "
-                f"hypoalbuminemia (albumin {albumin} g/dL)."
-            )
+            hypoalb_note = f" Measured calcium ({measured_ca} mg/dL) was falsely low due to hypoalbuminemia (albumin {albumin} g/dL)."
 
         return Interpretation(
             summary=f"Corrected Ca: {corrected_ca:.1f} mg/dL - {level}",
@@ -332,12 +318,13 @@ class CorrectedCalciumCalculator(BaseCalculator):
             stage=level,
             stage_description=f"Corrected Ca {corrected_ca:.1f} mg/dL",
             recommendations=recommendations,
-            warnings=warnings + (
+            warnings=warnings
+            + (
                 "Ionized calcium is more accurate when available",
                 "Formula less reliable in pH disturbances and critical illness",
-            ) if corrected_ca < 8.5 or corrected_ca > 10.5 else (
-                "Ionized calcium is gold standard but often not needed if corrected is normal",
-            ),
+            )
+            if corrected_ca < 8.5 or corrected_ca > 10.5
+            else ("Ionized calcium is gold standard but often not needed if corrected is normal",),
             next_steps=(
                 "Check ionized calcium if available and clinical concern",
                 "Address underlying cause of albumin abnormality",

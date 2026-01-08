@@ -16,7 +16,6 @@ Reference:
     PMID: 17656478
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -55,7 +54,7 @@ class DeltaRatioCalculator(BaseCalculator):
                 name="Delta Ratio (Delta Gap)",
                 purpose="Identify mixed acid-base disorders in high anion gap metabolic acidosis",
                 input_params=["anion_gap", "bicarbonate", "normal_ag (optional)", "normal_hco3 (optional)"],
-                output_type="Delta Ratio with mixed disorder interpretation"
+                output_type="Delta Ratio with mixed disorder interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -89,28 +88,33 @@ class DeltaRatioCalculator(BaseCalculator):
                 ),
                 icd10_codes=("E87.2", "E87.4", "E87.3"),
                 keywords=(
-                    "delta ratio", "delta gap", "mixed acid-base", "HAGMA", "NAGMA",
-                    "metabolic alkalosis", "acid-base analysis", "anion gap",
-                )
+                    "delta ratio",
+                    "delta gap",
+                    "mixed acid-base",
+                    "HAGMA",
+                    "NAGMA",
+                    "metabolic alkalosis",
+                    "acid-base analysis",
+                    "anion gap",
+                ),
             ),
             references=(
                 Reference(
-                    citation="Wrenn K. The delta (delta) gap: an approach to mixed acid-base "
-                             "disorders. Ann Emerg Med. 1990;19(11):1310-1313.",
+                    citation="Wrenn K. The delta (delta) gap: an approach to mixed acid-base disorders. Ann Emerg Med. 1990;19(11):1310-1313.",
                     doi="10.1016/s0196-0644(05)82292-9",
                     pmid="2240729",
-                    year=1990
+                    year=1990,
                 ),
                 Reference(
                     citation="Rastegar A. Use of the DeltaAG/DeltaHCO3- ratio in the diagnosis "
-                             "of mixed acid-base disorders. J Am Soc Nephrol. 2007;18(9):2429-2431.",
+                    "of mixed acid-base disorders. J Am Soc Nephrol. 2007;18(9):2429-2431.",
                     doi="10.1681/ASN.2006121408",
                     pmid="17656478",
-                    year=2007
+                    year=2007,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -154,8 +158,7 @@ class DeltaRatioCalculator(BaseCalculator):
                 unit=Unit.RATIO,
                 interpretation=Interpretation(
                     summary="Delta Ratio not applicable - No elevated anion gap",
-                    detail=f"Anion gap ({anion_gap}) is not elevated above normal ({normal_ag}). "
-                           f"Delta ratio is only meaningful when HAGMA is present.",
+                    detail=f"Anion gap ({anion_gap}) is not elevated above normal ({normal_ag}). Delta ratio is only meaningful when HAGMA is present.",
                     severity=Severity.NORMAL,
                     stage="N/A",
                     stage_description="Not applicable",
@@ -167,7 +170,7 @@ class DeltaRatioCalculator(BaseCalculator):
                     next_steps=(
                         "Check urine anion gap if acidosis present",
                         "Review clinical context for acidosis cause",
-                    )
+                    ),
                 ),
                 references=list(self.references),
                 tool_id=self.tool_id,
@@ -184,7 +187,7 @@ class DeltaRatioCalculator(BaseCalculator):
                     "valid": False,
                     "reason": "Anion gap not elevated",
                 },
-                formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ (not applicable - AG not elevated)"
+                formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ (not applicable - AG not elevated)",
             )
 
         # Check for division issues
@@ -195,8 +198,7 @@ class DeltaRatioCalculator(BaseCalculator):
                 unit=Unit.RATIO,
                 interpretation=Interpretation(
                     summary="Delta Ratio not calculable - Bicarbonate not decreased",
-                    detail=f"Bicarbonate ({bicarbonate}) is not decreased below normal ({normal_hco3}). "
-                           f"This suggests metabolic alkalosis may be present.",
+                    detail=f"Bicarbonate ({bicarbonate}) is not decreased below normal ({normal_hco3}). This suggests metabolic alkalosis may be present.",
                     severity=Severity.MILD,
                     stage="Possible Met Alk",
                     stage_description="Possible metabolic alkalosis",
@@ -208,7 +210,7 @@ class DeltaRatioCalculator(BaseCalculator):
                     next_steps=(
                         "Obtain arterial blood gas",
                         "Check urine chloride",
-                    )
+                    ),
                 ),
                 references=list(self.references),
                 tool_id=self.tool_id,
@@ -225,7 +227,7 @@ class DeltaRatioCalculator(BaseCalculator):
                     "valid": False,
                     "reason": "HCO₃⁻ not decreased",
                 },
-                formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ (not applicable - HCO₃⁻ not decreased)"
+                formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ (not applicable - HCO₃⁻ not decreased)",
             )
 
         # Calculate delta ratio
@@ -253,15 +255,10 @@ class DeltaRatioCalculator(BaseCalculator):
                 "delta_hco3": round(delta_hco3, 1),
                 "delta_ratio": delta_ratio,
             },
-            formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ = (AG - 12) / (24 - HCO₃⁻)"
+            formula_used="Delta Ratio = ΔAG / ΔHCO₃⁻ = (AG - 12) / (24 - HCO₃⁻)",
         )
 
-    def _get_interpretation(
-        self,
-        delta_ratio: float,
-        delta_ag: float,
-        delta_hco3: float
-    ) -> Interpretation:
+    def _get_interpretation(self, delta_ratio: float, delta_ag: float, delta_hco3: float) -> Interpretation:
         """Get clinical interpretation based on delta ratio value"""
 
         if delta_ratio < 1:
@@ -269,8 +266,8 @@ class DeltaRatioCalculator(BaseCalculator):
             return Interpretation(
                 summary=f"Mixed disorder: HAGMA + NAGMA (Delta Ratio: {delta_ratio})",
                 detail=f"Delta ratio <1 indicates bicarbonate loss exceeds anion gap increase. "
-                       f"This suggests concurrent Normal Anion Gap Metabolic Acidosis (NAGMA) "
-                       f"in addition to HAGMA. ΔAG: {delta_ag:.1f}, ΔHCO₃⁻: {delta_hco3:.1f}",
+                f"This suggests concurrent Normal Anion Gap Metabolic Acidosis (NAGMA) "
+                f"in addition to HAGMA. ΔAG: {delta_ag:.1f}, ΔHCO₃⁻: {delta_hco3:.1f}",
                 severity=Severity.MODERATE,
                 stage="HAGMA + NAGMA",
                 stage_description="Mixed HAGMA and NAGMA",
@@ -280,22 +277,20 @@ class DeltaRatioCalculator(BaseCalculator):
                     "Check urine anion gap to identify NAGMA cause",
                     "Consider: diarrhea, RTA, early renal failure, dilutional acidosis",
                 ),
-                warnings=(
-                    "Mixed disorder - may require addressing multiple causes",
-                ),
+                warnings=("Mixed disorder - may require addressing multiple causes",),
                 next_steps=(
                     "Calculate urine anion gap",
                     "UAG positive: RTA",
                     "UAG negative: GI loss (diarrhea)",
                     "Review IV fluids for dilutional component",
-                )
+                ),
             )
         elif delta_ratio <= 2:
             # Pure HAGMA
             return Interpretation(
                 summary=f"Pure High Anion Gap Metabolic Acidosis (Delta Ratio: {delta_ratio})",
                 detail=f"Delta ratio 1-2 indicates a pure HAGMA where the increase in anion gap "
-                       f"matches the decrease in bicarbonate. ΔAG: {delta_ag:.1f}, ΔHCO₃⁻: {delta_hco3:.1f}",
+                f"matches the decrease in bicarbonate. ΔAG: {delta_ag:.1f}, ΔHCO₃⁻: {delta_hco3:.1f}",
                 severity=Severity.MODERATE,
                 stage="Pure HAGMA",
                 stage_description="Pure High Anion Gap Metabolic Acidosis",
@@ -309,15 +304,15 @@ class DeltaRatioCalculator(BaseCalculator):
                     "Methanol, Uremia, DKA, Propylene glycol",
                     "INH/Iron, Lactic acidosis, Ethylene glycol, Salicylates",
                     "Calculate osmolar gap if toxic alcohol suspected",
-                )
+                ),
             )
         else:
             # Delta ratio > 2: Concurrent metabolic alkalosis
             return Interpretation(
                 summary=f"Mixed disorder: HAGMA + Metabolic Alkalosis (Delta Ratio: {delta_ratio})",
                 detail=f"Delta ratio >2 indicates the anion gap has increased more than bicarbonate "
-                       f"has decreased. This suggests a concurrent metabolic alkalosis is raising "
-                       f"the HCO₃⁻. ΔAG: {delta_ag:.1f}, ΔHCO₃⁻: {delta_hco3:.1f}",
+                f"has decreased. This suggests a concurrent metabolic alkalosis is raising "
+                f"the HCO₃⁻. ΔAG: {delta_ag:.1f}, ΔHCO₃⁻: {delta_hco3:.1f}",
                 severity=Severity.MODERATE,
                 stage="HAGMA + Met Alk",
                 stage_description="Mixed HAGMA and Metabolic Alkalosis",
@@ -327,13 +322,11 @@ class DeltaRatioCalculator(BaseCalculator):
                     "Check for: vomiting, NG suction, diuretics, hypokalemia",
                     "Consider contraction alkalosis",
                 ),
-                warnings=(
-                    "Mixed disorder - HCO₃⁻ is higher than expected for the AG elevation",
-                ),
+                warnings=("Mixed disorder - HCO₃⁻ is higher than expected for the AG elevation",),
                 next_steps=(
                     "Check urine chloride to classify metabolic alkalosis",
                     "UCl <20: Saline-responsive (vomiting, NG suction)",
                     "UCl >20: Saline-resistant (hyperaldo, Bartter, diuretics)",
                     "Correct underlying causes of both disorders",
-                )
+                ),
             )

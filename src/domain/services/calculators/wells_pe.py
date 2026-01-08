@@ -73,7 +73,7 @@ class WellsPeCalculator(BaseCalculator):
                     "hemoptysis",
                     "malignancy",
                 ],
-                output_type="Score with PE probability and diagnostic recommendations"
+                output_type="Score with PE probability and diagnostic recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -117,23 +117,23 @@ class WellsPeCalculator(BaseCalculator):
                     "CTPA",
                     "CT pulmonary angiogram",
                     "VTE workup",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple "
-                             "clinical model to categorize patients probability of pulmonary "
-                             "embolism: increasing the models utility with the SimpliRED D-dimer. "
-                             "Thromb Haemost. 2000;83(3):416-420.",
+                    "clinical model to categorize patients probability of pulmonary "
+                    "embolism: increasing the models utility with the SimpliRED D-dimer. "
+                    "Thromb Haemost. 2000;83(3):416-420.",
                     pmid="10744147",
                     year=2000,
                 ),
                 Reference(
                     citation="Wells PS, Anderson DR, Rodger M, et al. Excluding pulmonary embolism "
-                             "at the bedside without diagnostic imaging: management of patients "
-                             "with suspected pulmonary embolism presenting to the emergency "
-                             "department by using a simple clinical model and D-dimer. "
-                             "Ann Intern Med. 2001;135(2):98-107.",
+                    "at the bedside without diagnostic imaging: management of patients "
+                    "with suspected pulmonary embolism presenting to the emergency "
+                    "department by using a simple clinical model and D-dimer. "
+                    "Ann Intern Med. 2001;135(2):98-107.",
                     doi="10.7326/0003-4819-135-2-200107170-00010",
                     pmid="11453709",
                     year=2001,
@@ -224,10 +224,7 @@ class WellsPeCalculator(BaseCalculator):
                 three_level = "Moderate probability"
 
             summary = f"Wells PE = {score}: {category} ({pe_probability} probability)"
-            detail = (
-                f"Lower pretest probability of PE (approximately {pe_probability}). "
-                f"D-dimer can be used to rule out PE if negative."
-            )
+            detail = f"Lower pretest probability of PE (approximately {pe_probability}). D-dimer can be used to rule out PE if negative."
             recommendations = [
                 "Order high-sensitivity D-dimer",
                 "If D-dimer negative: PE effectively ruled out",
@@ -258,10 +255,7 @@ class WellsPeCalculator(BaseCalculator):
 
             category = "PE Likely"
             summary = f"Wells PE = {score}: {category} ({pe_probability} probability)"
-            detail = (
-                f"Elevated pretest probability of PE (approximately {pe_probability}). "
-                f"Direct imaging with CTPA is recommended."
-            )
+            detail = f"Elevated pretest probability of PE (approximately {pe_probability}). Direct imaging with CTPA is recommended."
             recommendations = [
                 "Proceed directly to CT pulmonary angiography (CTPA)",
                 "D-dimer alone cannot exclude PE at this probability",
@@ -287,7 +281,5 @@ class WellsPeCalculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=(
-                "High probability of PE - consider empiric anticoagulation",
-            ) if score > 6 else tuple(),
+            warnings=("High probability of PE - consider empiric anticoagulation",) if score > 6 else tuple(),
         )

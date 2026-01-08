@@ -12,7 +12,6 @@ Reference:
     PMID: 16729309
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
@@ -50,13 +49,8 @@ class Fib4IndexCalculator(BaseCalculator):
                 tool_id="fib4_index",
                 name="FIB-4 Index",
                 purpose="Non-invasive assessment of liver fibrosis",
-                input_params=[
-                    "age_years",
-                    "ast",
-                    "alt",
-                    "platelet_count"
-                ],
-                output_type="FIB-4 index value with fibrosis stage prediction"
+                input_params=["age_years", "ast", "alt", "platelet_count"],
+                output_type="FIB-4 index value with fibrosis stage prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -86,49 +80,53 @@ class Fib4IndexCalculator(BaseCalculator):
                     "Is further workup for fibrosis needed?",
                 ),
                 icd10_codes=(
-                    "K74.0",   # Hepatic fibrosis
-                    "K74.6",   # Other and unspecified cirrhosis of liver
-                    "K76.0",   # Fatty liver
+                    "K74.0",  # Hepatic fibrosis
+                    "K74.6",  # Other and unspecified cirrhosis of liver
+                    "K76.0",  # Fatty liver
                     "K75.81",  # Nonalcoholic steatohepatitis
-                    "B18.2",   # Chronic viral hepatitis C
+                    "B18.2",  # Chronic viral hepatitis C
                 ),
                 keywords=(
-                    "FIB-4", "fibrosis", "cirrhosis", "liver", "hepatitis",
-                    "NAFLD", "NASH", "HCV", "non-invasive",
-                    "elastography", "platelet", "AST", "ALT",
-                )
+                    "FIB-4",
+                    "fibrosis",
+                    "cirrhosis",
+                    "liver",
+                    "hepatitis",
+                    "NAFLD",
+                    "NASH",
+                    "HCV",
+                    "non-invasive",
+                    "elastography",
+                    "platelet",
+                    "AST",
+                    "ALT",
+                ),
             ),
             references=(
                 Reference(
                     citation="Sterling RK, Lissen E, Clumeck N, et al. "
-                             "Development of a simple noninvasive index to predict "
-                             "significant fibrosis in patients with HIV/HCV coinfection. "
-                             "Hepatology. 2006;43(6):1317-1325.",
+                    "Development of a simple noninvasive index to predict "
+                    "significant fibrosis in patients with HIV/HCV coinfection. "
+                    "Hepatology. 2006;43(6):1317-1325.",
                     doi="10.1002/hep.21178",
                     pmid="16729309",
-                    year=2006
+                    year=2006,
                 ),
                 Reference(
                     citation="McPherson S, Hardy T, Dufour JF, et al. "
-                             "Age as a Confounding Factor for the Accurate Non-Invasive "
-                             "Diagnosis of Advanced NAFLD Fibrosis. "
-                             "Am J Gastroenterol. 2017;112(5):740-751.",
+                    "Age as a Confounding Factor for the Accurate Non-Invasive "
+                    "Diagnosis of Advanced NAFLD Fibrosis. "
+                    "Am J Gastroenterol. 2017;112(5):740-751.",
                     doi="10.1038/ajg.2016.453",
                     pmid="27725647",
-                    year=2017
+                    year=2017,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
-    def calculate(
-        self,
-        age_years: int,
-        ast: float,
-        alt: float,
-        platelet_count: float
-    ) -> ScoreResult:
+    def calculate(self, age_years: int, ast: float, alt: float, platelet_count: float) -> ScoreResult:
         """
         Calculate FIB-4 Index.
 
@@ -153,6 +151,7 @@ class Fib4IndexCalculator(BaseCalculator):
 
         # Calculate FIB-4
         import math
+
         fib4 = (age_years * ast) / (platelet_count * math.sqrt(alt))
 
         # Round to 2 decimal places
@@ -171,9 +170,7 @@ class Fib4IndexCalculator(BaseCalculator):
             using_age_adjusted = False
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            fib4, low_cutoff, high_cutoff, using_age_adjusted
-        )
+        interpretation = self._get_interpretation(fib4, low_cutoff, high_cutoff, using_age_adjusted)
 
         # Build result
         return ScoreResult(
@@ -183,32 +180,22 @@ class Fib4IndexCalculator(BaseCalculator):
             references=list(self.references),
             tool_id=self.tool_id,
             tool_name=self.name,
-            raw_inputs={
-                "age_years": age_years,
-                "ast": ast,
-                "alt": alt,
-                "platelet_count": platelet_count
-            },
+            raw_inputs={"age_years": age_years, "ast": ast, "alt": alt, "platelet_count": platelet_count},
             calculation_details={
                 "fib4_index": fib4,
                 "formula": "(Age × AST) / (Platelets × √ALT)",
-                "component_values": {
-                    "age_component": age_years * ast,
-                    "platelet_alt_component": round(platelet_count * math.sqrt(alt), 2)
-                },
+                "component_values": {"age_component": age_years * ast, "platelet_alt_component": round(platelet_count * math.sqrt(alt), 2)},
                 "low_cutoff": low_cutoff,
                 "high_cutoff": high_cutoff,
                 "using_age_adjusted_cutoffs": using_age_adjusted,
                 "fibrosis_prediction": self._get_fibrosis_prediction(fib4, low_cutoff, high_cutoff),
-                "confidence": self._get_confidence(fib4, low_cutoff, high_cutoff)
+                "confidence": self._get_confidence(fib4, low_cutoff, high_cutoff),
             },
             formula_used=f"FIB-4 = ({age_years} × {ast}) / ({platelet_count} × √{alt}) = {fib4}",
-            notes=self._get_notes(fib4, low_cutoff, high_cutoff, using_age_adjusted)
+            notes=self._get_notes(fib4, low_cutoff, high_cutoff, using_age_adjusted),
         )
 
-    def _get_fibrosis_prediction(
-        self, fib4: float, low_cutoff: float, high_cutoff: float
-    ) -> str:
+    def _get_fibrosis_prediction(self, fib4: float, low_cutoff: float, high_cutoff: float) -> str:
         """Get predicted fibrosis stage."""
         if fib4 < low_cutoff:
             return "F0-F1 (No to minimal fibrosis)"
@@ -217,9 +204,7 @@ class Fib4IndexCalculator(BaseCalculator):
         else:
             return "Indeterminate (F2 possible)"
 
-    def _get_confidence(
-        self, fib4: float, low_cutoff: float, high_cutoff: float
-    ) -> str:
+    def _get_confidence(self, fib4: float, low_cutoff: float, high_cutoff: float) -> str:
         """Get confidence level of prediction."""
         if fib4 < low_cutoff:
             return "High NPV (~90%) - can rule out advanced fibrosis"
@@ -228,19 +213,12 @@ class Fib4IndexCalculator(BaseCalculator):
         else:
             return "Indeterminate - cannot reliably stage fibrosis"
 
-    def _get_interpretation(
-        self,
-        fib4: float,
-        low_cutoff: float,
-        high_cutoff: float,
-        using_age_adjusted: bool
-    ) -> Interpretation:
+    def _get_interpretation(self, fib4: float, low_cutoff: float, high_cutoff: float, using_age_adjusted: bool) -> Interpretation:
         """Get clinical interpretation."""
         if fib4 < low_cutoff:
             return Interpretation(
                 summary=f"FIB-4 = {fib4}: Low Risk of Advanced Fibrosis",
-                detail=f"FIB-4 <{low_cutoff} suggests F0-F1 (no/minimal fibrosis). "
-                       f"NPV ~90% for excluding advanced fibrosis.",
+                detail=f"FIB-4 <{low_cutoff} suggests F0-F1 (no/minimal fibrosis). NPV ~90% for excluding advanced fibrosis.",
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="Low Risk",
@@ -256,13 +234,13 @@ class Fib4IndexCalculator(BaseCalculator):
                     "No immediate need for elastography or biopsy",
                     "Manage underlying liver disease",
                     "Routine surveillance appropriate",
-                )
+                ),
             )
         elif fib4 > high_cutoff:
             return Interpretation(
                 summary=f"FIB-4 = {fib4}: High Risk of Advanced Fibrosis",
                 detail=f"FIB-4 >{high_cutoff} suggests F3-F4 (advanced fibrosis/cirrhosis). "
-                       f"PPV ~65% for advanced fibrosis. Confirm with elastography or biopsy.",
+                f"PPV ~65% for advanced fibrosis. Confirm with elastography or biopsy.",
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.HIGH,
                 stage="High Risk",
@@ -284,13 +262,13 @@ class Fib4IndexCalculator(BaseCalculator):
                     "EGD for variceal screening if cirrhosis",
                     "Initiate HCC surveillance (US ± AFP q6mo)",
                     "Hepatology evaluation",
-                )
+                ),
             )
         else:
             return Interpretation(
                 summary=f"FIB-4 = {fib4}: Indeterminate Risk",
                 detail=f"FIB-4 between {low_cutoff} and {high_cutoff} is indeterminate. "
-                       f"Cannot reliably exclude or confirm advanced fibrosis. Further testing needed.",
+                f"Cannot reliably exclude or confirm advanced fibrosis. Further testing needed.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Indeterminate",
@@ -310,16 +288,10 @@ class Fib4IndexCalculator(BaseCalculator):
                     "Consider ELF test or APRI as adjunct",
                     "Liver biopsy if non-invasive tests discordant",
                     "Repeat FIB-4 in 6-12 months if choosing watchful waiting",
-                )
+                ),
             )
 
-    def _get_notes(
-        self,
-        fib4: float,
-        low_cutoff: float,
-        high_cutoff: float,
-        using_age_adjusted: bool
-    ) -> list[str]:
+    def _get_notes(self, fib4: float, low_cutoff: float, high_cutoff: float, using_age_adjusted: bool) -> list[str]:
         """Get additional clinical notes."""
         notes = []
 

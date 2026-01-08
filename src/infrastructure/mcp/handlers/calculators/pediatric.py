@@ -21,12 +21,11 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     def calculate_pediatric_drug_dose(
         drug_name: Annotated[
             Literal["acetaminophen", "ibuprofen", "amoxicillin", "ceftriaxone", "ondansetron", "morphine", "fentanyl", "ketamine"],
-            Field(description="藥物名稱 Drug name | Options: acetaminophen, ibuprofen, amoxicillin, ceftriaxone, ondansetron, morphine, fentanyl, ketamine")
+            Field(description="藥物名稱 Drug name | Options: acetaminophen, ibuprofen, amoxicillin, ceftriaxone, ondansetron, morphine, fentanyl, ketamine"),
         ],
         weight_kg: Annotated[float, Field(gt=0, le=200, description="體重 Weight | Unit: kg | Range: >0-200")],
         route: Annotated[
-            Literal["iv", "po", "im", "pr"],
-            Field(description="給藥途徑 Route | Options: 'iv'=Intravenous, 'po'=Oral, 'im'=Intramuscular, 'pr'=Rectal")
+            Literal["iv", "po", "im", "pr"], Field(description="給藥途徑 Route | Options: 'iv'=Intravenous, 'po'=Oral, 'im'=Intramuscular, 'pr'=Rectal")
         ] = "iv",
         indication: Annotated[Optional[str], Field(description="適應症 Indication (may affect dose)")] = None,
     ) -> dict[str, Any]:
@@ -45,7 +44,7 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "weight_kg": weight_kg,
                 "route": route,
                 "indication": indication,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -57,7 +56,7 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         target_hematocrit: Annotated[float, Field(ge=15, le=50, description="目標Hct Minimum acceptable hematocrit | Unit: % | Range: 15-50")],
         patient_type: Annotated[
             Literal["preterm_neonate", "term_neonate", "infant", "child", "adult_male", "adult_female"],
-            Field(description="病患類型 Patient type | EBV (mL/kg): preterm_neonate=90, term_neonate=85, infant=80, child=75, adult_male=70, adult_female=65")
+            Field(description="病患類型 Patient type | EBV (mL/kg): preterm_neonate=90, term_neonate=85, infant=80, child=75, adult_male=70, adult_female=65"),
         ] = "adult_male",
     ) -> dict[str, Any]:
         """
@@ -75,7 +74,7 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "initial_hematocrit": initial_hematocrit,
                 "target_hematocrit": target_hematocrit,
                 "patient_type": patient_type,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -85,11 +84,11 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         weight_kg: Annotated[float, Field(gt=0, le=250, description="體重 Weight | Unit: kg | Range: >0-250")],
         product_type: Annotated[
             Literal["prbc", "whole_blood", "platelets", "platelet_concentrate", "ffp", "cryoprecipitate"],
-            Field(description="血品類型 Product | Options: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate")
+            Field(description="血品類型 Product | Options: prbc, whole_blood, platelets, platelet_concentrate, ffp, cryoprecipitate"),
         ] = "prbc",
         patient_type: Annotated[
             Literal["preterm_neonate", "term_neonate", "infant", "child", "adult_male", "adult_female"],
-            Field(description="病患類型 Patient type for EBV calculation")
+            Field(description="病患類型 Patient type for EBV calculation"),
         ] = "adult_male",
         current_hematocrit: Annotated[Optional[float], Field(ge=5, le=70, description="目前Hct Current hematocrit | Unit: %")] = None,
         target_hematocrit: Annotated[Optional[float], Field(ge=15, le=50, description="目標Hct Target hematocrit | Unit: %")] = None,
@@ -118,7 +117,7 @@ def register_pediatric_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "target_hemoglobin": target_hemoglobin,
                 "current_platelet": current_platelet,
                 "target_platelet": target_platelet,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

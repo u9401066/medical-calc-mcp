@@ -57,7 +57,7 @@ class ToolMetadata:
             "references": [ref.to_dict() for ref in self.references],
             "version": self.version,
             "last_updated": self.last_updated,
-            "validation_status": self.validation_status
+            "validation_status": self.validation_status,
         }
 
     def to_discovery_dict(self) -> dict[str, Any]:
@@ -73,5 +73,5 @@ class ToolMetadata:
             "output_type": self.low_level.output_type,
             "specialties": [s.value for s in self.high_level.specialties],
             "conditions": list(self.high_level.conditions),
-            "clinical_contexts": [c.value for c in self.high_level.clinical_contexts]
+            "clinical_contexts": [c.value for c in self.high_level.clinical_contexts],
         }

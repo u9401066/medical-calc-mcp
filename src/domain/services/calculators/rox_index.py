@@ -67,7 +67,7 @@ class RoxIndexCalculator(BaseCalculator):
                 name="ROX Index",
                 purpose="Predict high-flow nasal cannula failure and need for intubation",
                 input_params=["spo2", "fio2", "respiratory_rate"],
-                output_type="ROX index with HFNC failure risk"
+                output_type="ROX index with HFNC failure risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -97,9 +97,15 @@ class RoxIndexCalculator(BaseCalculator):
                 ),
                 icd10_codes=("J96.0", "J18.9", "U07.1"),
                 keywords=(
-                    "ROX index", "HFNC", "high-flow nasal cannula", "intubation",
-                    "respiratory failure", "hypoxemia", "oxygenation",
-                    "non-invasive", "NIV failure",
+                    "ROX index",
+                    "HFNC",
+                    "high-flow nasal cannula",
+                    "intubation",
+                    "respiratory failure",
+                    "hypoxemia",
+                    "oxygenation",
+                    "non-invasive",
+                    "NIV failure",
                 ),
             ),
             references=self._get_references(),
@@ -173,7 +179,7 @@ class RoxIndexCalculator(BaseCalculator):
             "SpO2": f"{spo2}%",
             "FiO2": f"{fio2:.0%}",
             "Respiratory_rate": f"{respiratory_rate} breaths/min",
-            "SpO2/FiO2": f"{spo2/fio2:.1f}",
+            "SpO2/FiO2": f"{spo2 / fio2:.1f}",
             "ROX_Index": f"{rox_index}",
         }
 

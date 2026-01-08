@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class RequestContext:
     """Context for a request being processed."""
+
     client_id: str = "unknown"
     api_key_id: Optional[str] = None
     timestamp: float = 0.0
@@ -74,26 +75,17 @@ class SecurityMiddleware:
         self._rate_limiter: Optional[RateLimiter] = None
         if self.config.rate_limit_enabled:
             self._rate_limiter = RateLimiter(
-                requests_per_minute=self.config.rate_limit_requests_per_minute,
-                burst=self.config.rate_limit_burst,
-                per_client=self.config.rate_limit_by_ip
+                requests_per_minute=self.config.rate_limit_requests_per_minute, burst=self.config.rate_limit_burst, per_client=self.config.rate_limit_by_ip
             )
-            logger.info(
-                f"Rate limiting enabled: {self.config.rate_limit_requests_per_minute} req/min, "
-                f"burst={self.config.rate_limit_burst}"
-            )
+            logger.info(f"Rate limiting enabled: {self.config.rate_limit_requests_per_minute} req/min, burst={self.config.rate_limit_burst}")
 
         # Initialize authenticator (if enabled)
         self._authenticator: Optional[APIAuthenticator] = None
         if self.config.auth_enabled:
             self._authenticator = APIAuthenticator(
-                api_keys=self.config.auth_api_keys,
-                header_name=self.config.auth_header_name,
-                query_param=self.config.auth_query_param
+                api_keys=self.config.auth_api_keys, header_name=self.config.auth_header_name, query_param=self.config.auth_query_param
             )
-            logger.info(
-                f"Authentication enabled: {len(self.config.auth_api_keys)} API key(s) configured"
-            )
+            logger.info(f"Authentication enabled: {len(self.config.auth_api_keys)} API key(s) configured")
 
         # Validate configuration
         warnings = self.config.validate()
@@ -107,10 +99,7 @@ class SecurityMiddleware:
             logger.info(f"Security middleware initialized:\n{self.config}")
 
     def check_request(
-        self,
-        client_id: str = "unknown",
-        headers: Optional[dict[str, str]] = None,
-        query_params: Optional[dict[str, str]] = None
+        self, client_id: str = "unknown", headers: Optional[dict[str, str]] = None, query_params: Optional[dict[str, str]] = None
     ) -> RequestContext:
         """
         Check if a request is allowed.
@@ -208,10 +197,7 @@ class SecurityMiddleware:
             self._rate_limiter.reset(client_id)
 
     # Decorator for protecting functions
-    def protect(
-        self,
-        get_client_id: Optional[Callable[..., str]] = None
-    ) -> Callable[..., Any]:
+    def protect(self, get_client_id: Optional[Callable[..., str]] = None) -> Callable[..., Any]:
         """
         Decorator to protect a function with security checks.
 
@@ -231,6 +217,7 @@ class SecurityMiddleware:
         Returns:
             Decorated function
         """
+
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             def wrapper(*args: Any, **kwargs: Any) -> Any:
                 # Extract client ID

@@ -48,14 +48,25 @@ class ApacheIiCalculator(BaseCalculator):
                 name="APACHE II Score",
                 purpose="Estimate ICU mortality risk based on acute physiology and chronic health",
                 input_params=[
-                    "temperature", "mean_arterial_pressure", "heart_rate",
-                    "respiratory_rate", "pao2_or_aado2", "fio2",
-                    "arterial_ph", "serum_sodium", "serum_potassium",
-                    "serum_creatinine", "hematocrit", "wbc_count",
-                    "gcs_score", "age", "chronic_health_conditions",
-                    "admission_type", "acute_renal_failure"
+                    "temperature",
+                    "mean_arterial_pressure",
+                    "heart_rate",
+                    "respiratory_rate",
+                    "pao2_or_aado2",
+                    "fio2",
+                    "arterial_ph",
+                    "serum_sodium",
+                    "serum_potassium",
+                    "serum_creatinine",
+                    "hematocrit",
+                    "wbc_count",
+                    "gcs_score",
+                    "age",
+                    "chronic_health_conditions",
+                    "admission_type",
+                    "acute_renal_failure",
                 ],
-                output_type="APACHE II Score (0-71) with estimated mortality risk"
+                output_type="APACHE II Score (0-71) with estimated mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -89,25 +100,32 @@ class ApacheIiCalculator(BaseCalculator):
                 icd10_codes=(
                     "R65.20",  # Severe sepsis without septic shock
                     "R65.21",  # Severe sepsis with septic shock
-                    "J96",     # Respiratory failure
-                    "R57.0",   # Cardiogenic shock
+                    "J96",  # Respiratory failure
+                    "R57.0",  # Cardiogenic shock
                 ),
                 keywords=(
-                    "APACHE", "APACHE II", "ICU", "mortality", "prognosis",
-                    "severity", "critical care", "intensive care",
-                    "acute physiology", "chronic health",
-                )
+                    "APACHE",
+                    "APACHE II",
+                    "ICU",
+                    "mortality",
+                    "prognosis",
+                    "severity",
+                    "critical care",
+                    "intensive care",
+                    "acute physiology",
+                    "chronic health",
+                ),
             ),
             references=(
                 Reference(
                     citation="Knaus WA, Draper EA, Wagner DP, Zimmerman JE. APACHE II: a severity of "
-                             "disease classification system. Crit Care Med. 1985;13(10):818-829.",
+                    "disease classification system. Crit Care Med. 1985;13(10):818-829.",
                     pmid="3928249",
-                    year=1985
+                    year=1985,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -135,7 +153,7 @@ class ApacheIiCalculator(BaseCalculator):
         # Chronic health
         chronic_health_conditions: tuple[str, ...] = (),  # liver, cardiovascular, respiratory, renal, immunocompromised
         admission_type: ADMISSION_TYPE = "nonoperative",
-        acute_renal_failure: bool = False
+        acute_renal_failure: bool = False,
     ) -> ScoreResult:
         """
         Calculate APACHE II Score.
@@ -228,9 +246,7 @@ class ApacheIiCalculator(BaseCalculator):
         age_points = self._score_age(age)
 
         # Chronic health points
-        chronic_points = self._score_chronic_health(
-            chronic_health_conditions, admission_type
-        )
+        chronic_points = self._score_chronic_health(chronic_health_conditions, admission_type)
 
         # Total APACHE II
         total_score = aps_total + age_points + chronic_points
@@ -266,7 +282,7 @@ class ApacheIiCalculator(BaseCalculator):
                 "age": age,
                 "chronic_health_conditions": chronic_health_conditions,
                 "admission_type": admission_type,
-                "acute_renal_failure": acute_renal_failure
+                "acute_renal_failure": acute_renal_failure,
             },
             calculation_details={
                 "aps_total": aps_total,
@@ -274,14 +290,14 @@ class ApacheIiCalculator(BaseCalculator):
                 "age_points": age_points,
                 "chronic_health_points": chronic_points,
                 "total_score": total_score,
-                "estimated_mortality_percent": mortality_estimate
+                "estimated_mortality_percent": mortality_estimate,
             },
             notes=[
                 "Use worst values in first 24 hours of ICU admission",
                 "GCS: if sedated, use estimated pre-sedation GCS or document as sedated",
                 "Mortality estimates are approximate; actual outcomes vary by diagnosis",
                 "APACHE II has been superseded but remains widely used",
-            ]
+            ],
         )
 
     def _score_temperature(self, temp: float) -> int:
@@ -336,9 +352,7 @@ class ApacheIiCalculator(BaseCalculator):
             return 0
         return 0
 
-    def _score_oxygenation(
-        self, fio2: float, pao2: Optional[float], aado2: Optional[float]
-    ) -> int:
+    def _score_oxygenation(self, fio2: float, pao2: Optional[float], aado2: Optional[float]) -> int:
         """Score oxygenation based on FiO2, PaO2, or A-aDO2"""
         if fio2 >= 0.5:
             # Use A-aDO2
@@ -455,9 +469,7 @@ class ApacheIiCalculator(BaseCalculator):
         else:
             return 6
 
-    def _score_chronic_health(
-        self, conditions: tuple[str, ...], admission_type: str
-    ) -> int:
+    def _score_chronic_health(self, conditions: tuple[str, ...], admission_type: str) -> int:
         """Score chronic health conditions"""
         if not conditions:
             return 0
@@ -515,22 +527,26 @@ class ApacheIiCalculator(BaseCalculator):
         warnings = []
 
         if score >= 25:
-            recommendations.extend([
-                "Goals of care discussion with family",
-                "Consider palliative care consultation",
-                "Intensive monitoring and support",
-            ])
+            recommendations.extend(
+                [
+                    "Goals of care discussion with family",
+                    "Consider palliative care consultation",
+                    "Intensive monitoring and support",
+                ]
+            )
             warnings.append("Estimated mortality >50%")
         elif score >= 15:
-            recommendations.extend([
-                "Aggressive treatment optimization",
-                "Consider escalation of care if not improving",
-            ])
+            recommendations.extend(
+                [
+                    "Aggressive treatment optimization",
+                    "Consider escalation of care if not improving",
+                ]
+            )
 
         return Interpretation(
             summary=f"APACHE II Score {score}: {stage} (estimated mortality {mortality:.0f}%)",
             detail=f"Total APACHE II score of {score} points corresponds to approximately "
-                   f"{mortality:.0f}% hospital mortality risk in the original validation cohort.",
+            f"{mortality:.0f}% hospital mortality risk in the original validation cohort.",
             severity=severity,
             risk_level=risk_level,
             stage=stage,
@@ -541,5 +557,5 @@ class ApacheIiCalculator(BaseCalculator):
                 "Continue intensive monitoring",
                 "Optimize organ support",
                 "Daily reassessment for trajectory",
-            )
+            ),
         )

@@ -64,7 +64,7 @@ class FourTsHitCalculator(BaseCalculator):
                 name="4Ts Score for HIT",
                 purpose="Assess pretest probability of heparin-induced thrombocytopenia",
                 input_params=["thrombocytopenia", "timing", "thrombosis", "other_causes"],
-                output_type="4Ts score with HIT probability"
+                output_type="4Ts score with HIT probability",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -95,8 +95,14 @@ class FourTsHitCalculator(BaseCalculator):
                 ),
                 icd10_codes=("D75.82", "T80.89"),
                 keywords=(
-                    "4Ts", "HIT", "heparin-induced thrombocytopenia", "thrombocytopenia",
-                    "heparin", "PF4", "platelet factor 4", "thrombosis",
+                    "4Ts",
+                    "HIT",
+                    "heparin-induced thrombocytopenia",
+                    "thrombocytopenia",
+                    "heparin",
+                    "PF4",
+                    "platelet factor 4",
+                    "thrombosis",
                 ),
             ),
             references=self._get_references(),

@@ -10,6 +10,10 @@ from typing import Any
 
 from ..entities.score_result import ScoreResult
 from ..entities.tool_metadata import ToolMetadata
+from ..validation.boundaries import (
+    ValidationSeverity,
+    get_boundary_registry,
+)
 from ..value_objects.reference import Reference
 from ..value_objects.tool_keys import HighLevelKey, LowLevelKey
 
@@ -98,10 +102,7 @@ class BaseCalculator(ABC):
         Get the input parameter schema.
         Override in subclass for detailed schema.
         """
-        return {
-            "params": self.metadata.low_level.input_params,
-            "output": self.metadata.low_level.output_type
-        }
+        return {"params": self.metadata.low_level.input_params, "output": self.metadata.low_level.output_type}
 
     def validate_inputs(self, **params: Any) -> None:
         """
@@ -113,6 +114,37 @@ class BaseCalculator(ABC):
         for param in required:
             if param not in params:
                 raise ValueError(f"Missing required parameter: {param}")
+
+    def validate_with_warnings(self, **params: Any) -> list[str]:
+        """
+        Validate input parameters and return clinical warnings.
+
+        Uses BoundaryRegistry to check if values are within clinical ranges.
+        This does NOT reject values - it only generates warnings for
+        unusual values that may need verification.
+
+        Args:
+            **params: Input parameters to validate
+
+        Returns:
+            List of warning messages for unusual values
+        """
+        warnings: list[str] = []
+        registry = get_boundary_registry()
+
+        for param_name, value in params.items():
+            if value is None:
+                continue
+
+            result = registry.validate(param_name, value)
+
+            if result.severity == ValidationSeverity.WARNING:
+                warnings.append(result.message)
+            elif result.severity == ValidationSeverity.CRITICAL:
+                # Critical values are still allowed but generate stronger warning
+                warnings.append(f"⚠️ CRITICAL: {result.message}")
+
+        return warnings
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(tool_id='{self.tool_id}')"

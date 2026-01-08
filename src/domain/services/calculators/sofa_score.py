@@ -66,11 +66,16 @@ class SofaScoreCalculator(BaseCalculator):
                 name="SOFA Score (Sequential Organ Failure Assessment)",
                 purpose="Assess organ dysfunction and predict ICU mortality in sepsis",
                 input_params=[
-                    "pao2_fio2_ratio", "is_mechanically_ventilated",
-                    "platelets", "bilirubin", "map_or_vasopressors",
-                    "gcs_score", "creatinine", "urine_output_24h"
+                    "pao2_fio2_ratio",
+                    "is_mechanically_ventilated",
+                    "platelets",
+                    "bilirubin",
+                    "map_or_vasopressors",
+                    "gcs_score",
+                    "creatinine",
+                    "urine_output_24h",
                 ],
-                output_type="SOFA score (0-24) with mortality prediction"
+                output_type="SOFA score (0-24) with mortality prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -105,39 +110,46 @@ class SofaScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("A41", "R65.20", "R65.21"),
                 keywords=(
-                    "SOFA", "sepsis", "organ failure", "organ dysfunction",
-                    "ICU", "mortality", "sequential organ failure",
-                    "Sepsis-3", "infection", "critical care",
-                )
+                    "SOFA",
+                    "sepsis",
+                    "organ failure",
+                    "organ dysfunction",
+                    "ICU",
+                    "mortality",
+                    "sequential organ failure",
+                    "Sepsis-3",
+                    "infection",
+                    "critical care",
+                ),
             ),
             references=(
                 Reference(
                     citation="Vincent JL, Moreno R, Takala J, et al. The SOFA (Sepsis-related "
-                             "Organ Failure Assessment) score to describe organ dysfunction/failure. "
-                             "Intensive Care Med. 1996;22(7):707-710.",
+                    "Organ Failure Assessment) score to describe organ dysfunction/failure. "
+                    "Intensive Care Med. 1996;22(7):707-710.",
                     doi="10.1007/BF01709751",
                     pmid="8844239",
-                    year=1996
+                    year=1996,
                 ),
                 Reference(
                     citation="Singer M, Deutschman CS, Seymour CW, et al. The Third International "
-                             "Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). "
-                             "JAMA. 2016;315(8):801-810.",
+                    "Consensus Definitions for Sepsis and Septic Shock (Sepsis-3). "
+                    "JAMA. 2016;315(8):801-810.",
                     doi="10.1001/jama.2016.0287",
                     pmid="26903338",
-                    year=2016
+                    year=2016,
                 ),
                 Reference(
                     citation="Evans L, Rhodes A, Alhazzani W, et al. Surviving Sepsis Campaign: "
-                             "International Guidelines for Management of Sepsis and Septic Shock 2021. "
-                             "Crit Care Med. 2021;49(11):e1063-e1143.",
+                    "International Guidelines for Management of Sepsis and Septic Shock 2021. "
+                    "Crit Care Med. 2021;49(11):e1063-e1143.",
                     doi="10.1097/CCM.0000000000005337",
                     pmid="34605781",
-                    year=2021
+                    year=2021,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -179,10 +191,7 @@ class SofaScoreCalculator(BaseCalculator):
         resp_score = self._respiratory_score(pao2_fio2_ratio, is_mechanically_ventilated)
         coag_score = self._coagulation_score(platelets)
         liver_score = self._liver_score(bilirubin)
-        cardio_score = self._cardiovascular_score(
-            map_value, dopamine_dose, dobutamine_any,
-            epinephrine_dose, norepinephrine_dose
-        )
+        cardio_score = self._cardiovascular_score(map_value, dopamine_dose, dobutamine_any, epinephrine_dose, norepinephrine_dose)
         cns_score = self._cns_score(gcs_score)
         renal_score = self._renal_score(creatinine, urine_output_24h)
 
@@ -222,7 +231,7 @@ class SofaScoreCalculator(BaseCalculator):
                 "renal": renal_score,
                 "total": total_score,
             },
-            formula_used="SOFA = Respiratory + Coagulation + Liver + Cardiovascular + CNS + Renal (each 0-4)"
+            formula_used="SOFA = Respiratory + Coagulation + Liver + Cardiovascular + CNS + Renal (each 0-4)",
         )
 
     def _respiratory_score(self, pao2_fio2: float, mechanically_ventilated: bool) -> int:
@@ -270,7 +279,7 @@ class SofaScoreCalculator(BaseCalculator):
         dopamine_dose: Optional[float],
         dobutamine_any: bool,
         epinephrine_dose: Optional[float],
-        norepinephrine_dose: Optional[float]
+        norepinephrine_dose: Optional[float],
     ) -> int:
         """
         Calculate cardiovascular component
@@ -283,15 +292,15 @@ class SofaScoreCalculator(BaseCalculator):
         Score 4: Dopamine >15 µg/kg/min OR Epinephrine >0.1 OR Norepinephrine >0.1
         """
         # Score 4: High-dose vasopressors
-        if (dopamine_dose and dopamine_dose > 15) or \
-           (epinephrine_dose and epinephrine_dose > 0.1) or \
-           (norepinephrine_dose and norepinephrine_dose > 0.1):
+        if (dopamine_dose and dopamine_dose > 15) or (epinephrine_dose and epinephrine_dose > 0.1) or (norepinephrine_dose and norepinephrine_dose > 0.1):
             return 4
 
         # Score 3: Medium-dose vasopressors
-        if (dopamine_dose and dopamine_dose > 5) or \
-           (epinephrine_dose and epinephrine_dose > 0 and epinephrine_dose <= 0.1) or \
-           (norepinephrine_dose and norepinephrine_dose > 0 and norepinephrine_dose <= 0.1):
+        if (
+            (dopamine_dose and dopamine_dose > 5)
+            or (epinephrine_dose and epinephrine_dose > 0 and epinephrine_dose <= 0.1)
+            or (norepinephrine_dose and norepinephrine_dose > 0 and norepinephrine_dose <= 0.1)
+        ):
             return 3
 
         # Score 2: Low-dose dopamine OR any dobutamine
@@ -382,14 +391,13 @@ class SofaScoreCalculator(BaseCalculator):
 
         return Interpretation(
             summary=f"SOFA Score {score}: {summary}",
-            detail=f"{sepsis_note}Estimated ICU mortality: {mortality}. "
-                   f"The SOFA score should be calculated at ICU admission and every 24 hours.",
+            detail=f"{sepsis_note}Estimated ICU mortality: {mortality}. The SOFA score should be calculated at ICU admission and every 24 hours.",
             severity=severity,
             stage=f"SOFA {score}",
             stage_description=summary,
             recommendations=self._get_recommendations(score),
             warnings=self._get_warnings(score),
-            next_steps=self._get_next_steps(score)
+            next_steps=self._get_next_steps(score),
         )
 
     def _get_recommendations(self, score: int) -> tuple[str, ...]:

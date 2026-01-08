@@ -62,11 +62,8 @@ class APGARScoreCalculator(BaseCalculator):
                 tool_id="apgar_score",
                 name="APGAR Score",
                 purpose="Newborn assessment at 1 and 5 minutes after birth",
-                input_params=[
-                    "appearance", "pulse", "grimace", "activity", "respiration",
-                    "assessment_time"
-                ],
-                output_type="APGAR score (0-10) with interpretation"
+                input_params=["appearance", "pulse", "grimace", "activity", "respiration", "assessment_time"],
+                output_type="APGAR score (0-10) with interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -91,26 +88,18 @@ class APGARScoreCalculator(BaseCalculator):
                 Reference(
                     citation="Apgar V. A proposal for a new method of evaluation of the newborn infant. Curr Res Anesth Analg. 1953;32(4):260-267.",
                     pmid="13083014",
-                    year=1953
+                    year=1953,
                 ),
                 Reference(
                     citation="AAP Committee on Fetus and Newborn. The Apgar Score. Pediatrics. 2015;136(4):819-822.",
                     doi="10.1542/peds.2015-2651",
                     pmid="26416932",
-                    year=2015
+                    year=2015,
                 ),
             ),
         )
 
-    def calculate(
-        self,
-        appearance: int,
-        pulse: int,
-        grimace: int,
-        activity: int,
-        respiration: int,
-        assessment_time: str = "1_minute"
-    ) -> ScoreResult:
+    def calculate(self, appearance: int, pulse: int, grimace: int, activity: int, respiration: int, assessment_time: str = "1_minute") -> ScoreResult:
         """
         Calculate APGAR score.
 
@@ -141,13 +130,7 @@ class APGARScoreCalculator(BaseCalculator):
             ScoreResult with APGAR score and interpretation
         """
         # Validate inputs
-        for name, value in [
-            ("appearance", appearance),
-            ("pulse", pulse),
-            ("grimace", grimace),
-            ("activity", activity),
-            ("respiration", respiration)
-        ]:
+        for name, value in [("appearance", appearance), ("pulse", pulse), ("grimace", grimace), ("activity", activity), ("respiration", respiration)]:
             if not isinstance(value, int) or value < 0 or value > 2:
                 raise ValueError(f"{name} must be 0, 1, or 2")
 
@@ -202,13 +185,9 @@ class APGARScoreCalculator(BaseCalculator):
             severity=severity,
             summary=f"{time_label} APGAR {total_score}: {status}",
             detail=(
-                f"Component scores: A={appearance} P={pulse} G={grimace} "
-                f"A={activity} R={respiration}\n"
-                f"Status: {status}\n"
-                f"{time_context}\n"
-                f"Prognosis: {prognosis}"
+                f"Component scores: A={appearance} P={pulse} G={grimace} A={activity} R={respiration}\nStatus: {status}\n{time_context}\nPrognosis: {prognosis}"
             ),
-            recommendations=(action,)
+            recommendations=(action,),
         )
 
         details = {
@@ -217,7 +196,7 @@ class APGARScoreCalculator(BaseCalculator):
             "status": status,
             "prognosis": prognosis,
             "action": action,
-            "next_step": self._get_next_step(total_score, assessment_time)
+            "next_step": self._get_next_step(total_score, assessment_time),
         }
 
         return ScoreResult(
@@ -235,7 +214,7 @@ class APGARScoreCalculator(BaseCalculator):
                 "respiration": respiration,
                 "assessment_time": assessment_time,
             },
-            calculation_details=details
+            calculation_details=details,
         )
 
     def _get_next_step(self, score: int, assessment_time: str) -> str:

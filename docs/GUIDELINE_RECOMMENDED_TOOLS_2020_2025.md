@@ -1,8 +1,9 @@
 # 📋 2020-2025 臨床指引推薦評分工具總整理
 
-> **最後更新**: 2025-12-03  
-> **資料來源**: PubMed 系統性搜尋 + ESC/SCCM/AHA 官方指引  
-> **搜尋方法**: PubMed Search MCP 多主題搜尋 (2020-2025)
+> **最後更新**: 2026-01-08  
+> **資料來源**: PubMed 系統性搜尋 + ESC/SCCM/AHA/ACC 官方指引  
+> **搜尋方法**: PubMed Search MCP 多主題搜尋 (2020-2025)  
+> **驗證狀態**: ✅ 已使用 PubMed MCP 2026-01-08 再次驗證
 
 本文件整理 2020-2025 年間主要臨床指引中提及的評分工具，並與本系統現有工具進行比對，
 以識別缺口並規劃未來開發優先順序。
@@ -14,7 +15,7 @@
 | 領域 | 指引推薦工具 | 已實作 | 待實作 |
 |------|-------------|--------|--------|
 | 敗血症/重症 | SOFA, SOFA-2, qSOFA, NEWS2, APACHE II, RASS, CAM-ICU | ✅ 7/7 | ICDSC |
-| 心血管 | CHA₂DS₂-VASc, CHA₂DS₂-VA, HAS-BLED, HEART, GRACE, TIMI | ✅ 6/6 | - |
+| 心血管 | CHA₂DS₂-VASc, CHA₂DS₂-VA, HAS-BLED, HEART, GRACE, TIMI | ✅ 6/6 | HFA-PEFF |
 | 消化道出血 | Rockall, Glasgow-Blatchford, AIMS65 | ⚠️ 1/3 | **Blatchford, AIMS65** |
 | 肝臟疾病 | Child-Pugh, MELD, MELD-Na, FIB-4 | ✅ 4/4 | Maddrey, Lille |
 | 腎臟疾病 | KDIGO AKI, CKD-EPI 2021 | ✅ 2/2 | - |
@@ -24,9 +25,27 @@
 | 麻醉科 | ASA, RCRI, Mallampati, STOP-BANG, Apfel, Aldrete | ✅ 6/6 | EuroSCORE II |
 | 創傷 | GCS | ✅ 1/1 | **ISS, RTS, TRISS** |
 | 燒傷 | - | ❌ 0/2 | **Parkland, TBSA** |
-| 小兒科 | PEWS (多版本) | ❌ 0/1 | **Brighton PEWS** |
+| 小兒科 | PEWS (多版本) | ❌ 0/1 | **Brighton PEWS, ED-PEWS** |
 
-**總計**: 70 已實作 / 約 15 個高優先待實作
+**總計**: 70+ 已實作 / 約 15 個高優先待實作
+
+---
+
+## 🆕 2026-01-08 PubMed 搜尋新發現
+
+### 新增重要指引 (需補充至文件)
+
+| 指引 | 年份 | PMID | 關鍵推薦 |
+|------|------|------|----------|
+| **2024 AHA/ACC Perioperative CV Guideline** | 2024 | 39316661 | RCRI, 術前心臟評估流程 |
+| **2023 ACC/AHA AF Guideline** | 2024 | 38033089 | CHA₂DS₂-VASc, HAS-BLED |
+| **2024 Pediatric Sepsis Consensus** | 2024 | 38245889 | Phoenix Sepsis Score (新!) |
+| **2020 HFA-PEFF Algorithm** | 2020 | 32133741 | HFpEF 診斷評分 |
+| **2021 ACG UGIB Guideline** | 2021 | 33929377 | **GBS 強烈推薦** |
+| **2021 ESGE NVUGIH Guideline** | 2021 | 33567467 | **GBS ≤1 可門診** |
+| **2024 ACG ALD Guideline** | 2024 | 38174913 | Maddrey DF, Lille Model |
+| **2020 ED-PEWS Validation** | 2020 | 32710839 | ED-PEWS (Lancet) |
+| **2022 PODIUM MOD Consensus** | 2022 | 34970683 | Pediatric MOD Scoring |
 
 ---
 
@@ -49,6 +68,31 @@
 - 2024 ESC 指引移除性別作為中風風險修飾因子
 - 新評分系統 CHA₂DS₂-VA 最高分從 9 分降為 8 分
 - 推薦同時使用 CHA₂DS₂-VA + HAS-BLED 平衡中風/出血風險
+
+### 🆕 2023 ACC/AHA/ACCP/HRS AF Guideline (美國版)
+
+> **PMID**: 38033089 | Circulation. 2024;149:e1-e156
+
+與 ESC 指引互補的美國版本，推薦工具相同。
+
+### 🆕 2024 AHA/ACC Perioperative CV Guideline
+
+> **PMID**: 39316661 | Circulation. 2024;150:e351-e442
+
+| 評分工具 | 用途 | 狀態 | 指引建議 |
+|---------|------|------|----------|
+| **RCRI** | 非心臟手術心臟風險 | ✅ 已實作 | **Class I 推薦** |
+| **Functional Capacity (METs)** | 功能狀態評估 | ⚠️ 部分 | 核心流程 |
+
+### 🆕 HFA-PEFF Algorithm for HFpEF (2020)
+
+> **PMID**: 32133741 | Eur J Heart Fail. 2020;22:391-412
+
+| 工具 | 用途 | 狀態 | 優先級 |
+|------|------|------|--------|
+| **HFA-PEFF Score** | HFpEF 診斷 | ❌ **待實作** | 🟡 中 |
+
+**說明**: 4 步驟診斷流程，含 echocardiographic 和 biomarker 評分
 
 ### 急性冠心症 (ACS)
 
@@ -165,22 +209,49 @@
 
 ## 🩸 消化道出血 (GI Bleeding) - ⚠️ 缺口領域
 
-### 上消化道出血 (UGIB)
+### 🆕 2021 ESGE NVUGIH Guideline (最重要!)
 
-> **關鍵 Meta-Analysis**: PMID: 39400553 | Eur J Gastroenterol Hepatol. 2025
+> **PMID**: 33567467 | Endoscopy. 2021;53(3):300-332
+> Gralnek IM, et al. European Society of Gastrointestinal Endoscopy
 
-| 工具 | 用途 | 狀態 | 指引推薦 |
-|------|------|------|----------|
-| **Rockall Score** | UGIB 死亡率/再出血 | ✅ 已實作 | 廣泛使用 |
-| **Glasgow-Blatchford (GBS)** | UGIB 需干預風險 | ❌ **待實作** | 🔴 **ESGE 推薦** |
-| **AIMS65** | UGIB 死亡率 | ❌ **待實作** | 🔴 **多指引推薦** |
+| 工具 | 用途 | 狀態 | **指引建議強度** |
+|------|------|------|-----------------|
+| **Glasgow-Blatchford (GBS)** | 預內視鏡風險分層 | ❌ **待實作** | 🔴 **強烈推薦** |
+| **AIMS65** | UGIB 死亡率 | ❌ **待實作** | 🔴 **推薦** |
+| **Rockall Score** | UGIB 死亡率/再出血 | ✅ 已實作 | 內視鏡後評估 |
 
-**Gap 分析**: 
-- Glasgow-Blatchford 為目前最推薦的 UGIB 風險分層工具
-- AIMS65 簡便易用，5 項指標即可計算
-- **建議優先實作** 以完善消化道出血評估能力
+**ESGE 關鍵建議**:
+- **GBS ≤1 分可安全門診追蹤**，不需住院或急診內視鏡
+- GBS 為預內視鏡評估首選工具
+- Rockall 需內視鏡資訊，適合後續評估
+
+### 🆕 2021 ACG UGIB Guideline
+
+> **PMID**: 33929377 | Am J Gastroenterol. 2021;116(5):899-917
+> Laine L, et al. American College of Gastroenterology
+
+**ACG 推薦**:
+- 建議使用風險分層工具 (GBS, AIMS65)
+- 與 ESGE 一致，支持低風險患者門診管理
+
+### 🆕 2021 ESGE LGIB Guideline (下消化道出血)
+
+> **PMID**: 34062566 | Endoscopy. 2021;53(8):850-868
+
+**LGIB 管理**:
+- 無特定評分工具強烈推薦
+- 重點在血流動力學穩定性和臨床判斷
+
+### Gap 分析
+
+- **Glasgow-Blatchford 為 2021 ESGE 強烈推薦工具**
+- GBS ≤1 的臨床意義：可安全出院，減少不必要住院
+- AIMS65 簡便易用 (5 項指標：A/I/M/S/65 歲)
+- **建議優先實作** GBS + AIMS65
 
 **關鍵文獻**:
+- PMID: 33567467 - **2021 ESGE NVUGIH Guideline** (核心指引)
+- PMID: 33929377 - **2021 ACG UGIB Guideline**
 - PMID: 39400553 - Rockall vs GBS Meta-analysis (2025)
 - PMID: 36542335 - 瑞士多中心驗證 (Eur J Emerg Med 2023)
 - PMID: 37629235 - 預內視鏡風險分層回顧 (J Clin Med 2023)
@@ -192,6 +263,7 @@
 ### 腦外傷 (TBI)
 
 #### 2024 NINDS TBI Classification Recommendations
+
 > **PMID**: 40393504 | J Neurotrauma 2025
 
 | 工具 | 用途 | 狀態 | 指引狀態 |
@@ -285,18 +357,54 @@
 
 ## 👶 小兒科 (Pediatrics) - ⚠️ 缺口領域
 
-### 小兒早期預警系統 (PEWS)
+### 🆕 2024 國際小兒敗血症共識 (Pediatric Sepsis Consensus)
+
+> **PMID**: 38245889 | JAMA. 2024;331(8):665-674
+> Schlapbach LJ, et al. Society of Critical Care Medicine Pediatric Sepsis Definition Task Force
+
+| 工具 | 用途 | 狀態 | 說明 |
+|------|------|------|------|
+| **Phoenix Sepsis Score** | 小兒敗血症診斷 | ❌ **待實作** | 🔴 **2024 新標準** |
+| **Phoenix-8 Score** | 簡化版器官衰竭 | ❌ **待實作** | 🔴 **適合資源有限環境** |
+
+**Phoenix Criteria 要點**:
+- 取代傳統 SIRS 為基礎的小兒敗血症定義
+- 包含 4 個器官系統評分 (呼吸、心血管、凝血、神經)
+- Phoenix Sepsis Score ≥2 + 感染 = 小兒敗血症
+
+### 🆕 2022 PODIUM MOD Consensus (小兒多重器官衰竭)
+
+> **PMID**: 34970683 | Pediatr Crit Care Med. 2022;23(1):S1-S7
+
+**PODIUM 器官衰竭定義**:
+- 標準化小兒多重器官衰竭 (MOD) 標準
+- 與 Phoenix Criteria 互補
+
+### 🆕 2020 ED-PEWS 驗證研究 (Lancet)
+
+> **PMID**: 32710839 | Lancet. 2020;395(10232):1274-1284
 
 | 工具 | 用途 | 狀態 | 驗證情況 |
 |------|------|------|----------|
-| **Brighton PEWS** | 小兒惡化預警 | ❌ **待實作** | 🔴 **高優先** |
-| Bedside PEWS | 小兒惡化預警 | ❌ 待評估 | 多國驗證 |
-| Cardiff PEWS | 小兒惡化預警 | ❌ 待評估 | 英國使用 |
+| **Brighton PEWS** | 小兒惡化預警 | ❌ **待實作** | 🔴 **Lancet 驗證** |
+| **Bedside PEWS** | 小兒惡化預警 | ❌ 待評估 | 多國驗證 |
+| **Cardiff PEWS** | 小兒惡化預警 | ❌ 待評估 | 英國使用 |
 
-**Gap 分析**: 
-- PEWS 為兒科住院安全核心工具
+**關鍵發現 (Lancet 2020)**:
+- 多中心驗證研究確認 PEWS 有效性
 - Brighton PEWS 為最廣泛採用版本
-- **建議優先實作** Brighton PEWS
+- 可有效預測小兒臨床惡化
+
+### 小兒科 Gap 分析 與 優先順序
+
+- **Phoenix Sepsis Score**: 2024 年新發表，為小兒敗血症新定義標準
+- **Brighton PEWS**: Lancet 2020 驗證，兒科住院安全核心工具
+- **建議優先實作順序**: Phoenix Sepsis → Brighton PEWS
+
+**關鍵文獻**:
+- PMID: 38245889 - **2024 Pediatric Sepsis Consensus** (JAMA)
+- PMID: 34970683 - **2022 PODIUM MOD Consensus**
+- PMID: 32710839 - **2020 Lancet PEWS Validation**
 
 ---
 
@@ -326,9 +434,10 @@
 
 | 工具 | 領域 | 理由 | 目標版本 |
 |------|------|------|----------|
-| **Glasgow-Blatchford** | GI | UGIB 標準工具，ESGE 推薦 | Phase 19 |
+| **Glasgow-Blatchford** | GI | 2021 ESGE 強烈推薦 | Phase 19 |
 | **AIMS65** | GI | UGIB 死亡率預測 | Phase 19 |
-| **Brighton PEWS** | Pediatrics | 兒科安全核心工具 | Phase 20 |
+| **Phoenix Sepsis Score** | Pediatrics | **2024 JAMA 小兒敗血症新標準** | Phase 19 |
+| **Brighton PEWS** | Pediatrics | 2020 Lancet 驗證 | Phase 20 |
 | **ISS** | Trauma | 創傷嚴重度國際標準 | Phase 18 |
 | **RTS** | Trauma | 創傷生理評分 | Phase 18 |
 | **TRISS** | Trauma | 創傷存活預測 | Phase 18 |
@@ -339,14 +448,16 @@
 
 | 工具 | 領域 | 理由 |
 |------|------|------|
+| **HFA-PEFF Score** | Cardiology | 2020 HFpEF 診斷 |
 | **EuroSCORE II** | Cardiac Surgery | 心臟手術廣泛使用 |
 | **Hunt & Hess** | Neurology | SAH 分級標準 |
 | **Fisher Grade** | Neurology | SAH CT 分級 |
-| **Maddrey DF** | Hepatology | 酒精性肝炎 |
+| **Maddrey DF** | Hepatology | 酒精性肝炎 (2024 ACG) |
 | **Lille Model** | Hepatology | 類固醇反應 |
 | **Murray Score** | Pulmonology | 肺損傷評分 |
 | **ICDSC** | Critical Care | ICU 譫妄替代 |
 | **PESI/sPESI** | Pulmonology | PE 預後 |
+| **Phoenix-8 Score** | Pediatrics | 簡化版小兒敗血症 |
 
 ### 🟢 低優先級/待評估
 

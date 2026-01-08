@@ -19,29 +19,16 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
     @mcp.tool()
     def calculate_anion_gap(
-        sodium: Annotated[
-            float,
-            Field(ge=120, le=160, description="血清鈉 Serum sodium | Unit: mEq/L | Range: 120-160")
-        ],
-        chloride: Annotated[
-            float,
-            Field(ge=80, le=120, description="血清氯 Serum chloride | Unit: mEq/L | Range: 80-120")
-        ],
-        bicarbonate: Annotated[
-            float,
-            Field(ge=5, le=40, description="血清碳酸氫鹽 Serum bicarbonate (HCO₃⁻) | Unit: mEq/L | Range: 5-40")
-        ],
+        sodium: Annotated[float, Field(ge=120, le=160, description="血清鈉 Serum sodium | Unit: mEq/L | Range: 120-160")],
+        chloride: Annotated[float, Field(ge=80, le=120, description="血清氯 Serum chloride | Unit: mEq/L | Range: 80-120")],
+        bicarbonate: Annotated[float, Field(ge=5, le=40, description="血清碳酸氫鹽 Serum bicarbonate (HCO₃⁻) | Unit: mEq/L | Range: 5-40")],
         albumin: Annotated[
             Optional[float],
-            Field(default=None, ge=0.5, le=6.0, description="血清白蛋白 Serum albumin (optional, for corrected AG) | Unit: g/dL | Range: 0.5-6.0")
+            Field(default=None, ge=0.5, le=6.0, description="血清白蛋白 Serum albumin (optional, for corrected AG) | Unit: g/dL | Range: 0.5-6.0"),
         ] = None,
-        include_potassium: Annotated[
-            bool,
-            Field(default=False, description="是否包含鉀 Include K⁺ in calculation (rarely used)")
-        ] = False,
+        include_potassium: Annotated[bool, Field(default=False, description="是否包含鉀 Include K⁺ in calculation (rarely used)")] = False,
         potassium: Annotated[
-            Optional[float],
-            Field(default=None, ge=2.0, le=8.0, description="血清鉀 Serum potassium (if including K⁺) | Unit: mEq/L | Range: 2.0-8.0")
+            Optional[float], Field(default=None, ge=2.0, le=8.0, description="血清鉀 Serum potassium (if including K⁺) | Unit: mEq/L | Range: 2.0-8.0")
         ] = None,
     ) -> dict[str, Any]:
         """
@@ -86,7 +73,7 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "albumin": albumin,
                 "include_potassium": include_potassium,
                 "potassium": potassium,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -94,20 +81,12 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     @mcp.tool()
     def calculate_delta_ratio(
         anion_gap: Annotated[
-            float,
-            Field(ge=0, le=50, description="陰離子間隙 Measured anion gap (use corrected AG if available) | Unit: mEq/L | Range: 0-50")
+            float, Field(ge=0, le=50, description="陰離子間隙 Measured anion gap (use corrected AG if available) | Unit: mEq/L | Range: 0-50")
         ],
-        bicarbonate: Annotated[
-            float,
-            Field(ge=5, le=40, description="血清碳酸氫鹽 Measured serum bicarbonate | Unit: mEq/L | Range: 5-40")
-        ],
-        normal_ag: Annotated[
-            float,
-            Field(default=12.0, ge=6, le=14, description="正常陰離子間隙基準值 Normal AG baseline | Unit: mEq/L | Default: 12")
-        ] = 12.0,
+        bicarbonate: Annotated[float, Field(ge=5, le=40, description="血清碳酸氫鹽 Measured serum bicarbonate | Unit: mEq/L | Range: 5-40")],
+        normal_ag: Annotated[float, Field(default=12.0, ge=6, le=14, description="正常陰離子間隙基準值 Normal AG baseline | Unit: mEq/L | Default: 12")] = 12.0,
         normal_hco3: Annotated[
-            float,
-            Field(default=24.0, ge=22, le=26, description="正常碳酸氫鹽基準值 Normal HCO₃⁻ baseline | Unit: mEq/L | Default: 24")
+            float, Field(default=24.0, ge=22, le=26, description="正常碳酸氫鹽基準值 Normal HCO₃⁻ baseline | Unit: mEq/L | Default: 24")
         ] = 24.0,
     ) -> dict[str, Any]:
         """
@@ -146,29 +125,20 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "bicarbonate": bicarbonate,
                 "normal_ag": normal_ag,
                 "normal_hco3": normal_hco3,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_corrected_sodium(
-        measured_sodium: Annotated[
-            float,
-            Field(ge=100, le=180, description="測量血鈉 Measured serum sodium | Unit: mEq/L | Range: 100-180")
-        ],
-        glucose: Annotated[
-            float,
-            Field(gt=0, description="血糖 Blood glucose level | Unit: mg/dL or mmol/L")
-        ],
+        measured_sodium: Annotated[float, Field(ge=100, le=180, description="測量血鈉 Measured serum sodium | Unit: mEq/L | Range: 100-180")],
+        glucose: Annotated[float, Field(gt=0, description="血糖 Blood glucose level | Unit: mg/dL or mmol/L")],
         formula: Annotated[
             Literal["katz", "hillier"],
-            Field(default="katz", description="校正公式 Formula: 'katz' (1.6 factor, standard) or 'hillier' (2.4 factor, for very high glucose)")
+            Field(default="katz", description="校正公式 Formula: 'katz' (1.6 factor, standard) or 'hillier' (2.4 factor, for very high glucose)"),
         ] = "katz",
-        glucose_unit: Annotated[
-            Literal["mg/dL", "mmol/L"],
-            Field(default="mg/dL", description="血糖單位 Glucose unit: 'mg/dL' or 'mmol/L'")
-        ] = "mg/dL",
+        glucose_unit: Annotated[Literal["mg/dL", "mmol/L"], Field(default="mg/dL", description="血糖單位 Glucose unit: 'mg/dL' or 'mmol/L'")] = "mg/dL",
     ) -> dict[str, Any]:
         """
         🩸 Corrected Sodium: 高血糖校正血鈉
@@ -208,20 +178,17 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "glucose": glucose,
                 "formula": formula,
                 "glucose_unit": glucose_unit,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_winters_formula(
-        hco3: Annotated[
-            float,
-            Field(ge=5, le=30, description="血清碳酸氫鹽 Serum bicarbonate | Unit: mEq/L | Range: 5-30")
-        ],
+        hco3: Annotated[float, Field(ge=5, le=30, description="血清碳酸氫鹽 Serum bicarbonate | Unit: mEq/L | Range: 5-30")],
         actual_paco2: Annotated[
             Optional[float],
-            Field(default=None, ge=10, le=80, description="測量 PaCO₂ (optional) Measured arterial CO₂ for comparison | Unit: mmHg | Range: 10-80")
+            Field(default=None, ge=10, le=80, description="測量 PaCO₂ (optional) Measured arterial CO₂ for comparison | Unit: mmHg | Range: 10-80"),
         ] = None,
     ) -> dict[str, Any]:
         """
@@ -261,32 +228,19 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
             params={
                 "hco3": hco3,
                 "actual_paco2": actual_paco2,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_osmolar_gap(
-        measured_osm: Annotated[
-            float,
-            Field(ge=200, le=450, description="測量血清滲透壓 Measured serum osmolality | Unit: mOsm/kg | Range: 200-450")
-        ],
-        sodium: Annotated[
-            float,
-            Field(ge=100, le=180, description="血清鈉 Serum sodium | Unit: mEq/L | Range: 100-180")
-        ],
-        glucose: Annotated[
-            float,
-            Field(ge=20, le=2000, description="血糖 Blood glucose | Unit: mg/dL | Range: 20-2000")
-        ],
-        bun: Annotated[
-            float,
-            Field(ge=1, le=200, description="血尿素氮 Blood urea nitrogen | Unit: mg/dL | Range: 1-200")
-        ],
+        measured_osm: Annotated[float, Field(ge=200, le=450, description="測量血清滲透壓 Measured serum osmolality | Unit: mOsm/kg | Range: 200-450")],
+        sodium: Annotated[float, Field(ge=100, le=180, description="血清鈉 Serum sodium | Unit: mEq/L | Range: 100-180")],
+        glucose: Annotated[float, Field(ge=20, le=2000, description="血糖 Blood glucose | Unit: mg/dL | Range: 20-2000")],
+        bun: Annotated[float, Field(ge=1, le=200, description="血尿素氮 Blood urea nitrogen | Unit: mg/dL | Range: 1-200")],
         ethanol: Annotated[
-            Optional[float],
-            Field(default=None, ge=0, le=600, description="血清乙醇 (optional) Serum ethanol level | Unit: mg/dL | Range: 0-600")
+            Optional[float], Field(default=None, ge=0, le=600, description="血清乙醇 (optional) Serum ethanol level | Unit: mg/dL | Range: 0-600")
         ] = None,
     ) -> dict[str, Any]:
         """
@@ -337,32 +291,25 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "glucose": glucose,
                 "bun": bun,
                 "ethanol": ethanol,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_free_water_deficit(
-        current_sodium: Annotated[
-            float,
-            Field(ge=145, le=200, description="目前血鈉 Current serum sodium | Unit: mEq/L | Range: 145-200 (hypernatremia)")
-        ],
-        weight_kg: Annotated[
-            float,
-            Field(ge=2, le=300, description="體重 Body weight | Unit: kg | Range: 2-300")
-        ],
-        target_sodium: Annotated[
-            float,
-            Field(default=140.0, ge=135, le=145, description="目標血鈉 Target sodium | Unit: mEq/L | Default: 140")
-        ] = 140.0,
+        current_sodium: Annotated[float, Field(ge=145, le=200, description="目前血鈉 Current serum sodium | Unit: mEq/L | Range: 145-200 (hypernatremia)")],
+        weight_kg: Annotated[float, Field(ge=2, le=300, description="體重 Body weight | Unit: kg | Range: 2-300")],
+        target_sodium: Annotated[float, Field(default=140.0, ge=135, le=145, description="目標血鈉 Target sodium | Unit: mEq/L | Default: 140")] = 140.0,
         patient_type: Annotated[
             Literal["adult_male", "adult_female", "elderly_male", "elderly_female", "child"],
-            Field(default="adult_male", description="病患類型 Patient type for TBW calculation: adult_male (60%), adult_female (50%), elderly_male (50%), elderly_female (45%), child (60%)")
+            Field(
+                default="adult_male",
+                description="病患類型 Patient type for TBW calculation: adult_male (60%), adult_female (50%), elderly_male (50%), elderly_female (45%), child (60%)",
+            ),
         ] = "adult_male",
         correction_time_hours: Annotated[
-            int,
-            Field(default=24, ge=1, le=72, description="校正時間 Time for correction | Unit: hours | Range: 1-72 | Recommended: 24-48h")
+            int, Field(default=24, ge=1, le=72, description="校正時間 Time for correction | Unit: hours | Range: 1-72 | Recommended: 24-48h")
         ] = 24,
     ) -> dict[str, Any]:
         """
@@ -413,7 +360,7 @@ def register_acid_base_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "target_sodium": target_sodium,
                 "patient_type": patient_type,
                 "correction_time_hours": correction_time_hours,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

@@ -59,11 +59,8 @@ class MablCalculator(BaseCalculator):
                 tool_id="mabl",
                 name="Maximum Allowable Blood Loss (MABL)",
                 purpose="Calculate maximum blood loss before transfusion required",
-                input_params=[
-                    "weight_kg", "initial_hematocrit", "target_hematocrit",
-                    "patient_type", "estimated_blood_volume_ml"
-                ],
-                output_type="MABL in mL"
+                input_params=["weight_kg", "initial_hematocrit", "target_hematocrit", "patient_type", "estimated_blood_volume_ml"],
+                output_type="MABL in mL",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -97,44 +94,48 @@ class MablCalculator(BaseCalculator):
                 ),
                 icd10_codes=("D62", "T81.0"),
                 keywords=(
-                    "MABL", "blood loss", "transfusion", "allowable blood loss",
-                    "EBV", "estimated blood volume", "hematocrit", "hemorrhage",
-                    "surgical bleeding", "blood management",
-                )
+                    "MABL",
+                    "blood loss",
+                    "transfusion",
+                    "allowable blood loss",
+                    "EBV",
+                    "estimated blood volume",
+                    "hematocrit",
+                    "hemorrhage",
+                    "surgical bleeding",
+                    "blood management",
+                ),
             ),
             references=(
                 Reference(
-                    citation="Gross JB. Estimating allowable blood loss: corrected for dilution. "
-                             "Anesthesiology. 1983;58(3):277-280.",
+                    citation="Gross JB. Estimating allowable blood loss: corrected for dilution. Anesthesiology. 1983;58(3):277-280.",
                     doi="10.1097/00000542-198303000-00016",
                     pmid="6829965",
-                    year=1983
+                    year=1983,
                 ),
                 Reference(
                     citation="Butterworth JF, Mackey DC, Wasnick JD. Morgan & Mikhail's Clinical "
-                             "Anesthesiology. 7th ed. New York: McGraw-Hill; 2022. Chapter 51: "
-                             "Fluid Management & Blood Component Therapy.",
+                    "Anesthesiology. 7th ed. New York: McGraw-Hill; 2022. Chapter 51: "
+                    "Fluid Management & Blood Component Therapy.",
                     doi=None,
                     pmid=None,
-                    year=2022
+                    year=2022,
                 ),
                 Reference(
-                    citation="Miller RD, et al. Miller's Anesthesia. 9th ed. Philadelphia: "
-                             "Elsevier; 2020. Chapter 49: Blood Therapy.",
+                    citation="Miller RD, et al. Miller's Anesthesia. 9th ed. Philadelphia: Elsevier; 2020. Chapter 49: Blood Therapy.",
                     doi=None,
                     pmid=None,
-                    year=2020
+                    year=2020,
                 ),
                 Reference(
-                    citation="Cote CJ, Lerman J, Anderson BJ. A Practice of Anesthesia for "
-                             "Infants and Children. 6th ed. Philadelphia: Elsevier; 2019.",
+                    citation="Cote CJ, Lerman J, Anderson BJ. A Practice of Anesthesia for Infants and Children. 6th ed. Philadelphia: Elsevier; 2019.",
                     doi=None,
                     pmid=None,
-                    year=2019
+                    year=2019,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -179,10 +180,7 @@ class MablCalculator(BaseCalculator):
         else:
             ebv_per_kg = get_ebv_per_kg(patient_type)
             if ebv_per_kg == 70 and patient_type.lower() not in EBV_ML_PER_KG:
-                raise ValueError(
-                    f"Unknown patient type: {patient_type}. "
-                    f"Available types: {list(EBV_ML_PER_KG.keys())}"
-                )
+                raise ValueError(f"Unknown patient type: {patient_type}. Available types: {list(EBV_ML_PER_KG.keys())}")
             ebv = weight_kg * ebv_per_kg
 
         # Calculate MABL
@@ -239,7 +237,7 @@ class MablCalculator(BaseCalculator):
                 "ebv_ml": round(ebv, 0),
                 "hematocrit_drop": round(hi - hf, 1),
                 "percent_blood_volume": round(mabl_percent, 1),
-            }
+            },
         )
 
     @staticmethod

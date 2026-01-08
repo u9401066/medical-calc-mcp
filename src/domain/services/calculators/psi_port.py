@@ -113,7 +113,7 @@ class PsiPortCalculator(BaseCalculator):
                     "pao2_lt_60_or_sao2_lt_90",
                     "pleural_effusion",
                 ],
-                output_type="PSI score with risk class and disposition recommendation"
+                output_type="PSI score with risk class and disposition recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -146,9 +146,9 @@ class PsiPortCalculator(BaseCalculator):
                 icd10_codes=(
                     "J18.9",  # Pneumonia, unspecified organism
                     "J18.1",  # Lobar pneumonia, unspecified organism
-                    "J13",    # Pneumonia due to Streptococcus pneumoniae
+                    "J13",  # Pneumonia due to Streptococcus pneumoniae
                     "J15.9",  # Bacterial pneumonia, unspecified
-                    "J22",    # Unspecified acute lower respiratory infection
+                    "J22",  # Unspecified acute lower respiratory infection
                 ),
                 keywords=(
                     "PSI score",
@@ -159,21 +159,21 @@ class PsiPortCalculator(BaseCalculator):
                     "pneumonia mortality",
                     "community-acquired pneumonia",
                     "Fine score",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Fine MJ, Auble TE, Yealy DM, et al. A prediction rule to identify "
-                             "low-risk patients with community-acquired pneumonia. N Engl J Med. "
-                             "1997;336(4):243-250.",
+                    "low-risk patients with community-acquired pneumonia. N Engl J Med. "
+                    "1997;336(4):243-250.",
                     doi="10.1056/NEJM199701233360402",
                     pmid="8995086",
                     year=1997,
                 ),
                 Reference(
                     citation="Aujesky D, Auble TE, Yealy DM, et al. Prospective comparison of "
-                             "three validated prediction rules for prognosis in community-acquired "
-                             "pneumonia. Am J Med. 2005;118(4):384-392.",
+                    "three validated prediction rules for prognosis in community-acquired "
+                    "pneumonia. Am J Med. 2005;118(4):384-392.",
                     doi="10.1016/j.amjmed.2005.01.006",
                     pmid="15808136",
                     year=2005,
@@ -240,40 +240,34 @@ class PsiPortCalculator(BaseCalculator):
         components: dict[str, Any] = {}
 
         # Check for Class I (low-risk criteria)
-        has_comorbidities = any([
-            neoplastic_disease, liver_disease, chf,
-            cerebrovascular_disease, renal_disease
-        ])
-        has_abnormal_vitals = any([
-            altered_mental_status, respiratory_rate_gte_30,
-            systolic_bp_lt_90, temperature_abnormal, pulse_gte_125
-        ])
+        has_comorbidities = any([neoplastic_disease, liver_disease, chf, cerebrovascular_disease, renal_disease])
+        has_abnormal_vitals = any([altered_mental_status, respiratory_rate_gte_30, systolic_bp_lt_90, temperature_abnormal, pulse_gte_125])
 
         # Class I: ≤50 years, no comorbidities, no abnormal vitals
         is_class_i = (
-            age_years <= 50 and
-            not female and  # Original study used male-only for Class I
-            not nursing_home_resident and
-            not has_comorbidities and
-            not has_abnormal_vitals
+            age_years <= 50
+            and not female  # Original study used male-only for Class I
+            and not nursing_home_resident
+            and not has_comorbidities
+            and not has_abnormal_vitals
         )
 
         # Actually, Class I is determined differently:
         # Low-risk criteria: age ≤50, no neoplastic/liver/CHF/CVD/renal disease,
         # no altered mental status, no RR≥30, no SBP<90, no temp<35 or ≥40, no pulse≥125
         is_class_i = (
-            age_years <= 50 and
-            not nursing_home_resident and
-            not neoplastic_disease and
-            not liver_disease and
-            not chf and
-            not cerebrovascular_disease and
-            not renal_disease and
-            not altered_mental_status and
-            not respiratory_rate_gte_30 and
-            not systolic_bp_lt_90 and
-            not temperature_abnormal and
-            not pulse_gte_125
+            age_years <= 50
+            and not nursing_home_resident
+            and not neoplastic_disease
+            and not liver_disease
+            and not chf
+            and not cerebrovascular_disease
+            and not renal_disease
+            and not altered_mental_status
+            and not respiratory_rate_gte_30
+            and not systolic_bp_lt_90
+            and not temperature_abnormal
+            and not pulse_gte_125
         )
 
         if is_class_i:
@@ -500,9 +494,7 @@ class PsiPortCalculator(BaseCalculator):
                 "Monitor closely for sepsis and respiratory failure",
             )
         if risk_class == "V":
-            warnings = warnings + (
-                "Very high mortality risk - consider ICU admission",
-            )
+            warnings = warnings + ("Very high mortality risk - consider ICU admission",)
 
         return Interpretation(
             summary=summary,

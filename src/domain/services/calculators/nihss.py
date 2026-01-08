@@ -68,14 +68,23 @@ class NihssCalculator(BaseCalculator):
                 name="NIH Stroke Scale (NIHSS)",
                 purpose="Quantify stroke severity and track neurological changes",
                 input_params=[
-                    "loc", "loc_questions", "loc_commands",
-                    "best_gaze", "visual_fields", "facial_palsy",
-                    "motor_arm_left", "motor_arm_right",
-                    "motor_leg_left", "motor_leg_right",
-                    "limb_ataxia", "sensory", "best_language",
-                    "dysarthria", "extinction_inattention"
+                    "loc",
+                    "loc_questions",
+                    "loc_commands",
+                    "best_gaze",
+                    "visual_fields",
+                    "facial_palsy",
+                    "motor_arm_left",
+                    "motor_arm_right",
+                    "motor_leg_left",
+                    "motor_leg_right",
+                    "limb_ataxia",
+                    "sensory",
+                    "best_language",
+                    "dysarthria",
+                    "extinction_inattention",
                 ],
-                output_type="NIHSS score (0-42) with severity classification"
+                output_type="NIHSS score (0-42) with severity classification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -107,35 +116,43 @@ class NihssCalculator(BaseCalculator):
                     "Is there neurological improvement?",
                 ),
                 icd10_codes=(
-                    "I63",    # Cerebral infarction
-                    "I61",    # Intracerebral hemorrhage
+                    "I63",  # Cerebral infarction
+                    "I61",  # Intracerebral hemorrhage
                     "G45.9",  # TIA, unspecified
                 ),
                 keywords=(
-                    "NIHSS", "stroke", "NIH Stroke Scale", "CVA",
-                    "ischemic", "hemorrhagic", "thrombolysis", "tPA",
-                    "neurological", "deficit", "severity",
-                )
+                    "NIHSS",
+                    "stroke",
+                    "NIH Stroke Scale",
+                    "CVA",
+                    "ischemic",
+                    "hemorrhagic",
+                    "thrombolysis",
+                    "tPA",
+                    "neurological",
+                    "deficit",
+                    "severity",
+                ),
             ),
             references=(
                 Reference(
                     citation="Brott T, Adams HP Jr, Olinger CP, et al. "
-                             "Measurements of acute cerebral infarction: a clinical examination scale. "
-                             "Stroke. 1989;20(7):864-870.",
+                    "Measurements of acute cerebral infarction: a clinical examination scale. "
+                    "Stroke. 1989;20(7):864-870.",
                     doi="10.1161/01.str.20.7.864",
                     pmid="2749846",
-                    year=1989
+                    year=1989,
                 ),
                 Reference(
                     citation="Lyden P, Brott T, Tilley B, et al. "
-                             "Improved reliability of the NIH Stroke Scale using video training. "
-                             "Stroke. 1994;25(11):2220-2226.",
+                    "Improved reliability of the NIH Stroke Scale using video training. "
+                    "Stroke. 1994;25(11):2220-2226.",
                     pmid="7974549",
-                    year=1994
+                    year=1994,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -154,7 +171,7 @@ class NihssCalculator(BaseCalculator):
         sensory: Literal[0, 1, 2],
         best_language: Literal[0, 1, 2, 3],
         dysarthria: Literal[0, 1, 2],
-        extinction_inattention: Literal[0, 1, 2]
+        extinction_inattention: Literal[0, 1, 2],
     ) -> ScoreResult:
         """
         Calculate NIH Stroke Scale.
@@ -181,12 +198,21 @@ class NihssCalculator(BaseCalculator):
         """
         # Calculate total score
         score = (
-            loc + loc_questions + loc_commands +
-            best_gaze + visual_fields + facial_palsy +
-            motor_arm_left + motor_arm_right +
-            motor_leg_left + motor_leg_right +
-            limb_ataxia + sensory + best_language +
-            dysarthria + extinction_inattention
+            loc
+            + loc_questions
+            + loc_commands
+            + best_gaze
+            + visual_fields
+            + facial_palsy
+            + motor_arm_left
+            + motor_arm_right
+            + motor_leg_left
+            + motor_leg_right
+            + limb_ataxia
+            + sensory
+            + best_language
+            + dysarthria
+            + extinction_inattention
         )
 
         # Component breakdown
@@ -205,7 +231,7 @@ class NihssCalculator(BaseCalculator):
             "8_sensory": sensory,
             "9_best_language": best_language,
             "10_dysarthria": dysarthria,
-            "11_extinction_inattention": extinction_inattention
+            "11_extinction_inattention": extinction_inattention,
         }
 
         # Identify lateralization
@@ -242,7 +268,7 @@ class NihssCalculator(BaseCalculator):
                 "sensory": sensory,
                 "best_language": best_language,
                 "dysarthria": dysarthria,
-                "extinction_inattention": extinction_inattention
+                "extinction_inattention": extinction_inattention,
             },
             calculation_details={
                 "total_score": score,
@@ -250,9 +276,9 @@ class NihssCalculator(BaseCalculator):
                 "component_scores": component_scores,
                 "lateralization": lateralization,
                 "left_motor_total": left_motor,
-                "right_motor_total": right_motor
+                "right_motor_total": right_motor,
             },
-            notes=self._get_notes(score, best_language > 0)
+            notes=self._get_notes(score, best_language > 0),
         )
 
     def _get_interpretation(self, score: int, language_score: int) -> Interpretation:
@@ -273,7 +299,7 @@ class NihssCalculator(BaseCalculator):
                 next_steps=(
                     "Complete stroke workup if clinically indicated",
                     "Risk factor assessment",
-                )
+                ),
             )
         elif score <= 4:
             return Interpretation(
@@ -293,7 +319,7 @@ class NihssCalculator(BaseCalculator):
                     "Complete stroke workup (imaging, labs, cardiac)",
                     "Secondary prevention initiation",
                     "Early mobilization",
-                )
+                ),
             )
         elif score <= 15:
             return Interpretation(
@@ -319,7 +345,7 @@ class NihssCalculator(BaseCalculator):
                     "Urgent neurology consultation",
                     "Consider endovascular evaluation",
                     "Plan rehabilitation assessment",
-                )
+                ),
             )
         elif score <= 20:
             return Interpretation(
@@ -346,7 +372,7 @@ class NihssCalculator(BaseCalculator):
                     "Emergent neurovascular consultation",
                     "Serial NIHSS monitoring",
                     "Early goals of care discussion",
-                )
+                ),
             )
         else:
             return Interpretation(
@@ -373,7 +399,7 @@ class NihssCalculator(BaseCalculator):
                     "Multidisciplinary team involvement",
                     "Goals of care discussion with family",
                     "Consider palliative care consultation",
-                )
+                ),
             )
 
     def _get_notes(self, score: int, has_aphasia: bool) -> list[str]:

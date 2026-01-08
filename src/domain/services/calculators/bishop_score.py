@@ -63,14 +63,8 @@ class BishopScoreCalculator(BaseCalculator):
                 tool_id="bishop_score",
                 name="Bishop Score",
                 purpose="Assess cervical favorability for labor induction",
-                input_params=[
-                    "dilation",
-                    "effacement",
-                    "station",
-                    "consistency",
-                    "position"
-                ],
-                output_type="Bishop score (0-13) with induction success prediction"
+                input_params=["dilation", "effacement", "station", "consistency", "position"],
+                output_type="Bishop score (0-13) with induction success prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -96,21 +90,19 @@ class BishopScoreCalculator(BaseCalculator):
             ),
             references=(
                 Reference(
-                    citation="Bishop EH. Pelvic scoring for elective induction. "
-                             "Obstet Gynecol. 1964 Aug;24:266-8.",
+                    citation="Bishop EH. Pelvic scoring for elective induction. Obstet Gynecol. 1964 Aug;24:266-8.",
                     pmid="14199536",
                     year=1964,
-                    level_of_evidence="Original study"
+                    level_of_evidence="Original study",
                 ),
                 Reference(
-                    citation="ACOG Practice Bulletin No. 107: Induction of labor. "
-                             "Obstet Gynecol. 2009;114:386-397.",
+                    citation="ACOG Practice Bulletin No. 107: Induction of labor. Obstet Gynecol. 2009;114:386-397.",
                     pmid="19623003",
                     doi="10.1097/AOG.0b013e3181b48ef5",
                     year=2009,
-                    level_of_evidence="Clinical guideline"
+                    level_of_evidence="Clinical guideline",
                 ),
-            )
+            ),
         )
 
     def calculate(
@@ -173,11 +165,7 @@ class BishopScoreCalculator(BaseCalculator):
             risk_level = RiskLevel.LOW
             category = "Favorable Cervix"
             success_rate = "~90-95%"
-            recommendation = (
-                "Cervix is favorable for induction. "
-                "Proceed with oxytocin induction. "
-                "High likelihood of successful vaginal delivery."
-            )
+            recommendation = "Cervix is favorable for induction. Proceed with oxytocin induction. High likelihood of successful vaginal delivery."
             ripening_needed = False
         elif total_score >= 6:
             severity = Severity.MILD
@@ -232,11 +220,7 @@ class BishopScoreCalculator(BaseCalculator):
             "category": category,
             "predicted_success_rate": success_rate,
             "ripening_needed": ripening_needed,
-            "next_step": (
-                "Consider cervical ripening method selection"
-                if ripening_needed
-                else "Proceed with induction protocol"
-            ),
+            "next_step": ("Consider cervical ripening method selection" if ripening_needed else "Proceed with induction protocol"),
         }
 
         # Add ripening options if needed
@@ -263,5 +247,5 @@ class BishopScoreCalculator(BaseCalculator):
                 "consistency": consistency,
                 "position": position,
             },
-            calculation_details=details
+            calculation_details=details,
         )

@@ -65,11 +65,8 @@ class PediatricGCSCalculator(BaseCalculator):
                 tool_id="pediatric_gcs",
                 name="Pediatric Glasgow Coma Scale",
                 purpose="Age-adapted consciousness assessment for children",
-                input_params=[
-                    "eye_response", "verbal_response", "motor_response",
-                    "age_group", "intubated"
-                ],
-                output_type="Pediatric GCS score (3-15) with interpretation"
+                input_params=["eye_response", "verbal_response", "motor_response", "age_group", "intubated"],
+                output_type="Pediatric GCS score (3-15) with interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -97,13 +94,13 @@ class PediatricGCSCalculator(BaseCalculator):
                 Reference(
                     citation="Reilly PL, et al. Assessing the conscious level in infants and young children: a paediatric version of the GCS. Childs Nerv Syst. 1988;4(1):30-33.",
                     pmid="3401866",
-                    year=1988
+                    year=1988,
                 ),
                 Reference(
                     citation="Holmes JF, et al. Performance of the pediatric GCS in children with blunt head trauma. Acad Emerg Med. 2005;12(9):814-819.",
                     doi="10.1197/j.aem.2005.04.019",
                     pmid="16141014",
-                    year=2005
+                    year=2005,
                 ),
             ),
         )
@@ -125,14 +122,7 @@ class PediatricGCSCalculator(BaseCalculator):
         1: "No response",
     }
 
-    def calculate(
-        self,
-        eye_response: int,
-        verbal_response: int,
-        motor_response: int,
-        age_group: str = "child",
-        intubated: bool = False
-    ) -> ScoreResult:
+    def calculate(self, eye_response: int, verbal_response: int, motor_response: int, age_group: str = "child", intubated: bool = False) -> ScoreResult:
         """
         Calculate Pediatric Glasgow Coma Scale.
 
@@ -190,12 +180,7 @@ class PediatricGCSCalculator(BaseCalculator):
             verbal_desc = self.VERBAL_CHILD.get(verbal_response, "")
 
         # Component descriptions
-        eye_desc = {
-            4: "Spontaneous",
-            3: "To voice/sound",
-            2: "To pain",
-            1: "None"
-        }.get(eye_response, "")
+        eye_desc = {4: "Spontaneous", 3: "To voice/sound", 2: "To pain", 1: "None"}.get(eye_response, "")
 
         motor_desc = {
             6: "Obeys commands/Normal movement",
@@ -203,7 +188,7 @@ class PediatricGCSCalculator(BaseCalculator):
             4: "Withdraws from pain",
             3: "Abnormal flexion (decorticate)",
             2: "Extension (decerebrate)",
-            1: "None"
+            1: "None",
         }.get(motor_response, "")
 
         # Determine severity
@@ -247,10 +232,9 @@ class PediatricGCSCalculator(BaseCalculator):
                 f"Components: E={eye_response} V={verbal_response} M={motor_response}\n"
                 f"Eye: {eye_desc}\n"
                 f"Verbal ({age_group}): {verbal_desc}\n"
-                f"Motor: {motor_desc}"
-                + (f"\nNote: {verbal_note}" if verbal_note else "")
+                f"Motor: {motor_desc}" + (f"\nNote: {verbal_note}" if verbal_note else "")
             ),
-            recommendations=(action,)
+            recommendations=(action,),
         )
 
         details = {
@@ -261,7 +245,7 @@ class PediatricGCSCalculator(BaseCalculator):
             "impairment_level": impairment,
             "intubated": intubated,
             "airway_concern": total_score <= 8,
-            "next_step": self._get_next_step(total_score, intubated)
+            "next_step": self._get_next_step(total_score, intubated),
         }
 
         return ScoreResult(
@@ -278,7 +262,7 @@ class PediatricGCSCalculator(BaseCalculator):
                 "age_group": age_group,
                 "intubated": intubated,
             },
-            calculation_details=details
+            calculation_details=details,
         )
 
     def _get_next_step(self, score: int, intubated: bool) -> str:

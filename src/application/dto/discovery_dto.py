@@ -11,14 +11,15 @@ from typing import Any, Optional
 
 class DiscoveryMode(Enum):
     """Discovery mode enumeration for structured API"""
-    SEARCH = "search"                    # Free text search
-    BY_SPECIALTY = "by_specialty"        # Filter by specialty
-    BY_CONTEXT = "by_context"            # Filter by clinical context
-    BY_CONDITION = "by_condition"        # Filter by condition
-    LIST_ALL = "list_all"                # List all tools
-    GET_INFO = "get_info"                # Get specific tool info
-    LIST_SPECIALTIES = "list_specialties"    # List available specialties
-    LIST_CONTEXTS = "list_contexts"          # List available contexts
+
+    SEARCH = "search"  # Free text search
+    BY_SPECIALTY = "by_specialty"  # Filter by specialty
+    BY_CONTEXT = "by_context"  # Filter by clinical context
+    BY_CONDITION = "by_condition"  # Filter by condition
+    LIST_ALL = "list_all"  # List all tools
+    GET_INFO = "get_info"  # Get specific tool info
+    LIST_SPECIALTIES = "list_specialties"  # List available specialties
+    LIST_CONTEXTS = "list_contexts"  # List available contexts
 
 
 @dataclass(frozen=True)
@@ -34,6 +35,7 @@ class DiscoveryRequest:
     - list_all: Get all available tools
     - get_info: Get detailed info for specific tool
     """
+
     mode: DiscoveryMode
     query: Optional[str] = None
     specialty: Optional[str] = None
@@ -48,6 +50,7 @@ class DiscoveryRequest:
 @dataclass
 class ToolSummaryDTO:
     """Summary information for a single tool"""
+
     tool_id: str
     name: str
     purpose: str
@@ -59,6 +62,7 @@ class ToolSummaryDTO:
 @dataclass
 class ToolDetailDTO:
     """Detailed information for a single tool"""
+
     tool_id: str
     name: str
     purpose: str
@@ -82,6 +86,7 @@ class DiscoveryResponse:
 
     Contains either a list of tool summaries or a single detailed tool info.
     """
+
     mode: DiscoveryMode
     success: bool
     count: int

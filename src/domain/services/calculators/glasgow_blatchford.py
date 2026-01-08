@@ -9,7 +9,6 @@ References:
 - ESGE Guideline. Endoscopy. 2021;53(3):300-332. PMID: 33567467
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, RiskLevel, Severity
@@ -37,11 +36,17 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                 name="Glasgow-Blatchford Score (GBS)",
                 purpose="Stratify upper GI bleeding risk and predict need for intervention",
                 input_params=[
-                    "bun_mg_dl", "hemoglobin_g_dl", "systolic_bp_mmhg",
-                    "heart_rate_bpm", "melena", "syncope",
-                    "hepatic_disease", "cardiac_failure", "sex"
+                    "bun_mg_dl",
+                    "hemoglobin_g_dl",
+                    "systolic_bp_mmhg",
+                    "heart_rate_bpm",
+                    "melena",
+                    "syncope",
+                    "hepatic_disease",
+                    "cardiac_failure",
+                    "sex",
                 ],
-                output_type="GBS (0-23) with intervention risk and disposition"
+                output_type="GBS (0-23) with intervention risk and disposition",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -50,10 +55,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                     Specialty.INTERNAL_MEDICINE,
                     Specialty.CRITICAL_CARE,
                 ),
-                conditions=(
-                    "Upper GI Bleeding", "UGIB", "Hematemesis",
-                    "Melena", "GI Hemorrhage"
-                ),
+                conditions=("Upper GI Bleeding", "UGIB", "Hematemesis", "Melena", "GI Hemorrhage"),
                 clinical_contexts=(
                     ClinicalContext.EMERGENCY,
                     ClinicalContext.DIAGNOSIS,
@@ -68,27 +70,34 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
                 ),
                 icd10_codes=("K92.0", "K92.1", "K92.2"),
                 keywords=(
-                    "Glasgow-Blatchford", "GBS", "upper GI bleeding", "UGIB",
-                    "hematemesis", "melena", "GI hemorrhage", "endoscopy",
-                    "transfusion", "intervention risk"
-                )
+                    "Glasgow-Blatchford",
+                    "GBS",
+                    "upper GI bleeding",
+                    "UGIB",
+                    "hematemesis",
+                    "melena",
+                    "GI hemorrhage",
+                    "endoscopy",
+                    "transfusion",
+                    "intervention risk",
+                ),
             ),
             references=(
                 Reference(
                     citation="Blatchford O, Murray WR, Blatchford M. A risk score to predict need for treatment for upper-gastrointestinal haemorrhage. Lancet. 2000;356(9238):1318-1321.",
                     doi="10.1016/S0140-6736(00)02816-6",
                     pmid="11073021",
-                    year=2000
+                    year=2000,
                 ),
                 Reference(
                     citation="Gralnek IM, Stanley AJ, Morris AJ, et al. Endoscopic diagnosis and management of nonvariceal upper gastrointestinal hemorrhage (NVUGIH): European Society of Gastrointestinal Endoscopy (ESGE) Guideline - Update 2021. Endoscopy. 2021;53(3):300-332.",
                     doi="10.1055/a-1369-5274",
                     pmid="33567467",
-                    year=2021
+                    year=2021,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -250,10 +259,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             disposition = "May consider early discharge with close follow-up"
             interpretation = Interpretation(
                 summary=f"GBS {score}/23: Low Risk - Early discharge possible",
-                detail=(
-                    "Low risk for needing intervention. "
-                    "Consider early discharge with outpatient follow-up."
-                ),
+                detail=("Low risk for needing intervention. Consider early discharge with outpatient follow-up."),
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.LOW,
                 stage="Low Risk",
@@ -273,11 +279,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             disposition = "Admission recommended, endoscopy within 24h"
             interpretation = Interpretation(
                 summary=f"GBS {score}/23: Intermediate Risk - Admission recommended",
-                detail=(
-                    "Intermediate risk for needing intervention. "
-                    "Recommend hospital admission. "
-                    "Endoscopy should be performed within 24 hours."
-                ),
+                detail=("Intermediate risk for needing intervention. Recommend hospital admission. Endoscopy should be performed within 24 hours."),
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Intermediate Risk",
@@ -337,11 +339,7 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             disposition = "ICU admission, emergent endoscopy"
             interpretation = Interpretation(
                 summary=f"GBS {score}/23: Very High Risk - Emergent intervention needed",
-                detail=(
-                    "Very high risk for needing intervention and adverse outcomes. "
-                    "Consider ICU admission. "
-                    "Emergent endoscopy indicated."
-                ),
+                detail=("Very high risk for needing intervention and adverse outcomes. Consider ICU admission. Emergent endoscopy indicated."),
                 severity=Severity.CRITICAL,
                 risk_level=RiskLevel.VERY_HIGH,
                 stage="Very High Risk",
@@ -393,6 +391,6 @@ class GlasgowBlatchfordCalculator(BaseCalculator):
             formula_used="GBS = sum of BUN + Hemoglobin + SBP + HR + clinical factors",
             notes=[
                 "GBS = 0 is the key threshold for identifying very low-risk patients",
-                "For GBS ≥1, arrange endoscopy; for GBS = 0, may consider outpatient management"
+                "For GBS ≥1, arrange endoscopy; for GBS = 0, may consider outpatient management",
             ],
         )

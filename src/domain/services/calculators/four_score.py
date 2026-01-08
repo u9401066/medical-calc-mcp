@@ -20,7 +20,6 @@ Clinical Notes:
 - Components: Eye, Motor, Brainstem, Respiration
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -80,7 +79,7 @@ class FourScoreCalculator(BaseCalculator):
                 name="FOUR Score (Full Outline of UnResponsiveness)",
                 purpose="Assess coma severity with detailed brainstem and respiratory evaluation",
                 input_params=["eye_response", "motor_response", "brainstem_reflexes", "respiration"],
-                output_type="FOUR Score (0-16) with coma severity classification"
+                output_type="FOUR Score (0-16) with coma severity classification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -116,23 +115,30 @@ class FourScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("R40.2", "R40.20", "G93.1", "S06", "I61", "I63"),
                 keywords=(
-                    "FOUR score", "Full Outline UnResponsiveness", "coma",
-                    "brain death", "brainstem", "consciousness",
-                    "intubated", "ICU", "neuro-ICU", "Wijdicks",
-                )
+                    "FOUR score",
+                    "Full Outline UnResponsiveness",
+                    "coma",
+                    "brain death",
+                    "brainstem",
+                    "consciousness",
+                    "intubated",
+                    "ICU",
+                    "neuro-ICU",
+                    "Wijdicks",
+                ),
             ),
             references=(
                 Reference(
                     citation="Wijdicks EF, Bamlet WR, Maramattom BV, Manno EM, McClelland RL. "
-                             "Validation of a new coma scale: The FOUR score. "
-                             "Ann Neurol. 2005;58(4):585-593.",
+                    "Validation of a new coma scale: The FOUR score. "
+                    "Ann Neurol. 2005;58(4):585-593.",
                     doi="10.1002/ana.20611",
                     pmid="16178024",
-                    year=2005
+                    year=2005,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -194,9 +200,7 @@ class FourScoreCalculator(BaseCalculator):
         four_notation = f"E{eye_response}M{motor_response}B{brainstem_reflexes}R{respiration}"
 
         # Get interpretation
-        interpretation = self._get_interpretation(
-            total_score, eye_response, motor_response, brainstem_reflexes, respiration
-        )
+        interpretation = self._get_interpretation(total_score, eye_response, motor_response, brainstem_reflexes, respiration)
 
         return ScoreResult(
             value=total_score,
@@ -215,22 +219,10 @@ class FourScoreCalculator(BaseCalculator):
                 "total_score": total_score,
                 "notation": four_notation,
                 "components": {
-                    "eye_response": {
-                        "score": eye_response,
-                        "description": self._get_eye_description(eye_response)
-                    },
-                    "motor_response": {
-                        "score": motor_response,
-                        "description": self._get_motor_description(motor_response)
-                    },
-                    "brainstem_reflexes": {
-                        "score": brainstem_reflexes,
-                        "description": self._get_brainstem_description(brainstem_reflexes)
-                    },
-                    "respiration": {
-                        "score": respiration,
-                        "description": self._get_respiration_description(respiration)
-                    },
+                    "eye_response": {"score": eye_response, "description": self._get_eye_description(eye_response)},
+                    "motor_response": {"score": motor_response, "description": self._get_motor_description(motor_response)},
+                    "brainstem_reflexes": {"score": brainstem_reflexes, "description": self._get_brainstem_description(brainstem_reflexes)},
+                    "respiration": {"score": respiration, "description": self._get_respiration_description(respiration)},
                 },
                 "brain_death_screening": total_score == 0,
             },
@@ -280,14 +272,7 @@ class FourScoreCalculator(BaseCalculator):
         }
         return descriptions.get(score, "Unknown")
 
-    def _get_interpretation(
-        self,
-        total_score: int,
-        eye: int,
-        motor: int,
-        brainstem: int,
-        respiration: int
-    ) -> Interpretation:
+    def _get_interpretation(self, total_score: int, eye: int, motor: int, brainstem: int, respiration: int) -> Interpretation:
         """Generate interpretation based on score"""
 
         # Check for brain death criteria (FOUR = 0)
@@ -295,8 +280,8 @@ class FourScoreCalculator(BaseCalculator):
             return Interpretation(
                 summary="FOUR Score 0 - Possible Brain Death",
                 detail="FOUR Score of 0 indicates absence of all responses and "
-                       "absent brainstem reflexes. This meets screening criteria for "
-                       "brain death evaluation.",
+                "absent brainstem reflexes. This meets screening criteria for "
+                "brain death evaluation.",
                 severity=Severity.CRITICAL,
                 stage="Score 0",
                 stage_description="All responses absent - brain death screening positive",
@@ -324,8 +309,7 @@ class FourScoreCalculator(BaseCalculator):
         if brainstem <= 1:
             return Interpretation(
                 summary=f"FOUR Score {total_score} - Severe Brainstem Dysfunction",
-                detail="Severe brainstem dysfunction with loss of protective reflexes. "
-                       "High mortality risk even if not meeting brain death criteria.",
+                detail="Severe brainstem dysfunction with loss of protective reflexes. High mortality risk even if not meeting brain death criteria.",
                 severity=Severity.CRITICAL,
                 stage=f"Score {total_score}",
                 stage_description="Severe brainstem dysfunction",
@@ -351,8 +335,7 @@ class FourScoreCalculator(BaseCalculator):
         if total_score <= 4:
             return Interpretation(
                 summary=f"FOUR Score {total_score} - Severe Coma",
-                detail="Severe impairment of consciousness. ICU monitoring required. "
-                       "Approximate GCS equivalent: 3-5.",
+                detail="Severe impairment of consciousness. ICU monitoring required. Approximate GCS equivalent: 3-5.",
                 severity=Severity.CRITICAL,
                 stage=f"Score {total_score}",
                 stage_description="Severe coma",
@@ -376,8 +359,7 @@ class FourScoreCalculator(BaseCalculator):
         elif total_score <= 8:
             return Interpretation(
                 summary=f"FOUR Score {total_score} - Moderate-Severe Coma",
-                detail="Significant impairment with some preserved responses. "
-                       "Approximate GCS equivalent: 5-8.",
+                detail="Significant impairment with some preserved responses. Approximate GCS equivalent: 5-8.",
                 severity=Severity.SEVERE,
                 stage=f"Score {total_score}",
                 stage_description="Moderate-severe coma",
@@ -396,8 +378,7 @@ class FourScoreCalculator(BaseCalculator):
         elif total_score <= 12:
             return Interpretation(
                 summary=f"FOUR Score {total_score} - Moderate Impairment",
-                detail="Moderate impairment with preserved brainstem function. "
-                       "Approximate GCS equivalent: 9-12.",
+                detail="Moderate impairment with preserved brainstem function. Approximate GCS equivalent: 9-12.",
                 severity=Severity.MODERATE,
                 stage=f"Score {total_score}",
                 stage_description="Moderate impairment",
@@ -416,8 +397,7 @@ class FourScoreCalculator(BaseCalculator):
         else:  # 13-16
             return Interpretation(
                 summary=f"FOUR Score {total_score} - Mild Impairment or Normal",
-                detail="Minimal to no impairment of consciousness. "
-                       "Good brainstem and respiratory function. GCS equivalent: 13-15.",
+                detail="Minimal to no impairment of consciousness. Good brainstem and respiratory function. GCS equivalent: 13-15.",
                 severity=Severity.MILD,
                 stage=f"Score {total_score}",
                 stage_description="Mild impairment or normal",

@@ -26,6 +26,7 @@ class ParameterSpec:
         default: Default value (None = required)
         examples: Example values for documentation
     """
+
     name: str
     display_name: str
     description: str
@@ -140,7 +141,6 @@ COMMON_PARAMETERS: dict[str, ParameterSpec] = {
         unit="%",
         examples=(92, 96, 99),
     ),
-
     # Oxygenation
     "fio2": ParameterSpec(
         name="fio2",
@@ -160,7 +160,6 @@ COMMON_PARAMETERS: dict[str, ParameterSpec] = {
         unit="mmHg",
         examples=(100, 200, 400),
     ),
-
     # Laboratory Values
     "serum_creatinine": ParameterSpec(
         name="serum_creatinine",
@@ -216,7 +215,6 @@ COMMON_PARAMETERS: dict[str, ParameterSpec] = {
         unit="g/dL",
         examples=(8, 12, 15),
     ),
-
     # Demographics
     "age": ParameterSpec(
         name="age",
@@ -245,7 +243,6 @@ COMMON_PARAMETERS: dict[str, ParameterSpec] = {
         unit="",
         examples=("male", "female"),
     ),
-
     # Scores
     "gcs_score": ParameterSpec(
         name="gcs_score",
@@ -265,7 +262,6 @@ COMMON_PARAMETERS: dict[str, ParameterSpec] = {
         unit="",
         examples=(-5, 0, 4),
     ),
-
     # Classification
     "asa_class": ParameterSpec(
         name="asa_class",
@@ -302,10 +298,7 @@ def get_parameter_spec(param_name: str) -> Optional[ParameterSpec]:
     return COMMON_PARAMETERS.get(param_name)
 
 
-def validate_parameters(
-    params: dict[str, Any],
-    specs: dict[str, ParameterSpec]
-) -> tuple[bool, dict[str, list[str]]]:
+def validate_parameters(params: dict[str, Any], specs: dict[str, ParameterSpec]) -> tuple[bool, dict[str, list[str]]]:
     """
     Validate multiple parameters against their specifications.
 

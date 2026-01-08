@@ -78,7 +78,7 @@ class MeldScoreCalculator(BaseCalculator):
                     "sodium",
                     "on_dialysis",
                 ],
-                output_type="MELD and MELD-Na scores with 90-day mortality risk"
+                output_type="MELD and MELD-Na scores with 90-day mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -124,28 +124,28 @@ class MeldScoreCalculator(BaseCalculator):
                     "cirrhosis prognosis",
                     "hepatic failure",
                     "transplant listing",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Kamath PS, Wiesner RH, Malinchoc M, et al. A model to predict survival "
-                             "in patients with end-stage liver disease. Hepatology. 2001;33(2):464-470.",
+                    "in patients with end-stage liver disease. Hepatology. 2001;33(2):464-470.",
                     doi="10.1053/jhep.2001.22172",
                     pmid="11172350",
                     year=2001,
                 ),
                 Reference(
                     citation="Kim WR, Biggins SW, Kremers WK, et al. Hyponatremia and mortality among "
-                             "patients on the liver-transplant waiting list. N Engl J Med. "
-                             "2008;359(10):1018-1026.",
+                    "patients on the liver-transplant waiting list. N Engl J Med. "
+                    "2008;359(10):1018-1026.",
                     doi="10.1056/NEJMoa0801209",
                     pmid="18768945",
                     year=2008,
                 ),
                 Reference(
                     citation="Kim WR, Mannalithara A, Heimbach JK, et al. MELD 3.0: The Model for "
-                             "End-Stage Liver Disease Updated for the Modern Era. Gastroenterology. "
-                             "2021;161(6):1887-1895.e4.",
+                    "End-Stage Liver Disease Updated for the Modern Era. Gastroenterology. "
+                    "2021;161(6):1887-1895.e4.",
                     doi="10.1053/j.gastro.2021.08.050",
                     pmid="34481845",
                     year=2021,
@@ -193,13 +193,7 @@ class MeldScoreCalculator(BaseCalculator):
         na = max(min(sodium, 137), 125)
 
         # Calculate original MELD score
-        meld = (
-            10 * (
-                0.957 * math.log(cr) +
-                0.378 * math.log(bili) +
-                1.120 * math.log(inr_adj)
-            ) + 6.43
-        )
+        meld = 10 * (0.957 * math.log(cr) + 0.378 * math.log(bili) + 1.120 * math.log(inr_adj)) + 6.43
 
         # Round and cap MELD
         meld = round(meld)
@@ -269,10 +263,7 @@ class MeldScoreCalculator(BaseCalculator):
         summary = f"MELD = {meld}, MELD-Na = {meld_na}: {mortality} 90-day mortality"
 
         if score < 15:
-            detail = (
-                f"Lower MELD score indicates less severe liver disease. "
-                f"The estimated 90-day mortality is {mortality}."
-            )
+            detail = f"Lower MELD score indicates less severe liver disease. The estimated 90-day mortality is {mortality}."
             recommendations = [
                 "Continue medical management of cirrhosis",
                 "Monitor for complications (ascites, encephalopathy, variceal bleeding)",
@@ -334,7 +325,5 @@ class MeldScoreCalculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=(
-                f"High mortality risk ({mortality}) - {urgency}",
-            ) if score >= 25 else tuple(),
+            warnings=(f"High mortality risk ({mortality}) - {urgency}",) if score >= 25 else tuple(),
         )

@@ -136,7 +136,7 @@ def register_surgery_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "oral_contraceptives_or_hrt": oral_contraceptives_or_hrt,
                 "pregnancy_or_postpartum": pregnancy_or_postpartum,
                 "pregnancy_loss_history": pregnancy_loss_history,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

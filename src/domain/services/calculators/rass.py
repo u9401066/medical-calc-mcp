@@ -60,7 +60,7 @@ class RassCalculator(BaseCalculator):
                 name="Richmond Agitation-Sedation Scale (RASS)",
                 purpose="Assess level of agitation or sedation in ICU patients",
                 input_params=["rass_score"],
-                output_type="RASS Score (-5 to +4) with sedation level interpretation"
+                output_type="RASS Score (-5 to +4) with sedation level interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -92,42 +92,47 @@ class RassCalculator(BaseCalculator):
                 ),
                 icd10_codes=(
                     "R40.0",  # Somnolence
-                    "R41.82", # Altered mental status
+                    "R41.82",  # Altered mental status
                     "R45.1",  # Restlessness and agitation
-                    "F05",    # Delirium
+                    "F05",  # Delirium
                 ),
                 keywords=(
-                    "RASS", "sedation", "agitation", "sedation scale",
-                    "ICU", "delirium", "sedation assessment", "sedation vacation",
-                    "oversedation", "undersedation", "light sedation",
-                )
+                    "RASS",
+                    "sedation",
+                    "agitation",
+                    "sedation scale",
+                    "ICU",
+                    "delirium",
+                    "sedation assessment",
+                    "sedation vacation",
+                    "oversedation",
+                    "undersedation",
+                    "light sedation",
+                ),
             ),
             references=(
                 Reference(
                     citation="Sessler CN, Gosnell MS, Grap MJ, et al. The Richmond Agitation-Sedation "
-                             "Scale: validity and reliability in adult intensive care unit patients. "
-                             "Am J Respir Crit Care Med. 2002;166(10):1338-1344.",
+                    "Scale: validity and reliability in adult intensive care unit patients. "
+                    "Am J Respir Crit Care Med. 2002;166(10):1338-1344.",
                     doi="10.1164/rccm.2107138",
                     pmid="12421743",
-                    year=2002
+                    year=2002,
                 ),
                 Reference(
                     citation="Ely EW, Truman B, Shintani A, et al. Monitoring sedation status over "
-                             "time in ICU patients: reliability and validity of the Richmond "
-                             "Agitation-Sedation Scale (RASS). JAMA. 2003;289(22):2983-2991.",
+                    "time in ICU patients: reliability and validity of the Richmond "
+                    "Agitation-Sedation Scale (RASS). JAMA. 2003;289(22):2983-2991.",
                     doi="10.1001/jama.289.22.2983",
                     pmid="12799407",
-                    year=2003
+                    year=2003,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
-    def calculate(
-        self,
-        rass_score: RASS_SCORE
-    ) -> ScoreResult:
+    def calculate(self, rass_score: RASS_SCORE) -> ScoreResult:
         """
         Document and interpret RASS score.
 
@@ -163,67 +168,29 @@ class RassCalculator(BaseCalculator):
             references=list(self.references),
             tool_id=self.tool_id,
             tool_name=self.name,
-            raw_inputs={
-                "rass_score": rass_score
-            },
-            calculation_details={
-                "score": rass_score,
-                "category": category["name"],
-                "description": category["description"]
-            },
+            raw_inputs={"rass_score": rass_score},
+            calculation_details={"score": rass_score, "category": category["name"], "description": category["description"]},
             notes=[
                 "Assess RASS before CAM-ICU for delirium screening",
                 "Target RASS of -2 to 0 for most ICU patients",
                 "RASS -3 to -5: patient cannot be assessed for delirium",
                 "Daily sedation interruption recommended for most patients",
-            ]
+            ],
         )
 
     def _get_category_description(self, rass_score: int) -> dict[str, str]:
         """Get category name and description for RASS score"""
         categories = {
-            4: {
-                "name": "Combative",
-                "description": "Overtly combative, violent, immediate danger to staff"
-            },
-            3: {
-                "name": "Very agitated",
-                "description": "Pulls or removes tubes or catheters; aggressive behavior"
-            },
-            2: {
-                "name": "Agitated",
-                "description": "Frequent non-purposeful movement, fights ventilator"
-            },
-            1: {
-                "name": "Restless",
-                "description": "Anxious but movements not aggressive or vigorous"
-            },
-            0: {
-                "name": "Alert and calm",
-                "description": "Spontaneously pays attention to caregiver"
-            },
-            -1: {
-                "name": "Drowsy",
-                "description": "Not fully alert, but has sustained awakening "
-                              "(eye-opening/eye contact) to voice (>10 seconds)"
-            },
-            -2: {
-                "name": "Light sedation",
-                "description": "Briefly awakens with eye contact to voice (<10 seconds)"
-            },
-            -3: {
-                "name": "Moderate sedation",
-                "description": "Movement or eye opening to voice but no eye contact"
-            },
-            -4: {
-                "name": "Deep sedation",
-                "description": "No response to voice, but movement or eye opening "
-                              "to physical stimulation"
-            },
-            -5: {
-                "name": "Unarousable",
-                "description": "No response to voice or physical stimulation"
-            }
+            4: {"name": "Combative", "description": "Overtly combative, violent, immediate danger to staff"},
+            3: {"name": "Very agitated", "description": "Pulls or removes tubes or catheters; aggressive behavior"},
+            2: {"name": "Agitated", "description": "Frequent non-purposeful movement, fights ventilator"},
+            1: {"name": "Restless", "description": "Anxious but movements not aggressive or vigorous"},
+            0: {"name": "Alert and calm", "description": "Spontaneously pays attention to caregiver"},
+            -1: {"name": "Drowsy", "description": "Not fully alert, but has sustained awakening (eye-opening/eye contact) to voice (>10 seconds)"},
+            -2: {"name": "Light sedation", "description": "Briefly awakens with eye contact to voice (<10 seconds)"},
+            -3: {"name": "Moderate sedation", "description": "Movement or eye opening to voice but no eye contact"},
+            -4: {"name": "Deep sedation", "description": "No response to voice, but movement or eye opening to physical stimulation"},
+            -5: {"name": "Unarousable", "description": "No response to voice or physical stimulation"},
         }
         return categories.get(rass_score, {"name": "Unknown", "description": ""})
 
@@ -258,7 +225,7 @@ class RassCalculator(BaseCalculator):
                     "Address underlying cause",
                     "Titrate sedation to target",
                     "Frequent reassessment",
-                )
+                ),
             )
         elif rass_score >= 1:
             # Restless or agitated
@@ -279,7 +246,7 @@ class RassCalculator(BaseCalculator):
                     "Address reversible causes",
                     "Non-pharmacologic interventions first",
                     "Reassess in 30 minutes",
-                )
+                ),
             )
         elif rass_score == 0:
             # Alert and calm - optimal for most patients
@@ -299,14 +266,13 @@ class RassCalculator(BaseCalculator):
                     "Continue current management",
                     "Assess for delirium with CAM-ICU",
                     "Evaluate readiness for weaning/extubation if intubated",
-                )
+                ),
             )
         elif rass_score == -1:
             # Drowsy - acceptable for many patients
             return Interpretation(
                 summary=f"RASS -1: {category['name']} - Appropriate for many patients",
-                detail=category["description"] + ". Acceptable sedation level; patient can still be "
-                       "assessed for delirium.",
+                detail=category["description"] + ". Acceptable sedation level; patient can still be assessed for delirium.",
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.VERY_LOW,
                 stage=category["name"],
@@ -319,14 +285,13 @@ class RassCalculator(BaseCalculator):
                 next_steps=(
                     "Assess for delirium with CAM-ICU",
                     "Continue weaning sedation if indicated",
-                )
+                ),
             )
         elif rass_score == -2:
             # Light sedation - common target
             return Interpretation(
                 summary=f"RASS -2: {category['name']} - Common target sedation",
-                detail=category["description"] + ". Acceptable for most patients on ventilator; "
-                       "can still assess for delirium.",
+                detail=category["description"] + ". Acceptable for most patients on ventilator; can still assess for delirium.",
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage=category["name"],
@@ -340,14 +305,13 @@ class RassCalculator(BaseCalculator):
                 next_steps=(
                     "Perform CAM-ICU if not recently done",
                     "Assess readiness for spontaneous breathing trial",
-                )
+                ),
             )
         elif rass_score == -3:
             # Moderate sedation - may be too deep for many
             return Interpretation(
                 summary=f"RASS -3: {category['name']} - Deeper sedation",
-                detail=category["description"] + ". CAM-ICU cannot be performed. Consider if this "
-                       "depth of sedation is necessary.",
+                detail=category["description"] + ". CAM-ICU cannot be performed. Consider if this depth of sedation is necessary.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage=category["name"],
@@ -367,14 +331,13 @@ class RassCalculator(BaseCalculator):
                     "Consider sedation vacation",
                     "Reassess need for deep sedation",
                     "Reduce sedation if ARDS/refractory hypoxemia resolved",
-                )
+                ),
             )
         elif rass_score == -4:
             # Deep sedation
             return Interpretation(
                 summary=f"RASS -4: {category['name']} - Deep sedation",
-                detail=category["description"] + ". Very deep sedation; only appropriate for "
-                       "specific indications.",
+                detail=category["description"] + ". Very deep sedation; only appropriate for specific indications.",
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.HIGH,
                 stage=category["name"],
@@ -393,14 +356,13 @@ class RassCalculator(BaseCalculator):
                 next_steps=(
                     "Daily assessment for sedation lightening",
                     "Document ongoing need for deep sedation",
-                )
+                ),
             )
         else:
             # -5: Unarousable
             return Interpretation(
                 summary=f"RASS -5: {category['name']} - Unresponsive",
-                detail=category["description"] + ". Patient completely unresponsive. Consider "
-                       "etiologies beyond sedation.",
+                detail=category["description"] + ". Patient completely unresponsive. Consider etiologies beyond sedation.",
                 severity=Severity.CRITICAL,
                 risk_level=RiskLevel.HIGH,
                 stage=category["name"],
@@ -420,5 +382,5 @@ class RassCalculator(BaseCalculator):
                     "Stop sedation and reassess",
                     "Neurologic assessment",
                     "Consider imaging if no improvement off sedation",
-                )
+                ),
             )

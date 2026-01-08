@@ -79,7 +79,7 @@ class Chads2VaCalculator(BaseCalculator):
                     "vascular_disease",
                     "age_65_to_74",
                 ],
-                output_type="Score 0-8 with annual stroke risk and anticoagulation recommendation"
+                output_type="Score 0-8 with annual stroke risk and anticoagulation recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -128,22 +128,22 @@ class Chads2VaCalculator(BaseCalculator):
                     "新版",
                     "心房顫動",
                     "抗凝血",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Van Gelder IC, Rienstra M, Bunting KV, et al. 2024 ESC Guidelines "
-                             "for the management of atrial fibrillation developed in collaboration "
-                             "with EACTS. Eur Heart J. 2024;45(36):3314-3414.",
+                    "for the management of atrial fibrillation developed in collaboration "
+                    "with EACTS. Eur Heart J. 2024;45(36):3314-3414.",
                     doi="10.1093/eurheartj/ehae176",
                     pmid="39217497",
                     year=2024,
                 ),
                 Reference(
                     citation="Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk "
-                             "stratification for predicting stroke and thromboembolism in atrial "
-                             "fibrillation using a novel risk factor-based approach: the euro "
-                             "heart survey on atrial fibrillation. Chest. 2010;137(2):263-272.",
+                    "stratification for predicting stroke and thromboembolism in atrial "
+                    "fibrillation using a novel risk factor-based approach: the euro "
+                    "heart survey on atrial fibrillation. Chest. 2010;137(2):263-272.",
                     doi="10.1378/chest.09-1584",
                     pmid="19762550",
                     year=2010,
@@ -243,15 +243,8 @@ class Chads2VaCalculator(BaseCalculator):
             severity = Severity.NORMAL
             risk_level = RiskLevel.VERY_LOW
             summary = f"CHA₂DS₂-VA = {score}: Very low risk ({annual_risk} annual stroke risk)"
-            detail = (
-                f"Very low stroke risk per 2024 ESC guidelines. "
-                f"Annual ischemic stroke rate approximately {annual_risk}. "
-                f"No anticoagulation recommended."
-            )
-            detail_zh = (
-                f"根據2024 ESC指引為極低中風風險。"
-                f"年中風率約{annual_risk}。不建議抗凝血治療。"
-            )
+            detail = f"Very low stroke risk per 2024 ESC guidelines. Annual ischemic stroke rate approximately {annual_risk}. No anticoagulation recommended."
+            detail_zh = f"根據2024 ESC指引為極低中風風險。年中風率約{annual_risk}。不建議抗凝血治療。"
             recommendations = [
                 "No anticoagulation recommended (不建議抗凝血)",
                 "Address modifiable cardiovascular risk factors",
@@ -273,10 +266,7 @@ class Chads2VaCalculator(BaseCalculator):
                 f"Annual stroke rate approximately {annual_risk}. "
                 f"Anticoagulation should be considered based on individual assessment."
             )
-            detail_zh = (
-                f"根據2024 ESC指引為低中風風險。"
-                f"年中風率約{annual_risk}。應依個別評估考慮抗凝血治療。"
-            )
+            detail_zh = f"根據2024 ESC指引為低中風風險。年中風率約{annual_risk}。應依個別評估考慮抗凝血治療。"
             recommendations = [
                 "Anticoagulation should be considered (應考慮抗凝血)",
                 "Assess bleeding risk with HAS-BLED score",
@@ -308,10 +298,7 @@ class Chads2VaCalculator(BaseCalculator):
                 f"Annual stroke rate approximately {annual_risk}. "
                 f"Oral anticoagulation is recommended."
             )
-            detail_zh = (
-                f"根據2024 ESC指引為{'中度' if score <= 3 else '高度'}中風風險。"
-                f"年中風率約{annual_risk}。建議口服抗凝血治療。"
-            )
+            detail_zh = f"根據2024 ESC指引為{'中度' if score <= 3 else '高度'}中風風險。年中風率約{annual_risk}。建議口服抗凝血治療。"
             recommendations = [
                 "Oral anticoagulation is recommended (建議口服抗凝血)",
                 "DOACs preferred over VKA (except mechanical valves, moderate-severe MS)",
@@ -329,7 +316,6 @@ class Chads2VaCalculator(BaseCalculator):
             if score >= 6:
                 recommendations.append("Very high risk - consider cardiology consultation")
 
-
         return Interpretation(
             summary=summary,
             severity=severity,
@@ -339,7 +325,5 @@ class Chads2VaCalculator(BaseCalculator):
             risk_level=risk_level,
             recommendations=tuple(recommendations),
             next_steps=tuple(next_steps),
-            warnings=(
-                "High stroke risk - anticoagulation strongly recommended (高中風風險-強烈建議抗凝血)",
-            ) if score >= 4 else tuple(),
+            warnings=("High stroke risk - anticoagulation strongly recommended (高中風風險-強烈建議抗凝血)",) if score >= 4 else tuple(),
         )

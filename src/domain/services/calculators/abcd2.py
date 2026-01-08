@@ -59,14 +59,8 @@ class Abcd2Calculator(BaseCalculator):
                 tool_id="abcd2",
                 name="ABCD2 Score",
                 purpose="Predict stroke risk after TIA at 2, 7, and 90 days",
-                input_params=[
-                    "age_gte_60",
-                    "bp_gte_140_90",
-                    "clinical_features",
-                    "duration_minutes",
-                    "diabetes"
-                ],
-                output_type="ABCD2 score (0-7) with stroke risk percentages"
+                input_params=["age_gte_60", "bp_gte_140_90", "clinical_features", "duration_minutes", "diabetes"],
+                output_type="ABCD2 score (0-7) with stroke risk percentages",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -95,39 +89,44 @@ class Abcd2Calculator(BaseCalculator):
                     "Is this high-risk TIA?",
                 ),
                 icd10_codes=(
-                    "G45.9",   # TIA, unspecified
-                    "G45.0",   # Vertebro-basilar artery syndrome
-                    "G45.1",   # Carotid artery syndrome
-                    "G45.8",   # Other TIA
+                    "G45.9",  # TIA, unspecified
+                    "G45.0",  # Vertebro-basilar artery syndrome
+                    "G45.1",  # Carotid artery syndrome
+                    "G45.8",  # Other TIA
                 ),
                 keywords=(
-                    "ABCD2", "TIA", "transient ischemic attack",
-                    "stroke risk", "mini-stroke", "cerebrovascular",
-                    "amaurosis fugax", "admission decision",
-                )
+                    "ABCD2",
+                    "TIA",
+                    "transient ischemic attack",
+                    "stroke risk",
+                    "mini-stroke",
+                    "cerebrovascular",
+                    "amaurosis fugax",
+                    "admission decision",
+                ),
             ),
             references=(
                 Reference(
                     citation="Johnston SC, Rothwell PM, Nguyen-Huynh MN, et al. "
-                             "Validation and refinement of scores to predict very early stroke risk "
-                             "after transient ischaemic attack. "
-                             "Lancet. 2007;369(9558):283-292.",
+                    "Validation and refinement of scores to predict very early stroke risk "
+                    "after transient ischaemic attack. "
+                    "Lancet. 2007;369(9558):283-292.",
                     doi="10.1016/S0140-6736(07)60150-0",
                     pmid="17258668",
-                    year=2007
+                    year=2007,
                 ),
                 Reference(
                     citation="Giles MF, Rothwell PM. "
-                             "Risk of stroke early after transient ischaemic attack: "
-                             "a systematic review and meta-analysis. "
-                             "Lancet Neurol. 2007;6(12):1063-1072.",
+                    "Risk of stroke early after transient ischaemic attack: "
+                    "a systematic review and meta-analysis. "
+                    "Lancet Neurol. 2007;6(12):1063-1072.",
                     doi="10.1016/S1474-4422(07)70274-0",
                     pmid="17993293",
-                    year=2007
+                    year=2007,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -136,7 +135,7 @@ class Abcd2Calculator(BaseCalculator):
         bp_gte_140_90: bool,
         clinical_features: Literal["none", "speech_only", "unilateral_weakness"],
         duration_minutes: Literal["lt_10", "10_to_59", "gte_60"],
-        diabetes: bool
+        diabetes: bool,
     ) -> ScoreResult:
         """
         Calculate ABCD2 Score.
@@ -200,7 +199,7 @@ class Abcd2Calculator(BaseCalculator):
                 "bp_gte_140_90": bp_gte_140_90,
                 "clinical_features": clinical_features,
                 "duration_minutes": duration_minutes,
-                "diabetes": diabetes
+                "diabetes": diabetes,
             },
             calculation_details={
                 "total_score": score,
@@ -210,13 +209,13 @@ class Abcd2Calculator(BaseCalculator):
                     "B_blood_pressure": bp_points,
                     "C_clinical_features": clinical_points,
                     "D1_duration": duration_points,
-                    "D2_diabetes": diabetes_points
+                    "D2_diabetes": diabetes_points,
                 },
                 "stroke_risk_2day": f"{risk_2day}%",
                 "stroke_risk_7day": f"{risk_7day}%",
-                "stroke_risk_90day": f"{risk_90day}%"
+                "stroke_risk_90day": f"{risk_90day}%",
             },
-            notes=self._get_notes(score)
+            notes=self._get_notes(score),
         )
 
     def _get_stroke_risks(self, score: int) -> tuple[float, float, float]:
@@ -234,12 +233,7 @@ class Abcd2Calculator(BaseCalculator):
         else:  # 6-7
             return (8.1, 11.7, 17.8)
 
-    def _get_interpretation(
-        self,
-        score: int,
-        risk_2day: float,
-        risk_7day: float
-    ) -> Interpretation:
+    def _get_interpretation(self, score: int, risk_2day: float, risk_7day: float) -> Interpretation:
         """Get clinical interpretation based on score"""
 
         if score <= 3:
@@ -262,7 +256,7 @@ class Abcd2Calculator(BaseCalculator):
                     "Ensure rapid outpatient follow-up (24-48h)",
                     "Patient education on stroke warning signs",
                     "Risk factor modification counseling",
-                )
+                ),
             )
         elif score <= 5:
             return Interpretation(
@@ -289,7 +283,7 @@ class Abcd2Calculator(BaseCalculator):
                     "Neurology consultation recommended",
                     "Complete workup before discharge",
                     "Arrange follow-up within 48-72 hours",
-                )
+                ),
             )
         else:  # 6-7
             return Interpretation(
@@ -318,7 +312,7 @@ class Abcd2Calculator(BaseCalculator):
                     "Admit to stroke unit or monitored bed",
                     "Complete workup within 24 hours",
                     "Consider CEA/CAS if symptomatic carotid stenosis",
-                )
+                ),
             )
 
     def _get_notes(self, score: int) -> list[str]:
@@ -330,18 +324,11 @@ class Abcd2Calculator(BaseCalculator):
         ]
 
         if score >= 4:
-            notes.append(
-                "POINT trial: DAPT (aspirin + clopidogrel x 21 days) reduces 90-day stroke risk"
-            )
+            notes.append("POINT trial: DAPT (aspirin + clopidogrel x 21 days) reduces 90-day stroke risk")
 
         if score <= 3:
-            notes.append(
-                "Low ABCD2 does not exclude stroke - clinical judgment remains essential"
-            )
+            notes.append("Low ABCD2 does not exclude stroke - clinical judgment remains essential")
 
-        notes.append(
-            "Etiology-specific treatment (e.g., anticoagulation for AF) may be needed"
-        )
+        notes.append("Etiology-specific treatment (e.g., anticoagulation for AF) may be needed")
 
         return notes
-

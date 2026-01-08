@@ -42,25 +42,18 @@ from src.domain.services.calculators import CALCULATORS
 # Pydantic Models for API
 # =============================================================================
 
+
 class CalculatorInput(BaseModel):
     """Generic calculator input model"""
+
     params: dict[str, Any] = Field(..., description="Calculator parameters")
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "params": {
-                    "serum_creatinine": 1.2,
-                    "age": 65,
-                    "sex": "female"
-                }
-            }
-        }
-    )
+    model_config = ConfigDict(json_schema_extra={"example": {"params": {"serum_creatinine": 1.2, "age": 65, "sex": "female"}}})
 
 
 class CalculatorResponse(BaseModel):
     """Calculator response model"""
+
     success: bool
     calculator: str
     result: Optional[dict[str, Any]] = None
@@ -69,12 +62,14 @@ class CalculatorResponse(BaseModel):
 
 class DiscoveryResponse(BaseModel):
     """Discovery response model"""
+
     count: int
     tools: list[dict[str, Any]]
 
 
 class HealthResponse(BaseModel):
     """Health check response"""
+
     status: str
     service: str
     version: str
@@ -85,6 +80,7 @@ class HealthResponse(BaseModel):
 # =============================================================================
 # Application Lifespan
 # =============================================================================
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -134,7 +130,7 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
 
 # CORS middleware - Configure via environment variables for production
@@ -156,6 +152,7 @@ app.add_middleware(
 # Health & Info Endpoints
 # =============================================================================
 
+
 @app.get("/", tags=["Info"])
 async def root() -> dict[str, Any]:
     """API root with service information"""
@@ -166,7 +163,7 @@ async def root() -> dict[str, Any]:
         "calculators": len(registry.list_all()),
         "docs": "/docs",
         "redoc": "/redoc",
-        "health": "/health"
+        "health": "/health",
     }
 
 
@@ -174,23 +171,16 @@ async def root() -> dict[str, Any]:
 async def health_check() -> HealthResponse:
     """Health check endpoint for Docker/K8s"""
     registry = get_registry()
-    return HealthResponse(
-        status="healthy",
-        service="medical-calc-api",
-        version="1.0.0",
-        calculators=len(registry.list_all()),
-        mode="api"
-    )
+    return HealthResponse(status="healthy", service="medical-calc-api", version="1.0.0", calculators=len(registry.list_all()), mode="api")
 
 
 # =============================================================================
 # Discovery Endpoints
 # =============================================================================
 
+
 @app.get("/api/v1/calculators", response_model=DiscoveryResponse, tags=["Discovery"])
-async def list_calculators(
-    limit: int = Query(50, ge=1, le=100, description="Maximum results")
-) -> DiscoveryResponse:
+async def list_calculators(limit: int = Query(50, ge=1, le=100, description="Maximum results")) -> DiscoveryResponse:
     """
     列出所有可用的計算器
 
@@ -202,10 +192,7 @@ async def list_calculators(
     request = DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=limit)
     result = use_case.execute(request)
 
-    return DiscoveryResponse(
-        count=len(result.tools),
-        tools=[asdict(t) for t in result.tools]
-    )
+    return DiscoveryResponse(count=len(result.tools), tools=[asdict(t) for t in result.tools])
 
 
 @app.get("/api/v1/calculators/{tool_id}", tags=["Discovery"])
@@ -230,8 +217,7 @@ async def get_calculator_info(tool_id: str) -> dict[str, Any]:
 
 @app.get("/api/v1/search", response_model=DiscoveryResponse, tags=["Discovery"])
 async def search_calculators(
-    q: str = Query(..., min_length=1, description="Search keyword"),
-    limit: int = Query(10, ge=1, le=50, description="Maximum results")
+    q: str = Query(..., min_length=1, description="Search keyword"), limit: int = Query(10, ge=1, le=50, description="Maximum results")
 ) -> DiscoveryResponse:
     """
     依關鍵字搜尋計算器
@@ -244,10 +230,7 @@ async def search_calculators(
     request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query=q, limit=limit)
     result = use_case.execute(request)
 
-    return DiscoveryResponse(
-        count=len(result.tools),
-        tools=[asdict(t) for t in result.tools]
-    )
+    return DiscoveryResponse(count=len(result.tools), tools=[asdict(t) for t in result.tools])
 
 
 @app.get("/api/v1/specialties", tags=["Discovery"])
@@ -263,17 +246,11 @@ async def list_specialties() -> dict[str, Any]:
     request = DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
     result = use_case.execute(request)
 
-    return {
-        "specialties": result.available_specialties,
-        "count": len(result.available_specialties) if result.available_specialties else 0
-    }
+    return {"specialties": result.available_specialties, "count": len(result.available_specialties) if result.available_specialties else 0}
 
 
 @app.get("/api/v1/specialties/{specialty}", response_model=DiscoveryResponse, tags=["Discovery"])
-async def list_by_specialty(
-    specialty: str,
-    limit: int = Query(20, ge=1, le=50, description="Maximum results")
-) -> DiscoveryResponse:
+async def list_by_specialty(specialty: str, limit: int = Query(20, ge=1, le=50, description="Maximum results")) -> DiscoveryResponse:
     """
     列出特定專科的所有計算器
 
@@ -285,10 +262,7 @@ async def list_by_specialty(
     request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty=specialty, limit=limit)
     result = use_case.execute(request)
 
-    return DiscoveryResponse(
-        count=len(result.tools),
-        tools=[asdict(t) for t in result.tools]
-    )
+    return DiscoveryResponse(count=len(result.tools), tools=[asdict(t) for t in result.tools])
 
 
 @app.get("/api/v1/contexts", tags=["Discovery"])
@@ -304,15 +278,13 @@ async def list_contexts() -> dict[str, Any]:
     request = DiscoveryRequest(mode=DiscoveryMode.LIST_CONTEXTS)
     result = use_case.execute(request)
 
-    return {
-        "contexts": result.available_contexts,
-        "count": len(result.available_contexts) if result.available_contexts else 0
-    }
+    return {"contexts": result.available_contexts, "count": len(result.available_contexts) if result.available_contexts else 0}
 
 
 # =============================================================================
 # Calculator Endpoints
 # =============================================================================
+
 
 @app.post("/api/v1/calculate/{tool_id}", response_model=CalculatorResponse, tags=["Calculate"])
 async def calculate(tool_id: str, input_data: CalculatorInput) -> CalculatorResponse:
@@ -335,18 +307,11 @@ async def calculate(tool_id: str, input_data: CalculatorInput) -> CalculatorResp
     registry = get_registry()
     use_case = CalculateUseCase(registry)
 
-    request = CalculateRequest(
-        tool_id=tool_id,
-        params=input_data.params
-    )
+    request = CalculateRequest(tool_id=tool_id, params=input_data.params)
     result = use_case.execute(request)
 
     if not result.success:
-        return CalculatorResponse(
-            success=False,
-            calculator=tool_id,
-            error=result.error
-        )
+        return CalculatorResponse(success=False, calculator=tool_id, error=result.error)
 
     # Convert dataclass to dict, excluding success and error fields
     result_dict = {
@@ -368,22 +333,19 @@ async def calculate(tool_id: str, input_data: CalculatorInput) -> CalculatorResp
     if result.component_scores:
         result_dict["component_scores"] = result.component_scores
 
-    return CalculatorResponse(
-        success=True,
-        calculator=tool_id,
-        result=result_dict
-    )
+    return CalculatorResponse(success=True, calculator=tool_id, result=result_dict)
 
 
 # =============================================================================
 # Convenience Endpoints (Direct Calculator Access)
 # =============================================================================
 
+
 @app.post("/api/v1/ckd-epi", tags=["Quick Calculate"])
 async def calculate_ckd_epi(
     serum_creatinine: float = Query(..., gt=0, description="Serum creatinine (mg/dL)"),
     age: int = Query(..., ge=18, le=120, description="Age in years"),
-    sex: str = Query(..., pattern="^(male|female)$", description="Sex (male/female)")
+    sex: str = Query(..., pattern="^(male|female)$", description="Sex (male/female)"),
 ) -> dict[str, Any]:
     """
     快速計算 CKD-EPI 2021 eGFR
@@ -393,10 +355,7 @@ async def calculate_ckd_epi(
     registry = get_registry()
     use_case = CalculateUseCase(registry)
 
-    request = CalculateRequest(
-        tool_id="ckd_epi_2021",
-        params={"serum_creatinine": serum_creatinine, "age": age, "sex": sex}
-    )
+    request = CalculateRequest(tool_id="ckd_epi_2021", params={"serum_creatinine": serum_creatinine, "age": age, "sex": sex})
     result = use_case.execute(request)
 
     if not result.success:
@@ -423,7 +382,7 @@ async def calculate_sofa(
     bilirubin: float = Query(..., description="Bilirubin (mg/dL)"),
     cardiovascular: str = Query(..., description="MAP or vasopressor status"),
     gcs_score: int = Query(..., ge=3, le=15, description="GCS score"),
-    creatinine: float = Query(..., description="Creatinine (mg/dL)")
+    creatinine: float = Query(..., description="Creatinine (mg/dL)"),
 ) -> dict[str, Any]:
     """
     快速計算 SOFA Score
@@ -441,8 +400,8 @@ async def calculate_sofa(
             "bilirubin": bilirubin,
             "cardiovascular": cardiovascular,
             "gcs_score": gcs_score,
-            "creatinine": creatinine
-        }
+            "creatinine": creatinine,
+        },
     )
     result = use_case.execute(request)
 
@@ -467,6 +426,7 @@ async def calculate_sofa(
 # Entry Point
 # =============================================================================
 
+
 def main() -> None:
     """Run the API server"""
     import uvicorn
@@ -478,12 +438,7 @@ def main() -> None:
     print(f"📚 API Docs: http://{host}:{port}/docs")
     print(f"📖 ReDoc: http://{host}:{port}/redoc")
 
-    uvicorn.run(
-        "src.infrastructure.api.server:app",
-        host=host,
-        port=port,
-        reload=os.environ.get("DEBUG", "false").lower() == "true"
-    )
+    uvicorn.run("src.infrastructure.api.server:app", host=host, port=port, reload=os.environ.get("DEBUG", "false").lower() == "true")
 
 
 if __name__ == "__main__":

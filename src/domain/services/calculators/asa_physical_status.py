@@ -53,7 +53,7 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                 name="ASA Physical Status Classification",
                 purpose="Assess preoperative patient fitness and anesthetic risk",
                 input_params=["asa_class", "is_emergency"],
-                output_type="ASA Classification (I-VI, with optional E suffix)"
+                output_type="ASA Classification (I-VI, with optional E suffix)",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -81,35 +81,35 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                 ),
                 icd10_codes=(),
                 keywords=(
-                    "ASA", "physical status", "preoperative", "surgical risk",
-                    "anesthetic risk", "fitness for surgery", "perioperative",
-                )
+                    "ASA",
+                    "physical status",
+                    "preoperative",
+                    "surgical risk",
+                    "anesthetic risk",
+                    "fitness for surgery",
+                    "perioperative",
+                ),
             ),
             references=(
                 Reference(
                     citation="Mayhew D, Mendonca V, Murthy BVS. A review of ASA physical status – "
-                             "historical perspectives and modern developments. Anaesthesia. "
-                             "2019;74(3):373-379.",
+                    "historical perspectives and modern developments. Anaesthesia. "
+                    "2019;74(3):373-379.",
                     doi="10.1111/anae.14569",
                     pmid="30648259",
-                    year=2019
+                    year=2019,
                 ),
                 Reference(
-                    citation="American Society of Anesthesiologists. ASA Physical Status "
-                             "Classification System. Last amended October 2019.",
+                    citation="American Society of Anesthesiologists. ASA Physical Status Classification System. Last amended October 2019.",
                     url="https://www.asahq.org/standards-and-guidelines/asa-physical-status-classification-system",
-                    year=2019
+                    year=2019,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
-    def calculate(
-        self,
-        asa_class: ASA_CLASS,
-        is_emergency: bool = False
-    ) -> ScoreResult:
+    def calculate(self, asa_class: ASA_CLASS, is_emergency: bool = False) -> ScoreResult:
         """
         Classify patient using ASA Physical Status.
 
@@ -138,18 +138,14 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
             references=list(self.references),
             tool_id=self.tool_id,
             tool_name=self.name,
-            raw_inputs={
-                "asa_class": asa_class,
-                "is_emergency": is_emergency
-            },
-            calculation_details={
-                "classification": display_value,
-                "emergency_suffix": "E" if is_emergency else None
-            },
+            raw_inputs={"asa_class": asa_class, "is_emergency": is_emergency},
+            calculation_details={"classification": display_value, "emergency_suffix": "E" if is_emergency else None},
             notes=[
                 "The 'E' suffix indicates emergency surgery",
                 "Emergency surgery increases perioperative risk",
-            ] if is_emergency else []
+            ]
+            if is_emergency
+            else [],
         )
 
     def _to_roman(self, num: int) -> str:
@@ -165,8 +161,7 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
         if asa_class == 1:
             return Interpretation(
                 summary="ASA I: Normal healthy patient",
-                detail="Healthy, non-smoking, no or minimal alcohol use. "
-                       "No significant medical history.",
+                detail="Healthy, non-smoking, no or minimal alcohol use. No significant medical history.",
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.VERY_LOW,
                 stage="ASA I",
@@ -178,14 +173,14 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                 next_steps=(
                     "Proceed with standard anesthetic plan",
                     "Routine monitoring",
-                )
+                ),
             )
         elif asa_class == 2:
             return Interpretation(
                 summary="ASA II: Mild systemic disease",
                 detail="Mild diseases only without substantive functional limitations. "
-                       "Examples: current smoker, social alcohol drinker, pregnancy, "
-                       "obesity (BMI 30-40), well-controlled DM/HTN, mild lung disease.",
+                "Examples: current smoker, social alcohol drinker, pregnancy, "
+                "obesity (BMI 30-40), well-controlled DM/HTN, mild lung disease.",
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="ASA II",
@@ -198,15 +193,15 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                 next_steps=(
                     "Review and optimize medications",
                     "Consider regional anesthesia if appropriate",
-                )
+                ),
             )
         elif asa_class == 3:
             return Interpretation(
                 summary="ASA III: Severe systemic disease",
                 detail="Substantive functional limitations. One or more moderate to severe diseases. "
-                       "Examples: poorly controlled DM/HTN, COPD, morbid obesity (BMI ≥40), "
-                       "active hepatitis, alcohol dependence, pacemaker, moderate reduction in EF, "
-                       "ESRD on dialysis, history of MI/CVA/TIA >3 months.",
+                "Examples: poorly controlled DM/HTN, COPD, morbid obesity (BMI ≥40), "
+                "active hepatitis, alcohol dependence, pacemaker, moderate reduction in EF, "
+                "ESRD on dialysis, history of MI/CVA/TIA >3 months.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="ASA III",
@@ -225,14 +220,14 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                     "Optimize all comorbidities",
                     "Order appropriate preoperative testing",
                     "Plan postoperative care level",
-                )
+                ),
             )
         elif asa_class == 4:
             return Interpretation(
                 summary="ASA IV: Severe systemic disease that is a constant threat to life",
                 detail="Examples: recent MI/CVA/TIA (<3 months), ongoing cardiac ischemia, "
-                       "severe valve dysfunction, severe reduction in EF, sepsis, DIC, "
-                       "ARDS, ESRD not on dialysis.",
+                "severe valve dysfunction, severe reduction in EF, sepsis, DIC, "
+                "ARDS, ESRD not on dialysis.",
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.HIGH,
                 stage="ASA IV",
@@ -253,14 +248,14 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                     "ICU bed reservation",
                     "Invasive line placement plan",
                     "Informed consent with detailed risk discussion",
-                )
+                ),
             )
         elif asa_class == 5:
             return Interpretation(
                 summary="ASA V: Moribund patient not expected to survive without surgery",
                 detail="Not expected to survive >24 hours without surgery. "
-                       "Examples: ruptured AAA, massive trauma, intracranial bleed with mass effect, "
-                       "ischemic bowel with cardiac pathology, multiorgan dysfunction.",
+                "Examples: ruptured AAA, massive trauma, intracranial bleed with mass effect, "
+                "ischemic bowel with cardiac pathology, multiorgan dysfunction.",
                 severity=Severity.CRITICAL,
                 risk_level=RiskLevel.VERY_HIGH,
                 stage="ASA V",
@@ -281,7 +276,7 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                     "Emergency surgery preparation",
                     "Massive transfusion protocol availability",
                     "Family communication and support",
-                )
+                ),
             )
         else:  # asa_class == 6
             return Interpretation(
@@ -298,5 +293,5 @@ class AsaPhysicalStatusCalculator(BaseCalculator):
                 next_steps=(
                     "Follow organ procurement protocols",
                     "Maintain donor hemodynamic stability",
-                )
+                ),
             )

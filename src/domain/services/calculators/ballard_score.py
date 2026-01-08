@@ -62,12 +62,20 @@ class BallardScoreCalculator(BaseCalculator):
                 name="New Ballard Score",
                 purpose="Estimate gestational age of newborns from physical and neuromuscular maturity",
                 input_params=[
-                    "posture", "square_window", "arm_recoil", "popliteal_angle",
-                    "scarf_sign", "heel_to_ear",
-                    "skin", "lanugo", "plantar_surface", "breast",
-                    "eye_ear", "genitals"
+                    "posture",
+                    "square_window",
+                    "arm_recoil",
+                    "popliteal_angle",
+                    "scarf_sign",
+                    "heel_to_ear",
+                    "skin",
+                    "lanugo",
+                    "plantar_surface",
+                    "breast",
+                    "eye_ear",
+                    "genitals",
                 ],
-                output_type="Ballard score (-10 to 50) with estimated gestational age"
+                output_type="Ballard score (-10 to 50) with estimated gestational age",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -94,22 +102,20 @@ class BallardScoreCalculator(BaseCalculator):
             ),
             references=(
                 Reference(
-                    citation="Ballard JL, et al. New Ballard Score, expanded to include "
-                             "extremely premature infants. J Pediatr. 1991 Sep;119(3):417-23.",
+                    citation="Ballard JL, et al. New Ballard Score, expanded to include extremely premature infants. J Pediatr. 1991 Sep;119(3):417-23.",
                     pmid="1880657",
                     doi="10.1016/s0022-3476(05)82056-6",
                     year=1991,
-                    level_of_evidence="Validation study"
+                    level_of_evidence="Validation study",
                 ),
                 Reference(
-                    citation="Dubowitz LM, Dubowitz V, Goldberg C. Clinical assessment "
-                             "of gestational age in the newborn infant. J Pediatr. 1970;77(1):1-10.",
+                    citation="Dubowitz LM, Dubowitz V, Goldberg C. Clinical assessment of gestational age in the newborn infant. J Pediatr. 1970;77(1):1-10.",
                     pmid="5430794",
                     doi="10.1016/s0022-3476(70)80038-5",
                     year=1970,
-                    level_of_evidence="Original study (Dubowitz Score)"
+                    level_of_evidence="Original study (Dubowitz Score)",
                 ),
-            )
+            ),
         )
 
     def calculate(
@@ -244,36 +250,22 @@ class BallardScoreCalculator(BaseCalculator):
             category = "Extremely Preterm"
             severity = Severity.CRITICAL
             risk_level = RiskLevel.VERY_HIGH
-            clinical_action = (
-                "Extremely preterm infant requiring Level III/IV NICU care. "
-                "High risk of RDS, IVH, NEC, ROP. "
-                "Surfactant likely needed."
-            )
+            clinical_action = "Extremely preterm infant requiring Level III/IV NICU care. High risk of RDS, IVH, NEC, ROP. Surfactant likely needed."
         elif gestational_age_weeks < 32:
             category = "Very Preterm"
             severity = Severity.SEVERE
             risk_level = RiskLevel.HIGH
-            clinical_action = (
-                "Very preterm infant requiring NICU care. "
-                "Monitor for respiratory distress, feeding intolerance, "
-                "and neurological complications."
-            )
+            clinical_action = "Very preterm infant requiring NICU care. Monitor for respiratory distress, feeding intolerance, and neurological complications."
         elif gestational_age_weeks < 34:
             category = "Moderate Preterm"
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE
-            clinical_action = (
-                "Moderate preterm infant. Monitor respiratory status, "
-                "thermoregulation, and feeding."
-            )
+            clinical_action = "Moderate preterm infant. Monitor respiratory status, thermoregulation, and feeding."
         elif gestational_age_weeks < 37:
             category = "Late Preterm"
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
-            clinical_action = (
-                "Late preterm infant. Higher risk of hypoglycemia, "
-                "hypothermia, hyperbilirubinemia, and feeding difficulties."
-            )
+            clinical_action = "Late preterm infant. Higher risk of hypoglycemia, hypothermia, hyperbilirubinemia, and feeding difficulties."
         elif gestational_age_weeks <= 42:
             category = "Term"
             severity = Severity.NORMAL
@@ -283,10 +275,7 @@ class BallardScoreCalculator(BaseCalculator):
             category = "Post-term"
             severity = Severity.MILD
             risk_level = RiskLevel.LOW
-            clinical_action = (
-                "Post-term infant. Monitor for meconium aspiration, "
-                "hypoglycemia, and polycythemia."
-            )
+            clinical_action = "Post-term infant. Monitor for meconium aspiration, hypoglycemia, and polycythemia."
 
         # Build interpretation
         interpretation = Interpretation(
@@ -353,5 +342,5 @@ class BallardScoreCalculator(BaseCalculator):
                 "eye_ear": eye_ear,
                 "genitals": genitals,
             },
-            calculation_details=details
+            calculation_details=details,
         )

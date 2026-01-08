@@ -50,13 +50,8 @@ class ApfelPonvCalculator(BaseCalculator):
                 tool_id="apfel_ponv",
                 name="Apfel Score for PONV",
                 purpose="Predict postoperative nausea and vomiting risk",
-                input_params=[
-                    "female_gender",
-                    "history_motion_sickness_or_ponv",
-                    "non_smoker",
-                    "postoperative_opioids"
-                ],
-                output_type="PONV risk score (0-4) with % probability"
+                input_params=["female_gender", "history_motion_sickness_or_ponv", "non_smoker", "postoperative_opioids"],
+                output_type="PONV risk score (0-4) with % probability",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -85,46 +80,47 @@ class ApfelPonvCalculator(BaseCalculator):
                 ),
                 icd10_codes=(
                     "R11.0",  # Nausea
-                    "R11.10", # Vomiting, unspecified
+                    "R11.10",  # Vomiting, unspecified
                     "R11.2",  # Nausea with vomiting, unspecified
-                    "T88.59", # Other complications of anesthesia
+                    "T88.59",  # Other complications of anesthesia
                 ),
                 keywords=(
-                    "Apfel", "PONV", "postoperative nausea", "vomiting",
-                    "antiemetic", "ondansetron", "dexamethasone",
-                    "prophylaxis", "general anesthesia", "perioperative",
-                )
+                    "Apfel",
+                    "PONV",
+                    "postoperative nausea",
+                    "vomiting",
+                    "antiemetic",
+                    "ondansetron",
+                    "dexamethasone",
+                    "prophylaxis",
+                    "general anesthesia",
+                    "perioperative",
+                ),
             ),
             references=(
                 Reference(
                     citation="Apfel CC, Läärä E, Koivuranta M, Greim CA, Roewer N. "
-                             "A simplified risk score for predicting postoperative nausea and "
-                             "vomiting: conclusions from cross-validations between two centers. "
-                             "Anesthesiology. 1999;91(3):693-700.",
+                    "A simplified risk score for predicting postoperative nausea and "
+                    "vomiting: conclusions from cross-validations between two centers. "
+                    "Anesthesiology. 1999;91(3):693-700.",
                     doi="10.1097/00000542-199909000-00022",
                     pmid="10485781",
-                    year=1999
+                    year=1999,
                 ),
                 Reference(
                     citation="Gan TJ, Belani KG, Bergese S, et al. Fourth Consensus Guidelines "
-                             "for the Management of Postoperative Nausea and Vomiting. "
-                             "Anesth Analg. 2020;131(2):411-448.",
+                    "for the Management of Postoperative Nausea and Vomiting. "
+                    "Anesth Analg. 2020;131(2):411-448.",
                     doi="10.1213/ANE.0000000000004833",
                     pmid="32467512",
-                    year=2020
+                    year=2020,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
-    def calculate(
-        self,
-        female_gender: bool,
-        history_motion_sickness_or_ponv: bool,
-        non_smoker: bool,
-        postoperative_opioids: bool
-    ) -> ScoreResult:
+    def calculate(self, female_gender: bool, history_motion_sickness_or_ponv: bool, non_smoker: bool, postoperative_opioids: bool) -> ScoreResult:
         """
         Calculate Apfel PONV Risk Score.
 
@@ -138,12 +134,7 @@ class ApfelPonvCalculator(BaseCalculator):
             ScoreResult with PONV risk score and prophylaxis recommendations
         """
         # Calculate score
-        score = sum([
-            female_gender,
-            history_motion_sickness_or_ponv,
-            non_smoker,
-            postoperative_opioids
-        ])
+        score = sum([female_gender, history_motion_sickness_or_ponv, non_smoker, postoperative_opioids])
 
         # Get PONV risk percentage
         ponv_risk = self._get_ponv_risk(score)
@@ -173,27 +164,16 @@ class ApfelPonvCalculator(BaseCalculator):
                 "female_gender": female_gender,
                 "history_motion_sickness_or_ponv": history_motion_sickness_or_ponv,
                 "non_smoker": non_smoker,
-                "postoperative_opioids": postoperative_opioids
+                "postoperative_opioids": postoperative_opioids,
             },
-            calculation_details={
-                "score": score,
-                "ponv_risk_percent": ponv_risk,
-                "risk_factors_present": present_factors,
-                "total_possible": 4
-            },
-            notes=self._get_notes(score)
+            calculation_details={"score": score, "ponv_risk_percent": ponv_risk, "risk_factors_present": present_factors, "total_possible": 4},
+            notes=self._get_notes(score),
         )
 
     def _get_ponv_risk(self, score: int) -> float:
         """Get PONV risk percentage based on score"""
         # From Apfel 1999: validated incidences
-        risk_map = {
-            0: 10.0,
-            1: 21.0,
-            2: 39.0,
-            3: 61.0,
-            4: 79.0
-        }
+        risk_map = {0: 10.0, 1: 21.0, 2: 39.0, 3: 61.0, 4: 79.0}
         return risk_map.get(score, 0.0)
 
     def _get_interpretation(self, score: int, ponv_risk: float) -> Interpretation:
@@ -214,7 +194,7 @@ class ApfelPonvCalculator(BaseCalculator):
                 next_steps=(
                     "No routine prophylaxis needed",
                     "Standard anesthetic technique acceptable",
-                )
+                ),
             )
         elif score == 1:
             return Interpretation(
@@ -231,13 +211,12 @@ class ApfelPonvCalculator(BaseCalculator):
                 next_steps=(
                     "Single antiemetic prophylaxis optional",
                     "Consider TIVA if other factors favor it",
-                )
+                ),
             )
         elif score == 2:
             return Interpretation(
                 summary=f"Moderate PONV Risk ({ponv_risk}%)",
-                detail="Two risk factors present. PONV risk approximately 39%. "
-                       "Prophylaxis recommended.",
+                detail="Two risk factors present. PONV risk approximately 39%. Prophylaxis recommended.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Moderate Risk",
@@ -248,19 +227,16 @@ class ApfelPonvCalculator(BaseCalculator):
                     "Consider TIVA (propofol) over inhalational agents",
                     "Minimize opioid use if possible",
                 ),
-                warnings=(
-                    "Without prophylaxis, ~40% will experience PONV",
-                ),
+                warnings=("Without prophylaxis, ~40% will experience PONV",),
                 next_steps=(
                     "Administer prophylactic antiemetics",
                     "Consider opioid-sparing multimodal analgesia",
-                )
+                ),
             )
         elif score == 3:
             return Interpretation(
                 summary=f"High PONV Risk ({ponv_risk}%)",
-                detail="Three risk factors present. PONV risk approximately 61%. "
-                       "Multi-modal prophylaxis strongly recommended.",
+                detail="Three risk factors present. PONV risk approximately 61%. Multi-modal prophylaxis strongly recommended.",
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.HIGH,
                 stage="High Risk",
@@ -281,13 +257,12 @@ class ApfelPonvCalculator(BaseCalculator):
                     "Implement multi-modal antiemetic strategy",
                     "Consider regional/local anesthesia",
                     "Plan opioid-free anesthesia if feasible",
-                )
+                ),
             )
         else:  # score == 4
             return Interpretation(
                 summary=f"Very High PONV Risk ({ponv_risk}%)",
-                detail="All four risk factors present. PONV risk approximately 79%. "
-                       "Aggressive multi-modal prophylaxis essential.",
+                detail="All four risk factors present. PONV risk approximately 79%. Aggressive multi-modal prophylaxis essential.",
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.VERY_HIGH,
                 stage="Very High Risk",
@@ -311,7 +286,7 @@ class ApfelPonvCalculator(BaseCalculator):
                     "Opioid-free anesthetic technique",
                     "Plan for prolonged PACU monitoring",
                     "Consider overnight observation",
-                )
+                ),
             )
 
     def _get_notes(self, score: int) -> list[str]:
@@ -322,16 +297,16 @@ class ApfelPonvCalculator(BaseCalculator):
         ]
 
         if score >= 2:
-            notes.extend([
-                "Multi-modal prophylaxis reduces PONV by ~30-50%",
-                "TIVA with propofol reduces PONV vs inhalational agents",
-                "5-HT3 antagonists are most effective as end-of-surgery prophylaxis",
-                "Dexamethasone should be given at induction for best effect",
-            ])
+            notes.extend(
+                [
+                    "Multi-modal prophylaxis reduces PONV by ~30-50%",
+                    "TIVA with propofol reduces PONV vs inhalational agents",
+                    "5-HT3 antagonists are most effective as end-of-surgery prophylaxis",
+                    "Dexamethasone should be given at induction for best effect",
+                ]
+            )
 
         if score >= 3:
-            notes.append(
-                "Consider adding NK-1 receptor antagonist (aprepitant) for highest-risk patients"
-            )
+            notes.append("Consider adding NK-1 receptor antagonist (aprepitant) for highest-risk patients")
 
         return notes

@@ -85,7 +85,7 @@ class OsmolarGapCalculator(BaseCalculator):
                 name="Osmolar Gap (Osmolal Gap)",
                 purpose="Calculate difference between measured and calculated osmolality",
                 input_params=["measured_osm", "sodium", "glucose", "bun", "ethanol"],
-                output_type="Osmolar gap (mOsm/kg) with interpretation"
+                output_type="Osmolar gap (mOsm/kg) with interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -118,9 +118,17 @@ class OsmolarGapCalculator(BaseCalculator):
                 ),
                 icd10_codes=("T51.1", "T51.8", "T52.3", "E87.0"),
                 keywords=(
-                    "osmolar gap", "osmolal gap", "osmolality", "toxic alcohol",
-                    "methanol", "ethylene glycol", "isopropanol", "poisoning",
-                    "HAGMA", "fomepizole", "antidote",
+                    "osmolar gap",
+                    "osmolal gap",
+                    "osmolality",
+                    "toxic alcohol",
+                    "methanol",
+                    "ethylene glycol",
+                    "isopropanol",
+                    "poisoning",
+                    "HAGMA",
+                    "fomepizole",
+                    "antidote",
                 ),
             ),
             references=self._get_references(),
@@ -292,9 +300,7 @@ class OsmolarGapCalculator(BaseCalculator):
                 "Check anion gap for concomitant HAGMA",
                 "Consider toxic alcohol levels if clinical suspicion",
             )
-            warnings = (
-                "Borderline elevated - may indicate early toxic ingestion",
-            )
+            warnings = ("Borderline elevated - may indicate early toxic ingestion",)
         elif osmolar_gap <= 50:
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE

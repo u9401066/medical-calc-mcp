@@ -79,7 +79,7 @@ class KdigoAkiCalculator(BaseCalculator):
                     "urine_output_duration_hours",
                     "on_rrt",
                 ],
-                output_type="AKI Stage 1-3 with management recommendations"
+                output_type="AKI Stage 1-3 with management recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -130,28 +130,27 @@ class KdigoAkiCalculator(BaseCalculator):
                     "RIFLE",
                     "AKIN",
                     "kidney injury criteria",
-                )
+                ),
             ),
             references=(
                 Reference(
                     citation="Kidney Disease: Improving Global Outcomes (KDIGO) "
-                             "Acute Kidney Injury Work Group. KDIGO Clinical Practice "
-                             "Guideline for Acute Kidney Injury. "
-                             "Kidney Int Suppl. 2012;2(1):1-138.",
+                    "Acute Kidney Injury Work Group. KDIGO Clinical Practice "
+                    "Guideline for Acute Kidney Injury. "
+                    "Kidney Int Suppl. 2012;2(1):1-138.",
                     doi="10.1038/kisup.2012.1",
                     year=2012,
                 ),
                 Reference(
                     citation="Kellum JA, Lameire N; KDIGO AKI Guideline Work Group. "
-                             "Diagnosis, evaluation, and management of acute kidney injury: "
-                             "a KDIGO summary (Part 1). Crit Care. 2013;17(1):204.",
+                    "Diagnosis, evaluation, and management of acute kidney injury: "
+                    "a KDIGO summary (Part 1). Crit Care. 2013;17(1):204.",
                     doi="10.1186/cc11454",
                     pmid="23394211",
                     year=2013,
                 ),
                 Reference(
-                    citation="Khwaja A. KDIGO Clinical Practice Guidelines for Acute "
-                             "Kidney Injury. Nephron Clin Pract. 2012;120(4):c179-c184.",
+                    citation="Khwaja A. KDIGO Clinical Practice Guidelines for Acute Kidney Injury. Nephron Clin Pract. 2012;120(4):c179-c184.",
                     doi="10.1159/000339789",
                     pmid="22890468",
                     year=2012,
@@ -189,14 +188,10 @@ class KdigoAkiCalculator(BaseCalculator):
             ScoreResult with AKI stage and management recommendations
         """
         # Determine AKI stage based on creatinine criteria
-        cr_stage = self._stage_by_creatinine(
-            current_creatinine, baseline_creatinine, creatinine_increase_48h
-        )
+        cr_stage = self._stage_by_creatinine(current_creatinine, baseline_creatinine, creatinine_increase_48h)
 
         # Determine AKI stage based on urine output criteria
-        uo_stage = self._stage_by_urine_output(
-            urine_output_ml_kg_h, urine_output_duration_hours
-        )
+        uo_stage = self._stage_by_urine_output(urine_output_ml_kg_h, urine_output_duration_hours)
 
         # RRT automatically means Stage 3
         if on_rrt:
@@ -209,16 +204,13 @@ class KdigoAkiCalculator(BaseCalculator):
         has_aki = final_stage > 0
 
         # Generate interpretation
-        interpretation = self._interpret_stage(
-            final_stage, cr_stage, uo_stage,
-            current_creatinine, baseline_creatinine, on_rrt
-        )
+        interpretation = self._interpret_stage(final_stage, cr_stage, uo_stage, current_creatinine, baseline_creatinine, on_rrt)
 
         # Calculation details
         components = {
             "Current Creatinine": f"{current_creatinine} mg/dL",
             "Baseline Creatinine": f"{baseline_creatinine} mg/dL" if baseline_creatinine else "Unknown",
-            "Creatinine Ratio": f"{current_creatinine/baseline_creatinine:.2f}x" if baseline_creatinine else "N/A",
+            "Creatinine Ratio": f"{current_creatinine / baseline_creatinine:.2f}x" if baseline_creatinine else "N/A",
             "48h Creatinine Increase": f"+{creatinine_increase_48h} mg/dL" if creatinine_increase_48h else "N/A",
             "Creatinine-based Stage": cr_stage if cr_stage > 0 else "No AKI by Cr",
             "Urine Output": f"{urine_output_ml_kg_h} mL/kg/h × {urine_output_duration_hours}h" if urine_output_ml_kg_h else "N/A",
@@ -311,10 +303,7 @@ class KdigoAkiCalculator(BaseCalculator):
             severity = Severity.NORMAL
             risk_level = RiskLevel.LOW
             summary = "No AKI: Does not meet KDIGO AKI criteria"
-            detail = (
-                "Current creatinine and urine output do not meet KDIGO criteria "
-                "for acute kidney injury. Continue monitoring if risk factors present."
-            )
+            detail = "Current creatinine and urine output do not meet KDIGO criteria for acute kidney injury. Continue monitoring if risk factors present."
             recommendations = [
                 "No AKI by current criteria",
                 "Continue monitoring creatinine if at risk",
@@ -351,9 +340,7 @@ class KdigoAkiCalculator(BaseCalculator):
                 "Renal ultrasound if obstruction suspected",
                 "Nephrology consult if no clear cause or not improving",
             ]
-            warnings = [
-                "Stage 1 AKI can progress to higher stages if cause not addressed."
-            ]
+            warnings = ["Stage 1 AKI can progress to higher stages if cause not addressed."]
 
         elif stage == 2:
             severity = Severity.MODERATE

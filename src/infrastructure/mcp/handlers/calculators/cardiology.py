@@ -18,30 +18,14 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
 
     @mcp.tool()
     def calculate_chads2_vasc(
-        chf_or_lvef_lte_40: Annotated[bool, Field(
-            description="心衰竭或 LVEF ≤40% CHF or LVEF ≤40%"
-        )],
-        hypertension: Annotated[bool, Field(
-            description="高血壓病史 History of hypertension"
-        )],
-        age_gte_75: Annotated[bool, Field(
-            description="年齡 ≥75 歲 Age ≥75 years (+2 points)"
-        )],
-        diabetes: Annotated[bool, Field(
-            description="糖尿病 Diabetes mellitus"
-        )],
-        stroke_tia_or_te_history: Annotated[bool, Field(
-            description="中風/TIA/血栓栓塞病史 Prior stroke, TIA, or thromboembolism (+2 points)"
-        )],
-        vascular_disease: Annotated[bool, Field(
-            description="血管疾病 Prior MI, PAD, or aortic plaque"
-        )],
-        age_65_to_74: Annotated[bool, Field(
-            description="年齡 65-74 歲 Age 65-74 years (if not ≥75)"
-        )],
-        female_sex: Annotated[bool, Field(
-            description="女性 Female sex"
-        )],
+        chf_or_lvef_lte_40: Annotated[bool, Field(description="心衰竭或 LVEF ≤40% CHF or LVEF ≤40%")],
+        hypertension: Annotated[bool, Field(description="高血壓病史 History of hypertension")],
+        age_gte_75: Annotated[bool, Field(description="年齡 ≥75 歲 Age ≥75 years (+2 points)")],
+        diabetes: Annotated[bool, Field(description="糖尿病 Diabetes mellitus")],
+        stroke_tia_or_te_history: Annotated[bool, Field(description="中風/TIA/血栓栓塞病史 Prior stroke, TIA, or thromboembolism (+2 points)")],
+        vascular_disease: Annotated[bool, Field(description="血管疾病 Prior MI, PAD, or aortic plaque")],
+        age_65_to_74: Annotated[bool, Field(description="年齡 65-74 歲 Age 65-74 years (if not ≥75)")],
+        female_sex: Annotated[bool, Field(description="女性 Female sex")],
     ) -> dict[str, Any]:
         """
         🫀 CHA₂DS₂-VASc: 心房顫動中風風險評估
@@ -80,34 +64,20 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "vascular_disease": vascular_disease,
                 "age_65_to_74": age_65_to_74,
                 "female_sex": female_sex,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_chads2_va(
-        chf_or_lvef_lte_40: Annotated[bool, Field(
-            description="心衰竭或 LVEF ≤40% CHF or LVEF ≤40%"
-        )],
-        hypertension: Annotated[bool, Field(
-            description="高血壓病史 History of hypertension"
-        )],
-        age_gte_75: Annotated[bool, Field(
-            description="年齡 ≥75 歲 Age ≥75 years (+2 points)"
-        )],
-        diabetes: Annotated[bool, Field(
-            description="糖尿病 Diabetes mellitus"
-        )],
-        stroke_tia_or_te_history: Annotated[bool, Field(
-            description="中風/TIA/血栓栓塞病史 Prior stroke, TIA, or thromboembolism (+2 points)"
-        )],
-        vascular_disease: Annotated[bool, Field(
-            description="血管疾病 Prior MI, PAD, or aortic plaque"
-        )],
-        age_65_to_74: Annotated[bool, Field(
-            description="年齡 65-74 歲 Age 65-74 years (if not ≥75)"
-        )],
+        chf_or_lvef_lte_40: Annotated[bool, Field(description="心衰竭或 LVEF ≤40% CHF or LVEF ≤40%")],
+        hypertension: Annotated[bool, Field(description="高血壓病史 History of hypertension")],
+        age_gte_75: Annotated[bool, Field(description="年齡 ≥75 歲 Age ≥75 years (+2 points)")],
+        diabetes: Annotated[bool, Field(description="糖尿病 Diabetes mellitus")],
+        stroke_tia_or_te_history: Annotated[bool, Field(description="中風/TIA/血栓栓塞病史 Prior stroke, TIA, or thromboembolism (+2 points)")],
+        vascular_disease: Annotated[bool, Field(description="血管疾病 Prior MI, PAD, or aortic plaque")],
+        age_65_to_74: Annotated[bool, Field(description="年齡 65-74 歲 Age 65-74 years (if not ≥75)")],
     ) -> dict[str, Any]:
         """
         🫀 CHA₂DS₂-VA: 心房顫動中風風險評估 (2024 ESC 新版)
@@ -151,7 +121,7 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "stroke_tia_or_te_history": stroke_tia_or_te_history,
                 "vascular_disease": vascular_disease,
                 "age_65_to_74": age_65_to_74,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -159,25 +129,16 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
     @mcp.tool()
     def calculate_heart_score(
         history_score: Annotated[
-            Literal[0, 1, 2],
-            Field(description="病史可疑程度 History | Options: 0=Slightly suspicious, 1=Moderately suspicious, 2=Highly suspicious")
+            Literal[0, 1, 2], Field(description="病史可疑程度 History | Options: 0=Slightly suspicious, 1=Moderately suspicious, 2=Highly suspicious")
         ],
         ecg_score: Annotated[
-            Literal[0, 1, 2],
-            Field(description="心電圖 ECG | Options: 0=Normal, 1=Non-specific repolarization changes, 2=Significant ST deviation")
+            Literal[0, 1, 2], Field(description="心電圖 ECG | Options: 0=Normal, 1=Non-specific repolarization changes, 2=Significant ST deviation")
         ],
-        age_score: Annotated[
-            Literal[0, 1, 2],
-            Field(description="年齡 Age | Options: 0=<45 years, 1=45-64 years, 2=≥65 years")
-        ],
+        age_score: Annotated[Literal[0, 1, 2], Field(description="年齡 Age | Options: 0=<45 years, 1=45-64 years, 2=≥65 years")],
         risk_factors_score: Annotated[
-            Literal[0, 1, 2],
-            Field(description="危險因子 Risk factors | Options: 0=None known, 1=1-2 factors, 2=≥3 factors or known atherosclerosis")
+            Literal[0, 1, 2], Field(description="危險因子 Risk factors | Options: 0=None known, 1=1-2 factors, 2=≥3 factors or known atherosclerosis")
         ],
-        troponin_score: Annotated[
-            Literal[0, 1, 2],
-            Field(description="肌鈣蛋白 Troponin | Options: 0=≤Normal limit, 1=1-3× ULN, 2=>3× ULN")
-        ],
+        troponin_score: Annotated[Literal[0, 1, 2], Field(description="肌鈣蛋白 Troponin | Options: 0=≤Normal limit, 1=1-3× ULN, 2=>3× ULN")],
     ) -> dict[str, Any]:
         """
         🫀 HEART Score: 急診胸痛 MACE 風險分層
@@ -214,40 +175,22 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "age_score": age_score,
                 "risk_factors_score": risk_factors_score,
                 "troponin_score": troponin_score,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_has_bled(
-        hypertension_uncontrolled: Annotated[bool, Field(
-            description="未控制高血壓 Uncontrolled hypertension (SBP >160 mmHg)"
-        )],
-        renal_disease: Annotated[bool, Field(
-            description="腎功能異常 Chronic dialysis, transplant, or Cr >2.26 mg/dL"
-        )],
-        liver_disease: Annotated[bool, Field(
-            description="肝功能異常 Chronic hepatic disease (cirrhosis) or biochemical evidence"
-        )],
-        stroke_history: Annotated[bool, Field(
-            description="中風病史 Previous stroke (ischemic or hemorrhagic)"
-        )],
-        bleeding_history: Annotated[bool, Field(
-            description="出血病史 Previous major bleeding or predisposition"
-        )],
-        labile_inr: Annotated[bool, Field(
-            description="不穩定INR Unstable/high INRs, TTR <60% (only if on warfarin)"
-        )] = False,
-        elderly_gt_65: Annotated[bool, Field(
-            description="年齡>65歲 Age >65 years"
-        )] = False,
-        drugs_antiplatelet_nsaid: Annotated[bool, Field(
-            description="併用藥物 Concomitant antiplatelet agents or NSAIDs"
-        )] = False,
-        alcohol_excess: Annotated[bool, Field(
-            description="過量飲酒 Alcohol excess (≥8 drinks/week)"
-        )] = False,
+        hypertension_uncontrolled: Annotated[bool, Field(description="未控制高血壓 Uncontrolled hypertension (SBP >160 mmHg)")],
+        renal_disease: Annotated[bool, Field(description="腎功能異常 Chronic dialysis, transplant, or Cr >2.26 mg/dL")],
+        liver_disease: Annotated[bool, Field(description="肝功能異常 Chronic hepatic disease (cirrhosis) or biochemical evidence")],
+        stroke_history: Annotated[bool, Field(description="中風病史 Previous stroke (ischemic or hemorrhagic)")],
+        bleeding_history: Annotated[bool, Field(description="出血病史 Previous major bleeding or predisposition")],
+        labile_inr: Annotated[bool, Field(description="不穩定INR Unstable/high INRs, TTR <60% (only if on warfarin)")] = False,
+        elderly_gt_65: Annotated[bool, Field(description="年齡>65歲 Age >65 years")] = False,
+        drugs_antiplatelet_nsaid: Annotated[bool, Field(description="併用藥物 Concomitant antiplatelet agents or NSAIDs")] = False,
+        alcohol_excess: Annotated[bool, Field(description="過量飲酒 Alcohol excess (≥8 drinks/week)")] = False,
     ) -> dict[str, Any]:
         """
         🩸 HAS-BLED: 心房顫動出血風險評估 (2024 ESC 推薦)
@@ -289,28 +232,19 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "elderly_gt_65": elderly_gt_65,
                 "drugs_antiplatelet_nsaid": drugs_antiplatelet_nsaid,
                 "alcohol_excess": alcohol_excess,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_corrected_qt(
-        qt_interval: Annotated[float, Field(
-            ge=200, le=800,
-            description="測量 QT 間期 Measured QT interval | Unit: ms | Range: 200-800"
-        )],
-        heart_rate: Annotated[float, Field(
-            ge=30, le=250,
-            description="心率 Heart rate | Unit: bpm | Range: 30-250"
-        )],
-        sex: Annotated[
-            Literal["male", "female"],
-            Field(description="性別 Sex | Options: male, female")
-        ] = "male",
+        qt_interval: Annotated[float, Field(ge=200, le=800, description="測量 QT 間期 Measured QT interval | Unit: ms | Range: 200-800")],
+        heart_rate: Annotated[float, Field(ge=30, le=250, description="心率 Heart rate | Unit: bpm | Range: 30-250")],
+        sex: Annotated[Literal["male", "female"], Field(description="性別 Sex | Options: male, female")] = "male",
         formula: Annotated[
             Literal["bazett", "fridericia", "framingham"],
-            Field(description="校正公式 Formula | Options: bazett (most common), fridericia (better for tachycardia), framingham")
+            Field(description="校正公式 Formula | Options: bazett (most common), fridericia (better for tachycardia), framingham"),
         ] = "bazett",
     ) -> dict[str, Any]:
         """
@@ -351,42 +285,21 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "heart_rate": heart_rate,
                 "sex": sex,
                 "formula": formula,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_grace_score(
-        age: Annotated[int, Field(
-            ge=18, le=120,
-            description="年齡 Age | Unit: years | Range: 18-120"
-        )],
-        heart_rate: Annotated[int, Field(
-            ge=30, le=250,
-            description="心率 Heart rate | Unit: bpm | Range: 30-250"
-        )],
-        systolic_bp: Annotated[int, Field(
-            ge=50, le=250,
-            description="收縮壓 Systolic BP | Unit: mmHg | Range: 50-250"
-        )],
-        creatinine: Annotated[float, Field(
-            ge=0.3, le=20.0,
-            description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.3-20.0"
-        )],
-        killip_class: Annotated[
-            Literal[1, 2, 3, 4],
-            Field(description="Killip 分級 | Options: 1=No CHF, 2=Rales/JVD, 3=Pulmonary edema, 4=Cardiogenic shock")
-        ],
-        cardiac_arrest: Annotated[bool, Field(
-            description="到院前心跳停止 Cardiac arrest at admission"
-        )],
-        st_deviation: Annotated[bool, Field(
-            description="ST 段偏移 ST-segment deviation (depression or elevation)"
-        )],
-        elevated_troponin: Annotated[bool, Field(
-            description="肌鈣蛋白升高 Elevated cardiac troponin/enzymes"
-        )],
+        age: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
+        heart_rate: Annotated[int, Field(ge=30, le=250, description="心率 Heart rate | Unit: bpm | Range: 30-250")],
+        systolic_bp: Annotated[int, Field(ge=50, le=250, description="收縮壓 Systolic BP | Unit: mmHg | Range: 50-250")],
+        creatinine: Annotated[float, Field(ge=0.3, le=20.0, description="血清肌酸酐 Serum creatinine | Unit: mg/dL | Range: 0.3-20.0")],
+        killip_class: Annotated[Literal[1, 2, 3, 4], Field(description="Killip 分級 | Options: 1=No CHF, 2=Rales/JVD, 3=Pulmonary edema, 4=Cardiogenic shock")],
+        cardiac_arrest: Annotated[bool, Field(description="到院前心跳停止 Cardiac arrest at admission")],
+        st_deviation: Annotated[bool, Field(description="ST 段偏移 ST-segment deviation (depression or elevation)")],
+        elevated_troponin: Annotated[bool, Field(description="肌鈣蛋白升高 Elevated cardiac troponin/enzymes")],
     ) -> dict[str, Any]:
         """
         🫀 GRACE Score: 急性冠心症風險分層
@@ -436,28 +349,17 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "cardiac_arrest": cardiac_arrest,
                 "st_deviation": st_deviation,
                 "elevated_troponin": elevated_troponin,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_acef_ii(
-        age: Annotated[int, Field(
-            ge=18, le=100,
-            description="年齡 Age | Unit: years | Range: 18-100"
-        )],
-        lvef: Annotated[float, Field(
-            ge=5, le=80,
-            description="左心室射出分率 LVEF | Unit: % | Range: 5-80"
-        )],
-        creatinine: Annotated[float, Field(
-            ge=0.3, le=15,
-            description="血清肌酸酐 Creatinine | Unit: mg/dL | Range: 0.3-15"
-        )],
-        emergency: Annotated[bool, Field(
-            description="緊急手術 Emergency surgery (doubles the score)"
-        )] = False,
+        age: Annotated[int, Field(ge=18, le=100, description="年齡 Age | Unit: years | Range: 18-100")],
+        lvef: Annotated[float, Field(ge=5, le=80, description="左心室射出分率 LVEF | Unit: % | Range: 5-80")],
+        creatinine: Annotated[float, Field(ge=0.3, le=15, description="血清肌酸酐 Creatinine | Unit: mg/dL | Range: 0.3-15")],
+        emergency: Annotated[bool, Field(description="緊急手術 Emergency surgery (doubles the score)")] = False,
     ) -> dict[str, Any]:
         """
         🫀 ACEF II Score: 心臟手術死亡風險預測
@@ -496,39 +398,21 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "lvef": lvef,
                 "creatinine": creatinine,
                 "emergency": emergency,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_timi_stemi(
-        age_years: Annotated[int, Field(
-            description="年齡 Age in years",
-            ge=18, le=120
-        )],
-        has_dm_htn_or_angina: Annotated[bool, Field(
-            description="糖尿病、高血壓或心絞痛史 History of diabetes, hypertension, or angina"
-        )],
-        systolic_bp_lt_100: Annotated[bool, Field(
-            description="收縮壓 <100 mmHg Systolic BP <100 mmHg"
-        )],
-        heart_rate_gt_100: Annotated[bool, Field(
-            description="心率 >100 bpm Heart rate >100 bpm"
-        )],
-        killip_class: Annotated[int, Field(
-            description="Killip 分級 (1-4) | 1=無心衰, 2=肺囉音/S3, 3=肺水腫, 4=心因性休克",
-            ge=1, le=4
-        )],
-        weight_lt_67kg: Annotated[bool, Field(
-            description="體重 <67 kg Body weight <67 kg"
-        )],
-        anterior_ste_or_lbbb: Annotated[bool, Field(
-            description="前壁ST上升或左束支傳導阻滯 Anterior ST elevation or LBBB"
-        )],
-        time_to_treatment_gt_4h: Annotated[bool, Field(
-            description="症狀發作至治療 >4 小時 Time from symptom onset to treatment >4 hours"
-        )]
+        age_years: Annotated[int, Field(description="年齡 Age in years", ge=18, le=120)],
+        has_dm_htn_or_angina: Annotated[bool, Field(description="糖尿病、高血壓或心絞痛史 History of diabetes, hypertension, or angina")],
+        systolic_bp_lt_100: Annotated[bool, Field(description="收縮壓 <100 mmHg Systolic BP <100 mmHg")],
+        heart_rate_gt_100: Annotated[bool, Field(description="心率 >100 bpm Heart rate >100 bpm")],
+        killip_class: Annotated[int, Field(description="Killip 分級 (1-4) | 1=無心衰, 2=肺囉音/S3, 3=肺水腫, 4=心因性休克", ge=1, le=4)],
+        weight_lt_67kg: Annotated[bool, Field(description="體重 <67 kg Body weight <67 kg")],
+        anterior_ste_or_lbbb: Annotated[bool, Field(description="前壁ST上升或左束支傳導阻滯 Anterior ST elevation or LBBB")],
+        time_to_treatment_gt_4h: Annotated[bool, Field(description="症狀發作至治療 >4 小時 Time from symptom onset to treatment >4 hours")],
     ) -> dict[str, Any]:
         """
         ❤️ TIMI Risk Score for STEMI: ST 上升心肌梗塞死亡風險
@@ -586,8 +470,8 @@ def register_cardiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "killip_class": killip_class,
                 "weight_lt_67kg": weight_lt_67kg,
                 "anterior_ste_or_lbbb": anterior_ste_or_lbbb,
-                "time_to_treatment_gt_4h": time_to_treatment_gt_4h
-            }
+                "time_to_treatment_gt_4h": time_to_treatment_gt_4h,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

@@ -56,14 +56,8 @@ class RockallScoreCalculator(BaseCalculator):
                 tool_id="rockall_score",
                 name="Rockall Score",
                 purpose="Predict mortality and rebleeding in upper GI bleeding",
-                input_params=[
-                    "age_years",
-                    "shock_status",
-                    "comorbidity",
-                    "diagnosis",
-                    "stigmata_of_recent_hemorrhage"
-                ],
-                output_type="Rockall score (0-11) with mortality risk"
+                input_params=["age_years", "shock_status", "comorbidity", "diagnosis", "stigmata_of_recent_hemorrhage"],
+                output_type="Rockall score (0-11) with mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -94,31 +88,38 @@ class RockallScoreCalculator(BaseCalculator):
                     "Is this a high-risk upper GI bleed?",
                 ),
                 icd10_codes=(
-                    "K92.0",   # Hematemesis
-                    "K92.1",   # Melena
-                    "K92.2",   # GI hemorrhage, unspecified
-                    "K25.0",   # Gastric ulcer with hemorrhage
-                    "K26.0",   # Duodenal ulcer with hemorrhage
+                    "K92.0",  # Hematemesis
+                    "K92.1",  # Melena
+                    "K92.2",  # GI hemorrhage, unspecified
+                    "K25.0",  # Gastric ulcer with hemorrhage
+                    "K26.0",  # Duodenal ulcer with hemorrhage
                     "I85.01",  # Esophageal varices with bleeding
                 ),
                 keywords=(
-                    "Rockall", "GI bleed", "upper GI bleeding", "UGIB",
-                    "hematemesis", "melena", "mortality", "rebleeding",
-                    "peptic ulcer", "endoscopy",
-                )
+                    "Rockall",
+                    "GI bleed",
+                    "upper GI bleeding",
+                    "UGIB",
+                    "hematemesis",
+                    "melena",
+                    "mortality",
+                    "rebleeding",
+                    "peptic ulcer",
+                    "endoscopy",
+                ),
             ),
             references=(
                 Reference(
                     citation="Rockall TA, Logan RF, Devlin HB, Northfield TC. "
-                             "Risk assessment after acute upper gastrointestinal haemorrhage. "
-                             "Gut. 1996;38(3):316-321.",
+                    "Risk assessment after acute upper gastrointestinal haemorrhage. "
+                    "Gut. 1996;38(3):316-321.",
                     doi="10.1136/gut.38.3.316",
                     pmid="8675081",
-                    year=1996
+                    year=1996,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -127,7 +128,7 @@ class RockallScoreCalculator(BaseCalculator):
         shock_status: Literal["none", "tachycardia", "hypotension"],
         comorbidity: Literal["none", "cardiac_major", "renal_liver_malignancy"],
         diagnosis: Literal["mallory_weiss_no_lesion", "other_diagnosis", "gi_malignancy"],
-        stigmata_of_recent_hemorrhage: Literal["none_or_dark_spot", "blood_clot_visible_vessel"]
+        stigmata_of_recent_hemorrhage: Literal["none_or_dark_spot", "blood_clot_visible_vessel"],
     ) -> ScoreResult:
         """
         Calculate Full Rockall Score.
@@ -162,34 +163,19 @@ class RockallScoreCalculator(BaseCalculator):
             age_points = 0
 
         # Shock points
-        shock_points_map = {
-            "none": 0,
-            "tachycardia": 1,
-            "hypotension": 2
-        }
+        shock_points_map = {"none": 0, "tachycardia": 1, "hypotension": 2}
         shock_points = shock_points_map[shock_status]
 
         # Comorbidity points
-        comorbidity_points_map = {
-            "none": 0,
-            "cardiac_major": 2,
-            "renal_liver_malignancy": 3
-        }
+        comorbidity_points_map = {"none": 0, "cardiac_major": 2, "renal_liver_malignancy": 3}
         comorbidity_points = comorbidity_points_map[comorbidity]
 
         # Diagnosis points
-        diagnosis_points_map = {
-            "mallory_weiss_no_lesion": 0,
-            "other_diagnosis": 1,
-            "gi_malignancy": 2
-        }
+        diagnosis_points_map = {"mallory_weiss_no_lesion": 0, "other_diagnosis": 1, "gi_malignancy": 2}
         diagnosis_points = diagnosis_points_map[diagnosis]
 
         # Stigmata points
-        stigmata_points_map = {
-            "none_or_dark_spot": 0,
-            "blood_clot_visible_vessel": 2
-        }
+        stigmata_points_map = {"none_or_dark_spot": 0, "blood_clot_visible_vessel": 2}
         stigmata_points = stigmata_points_map[stigmata_of_recent_hemorrhage]
 
         # Total score (Full Rockall)
@@ -216,7 +202,7 @@ class RockallScoreCalculator(BaseCalculator):
                 "shock_status": shock_status,
                 "comorbidity": comorbidity,
                 "diagnosis": diagnosis,
-                "stigmata_of_recent_hemorrhage": stigmata_of_recent_hemorrhage
+                "stigmata_of_recent_hemorrhage": stigmata_of_recent_hemorrhage,
             },
             calculation_details={
                 "total_score": score,
@@ -227,12 +213,12 @@ class RockallScoreCalculator(BaseCalculator):
                     "shock": shock_points,
                     "comorbidity": comorbidity_points,
                     "diagnosis": diagnosis_points,
-                    "stigmata": stigmata_points
+                    "stigmata": stigmata_points,
                 },
                 "mortality_risk": f"{mortality_risk}%",
-                "rebleed_risk": f"{rebleed_risk}%"
+                "rebleed_risk": f"{rebleed_risk}%",
             },
-            notes=self._get_notes(score, clinical_score)
+            notes=self._get_notes(score, clinical_score),
         )
 
     def _get_risks(self, score: int) -> tuple[float, float]:
@@ -243,43 +229,17 @@ class RockallScoreCalculator(BaseCalculator):
             Tuple of (mortality %, rebleed %)
         """
         # Mortality data from Rockall 1996
-        mortality_table = {
-            0: 0.0,
-            1: 0.0,
-            2: 0.2,
-            3: 2.9,
-            4: 5.3,
-            5: 10.8,
-            6: 17.3,
-            7: 27.0
-        }
+        mortality_table = {0: 0.0, 1: 0.0, 2: 0.2, 3: 2.9, 4: 5.3, 5: 10.8, 6: 17.3, 7: 27.0}
 
         # Rebleeding data
-        rebleed_table = {
-            0: 4.9,
-            1: 3.4,
-            2: 5.3,
-            3: 11.2,
-            4: 14.1,
-            5: 24.1,
-            6: 32.9,
-            7: 43.8
-        }
+        rebleed_table = {0: 4.9, 1: 3.4, 2: 5.3, 3: 11.2, 4: 14.1, 5: 24.1, 6: 32.9, 7: 43.8}
 
         if score >= 8:
             return (41.1, 41.8)
 
-        return (
-            mortality_table.get(score, 41.1),
-            rebleed_table.get(score, 41.8)
-        )
+        return (mortality_table.get(score, 41.1), rebleed_table.get(score, 41.8))
 
-    def _get_interpretation(
-        self,
-        score: int,
-        mortality: float,
-        rebleed: float
-    ) -> Interpretation:
+    def _get_interpretation(self, score: int, mortality: float, rebleed: float) -> Interpretation:
         """Get clinical interpretation based on score"""
 
         if score <= 2:
@@ -300,7 +260,7 @@ class RockallScoreCalculator(BaseCalculator):
                     "Complete endoscopy if not done",
                     "Outpatient follow-up in 2-4 weeks",
                     "Dietary counseling",
-                )
+                ),
             )
         elif score <= 4:
             return Interpretation(
@@ -325,7 +285,7 @@ class RockallScoreCalculator(BaseCalculator):
                     "Admission to monitored bed",
                     "GI consultation",
                     "Repeat labs in 6-12 hours",
-                )
+                ),
             )
         elif score <= 6:
             return Interpretation(
@@ -352,7 +312,7 @@ class RockallScoreCalculator(BaseCalculator):
                     "ICU admission",
                     "Urgent GI consult for repeat endoscopy",
                     "Multidisciplinary approach",
-                )
+                ),
             )
         else:  # score > 6
             return Interpretation(
@@ -379,7 +339,7 @@ class RockallScoreCalculator(BaseCalculator):
                     "Emergent intervention",
                     "Family meeting for prognosis discussion",
                     "Consider palliative care if futile",
-                )
+                ),
             )
 
     def _get_notes(self, score: int, clinical_score: int) -> list[str]:
@@ -390,18 +350,11 @@ class RockallScoreCalculator(BaseCalculator):
         ]
 
         if score <= 2:
-            notes.append(
-                "Rockall ≤2: May be suitable for early discharge (within 24h)"
-            )
+            notes.append("Rockall ≤2: May be suitable for early discharge (within 24h)")
 
         if clinical_score >= 3:
-            notes.append(
-                "High pre-endoscopy score: Consider urgent endoscopy"
-            )
+            notes.append("High pre-endoscopy score: Consider urgent endoscopy")
 
-        notes.append(
-            "Consider Glasgow-Blatchford Score (GBS) for need for intervention"
-        )
+        notes.append("Consider Glasgow-Blatchford Score (GBS) for need for intervention")
 
         return notes
-

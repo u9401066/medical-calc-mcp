@@ -34,11 +34,8 @@ class AIMS65Calculator(BaseCalculator):
                 tool_id="aims65",
                 name="AIMS65 Score",
                 purpose="Predict in-hospital mortality for upper GI bleeding",
-                input_params=[
-                    "albumin_lt_3", "inr_gt_1_5", "altered_mental_status",
-                    "sbp_lte_90", "age_gte_65"
-                ],
-                output_type="AIMS65 Score (0-5) with mortality risk"
+                input_params=["albumin_lt_3", "inr_gt_1_5", "altered_mental_status", "sbp_lte_90", "age_gte_65"],
+                output_type="AIMS65 Score (0-5) with mortality risk",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -47,10 +44,7 @@ class AIMS65Calculator(BaseCalculator):
                     Specialty.INTERNAL_MEDICINE,
                     Specialty.CRITICAL_CARE,
                 ),
-                conditions=(
-                    "Upper GI Bleeding", "UGIB", "Hematemesis",
-                    "Melena", "GI Hemorrhage"
-                ),
+                conditions=("Upper GI Bleeding", "UGIB", "Hematemesis", "Melena", "GI Hemorrhage"),
                 clinical_contexts=(
                     ClinicalContext.EMERGENCY,
                     ClinicalContext.PROGNOSIS,
@@ -62,22 +56,18 @@ class AIMS65Calculator(BaseCalculator):
                     "How severe is this upper GI bleeding?",
                 ),
                 icd10_codes=("K92.0", "K92.1", "K92.2"),
-                keywords=(
-                    "AIMS65", "upper GI bleeding", "UGIB mortality",
-                    "hematemesis", "melena", "GI hemorrhage",
-                    "in-hospital mortality", "prognosis"
-                )
+                keywords=("AIMS65", "upper GI bleeding", "UGIB mortality", "hematemesis", "melena", "GI hemorrhage", "in-hospital mortality", "prognosis"),
             ),
             references=(
                 Reference(
                     citation="Saltzman JR, Tabak YP, Hyett BH, et al. A simple risk score accurately predicts in-hospital mortality, length of stay, and cost in acute upper GI bleeding. Gastrointest Endosc. 2011;74(6):1215-1224.",
                     doi="10.1016/j.gie.2011.06.024",
                     pmid="21907980",
-                    year=2011
+                    year=2011,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -156,9 +146,7 @@ class AIMS65Calculator(BaseCalculator):
             interpretation = Interpretation(
                 summary=f"AIMS65 {score}/5: Very Low Risk - Mortality {mortality_risk}",
                 detail=(
-                    "AIMS65 = 0: Very low in-hospital mortality risk. "
-                    "Standard ward admission typically appropriate. "
-                    "Consider early endoscopy within 24 hours."
+                    "AIMS65 = 0: Very low in-hospital mortality risk. Standard ward admission typically appropriate. Consider early endoscopy within 24 hours."
                 ),
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.VERY_LOW,
@@ -179,11 +167,7 @@ class AIMS65Calculator(BaseCalculator):
         elif score == 1:
             interpretation = Interpretation(
                 summary=f"AIMS65 {score}/5: Low Risk - Mortality {mortality_risk}",
-                detail=(
-                    "AIMS65 = 1: Low in-hospital mortality risk. "
-                    "Standard monitoring appropriate. "
-                    "Endoscopy within 24 hours recommended."
-                ),
+                detail=("AIMS65 = 1: Low in-hospital mortality risk. Standard monitoring appropriate. Endoscopy within 24 hours recommended."),
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="Low Risk",
@@ -202,11 +186,7 @@ class AIMS65Calculator(BaseCalculator):
         elif score == 2:
             interpretation = Interpretation(
                 summary=f"AIMS65 {score}/5: Intermediate Risk - Mortality {mortality_risk}",
-                detail=(
-                    "AIMS65 = 2: Intermediate mortality risk. "
-                    "Close monitoring recommended. "
-                    "Consider early endoscopy (<12-24 hours)."
-                ),
+                detail=("AIMS65 = 2: Intermediate mortality risk. Close monitoring recommended. Consider early endoscopy (<12-24 hours)."),
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Intermediate Risk",
@@ -230,11 +210,7 @@ class AIMS65Calculator(BaseCalculator):
         elif score == 3:
             interpretation = Interpretation(
                 summary=f"AIMS65 {score}/5: High Risk - Mortality {mortality_risk}",
-                detail=(
-                    "AIMS65 = 3: High mortality risk. "
-                    "ICU or step-down unit consideration. "
-                    "Urgent endoscopy recommended (<12 hours)."
-                ),
+                detail=("AIMS65 = 3: High mortality risk. ICU or step-down unit consideration. Urgent endoscopy recommended (<12 hours)."),
                 severity=Severity.SEVERE,
                 risk_level=RiskLevel.HIGH,
                 stage="High Risk",
@@ -260,9 +236,7 @@ class AIMS65Calculator(BaseCalculator):
             interpretation = Interpretation(
                 summary=f"AIMS65 {score}/5: Critical Risk - Mortality {mortality_risk}",
                 detail=(
-                    f"AIMS65 = {score}: Very high/critical mortality risk. "
-                    "ICU admission strongly recommended. "
-                    "Emergent endoscopy and aggressive resuscitation."
+                    f"AIMS65 = {score}: Very high/critical mortality risk. ICU admission strongly recommended. Emergent endoscopy and aggressive resuscitation."
                 ),
                 severity=Severity.CRITICAL,
                 risk_level=RiskLevel.VERY_HIGH,
@@ -314,6 +288,6 @@ class AIMS65Calculator(BaseCalculator):
             formula_used="AIMS65 = sum of 5 binary criteria",
             notes=[
                 "AIMS65 predicts mortality; use GBS for intervention risk",
-                f"Consider {'ICU admission and emergent endoscopy' if score >= 3 else 'endoscopy within 24h'}"
+                f"Consider {'ICU admission and emergent endoscopy' if score >= 3 else 'endoscopy within 24h'}",
             ],
         )

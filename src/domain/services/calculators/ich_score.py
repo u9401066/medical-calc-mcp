@@ -21,7 +21,6 @@ Clinical Notes:
 - Higher scores correlate with higher 30-day mortality
 """
 
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -78,7 +77,7 @@ class IchScoreCalculator(BaseCalculator):
                 name="ICH Score (Intracerebral Hemorrhage Score)",
                 purpose="Predict 30-day mortality in spontaneous intracerebral hemorrhage",
                 input_params=["gcs_score", "ich_volume_ml", "ivh_present", "infratentorial", "age"],
-                output_type="ICH Score (0-6) with 30-day mortality prediction"
+                output_type="ICH Score (0-6) with 30-day mortality prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -108,24 +107,30 @@ class IchScoreCalculator(BaseCalculator):
                 ),
                 icd10_codes=("I61", "I61.0", "I61.1", "I61.9", "I62.9"),
                 keywords=(
-                    "ICH score", "intracerebral hemorrhage", "brain hemorrhage",
-                    "hemorrhagic stroke", "prognosis", "mortality", "Hemphill",
-                    "brain bleed", "hypertensive hemorrhage",
-                )
+                    "ICH score",
+                    "intracerebral hemorrhage",
+                    "brain hemorrhage",
+                    "hemorrhagic stroke",
+                    "prognosis",
+                    "mortality",
+                    "Hemphill",
+                    "brain bleed",
+                    "hypertensive hemorrhage",
+                ),
             ),
             references=(
                 Reference(
                     citation="Hemphill JC 3rd, Bonovich DC, Besmertis L, Manley GT, "
-                             "Johnston SC. The ICH score: a simple, reliable grading "
-                             "scale for intracerebral hemorrhage. "
-                             "Stroke. 2001;32(4):891-897.",
+                    "Johnston SC. The ICH score: a simple, reliable grading "
+                    "scale for intracerebral hemorrhage. "
+                    "Stroke. 2001;32(4):891-897.",
                     doi="10.1161/01.str.32.4.891",
                     pmid="11283388",
-                    year=2001
+                    year=2001,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(

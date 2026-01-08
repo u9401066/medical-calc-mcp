@@ -5,7 +5,6 @@ Shared clinical constants and reference values used across multiple calculators.
 This ensures consistency and provides a single source of truth.
 """
 
-
 from typing import Any
 
 # =============================================================================
@@ -16,15 +15,15 @@ from typing import Any
 #            Miller RD, et al. Miller's Anesthesia. 9th ed. 2020.
 
 EBV_ML_PER_KG: dict[str, int] = {
-    "preterm_neonate": 90,      # Premature infant (<37 weeks)
-    "term_neonate": 85,         # Full-term newborn (0-28 days)
-    "infant": 80,               # 1-12 months
-    "child": 75,                # 1-12 years
-    "adolescent": 70,           # >12 years
-    "adult_male": 70,           # Adult male
-    "adult_female": 65,         # Adult female
-    "obese_adult": 60,          # Obese adult (use IBW)
-    "elderly": 65,              # >65 years
+    "preterm_neonate": 90,  # Premature infant (<37 weeks)
+    "term_neonate": 85,  # Full-term newborn (0-28 days)
+    "infant": 80,  # 1-12 months
+    "child": 75,  # 1-12 years
+    "adolescent": 70,  # >12 years
+    "adult_male": 70,  # Adult male
+    "adult_female": 65,  # Adult female
+    "obese_adult": 60,  # Obese adult (use IBW)
+    "elderly": 65,  # >65 years
 }
 
 
@@ -76,6 +75,7 @@ BLOOD_PRODUCTS: dict[str, dict[str, Any]] = {
 # =============================================================================
 # Helper Functions
 # =============================================================================
+
 
 def get_ebv_per_kg(patient_type: str, default: int = 70) -> int:
     """

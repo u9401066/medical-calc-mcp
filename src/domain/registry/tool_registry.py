@@ -49,8 +49,8 @@ class ToolRegistry:
         self._by_icd10: dict[str, set[str]] = defaultdict(set)
 
         # Auto-discovery components (lazy init)
-        self._discovery_engine: Optional["AutoDiscoveryEngine"] = None
-        self._relation_graph: Optional["ToolRelationGraph"] = None
+        self._discovery_engine: Optional[AutoDiscoveryEngine] = None
+        self._relation_graph: Optional[ToolRelationGraph] = None
         self._discovery_built = False
 
     @classmethod
@@ -121,11 +121,7 @@ class ToolRegistry:
 
     # Search methods
 
-    def search(
-        self,
-        query: str,
-        limit: int = 10
-    ) -> list[ToolMetadata]:
+    def search(self, query: str, limit: int = 10) -> list[ToolMetadata]:
         """
         Search for tools by free text query.
 
@@ -285,11 +281,7 @@ class ToolRegistry:
 
         self._discovery_built = True
 
-    def get_related_tools(
-        self,
-        tool_id: str,
-        limit: int = 5
-    ) -> list[tuple[str, float]]:
+    def get_related_tools(self, tool_id: str, limit: int = 5) -> list[tuple[str, float]]:
         """
         Get tools related to the given tool.
 
@@ -312,12 +304,7 @@ class ToolRegistry:
             return self._relation_graph.get_related_tools(tool_id, limit)
         return []
 
-    def smart_search(
-        self,
-        query: str,
-        limit: int = 10,
-        expand_related: bool = True
-    ) -> list[ToolMetadata]:
+    def smart_search(self, query: str, limit: int = 10, expand_related: bool = True) -> list[ToolMetadata]:
         """
         Enhanced search using auto-discovery engine.
 
@@ -351,11 +338,7 @@ class ToolRegistry:
                         if rel_id not in tool_ids:
                             tool_ids.append(rel_id)
 
-            return [
-                self._calculators[tid].metadata
-                for tid in tool_ids[:limit]
-                if tid in self._calculators
-            ]
+            return [self._calculators[tid].metadata for tid in tool_ids[:limit] if tid in self._calculators]
 
         # Fallback to basic search
         return self.search(query, limit)
@@ -377,11 +360,7 @@ class ToolRegistry:
 
         if self._discovery_engine:
             tool_ids = self._discovery_engine.find_tools_by_params(params)
-            return [
-                self._calculators[tid].metadata
-                for tid in tool_ids
-                if tid in self._calculators
-            ]
+            return [self._calculators[tid].metadata for tid in tool_ids if tid in self._calculators]
         return []
 
     def get_discovery_statistics(self) -> dict[str, Any]:
@@ -402,12 +381,8 @@ class ToolRegistry:
         """Get registry statistics"""
         return {
             "total_tools": self.count(),
-            "specialties": {
-                s.value: len(ids) for s, ids in self._by_specialty.items() if ids
-            },
-            "clinical_contexts": {
-                c.value: len(ids) for c, ids in self._by_context.items() if ids
-            },
+            "specialties": {s.value: len(ids) for s, ids in self._by_specialty.items() if ids},
+            "clinical_contexts": {c.value: len(ids) for c, ids in self._by_context.items() if ids},
         }
 
 

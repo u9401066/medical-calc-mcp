@@ -18,21 +18,11 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
 
     @mcp.tool()
     def calculate_curb65(
-        confusion: Annotated[bool, Field(
-            description="新發意識混亂 New mental confusion (disorientation in person, place, or time)"
-        )],
-        bun_gt_19_or_urea_gt_7: Annotated[bool, Field(
-            description="BUN >19 mg/dL 或 Urea >7 mmol/L (Blood urea nitrogen elevated)"
-        )],
-        respiratory_rate_gte_30: Annotated[bool, Field(
-            description="呼吸速率 ≥30/min Respiratory rate ≥30 breaths per minute"
-        )],
-        sbp_lt_90_or_dbp_lte_60: Annotated[bool, Field(
-            description="低血壓 Low BP: Systolic <90 mmHg OR Diastolic ≤60 mmHg"
-        )],
-        age_gte_65: Annotated[bool, Field(
-            description="年齡 ≥65歲 Age ≥65 years"
-        )],
+        confusion: Annotated[bool, Field(description="新發意識混亂 New mental confusion (disorientation in person, place, or time)")],
+        bun_gt_19_or_urea_gt_7: Annotated[bool, Field(description="BUN >19 mg/dL 或 Urea >7 mmol/L (Blood urea nitrogen elevated)")],
+        respiratory_rate_gte_30: Annotated[bool, Field(description="呼吸速率 ≥30/min Respiratory rate ≥30 breaths per minute")],
+        sbp_lt_90_or_dbp_lte_60: Annotated[bool, Field(description="低血壓 Low BP: Systolic <90 mmHg OR Diastolic ≤60 mmHg")],
+        age_gte_65: Annotated[bool, Field(description="年齡 ≥65歲 Age ≥65 years")],
     ) -> dict[str, Any]:
         """
         🫁 CURB-65: 社區型肺炎嚴重度評估
@@ -65,7 +55,7 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "respiratory_rate_gte_30": respiratory_rate_gte_30,
                 "sbp_lt_90_or_dbp_lte_60": sbp_lt_90_or_dbp_lte_60,
                 "age_gte_65": age_gte_65,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -143,37 +133,21 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "hematocrit_lt_30": hematocrit_lt_30,
                 "pao2_lt_60_or_sao2_lt_90": pao2_lt_60_or_sao2_lt_90,
                 "pleural_effusion": pleural_effusion,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_aa_gradient(
-        pao2: Annotated[float, Field(
-            ge=10, le=700,
-            description="動脈血氧分壓 Arterial PaO₂ | Unit: mmHg | Range: 10-700"
-        )],
-        paco2: Annotated[float, Field(
-            ge=10, le=150,
-            description="動脈血二氧化碳分壓 Arterial PaCO₂ | Unit: mmHg | Range: 10-150"
-        )],
-        fio2: Annotated[float, Field(
-            ge=0.21, le=1.0,
-            description="吸入氧濃度 FiO₂ | Range: 0.21-1.0 (e.g., 0.21 = room air)"
-        )],
-        age: Annotated[Optional[int], Field(
-            ge=0, le=120,
-            description="年齡 Age (for expected normal calculation) | Unit: years | Range: 0-120"
-        )] = None,
-        atmospheric_pressure: Annotated[float, Field(
-            ge=500, le=800,
-            description="大氣壓力 Atmospheric pressure | Unit: mmHg | Default: 760 (sea level)"
-        )] = 760.0,
-        respiratory_quotient: Annotated[float, Field(
-            ge=0.7, le=1.0,
-            description="呼吸商 Respiratory quotient (RQ) | Default: 0.8"
-        )] = 0.8,
+        pao2: Annotated[float, Field(ge=10, le=700, description="動脈血氧分壓 Arterial PaO₂ | Unit: mmHg | Range: 10-700")],
+        paco2: Annotated[float, Field(ge=10, le=150, description="動脈血二氧化碳分壓 Arterial PaCO₂ | Unit: mmHg | Range: 10-150")],
+        fio2: Annotated[float, Field(ge=0.21, le=1.0, description="吸入氧濃度 FiO₂ | Range: 0.21-1.0 (e.g., 0.21 = room air)")],
+        age: Annotated[Optional[int], Field(ge=0, le=120, description="年齡 Age (for expected normal calculation) | Unit: years | Range: 0-120")] = None,
+        atmospheric_pressure: Annotated[
+            float, Field(ge=500, le=800, description="大氣壓力 Atmospheric pressure | Unit: mmHg | Default: 760 (sea level)")
+        ] = 760.0,
+        respiratory_quotient: Annotated[float, Field(ge=0.7, le=1.0, description="呼吸商 Respiratory quotient (RQ) | Default: 0.8")] = 0.8,
     ) -> dict[str, Any]:
         """
         🫁 A-a Gradient: 肺泡-動脈氧氣梯度
@@ -216,25 +190,16 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "age": age,
                 "atmospheric_pressure": atmospheric_pressure,
                 "respiratory_quotient": respiratory_quotient,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_ideal_body_weight(
-        height: Annotated[float, Field(
-            ge=100, le=250,
-            description="身高 Height | Unit: cm | Range: 100-250"
-        )],
-        sex: Annotated[
-            Literal["male", "female"],
-            Field(description="性別 Sex | Options: male, female")
-        ],
-        height_unit: Annotated[
-            Literal["cm", "inches"],
-            Field(description="身高單位 Height unit | Default: cm")
-        ] = "cm",
+        height: Annotated[float, Field(ge=100, le=250, description="身高 Height | Unit: cm | Range: 100-250")],
+        sex: Annotated[Literal["male", "female"], Field(description="性別 Sex | Options: male, female")],
+        height_unit: Annotated[Literal["cm", "inches"], Field(description="身高單位 Height unit | Default: cm")] = "cm",
     ) -> dict[str, Any]:
         """
         🫁 Ideal Body Weight (IBW): 理想體重計算 (Devine 公式)
@@ -269,28 +234,17 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "height": height,
                 "sex": sex,
                 "height_unit": height_unit,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_pf_ratio(
-        pao2: Annotated[float, Field(
-            ge=20, le=700,
-            description="動脈血氧分壓 PaO₂ | Unit: mmHg | Range: 20-700"
-        )],
-        fio2: Annotated[float, Field(
-            ge=0.21, le=1.0,
-            description="吸入氧濃度 FiO₂ | Range: 0.21-1.0"
-        )],
-        on_vent: Annotated[bool, Field(
-            description="是否機械通氣 On mechanical ventilation"
-        )] = False,
-        peep: Annotated[Optional[float], Field(
-            ge=0, le=30,
-            description="呼氣末正壓 PEEP | Unit: cmH₂O | Range: 0-30 (if on vent)"
-        )] = None,
+        pao2: Annotated[float, Field(ge=20, le=700, description="動脈血氧分壓 PaO₂ | Unit: mmHg | Range: 20-700")],
+        fio2: Annotated[float, Field(ge=0.21, le=1.0, description="吸入氧濃度 FiO₂ | Range: 0.21-1.0")],
+        on_vent: Annotated[bool, Field(description="是否機械通氣 On mechanical ventilation")] = False,
+        peep: Annotated[Optional[float], Field(ge=0, le=30, description="呼氣末正壓 PEEP | Unit: cmH₂O | Range: 0-30 (if on vent)")] = None,
     ) -> dict[str, Any]:
         """
         🫁 P/F Ratio: 氧合指數 (ARDS Berlin 分類)
@@ -327,28 +281,18 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "fio2": fio2,
                 "on_vent": on_vent,
                 "peep": peep,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
 
     @mcp.tool()
     def calculate_rox_index(
-        spo2: Annotated[float, Field(
-            ge=70, le=100,
-            description="血氧飽和度 SpO₂ | Unit: % | Range: 70-100"
-        )],
-        fio2: Annotated[float, Field(
-            ge=0.21, le=1.0,
-            description="吸入氧濃度 FiO₂ | Range: 0.21-1.0"
-        )],
-        respiratory_rate: Annotated[int, Field(
-            ge=5, le=60,
-            description="呼吸速率 Respiratory rate | Unit: breaths/min | Range: 5-60"
-        )],
+        spo2: Annotated[float, Field(ge=70, le=100, description="血氧飽和度 SpO₂ | Unit: % | Range: 70-100")],
+        fio2: Annotated[float, Field(ge=0.21, le=1.0, description="吸入氧濃度 FiO₂ | Range: 0.21-1.0")],
+        respiratory_rate: Annotated[int, Field(ge=5, le=60, description="呼吸速率 Respiratory rate | Unit: breaths/min | Range: 5-60")],
         hours_on_hfnc: Annotated[
-            Optional[Literal[2, 6, 12]],
-            Field(description="HFNC 使用時間 Hours on HFNC | Options: 2, 6, 12 (for threshold selection)")
+            Optional[Literal[2, 6, 12]], Field(description="HFNC 使用時間 Hours on HFNC | Options: 2, 6, 12 (for threshold selection)")
         ] = None,
     ) -> dict[str, Any]:
         """
@@ -390,7 +334,7 @@ def register_pulmonology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None
                 "fio2": fio2,
                 "respiratory_rate": respiratory_rate,
                 "hours_on_hfnc": hours_on_hfnc,
-            }
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

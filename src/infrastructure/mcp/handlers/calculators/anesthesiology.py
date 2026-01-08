@@ -21,9 +21,11 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     def calculate_asa_physical_status(
         asa_class: Annotated[
             Literal[1, 2, 3, 4, 5, 6],
-            Field(description="ASA分級 ASA Physical Status | Options: 1=健康Healthy, 2=輕度Mild, 3=嚴重Severe, 4=致命Life-threatening, 5=瀕死Moribund, 6=腦死Brain-dead")
+            Field(
+                description="ASA分級 ASA Physical Status | Options: 1=健康Healthy, 2=輕度Mild, 3=嚴重Severe, 4=致命Life-threatening, 5=瀕死Moribund, 6=腦死Brain-dead"
+            ),
         ],
-        is_emergency: Annotated[bool, Field(description="是否緊急手術 Emergency surgery (adds 'E' suffix)")] = False
+        is_emergency: Annotated[bool, Field(description="是否緊急手術 Emergency surgery (adds 'E' suffix)")] = False,
     ) -> dict[str, Any]:
         """
         ASA 身體狀態分級 (ASA Physical Status Classification)
@@ -31,10 +33,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         Classify patient overall health for perioperative risk.
         I=Healthy, II=Mild, III=Severe, IV=Life-threatening, V=Moribund, VI=Brain-dead.
         """
-        request = CalculateRequest(
-            tool_id="asa_physical_status",
-            params={"asa_class": asa_class, "is_emergency": is_emergency}
-        )
+        request = CalculateRequest(tool_id="asa_physical_status", params={"asa_class": asa_class, "is_emergency": is_emergency})
         response = use_case.execute(request)
         return response.to_dict()
 
@@ -43,7 +42,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         female_gender: Annotated[bool, Field(description="女性 Female gender")],
         history_motion_sickness_or_ponv: Annotated[bool, Field(description="暈動病或PONV病史 History of motion sickness or previous PONV")],
         non_smoker: Annotated[bool, Field(description="不吸菸 Non-smoker (does NOT currently smoke)")],
-        postoperative_opioids: Annotated[bool, Field(description="術後使用鴉片類藥物 Postoperative opioids planned/anticipated")]
+        postoperative_opioids: Annotated[bool, Field(description="術後使用鴉片類藥物 Postoperative opioids planned/anticipated")],
     ) -> dict[str, Any]:
         """
         🤢 Apfel Score: 術後噁心嘔吐風險評估 (PONV Risk Score)
@@ -79,8 +78,8 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
                 "female_gender": female_gender,
                 "history_motion_sickness_or_ponv": history_motion_sickness_or_ponv,
                 "non_smoker": non_smoker,
-                "postoperative_opioids": postoperative_opioids
-            }
+                "postoperative_opioids": postoperative_opioids,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -89,8 +88,10 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     def calculate_mallampati(
         mallampati_class: Annotated[
             Literal[1, 2, 3, 4],
-            Field(description="Mallampati分級 Mallampati Class | Options: 1=全視野Full visibility, 2=部分懸雍垂Partial uvula, 3=軟顎Soft palate only, 4=硬顎Hard palate only")
-        ]
+            Field(
+                description="Mallampati分級 Mallampati Class | Options: 1=全視野Full visibility, 2=部分懸雍垂Partial uvula, 3=軟顎Soft palate only, 4=硬顎Hard palate only"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         Mallampati 氣道評估分級 (Modified Mallampati Classification)
@@ -98,10 +99,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         Predict difficult intubation. Higher class = higher difficulty.
         I=Easy, IV=Most difficult.
         """
-        request = CalculateRequest(
-            tool_id="mallampati_score",
-            params={"mallampati_class": mallampati_class}
-        )
+        request = CalculateRequest(tool_id="mallampati_score", params={"mallampati_class": mallampati_class})
         response = use_case.execute(request)
         return response.to_dict()
 
@@ -112,7 +110,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         heart_failure: Annotated[bool, Field(description="心衰竭 Heart failure (CHF/pulmonary edema/S3/rales)")] = False,
         cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 Cerebrovascular disease (TIA or stroke history)")] = False,
         insulin_diabetes: Annotated[bool, Field(description="胰島素糖尿病 Insulin-dependent diabetes mellitus")] = False,
-        creatinine_above_2: Annotated[bool, Field(description="肌酐>2 Preoperative Cr >2.0 mg/dL")] = False
+        creatinine_above_2: Annotated[bool, Field(description="肌酐>2 Preoperative Cr >2.0 mg/dL")] = False,
     ) -> dict[str, Any]:
         """
         計算 RCRI 心臟風險指數 (Revised Cardiac Risk Index)
@@ -130,8 +128,8 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
                 "heart_failure": heart_failure,
                 "cerebrovascular_disease": cerebrovascular_disease,
                 "insulin_diabetes": insulin_diabetes,
-                "creatinine_above_2": creatinine_above_2
-            }
+                "creatinine_above_2": creatinine_above_2,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -145,7 +143,7 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
         bmi_over_35: Annotated[bool, Field(description="BMI>35 Obesity with BMI >35 kg/m²")],
         age_over_50: Annotated[bool, Field(description="年齡>50 Age >50 years")],
         neck_over_40cm: Annotated[bool, Field(description="頸圍>40cm Neck circumference >40 cm (>16 inches)")],
-        male_gender: Annotated[bool, Field(description="男性 Male gender")]
+        male_gender: Annotated[bool, Field(description="男性 Male gender")],
     ) -> dict[str, Any]:
         """
         😴 STOP-BANG: 阻塞性睡眠呼吸中止症篩檢 (OSA Screening Questionnaire)
@@ -188,8 +186,8 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
                 "bmi_over_35": bmi_over_35,
                 "age_over_50": age_over_50,
                 "neck_over_40cm": neck_over_40cm,
-                "male_gender": male_gender
-            }
+                "male_gender": male_gender,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()
@@ -198,24 +196,31 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
     def calculate_aldrete_score(
         activity: Annotated[
             Literal[0, 1, 2],
-            Field(description="活動力 Activity | Options: 0=無法移動四肢Unable to move, 1=可移動兩肢Moves 2 extremities, 2=可移動四肢Moves 4 extremities voluntarily")
+            Field(
+                description="活動力 Activity | Options: 0=無法移動四肢Unable to move, 1=可移動兩肢Moves 2 extremities, 2=可移動四肢Moves 4 extremities voluntarily"
+            ),
         ],
         respiration: Annotated[
             Literal[0, 1, 2],
-            Field(description="呼吸 Respiration | Options: 0=呼吸暫停Apneic, 1=呼吸困難/淺弱Dyspnea or shallow breathing, 2=可深呼吸咳嗽Able to breathe deeply and cough")
+            Field(
+                description="呼吸 Respiration | Options: 0=呼吸暫停Apneic, 1=呼吸困難/淺弱Dyspnea or shallow breathing, 2=可深呼吸咳嗽Able to breathe deeply and cough"
+            ),
         ],
         circulation: Annotated[
             Literal[0, 1, 2],
-            Field(description="循環 Circulation (BP vs pre-anesthesia) | Options: 0=BP±50%以上BP±50%+, 1=BP±20-50%BP±20-50%, 2=BP±20%以內BP±20% of pre-anesthesia")
+            Field(
+                description="循環 Circulation (BP vs pre-anesthesia) | Options: 0=BP±50%以上BP±50%+, 1=BP±20-50%BP±20-50%, 2=BP±20%以內BP±20% of pre-anesthesia"
+            ),
         ],
         consciousness: Annotated[
-            Literal[0, 1, 2],
-            Field(description="意識 Consciousness | Options: 0=無反應Not responding, 1=可喚醒Arousable on calling, 2=完全清醒Fully awake")
+            Literal[0, 1, 2], Field(description="意識 Consciousness | Options: 0=無反應Not responding, 1=可喚醒Arousable on calling, 2=完全清醒Fully awake")
         ],
         oxygen_saturation: Annotated[
             Literal[0, 1, 2],
-            Field(description="血氧飽和度 O2 Saturation | Options: 0=SpO2<90%即使給氧SpO2<90% on O2, 1=需給氧維持SpO2>90%Needs O2 to maintain SpO2>90%, 2=室內空氣SpO2>92%SpO2>92% on room air")
-        ]
+            Field(
+                description="血氧飽和度 O2 Saturation | Options: 0=SpO2<90%即使給氧SpO2<90% on O2, 1=需給氧維持SpO2>90%Needs O2 to maintain SpO2>90%, 2=室內空氣SpO2>92%SpO2>92% on room air"
+            ),
+        ],
     ) -> dict[str, Any]:
         """
         🏥 Aldrete Score: 麻醉後恢復評估 (Post-Anesthesia Recovery Score)
@@ -256,8 +261,8 @@ def register_anesthesiology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> N
                 "respiration": respiration,
                 "circulation": circulation,
                 "consciousness": consciousness,
-                "oxygen_saturation": oxygen_saturation
-            }
+                "oxygen_saturation": oxygen_saturation,
+            },
         )
         response = use_case.execute(request)
         return response.to_dict()

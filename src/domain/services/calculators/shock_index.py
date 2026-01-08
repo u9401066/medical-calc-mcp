@@ -92,7 +92,7 @@ class ShockIndexCalculator(BaseCalculator):
                 name="Shock Index (SI)",
                 purpose="Calculate HR/SBP ratio for rapid hemodynamic assessment",
                 input_params=["heart_rate", "systolic_bp", "diastolic_bp", "patient_type"],
-                output_type="Shock Index with hemodynamic interpretation"
+                output_type="Shock Index with hemodynamic interpretation",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -129,9 +129,19 @@ class ShockIndexCalculator(BaseCalculator):
                 ),
                 icd10_codes=("R57.9", "R57.1", "T79.4", "R58"),
                 keywords=(
-                    "shock index", "SI", "hemodynamic", "triage", "trauma",
-                    "hemorrhage", "hypovolemia", "massive transfusion", "shock",
-                    "vital signs", "heart rate", "blood pressure", "instability",
+                    "shock index",
+                    "SI",
+                    "hemodynamic",
+                    "triage",
+                    "trauma",
+                    "hemorrhage",
+                    "hypovolemia",
+                    "massive transfusion",
+                    "shock",
+                    "vital signs",
+                    "heart rate",
+                    "blood pressure",
+                    "instability",
                 ),
             ),
             references=self._get_references(),
@@ -199,9 +209,7 @@ class ShockIndexCalculator(BaseCalculator):
             msi = round(msi, 2)
 
         # Generate interpretation
-        interpretation = self._interpret_shock_index(
-            shock_index, msi, patient_type
-        )
+        interpretation = self._interpret_shock_index(shock_index, msi, patient_type)
 
         # Build calculation details
         details = {
@@ -234,12 +242,7 @@ class ShockIndexCalculator(BaseCalculator):
             formula_used="SI = Heart Rate / Systolic BP",
         )
 
-    def _interpret_shock_index(
-        self,
-        si: float,
-        msi: Optional[float],
-        patient_type: str
-    ) -> Interpretation:
+    def _interpret_shock_index(self, si: float, msi: Optional[float], patient_type: str) -> Interpretation:
         """Generate interpretation based on Shock Index."""
 
         # Adjust thresholds for obstetric patients
@@ -294,9 +297,7 @@ class ShockIndexCalculator(BaseCalculator):
                 "Consider IV access if not established",
                 "Evaluate for sources of volume loss",
             )
-            warnings = (
-                "Borderline SI - consider occult hemorrhage or early shock",
-            )
+            warnings = ("Borderline SI - consider occult hemorrhage or early shock",)
         elif si < severe_threshold:
             severity = Severity.MODERATE
             risk_level = RiskLevel.INTERMEDIATE

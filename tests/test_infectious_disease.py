@@ -430,7 +430,7 @@ class TestInfectiousDiseaseCalculatorRegistration:
         assert "CentorScoreCalculator" in calculator_names
         assert "CpisCalculator" in calculator_names
 
-    def test_calculator_count_is_75(self) -> None:
-        """Test total calculator count after Phase 18 (GI Bleeding & Trauma)"""
+    def test_calculator_count_is_91(self) -> None:
+        """Test total calculator count after Phase 23 (CV Prevention & Bone Health)"""
         from src.domain.services.calculators import CALCULATORS
-        assert len(CALCULATORS) == 75
+        assert len(CALCULATORS) == 91

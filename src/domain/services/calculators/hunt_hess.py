@@ -18,8 +18,6 @@ Clinical Notes:
 - Modified versions exist but original scale remains widely used
 """
 
-
-
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -60,7 +58,7 @@ class HuntHessCalculator(BaseCalculator):
                 name="Hunt and Hess Scale",
                 purpose="Grade subarachnoid hemorrhage severity and predict surgical risk",
                 input_params=["grade"],
-                output_type="Hunt & Hess Grade (I-V) with mortality prediction"
+                output_type="Hunt & Hess Grade (I-V) with mortality prediction",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -90,23 +88,30 @@ class HuntHessCalculator(BaseCalculator):
                 ),
                 icd10_codes=("I60", "I60.0", "I60.9", "I67.1"),
                 keywords=(
-                    "Hunt and Hess", "Hunt Hess", "SAH", "subarachnoid",
-                    "hemorrhage", "aneurysm", "grading", "neurosurgery",
-                    "brain bleed", "surgery timing",
-                )
+                    "Hunt and Hess",
+                    "Hunt Hess",
+                    "SAH",
+                    "subarachnoid",
+                    "hemorrhage",
+                    "aneurysm",
+                    "grading",
+                    "neurosurgery",
+                    "brain bleed",
+                    "surgery timing",
+                ),
             ),
             references=(
                 Reference(
                     citation="Hunt WE, Hess RM. Surgical risk as related to time of "
-                             "intervention in the repair of intracranial aneurysms. "
-                             "J Neurosurg. 1968;28(1):14-20.",
+                    "intervention in the repair of intracranial aneurysms. "
+                    "J Neurosurg. 1968;28(1):14-20.",
                     doi="10.3171/jns.1968.28.1.0014",
                     pmid="5635959",
-                    year=1968
+                    year=1968,
                 ),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -160,11 +165,9 @@ class HuntHessCalculator(BaseCalculator):
         """Get clinical description for each grade"""
         descriptions = {
             1: "Asymptomatic or minimal headache, slight nuchal rigidity",
-            2: "Moderate to severe headache, nuchal rigidity, no neurological "
-               "deficit except cranial nerve palsy",
+            2: "Moderate to severe headache, nuchal rigidity, no neurological deficit except cranial nerve palsy",
             3: "Drowsiness, confusion, or mild focal neurological deficit",
-            4: "Stupor, moderate to severe hemiparesis, possible early "
-               "decerebrate rigidity, vegetative disturbances",
+            4: "Stupor, moderate to severe hemiparesis, possible early decerebrate rigidity, vegetative disturbances",
             5: "Deep coma, decerebrate rigidity, moribund appearance",
         }
         return descriptions.get(grade, "Unknown grade")
@@ -194,8 +197,7 @@ class HuntHessCalculator(BaseCalculator):
         if grade == 1:
             return Interpretation(
                 summary="Hunt & Hess Grade I - Minimal symptoms",
-                detail="Asymptomatic or minimal headache with slight nuchal rigidity. "
-                       "Excellent prognosis with low surgical risk.",
+                detail="Asymptomatic or minimal headache with slight nuchal rigidity. Excellent prognosis with low surgical risk.",
                 severity=Severity.MILD,
                 stage="Grade I",
                 stage_description="Minimal symptoms - excellent prognosis",
@@ -214,8 +216,7 @@ class HuntHessCalculator(BaseCalculator):
         elif grade == 2:
             return Interpretation(
                 summary="Hunt & Hess Grade II - Moderate symptoms",
-                detail="Moderate to severe headache with nuchal rigidity. No neurological "
-                       "deficit except possible cranial nerve palsy. Good prognosis.",
+                detail="Moderate to severe headache with nuchal rigidity. No neurological deficit except possible cranial nerve palsy. Good prognosis.",
                 severity=Severity.MILD,
                 stage="Grade II",
                 stage_description="Moderate symptoms - good prognosis",
@@ -234,8 +235,7 @@ class HuntHessCalculator(BaseCalculator):
         elif grade == 3:
             return Interpretation(
                 summary="Hunt & Hess Grade III - Significant neurological impairment",
-                detail="Drowsiness, confusion, or mild focal neurological deficit. "
-                       "Moderate surgical risk. Intensive monitoring required.",
+                detail="Drowsiness, confusion, or mild focal neurological deficit. Moderate surgical risk. Intensive monitoring required.",
                 severity=Severity.MODERATE,
                 stage="Grade III",
                 stage_description="Significant impairment - moderate risk",
@@ -259,8 +259,7 @@ class HuntHessCalculator(BaseCalculator):
         elif grade == 4:
             return Interpretation(
                 summary="Hunt & Hess Grade IV - Severe impairment",
-                detail="Stupor with moderate to severe hemiparesis. Possible early "
-                       "decerebrate rigidity and vegetative disturbances. High surgical risk.",
+                detail="Stupor with moderate to severe hemiparesis. Possible early decerebrate rigidity and vegetative disturbances. High surgical risk.",
                 severity=Severity.SEVERE,
                 stage="Grade IV",
                 stage_description="Severe impairment - high surgical risk",
@@ -284,8 +283,7 @@ class HuntHessCalculator(BaseCalculator):
         else:  # grade 5
             return Interpretation(
                 summary="Hunt & Hess Grade V - Critical / Moribund",
-                detail="Deep coma with decerebrate rigidity and moribund appearance. "
-                       "Very poor prognosis. Surgery typically delayed.",
+                detail="Deep coma with decerebrate rigidity and moribund appearance. Very poor prognosis. Surgery typically delayed.",
                 severity=Severity.CRITICAL,
                 stage="Grade V",
                 stage_description="Moribund - very high surgical risk",

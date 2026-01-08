@@ -84,11 +84,17 @@ class PediatricSOFACalculator(BaseCalculator):
                 name="Pediatric SOFA (pSOFA) Score",
                 purpose="Age-adapted organ dysfunction assessment for pediatric patients",
                 input_params=[
-                    "age_group", "pao2_fio2_ratio", "platelets", "bilirubin",
-                    "map_value", "gcs_score", "creatinine", "vasopressor_type",
-                    "on_mechanical_ventilation"
+                    "age_group",
+                    "pao2_fio2_ratio",
+                    "platelets",
+                    "bilirubin",
+                    "map_value",
+                    "gcs_score",
+                    "creatinine",
+                    "vasopressor_type",
+                    "on_mechanical_ventilation",
                 ],
-                output_type="pSOFA score (0-24) with organ-specific subscores"
+                output_type="pSOFA score (0-24) with organ-specific subscores",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -116,13 +122,13 @@ class PediatricSOFACalculator(BaseCalculator):
                     citation="Matics TJ, Sanchez-Pinto LN. Adaptation and Validation of a Pediatric SOFA Score. JAMA Pediatr. 2017;171(10):e172352.",
                     doi="10.1001/jamapediatrics.2017.2352",
                     pmid="28783810",
-                    year=2017
+                    year=2017,
                 ),
                 Reference(
                     citation="Schlapbach LJ, et al. International Consensus Criteria for Pediatric Sepsis (Phoenix). JAMA. 2024;331(8):665-674.",
                     doi="10.1001/jama.2024.0196",
                     pmid="38245889",
-                    year=2024
+                    year=2024,
                 ),
             ),
         )
@@ -138,7 +144,7 @@ class PediatricSOFACalculator(BaseCalculator):
         map_value: Optional[float] = None,
         vasopressor_type: Optional[str] = None,
         vasopressor_dose: Optional[float] = None,
-        on_mechanical_ventilation: bool = False
+        on_mechanical_ventilation: bool = False,
     ) -> ScoreResult:
         """
         Calculate Pediatric SOFA score.
@@ -230,7 +236,7 @@ class PediatricSOFACalculator(BaseCalculator):
                 f"Estimated PICU mortality: {mortality}\n"
                 f"{sepsis_criteria}"
             ),
-            recommendations=(self._get_recommendation(total_score, worst_organs),)
+            recommendations=(self._get_recommendation(total_score, worst_organs),),
         )
 
         details = {
@@ -241,7 +247,7 @@ class PediatricSOFACalculator(BaseCalculator):
             "estimated_mortality": mortality,
             "sepsis_criteria_met": total_score >= 2,
             "on_mechanical_ventilation": on_mechanical_ventilation,
-            "next_step": self._get_next_step(total_score)
+            "next_step": self._get_next_step(total_score),
         }
 
         return ScoreResult(
@@ -263,7 +269,7 @@ class PediatricSOFACalculator(BaseCalculator):
                 "vasopressor_dose": vasopressor_dose,
                 "on_mechanical_ventilation": on_mechanical_ventilation,
             },
-            calculation_details=details
+            calculation_details=details,
         )
 
     def _calc_respiratory(self, pf_ratio: float, on_mv: bool) -> int:
@@ -305,13 +311,7 @@ class PediatricSOFACalculator(BaseCalculator):
         else:
             return 4
 
-    def _calc_cardiovascular(
-        self,
-        age_group: str,
-        map_value: Optional[float],
-        vaso_type: Optional[str],
-        vaso_dose: Optional[float]
-    ) -> int:
+    def _calc_cardiovascular(self, age_group: str, map_value: Optional[float], vaso_type: Optional[str], vaso_dose: Optional[float]) -> int:
         """Calculate cardiovascular subscore with age-adjusted MAP."""
         # Get age-specific MAP threshold
         map_threshold = self.MAP_THRESHOLDS.get(age_group, 65)

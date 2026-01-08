@@ -65,7 +65,7 @@ class MasccScoreCalculator(BaseCalculator):
                     "outpatient_status",
                     "age_lt_60",
                 ],
-                output_type="Score 0-26 with risk classification and management recommendation"
+                output_type="Score 0-26 with risk classification and management recommendation",
             ),
             high_level=HighLevelKey(
                 specialties=(

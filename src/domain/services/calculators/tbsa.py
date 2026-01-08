@@ -36,12 +36,8 @@ class TbsaCalculator(BaseCalculator):
                 tool_id="tbsa",
                 name="TBSA Calculator (Rule of Nines)",
                 purpose="Calculate total body surface area burned using Rule of Nines",
-                input_params=[
-                    "head_neck", "anterior_trunk", "posterior_trunk",
-                    "right_arm", "left_arm", "right_leg", "left_leg",
-                    "genitalia", "age", "method"
-                ],
-                output_type="TBSA percentage with burn severity classification"
+                input_params=["head_neck", "anterior_trunk", "posterior_trunk", "right_arm", "left_arm", "right_leg", "left_leg", "genitalia", "age", "method"],
+                output_type="TBSA percentage with burn severity classification",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -50,10 +46,7 @@ class TbsaCalculator(BaseCalculator):
                     Specialty.CRITICAL_CARE,
                     Specialty.TRAUMA,
                 ),
-                conditions=(
-                    "Burns", "Burn Injury", "Thermal Injury",
-                    "Scald", "Chemical Burn"
-                ),
+                conditions=("Burns", "Burn Injury", "Thermal Injury", "Scald", "Chemical Burn"),
                 clinical_contexts=(
                     ClinicalContext.EMERGENCY,
                     ClinicalContext.FLUID_MANAGEMENT,
@@ -67,25 +60,29 @@ class TbsaCalculator(BaseCalculator):
                 ),
                 icd10_codes=("T30", "T31"),
                 keywords=(
-                    "TBSA", "burns", "burn area", "Rule of Nines",
-                    "body surface area", "burn severity", "Parkland",
-                    "thermal injury", "scald", "Lund-Browder"
-                )
+                    "TBSA",
+                    "burns",
+                    "burn area",
+                    "Rule of Nines",
+                    "body surface area",
+                    "burn severity",
+                    "Parkland",
+                    "thermal injury",
+                    "scald",
+                    "Lund-Browder",
+                ),
             ),
             references=(
                 Reference(
                     citation="Wallace AB. The exposure treatment of burns. Lancet. 1951;1(6653):501-504.",
                     doi="10.1016/S0140-6736(51)91975-7",
                     pmid="14805109",
-                    year=1951
+                    year=1951,
                 ),
-                Reference(
-                    citation="Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352-358.",
-                    year=1944
-                ),
+                Reference(citation="Lund CC, Browder NC. The estimation of areas of burns. Surg Gynecol Obstet. 1944;79:352-358.", year=1944),
             ),
             version="1.0.0",
-            validation_status="validated"
+            validation_status="validated",
         )
 
     def calculate(
@@ -138,9 +135,22 @@ class TbsaCalculator(BaseCalculator):
         """
         # Validate inputs
         all_inputs = [
-            head_neck, chest, abdomen, upper_back, lower_back,
-            right_arm, left_arm, right_hand, left_hand, perineum,
-            right_thigh, left_thigh, right_leg, left_leg, right_foot, left_foot
+            head_neck,
+            chest,
+            abdomen,
+            upper_back,
+            lower_back,
+            right_arm,
+            left_arm,
+            right_hand,
+            left_hand,
+            perineum,
+            right_thigh,
+            left_thigh,
+            right_leg,
+            left_leg,
+            right_foot,
+            left_foot,
         ]
         for val in all_inputs:
             if not 0 <= val <= 100:
@@ -233,11 +243,7 @@ class TbsaCalculator(BaseCalculator):
             disposition = "May be treated outpatient if <10% and no high-risk features"
             interpretation = Interpretation(
                 summary=f"TBSA {tbsa}%: Minor Burn",
-                detail=(
-                    f"Total Body Surface Area burned: {tbsa}%. "
-                    "Minor burn, may be appropriate for outpatient management "
-                    "if no high-risk features present."
-                ),
+                detail=(f"Total Body Surface Area burned: {tbsa}%. Minor burn, may be appropriate for outpatient management if no high-risk features present."),
                 severity=Severity.MILD,
                 risk_level=RiskLevel.LOW,
                 stage="Minor Burn",
@@ -259,11 +265,7 @@ class TbsaCalculator(BaseCalculator):
             disposition = "Hospital admission, consider burn center"
             interpretation = Interpretation(
                 summary=f"TBSA {tbsa}%: Moderate Burn - Hospital Admission",
-                detail=(
-                    f"Total Body Surface Area burned: {tbsa}%. "
-                    "Moderate burn requiring hospital admission. "
-                    "Consider burn center referral."
-                ),
+                detail=(f"Total Body Surface Area burned: {tbsa}%. Moderate burn requiring hospital admission. Consider burn center referral."),
                 severity=Severity.MODERATE,
                 risk_level=RiskLevel.INTERMEDIATE,
                 stage="Moderate Burn",
@@ -324,9 +326,7 @@ class TbsaCalculator(BaseCalculator):
             interpretation = Interpretation(
                 summary=f"TBSA {tbsa}%: Critical Burn - High Mortality Risk",
                 detail=(
-                    f"Total Body Surface Area burned: {tbsa}%. "
-                    "Critical burn with high mortality risk. "
-                    "Requires burn center ICU and aggressive resuscitation."
+                    f"Total Body Surface Area burned: {tbsa}%. Critical burn with high mortality risk. Requires burn center ICU and aggressive resuscitation."
                 ),
                 severity=Severity.CRITICAL,
                 risk_level=RiskLevel.VERY_HIGH,
@@ -403,6 +403,6 @@ class TbsaCalculator(BaseCalculator):
             formula_used="TBSA = sum of (region % × burn %) for all regions",
             notes=[
                 "For 2nd/3rd degree burns ≥20% TBSA, use Parkland formula",
-                f"{'Calculate Parkland formula for fluid resuscitation' if tbsa >= 15 else 'Assess burn depth and consider outpatient vs admission'}"
+                f"{'Calculate Parkland formula for fluid resuscitation' if tbsa >= 15 else 'Assess burn depth and consider outpatient vs admission'}",
             ],
         )

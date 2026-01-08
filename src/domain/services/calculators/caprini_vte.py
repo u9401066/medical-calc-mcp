@@ -147,7 +147,7 @@ class CapriniVteCalculator(BaseCalculator):
                     "pregnancy_or_postpartum",
                     "pregnancy_loss_history",
                 ],
-                output_type="Caprini score with VTE risk level and prophylaxis recommendations"
+                output_type="Caprini score with VTE risk level and prophylaxis recommendations",
             ),
             high_level=HighLevelKey(
                 specialties=(
@@ -197,28 +197,27 @@ class CapriniVteCalculator(BaseCalculator):
                     "LMWH prophylaxis",
                     "mechanical prophylaxis",
                     "SCDs",
-                )
+                ),
             ),
             references=(
                 Reference(
-                    citation="Caprini JA. Thrombosis risk assessment as a guide to quality "
-                             "patient care. Dis Mon. 2005;51(2-3):70-78.",
+                    citation="Caprini JA. Thrombosis risk assessment as a guide to quality patient care. Dis Mon. 2005;51(2-3):70-78.",
                     doi="10.1016/j.disamonth.2005.02.003",
                     pmid="15900257",
                     year=2005,
                 ),
                 Reference(
                     citation="Bahl V, Hu HM, Henke PK, Wakefield TW, Campbell DA Jr, Caprini JA. "
-                             "A validation study of a retrospective venous thromboembolism risk "
-                             "scoring method. Ann Surg. 2010;251(2):344-350.",
+                    "A validation study of a retrospective venous thromboembolism risk "
+                    "scoring method. Ann Surg. 2010;251(2):344-350.",
                     doi="10.1097/SLA.0b013e3181b7fca6",
                     pmid="19779324",
                     year=2010,
                 ),
                 Reference(
                     citation="Caprini JA. Risk assessment as a guide for the prevention of "
-                             "the many faces of venous thromboembolism. Am J Surg. "
-                             "2010;199(1 Suppl):S3-10.",
+                    "the many faces of venous thromboembolism. Am J Surg. "
+                    "2010;199(1 Suppl):S3-10.",
                     doi="10.1016/j.amjsurg.2009.10.006",
                     pmid="20103082",
                     year=2010,
@@ -545,9 +544,7 @@ class CapriniVteCalculator(BaseCalculator):
                 "Consider extended prophylaxis for major surgery",
             )
         if hit_history:
-            warnings = warnings + (
-                "History of HIT - AVOID all heparin products",
-            )
+            warnings = warnings + ("History of HIT - AVOID all heparin products",)
 
         return Interpretation(
             summary=summary,

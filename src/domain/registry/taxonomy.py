@@ -4,7 +4,6 @@ Taxonomy Definitions
 Defines the taxonomy used for tool classification and discovery.
 """
 
-
 from ..value_objects.tool_keys import ClinicalContext, Specialty
 
 # Specialty groupings for easier discovery
@@ -51,30 +50,10 @@ SPECIALTY_GROUPS: dict[str, list[Specialty]] = {
 # Related specialties for cross-referencing
 RELATED_SPECIALTIES: dict[Specialty, set[Specialty]] = {
     # Anesthesia connections
-    Specialty.ANESTHESIOLOGY: {
-        Specialty.CRITICAL_CARE,
-        Specialty.SURGERY,
-        Specialty.PAIN_MEDICINE,
-        Specialty.EMERGENCY_MEDICINE
-    },
-    Specialty.CRITICAL_CARE: {
-        Specialty.ANESTHESIOLOGY,
-        Specialty.EMERGENCY_MEDICINE,
-        Specialty.INTERNAL_MEDICINE,
-        Specialty.PULMONOLOGY
-    },
-    Specialty.PAIN_MEDICINE: {
-        Specialty.ANESTHESIOLOGY,
-        Specialty.NEUROLOGY,
-        Specialty.RHEUMATOLOGY,
-        Specialty.REGIONAL_ANESTHESIA
-    },
-    Specialty.CARDIAC_ANESTHESIA: {
-        Specialty.ANESTHESIOLOGY,
-        Specialty.CARDIOLOGY,
-        Specialty.SURGERY
-    },
-
+    Specialty.ANESTHESIOLOGY: {Specialty.CRITICAL_CARE, Specialty.SURGERY, Specialty.PAIN_MEDICINE, Specialty.EMERGENCY_MEDICINE},
+    Specialty.CRITICAL_CARE: {Specialty.ANESTHESIOLOGY, Specialty.EMERGENCY_MEDICINE, Specialty.INTERNAL_MEDICINE, Specialty.PULMONOLOGY},
+    Specialty.PAIN_MEDICINE: {Specialty.ANESTHESIOLOGY, Specialty.NEUROLOGY, Specialty.RHEUMATOLOGY, Specialty.REGIONAL_ANESTHESIA},
+    Specialty.CARDIAC_ANESTHESIA: {Specialty.ANESTHESIOLOGY, Specialty.CARDIOLOGY, Specialty.SURGERY},
     # Internal medicine connections
     Specialty.NEPHROLOGY: {Specialty.INTERNAL_MEDICINE, Specialty.CRITICAL_CARE},
     Specialty.CARDIOLOGY: {Specialty.INTERNAL_MEDICINE, Specialty.CRITICAL_CARE, Specialty.SURGERY},
@@ -99,7 +78,6 @@ CONTEXT_DESCRIPTIONS: dict[ClinicalContext, str] = {
     ClinicalContext.DISPOSITION: "Tools that guide admission/discharge decisions",
     ClinicalContext.ELIGIBILITY: "Tools that assess eligibility for trials/treatments",
     ClinicalContext.PHYSIOLOGIC: "Tools for normal physiologic calculations",
-
     # Anesthesia / ICU specific
     ClinicalContext.PREOPERATIVE_ASSESSMENT: "Tools for preoperative risk assessment (ASA, RCRI, etc.)",
     ClinicalContext.AIRWAY_MANAGEMENT: "Tools for airway assessment and management (Mallampati, etc.)",

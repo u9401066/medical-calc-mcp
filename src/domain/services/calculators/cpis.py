@@ -85,7 +85,7 @@ class CpisCalculator(BaseCalculator):
                     "culture_growth",
                     "gram_stain_matches",
                 ],
-                output_type="Score 0-12 with VAP probability and antibiotic guidance"
+                output_type="Score 0-12 with VAP probability and antibiotic guidance",
             ),
             high_level=HighLevelKey(
                 specialties=(
