@@ -78,3 +78,8 @@ skips = ["B101"]  # Allow assert statements
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "mkdocs-awesome-pages-plugin>=2.10.1",
+]

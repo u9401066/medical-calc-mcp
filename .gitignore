@@ -58,6 +58,9 @@ Thumbs.db
 references/*.pdf
 *.log
 
+# MkDocs
+site/
+
 # SSL certificates (sensitive!)
 nginx/ssl/*.key
 nginx/ssl/*.crt
