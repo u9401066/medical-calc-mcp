@@ -138,6 +138,16 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 
 3. **Context-Aware Tool Discovery**: Two-level key system + Clinical Knowledge Graph for intelligent tool recommendation based on clinical context.
 
+### 🏆 Levels of Academic Value
+
+| Level | Contribution | Scholarly Focus |
+|-------|--------------|-----------------|
+| **L1** | **Validated Symbolic Engine** | Extends LLM with deterministic precision |
+| **L2** | **Hierarchical Tool Discovery** | Solves RAG precision in high-stakes domains |
+| **L3** | **Robust Semantic Extraction** | Resolves the "Vocabulary Mismatch" problem |
+| **L4** | **Knowledge-Gated Safety Layer** | **Unique**: Literature-derived constraint verification |
+| **L5** | **Clinical Hypergraph Agent** | Cross-specialty workflow reasoning |
+
 > 📄 For detailed research roadmap and benchmark strategy, see [ROADMAP.md](ROADMAP.md)
 
 ---

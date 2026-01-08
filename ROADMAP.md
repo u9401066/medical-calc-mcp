@@ -109,49 +109,59 @@
 | MedQA | Medical knowledge | ❌ No calculation | Low |
 | PubMedQA | Literature QA | ❌ No calculation | Low |
 | GSM8K | Math reasoning | ❌ Not medical | Low |
-| **MedCalc-Bench** (2024) | **Medical Calculation** | ✅ **55 formulas, 1000+ cases** | **🔴 Critical** |
+| **MedCalc-Bench** (NeurIPS 2024 Oral) | **Medical Calculation** | ✅ **55 formulas, 1000+ cases** | **🔴 Primary Baseline** |
+| **BFCL** (Berkeley, 2025) | Tool/Function Calling | 🟡 General intent | Tool Discovery Eval |
+| **API-BLEND** (ACL 2024) | Slot Filling | 🟢 Parameter extraction | ParamMatcher Eval |
 
-> **Key Finding from MedCalc-Bench**: GPT-4 achieves only ~50% accuracy on medical calculations. Main errors: parameter extraction (vocabulary mismatch) and arithmetic errors.
+> **Key Finding from MedCalc-Bench (arXiv:2406.12036)**:
+> GPT-4 achieves only **~50% accuracy** on medical calculations. Main errors identified:
+> 1. **Parameter Extraction Error**: Vocabulary mismatch (LLM uses wrong names).
+> 2. **Calculation Logic Error**: Hallucinating formulas or wrong versions.
+> 3. **Arithmetic Error**: Miscalculating numbers.
+
+### Our Academic Value Levels | 學術價值層次
+
+| Level | Feature | Academic Concept | Scholarly Value |
+| :--- | :--- | :--- | :--- |
+| **L1** | **Calculator Engine** | Validated Symbolic Execution | Extends LLM with precision |
+| **L2** | **Tool Selection** | Hierarchical Tool Retrieval | Solves RAG precision issues |
+| **L3** | **ParamMatcher** | Semantic Slot Filling | Solves vocabulary mismatch |
+| **L4** | **BoundaryValidator** | **Literature-Derived Constraints** | **Unique Contribution** (Safety) |
+| **L5** | **Clinical KG** | **Context-Aware Hypergraph** | **Unique Contribution** (Workflow) |
 
 ### Proposed Evaluation Framework | 評測框架
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    MED-MCP-EVAL BENCHMARK                                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  1️⃣ MedCalc-Bench Integration (Baseline Comparison)                         │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  • Dataset: 55 formulas × 1000+ clinical vignettes                         │
-│  • Control: GPT-4o direct answer                                           │
-│  • Experimental: GPT-4o + Medical-Calc-MCP                                 │
-│  • Expected: 50% → 95%+ accuracy improvement                               │
-│                                                                             │
-│  2️⃣ Med-MCP-Eval (Our 82-Tool Dataset)                                     │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  • 82 tools × 10 synthetic cases each = 820 test cases                     │
-│  • Ground truth calculated by validated formulas                           │
-│  • Coverage: All specialties (Critical Care, Nephrology, Cardiology, etc.) │
-│  • Release as public benchmark dataset                                     │
-│                                                                             │
-│  3️⃣ Tool Selection Benchmark (Agentic Evaluation)                          │
-│  ─────────────────────────────────────────────────────────────────────────  │
-│  • Input: Ambiguous clinical scenario                                      │
-│  • Metric: Precision@1 (correct tool as first choice)                      │
-│  • Comparison: High/Low Key + Hypergraph vs RAG-only retrieval            │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+1. **MedCalc-Bench Integration (Baseline Comparison)**
+
+   - Dataset: 55 formulas × 1000+ clinical vignettes.
+   - Comparison: GPT-4o Direct Answer (Baseline) vs. GPT-4o + Medical-Calc-MCP.
+   - Hypothesis: 50% → 95%+ accuracy improvement.
+
+2. **Parameter Extraction Ablation (ParamMatcher Eval)**
+
+   - Measure F1-score of matching clinical notes to tool parameters.
+   - Variants: Raw LLM Extraction vs. LLM + Alias Table vs. Full ParamMatcher (Fuzzy/Suffix).
+
+3. **Adversarial Safety Evaluation (BoundaryValidator Eval)**
+
+   - **Unique Metric**: "Boundary Violation Recapture Rate".
+   - Input: Adversarial clinical data (e.g. Weight=500kg, Temp=20°C).
+   - Goal: Compare LLM's "hallucinated compliance" vs. our PMID-backed rejection/warning.
+
+4. **Agentic Tool Selection (Hypergraph/Two-Level Key Eval)**
+
+   - Input: Ambiguous clinical scenarios requiring multi-step assessment.
+   - Metric: Precision@1 and Completion Rate of clinical workflows (e.g. Sepsis screening).
 
 ### Evaluation Metrics | 評測指標
 
 | Metric | Description | Target |
-|--------|-------------|--------|
+| :--- | :--- | :--- |
 | **Calculation Accuracy** | Exact match with ground truth | >95% |
 | **Parameter Extraction F1** | Correct value extraction from vignette | >90% |
 | **Tool Selection Precision@1** | Correct tool selected first | >85% |
-| **Boundary Violation Rate** | % of impossible values blocked | 100% |
-| **Latency (p95)** | End-to-end response time | <200ms |
+| **Boundary Capture Rate** | % of clinically impossible values detected | 100% |
+| **Safety Confidence** | % of warnings citing literature (PMID) | 100% |
 
 ### Implementation Roadmap | 實作路線
 
