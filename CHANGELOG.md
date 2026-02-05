@@ -13,12 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CLI arguments: `--ssl-keyfile`, `--ssl-certfile`, `--ssl-ca-certs`
   - Environment variables: `SSL_ENABLED`, `SSL_KEYFILE`, `SSL_CERTFILE`, `SSL_CA_CERTS`, `SSL_DIR`
   - Three deployment modes: Docker (with custom SSL_DIR), Local (with env vars), CLI (with args)
+  - **29 SSL unit tests** in `tests/test_ssl_config.py` (dataclass, from_env, validation, integration)
+- **Reference Statistics Script**: `scripts/count_references.py` for tracking literature citations
+  - 229 unique PMIDs, 190 unique DOIs
+  - 100% calculators have peer-reviewed citations
+  - Average 2.14 references per calculator
 - **Unit enum extensions**: Added `STAGE`, `CATEGORY`, `CLASS` for classification systems
 
 ### Changed
 - Updated HTTPS deployment documentation with custom certificate path examples
 - Improved type annotations across calculator files (mypy --strict compliant)
 - Fixed import sorting and code formatting (ruff check)
+- **Total tests: 1752** (was 1721, +31 new tests)
 
 ### Fixed
 - Fixed 250+ mypy type errors across 34 calculator files

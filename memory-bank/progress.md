@@ -5,7 +5,7 @@
 - uv 套件管理遷移完成
 - mypy --strict 100% 類型覆蓋
 - ruff 程式碼清理
-- 測試套件通過 (1721+ passed)
+- 測試套件通過 (1752+ passed)
 - 文件更新 (README, CHANGELOG, ROADMAP, CONTRIBUTING)
 - Dockerfile 更新為 uv 多階段建構
 - Git 推送 (commit 47c1f3e)
@@ -20,6 +20,16 @@
   - 更新部署文件 (DEPLOYMENT.md, README.md, README.zh-TW.md)
 - mypy --strict src 全部通過 (195 files)
 - ruff check 全部通過
+- SSL 測試套件 (29 tests in test_ssl_config.py)
+  - SslConfig dataclass 單元測試
+  - from_env() 環境變數測試
+  - validate() 驗證測試
+  - 整合測試 (create_server, main CLI)
+- 文獻引用統計 script (scripts/count_references.py)
+  - 229 unique PMIDs
+  - 190 unique DOIs
+  - 100% calculators have citations
+  - Average 2.14 refs per calculator
 
 ## Doing
 

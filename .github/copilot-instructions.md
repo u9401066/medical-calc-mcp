@@ -9,8 +9,9 @@
 |------|------|
 | **計算器數量** | 121 (涵蓋 24 個專科) |
 | **MCP Tools** | 128 (121 計算器 + 7 發現工具) |
-| **測試數量** | 1721+ |
+| **測試數量** | 1752+ |
 | **測試覆蓋率** | 92% |
+| **文獻引用** | 229 PMIDs, 190 DOIs (100% 覆蓋) |
 | **架構** | DDD Onion + FastMCP |
 | **Python 版本** | 3.11+ |
 | **套件管理** | uv |
@@ -31,7 +32,10 @@ uv run mypy --strict src tests
 uv run ruff check .
 
 # 計算工具數量
-$env:PYTHONPATH = "."; python scripts/count_tools.py
+uv run python scripts/count_tools.py
+
+# 計算引用文獻數量
+uv run python scripts/count_references.py
 
 # 啟動 MCP 伺服器 (stdio)
 uv run python -m src.main
