@@ -10,7 +10,6 @@ This script fixes:
 """
 
 import re
-import sys
 from pathlib import Path
 
 
@@ -22,15 +21,15 @@ def fix_interpretation_lists(content: str) -> str:
         (r'(warnings=)\[([^\]]*)\]', r'\1tuple([\2])'),
         (r'(next_steps=)\[([^\]]*)\]', r'\1tuple([\2])'),
     ]
-    
+
     for pattern, replacement in patterns:
         content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-    
+
     # Pattern for variable references: recommendations=recommendations -> recommendations=tuple(recommendations)
     # But only inside Interpretation(...) calls
     # This is tricky - we need context-aware replacement
     # Use a simpler approach: only convert bare variable if it's a known pattern
-    
+
     # For variables being passed in (not literals), wrap in tuple()
     # Pattern: only match if NOT already tuple() wrapped
     var_patterns = [
@@ -38,10 +37,10 @@ def fix_interpretation_lists(content: str) -> str:
         (r'(\s+warnings=)(?!tuple\()([a-z_]+),', r'\1tuple(\2),'),
         (r'(\s+next_steps=)(?!tuple\()([a-z_]+),', r'\1tuple(\2),'),
     ]
-    
+
     for pattern, replacement in var_patterns:
         content = re.sub(pattern, replacement, content)
-    
+
     return content
 
 
@@ -107,7 +106,7 @@ def ensure_any_import(content: str) -> str:
                 content = content[:end] + '\n\nfrom typing import Any' + content[end:]
         else:
             content = 'from typing import Any\n\n' + content
-    
+
     return content
 
 
@@ -115,17 +114,17 @@ def fix_file(filepath: Path) -> bool:
     """Fix mypy errors in a single file. Returns True if changes were made."""
     content = filepath.read_text(encoding='utf-8')
     original = content
-    
+
     # Apply fixes
     content = fix_interpretation_lists(content)
     content = fix_references_tuple(content)
     content = fix_calculate_method_signature(content)
     content = fix_missing_dict_type_params(content)
-    
+
     # Ensure Any is imported if we added type annotations
     if content != original and 'Any' in content:
         content = ensure_any_import(content)
-    
+
     if content != original:
         filepath.write_text(content, encoding='utf-8')
         return True
@@ -136,7 +135,7 @@ def main() -> None:
     """Main entry point."""
     # Files with known issues from mypy output
     calculator_dir = Path('src/domain/services/calculators')
-    
+
     problem_files = [
         'tug.py', 'toronto_css.py', 'stone_score.py', 'sflt_plgf.py',
         'scorad.py', 'salt.py', 'pop_q.py', 'pasi.py', 'nds.py',
@@ -145,7 +144,7 @@ def main() -> None:
         'cas_graves.py', 'bsa_derm.py', 'bosniak.py', 'barthel_index.py',
         'score2.py', 'nutric_score.py', 'nrs_2002.py', 'icdsc.py', 'hfa_peff.py',
     ]
-    
+
     fixed_count = 0
     for filename in problem_files:
         filepath = calculator_dir / filename
@@ -157,7 +156,7 @@ def main() -> None:
                 print(f"No changes: {filepath}")
         else:
             print(f"Not found: {filepath}")
-    
+
     print(f"\nTotal files fixed: {fixed_count}")
 
 

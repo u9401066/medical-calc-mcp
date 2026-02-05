@@ -79,10 +79,10 @@ from .epds import EPDSCalculator
 
 # Phase 19: Guideline-Recommended Missing Tools (2025)
 from .euroscore_ii import EuroSCOREIICalculator
-from .fib4_index import Fib4IndexCalculator
 
 # MedCalc-Bench P0: AKI Differential Diagnosis
 from .fena import FENaCalculator
+from .fib4_index import Fib4IndexCalculator
 
 # Phase 26: Endocrinology (Guideline-Recommended)
 from .findrisc import FINDRISCCalculator
@@ -90,10 +90,10 @@ from .fisher_grade import FisherGradeCalculator
 from .four_at_delirium import FourATCalculator
 from .four_score import FourScoreCalculator
 from .four_ts_hit import FourTsHitCalculator
-from .frax import FRAXCalculator
 
 # MedCalc-Bench P0: Cardiovascular Risk Assessment
 from .framingham import FraminghamRiskScoreCalculator
+from .frax import FRAXCalculator
 from .free_water_deficit import FreeWaterDeficitCalculator
 from .gad7 import GAD7Calculator
 from .gcs import GlasgowComaScaleCalculator

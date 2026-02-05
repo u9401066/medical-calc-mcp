@@ -25,7 +25,6 @@ ATP III Update:
     Circulation. 2002;106(25):3143-3421. PMID: 12485966.
 """
 
-import math
 from typing import Literal
 
 from ...entities.score_result import ScoreResult
@@ -40,7 +39,6 @@ from ...value_objects.tool_keys import (
 )
 from ...value_objects.units import Unit
 from ..base import BaseCalculator
-
 
 # Age points for men (Wilson 1998, ATP III)
 AGE_POINTS_MEN: dict[str, int] = {

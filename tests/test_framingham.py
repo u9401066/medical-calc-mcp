@@ -16,7 +16,7 @@ import pytest
 from src.domain.services.calculators.framingham import (
     FraminghamRiskScoreCalculator,
 )
-from src.domain.value_objects.interpretation import RiskLevel, Severity
+from src.domain.value_objects.interpretation import RiskLevel
 
 
 @pytest.fixture

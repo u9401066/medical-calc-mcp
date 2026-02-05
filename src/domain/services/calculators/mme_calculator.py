@@ -37,7 +37,6 @@ from ...value_objects.tool_keys import (
 from ...value_objects.units import Unit
 from ..base import BaseCalculator
 
-
 # Opioid conversion factors to morphine milligram equivalents
 # Source: CDC 2022 Guidelines, CMS Opioid Oral MME Conversion Factors
 OPIOID_MME_FACTORS: dict[str, float] = {

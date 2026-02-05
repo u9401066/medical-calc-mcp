@@ -15,7 +15,6 @@ import pytest
 
 from src.domain.services.calculators.mme_calculator import (
     MMECalculator,
-    OPIOID_MME_FACTORS,
 )
 from src.domain.value_objects.interpretation import RiskLevel, Severity
 
