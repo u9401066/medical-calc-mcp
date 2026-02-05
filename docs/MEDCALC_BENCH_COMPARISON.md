@@ -179,4 +179,118 @@ MedCalc-Bench Evaluation Script
 
 ---
 
+## 🧪 資料來源與測試策略
+
+### MedCalc-Bench 資料來源澄清
+
+MedCalc-Bench **並非來自 MDCalc 網站**，而是：
+
+| 來源 | 說明 | 授權 |
+|------|------|------|
+| **PMC-Patients** | PubMed Central 公開病例報告 | CC-BY-SA 4.0 |
+| **臨床醫師撰寫** | 匿名 patient vignettes | 原創 |
+| **模板生成** | Python 模板產生的病人筆記 | 原創 |
+
+> **重點**: 55 個計算器的公式/規則是公開醫學知識，不涉及任何網站版權
+
+### 原始測試方法 vs 我們的架構
+
+**原始 MedCalc-Bench 測試** (測試 LLM 能力):
+```
+Patient Note → LLM (萃取 + 計算) → 比對 Ground Truth
+```
+
+測試的是 LLM:
+1. 從病人筆記萃取正確實體 (Relevant Entities)
+2. 選擇正確公式/規則
+3. 執行正確算術運算
+
+**我們的 Agent + MCP 架構**:
+```
+User Query → Agent → 理解需求 → 呼叫 MCP Tool → 計算器執行 → 結果
+```
+
+### 可執行的測試方案
+
+#### 方案 A: 計算精確度驗證 (Unit Test) ✅ 推薦
+
+使用 MedCalc-Bench 的 `Relevant Entities` + `Ground Truth Answer` 直接測試我們的計算器：
+
+```python
+# 範例：使用 MedCalc-Bench 驗證 BMI 計算器
+test_case = {
+    "Calculator Name": "BMI",
+    "Relevant Entities": {"weight_kg": 70, "height_m": 1.75},
+    "Ground Truth Answer": 22.86,
+    "Lower Limit": 21.72,  # 95%
+    "Upper Limit": 24.00   # 105%
+}
+
+result = calculate_bmi(weight_kg=70, height_m=1.75)
+assert test_case["Lower Limit"] <= result <= test_case["Upper Limit"]
+```
+
+**優點**: 
+- 可直接驗證我們的計算邏輯正確性
+- 不需要 LLM，純程式測試
+- 資料: 使用 `datasets/test_data.csv` 中已有 Relevant Entities 的案例
+
+#### 方案 B: 端到端 Agent 測試 (E2E Test)
+
+給 Agent Patient Note + Question，讓 Agent 決定呼叫哪個 MCP Tool：
+
+```python
+# 範例 E2E 測試
+patient_note = "A 45-year-old male presents with weight 70kg and height 175cm..."
+question = "What is the patient's BMI?"
+
+# Agent 應該：
+# 1. 理解需要計算 BMI
+# 2. 從 note 萃取 weight=70, height=1.75
+# 3. 呼叫 calculate_bmi MCP tool
+# 4. 回傳結果 ≈ 22.86
+```
+
+**優點**: 測試完整 Agent + MCP 整合
+**挑戰**: 需要 LLM 執行 Agent 角色 (成本較高)
+
+#### 方案 C: Tool Discovery 測試
+
+測試 Agent 是否能正確選擇工具：
+
+```python
+# 給定計算任務，Agent 能否發現正確的 MCP tool?
+question = "Calculate the patient's creatinine clearance"
+expected_tool = "calculate_cockcroft_gault"  # 或 "calculate_ckd_epi_2021"
+
+# 使用 discover() 或 find_tools_by_params() 測試
+```
+
+### 建議實作步驟
+
+```
+Phase 1: 下載 MedCalc-Bench test_data.csv
+         ↓
+Phase 2: 建立 calculator name mapping (他們的名稱 → 我們的 tool_id)
+         ↓
+Phase 3: 對 27 個已實作計算器執行方案 A (Unit Test)
+         ↓
+Phase 4: 產生精確度報告 (Accuracy Report)
+         ↓
+Phase 5: 修正任何偏差的計算邏輯
+         ↓
+Phase 6: (可選) 執行方案 B (E2E with LLM)
+```
+
+### 可用資源
+
+| 資源 | 連結 | 說明 |
+|------|------|------|
+| Test Dataset | `datasets/test_data.csv` | 1,100 instances |
+| Training Data | `datasets/train_data.csv.zip` | 10,543 instances |
+| Calculator Implementations | `calculator_implementations/` | 參考實作 |
+| HuggingFace (Verified) | `nsk7153/MedCalc-Bench-Verified` | 最新修正版 |
+
+---
+
 *此文件追蹤 MedCalc-Bench 整合進度*
