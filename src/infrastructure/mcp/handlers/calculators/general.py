@@ -9,6 +9,7 @@ Calculators:
 - Cockcroft-Gault - Creatinine clearance for drug dosing
 - Corrected Calcium - Albumin-adjusted calcium
 - Parkland Formula - Burn fluid resuscitation
+- Charlson Comorbidity Index (CCI) - 10-year mortality prediction
 """
 
 from typing import Annotated, Any, Literal, Optional
@@ -213,6 +214,105 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
                 "tbsa_percent": tbsa_percent,
                 "hours_since_burn": hours_since_burn,
                 "is_pediatric": is_pediatric,
+            },
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
+
+    @mcp.tool()
+    def calculate_charlson_comorbidity_index(
+        # Age (required if age adjustment enabled)
+        age_years: Annotated[Optional[int], Field(default=None, ge=18, le=120, description="年齡 Age | Unit: years | Required for age-adjusted CCI")] = None,
+        # 1-point conditions
+        myocardial_infarction: Annotated[bool, Field(description="心肌梗塞 Myocardial infarction | History of MI (not just ECG changes)")] = False,
+        congestive_heart_failure: Annotated[bool, Field(description="充血性心衰竭 Congestive heart failure | Exertional or PND")] = False,
+        peripheral_vascular_disease: Annotated[bool, Field(description="周邊血管疾病 Peripheral vascular disease | Claudication, bypass, AAA ≥6cm")] = False,
+        cerebrovascular_disease: Annotated[bool, Field(description="腦血管疾病 Cerebrovascular disease | CVA with mild/no residua or TIA")] = False,
+        dementia: Annotated[bool, Field(description="失智症 Dementia | Chronic cognitive deficit")] = False,
+        chronic_pulmonary_disease: Annotated[bool, Field(description="慢性肺病 Chronic pulmonary disease | COPD, asthma, emphysema")] = False,
+        connective_tissue_disease: Annotated[bool, Field(description="結締組織疾病 Connective tissue disease | Lupus, RA, polymyositis")] = False,
+        peptic_ulcer_disease: Annotated[bool, Field(description="消化性潰瘍 Peptic ulcer disease | Requiring treatment")] = False,
+        # Hierarchical - liver (3 > 1)
+        mild_liver_disease: Annotated[bool, Field(description="輕度肝病 Mild liver disease | Chronic hepatitis, cirrhosis without portal HTN (1 pt)")] = False,
+        moderate_severe_liver_disease: Annotated[bool, Field(description="中重度肝病 Moderate/severe liver disease | Cirrhosis with portal HTN ± variceal bleeding (3 pts)")] = False,
+        # Hierarchical - diabetes (2 > 1)
+        diabetes_uncomplicated: Annotated[bool, Field(description="糖尿病(無併發症) Diabetes without complications | Insulin or oral agent (1 pt)")] = False,
+        diabetes_with_end_organ_damage: Annotated[bool, Field(description="糖尿病(有併發症) Diabetes with end-organ damage | Retinopathy, neuropathy, nephropathy (2 pts)")] = False,
+        # 2-point conditions
+        hemiplegia: Annotated[bool, Field(description="偏癱/截癱 Hemiplegia or paraplegia | (2 pts)")] = False,
+        moderate_severe_renal_disease: Annotated[bool, Field(description="中重度腎病 Moderate/severe renal disease | Cr >3, dialysis, transplant, uremia (2 pts)")] = False,
+        any_malignancy: Annotated[bool, Field(description="任何惡性腫瘤 Any malignancy | Non-metastatic, including leukemia/lymphoma (2 pts)")] = False,
+        # 6-point conditions (highest hierarchy for cancer)
+        metastatic_solid_tumor: Annotated[bool, Field(description="轉移性實體腫瘤 Metastatic solid tumor | (6 pts, supersedes any_malignancy)")] = False,
+        aids: Annotated[bool, Field(description="愛滋病 AIDS | Not just HIV+ (6 pts)")] = False,
+        # Age adjustment option
+        include_age_adjustment: Annotated[bool, Field(description="包含年齡調整 Include age adjustment | +1 point per decade from age 50")] = True,
+    ) -> dict[str, Any]:
+        """
+        📊 Charlson Comorbidity Index (CCI): 共病指數
+
+        預測 10 年死亡風險，基於 17 種共病條件的加權評分。
+        臨床研究中最廣泛使用的共病評估工具。
+
+        **計分條件:**
+
+        **1 分:** MI, CHF, PVD, CVA/TIA, dementia, COPD, connective tissue disease,
+                 peptic ulcer, mild liver disease, DM without complications
+
+        **2 分:** Hemiplegia, moderate-severe renal disease (Cr >3, dialysis),
+                 DM with end-organ damage, any malignancy (non-metastatic)
+
+        **3 分:** Moderate-severe liver disease (cirrhosis + portal HTN)
+
+        **6 分:** Metastatic solid tumor, AIDS
+
+        **層級規則 (只計較高分):**
+        - Liver: Mild (1) vs Moderate/Severe (3)
+        - DM: Without (1) vs With complications (2)
+        - Cancer: Localized (2) vs Metastatic (6)
+
+        **年齡調整 (可選):**
+        - 50-59歲: +1  |  60-69歲: +2  |  70-79歲: +3  |  ≥80歲: +4
+
+        **10 年存活率估計:**
+        - CCI 0: 98%  |  CCI 1: 96%  |  CCI 2: 90%
+        - CCI 3: 77%  |  CCI 4: 53%  |  CCI 5: 21%  |  CCI ≥6: ≤2%
+
+        **臨床應用:**
+        - 研究風險校正
+        - 術前評估
+        - 治療決策
+        - 預後溝通
+
+        **參考文獻:**
+        1. Charlson ME, et al. J Chronic Dis. 1987;40(5):373-383. PMID: 3558716
+        2. Quan H, et al. Med Care. 2005;43(11):1130-1139. PMID: 16224307
+
+        Returns:
+            CCI 分數、10 年存活率估計、共病條件列表、處置建議
+        """
+        request = CalculateRequest(
+            tool_id="charlson_comorbidity_index",
+            params={
+                "age_years": age_years,
+                "myocardial_infarction": myocardial_infarction,
+                "congestive_heart_failure": congestive_heart_failure,
+                "peripheral_vascular_disease": peripheral_vascular_disease,
+                "cerebrovascular_disease": cerebrovascular_disease,
+                "dementia": dementia,
+                "chronic_pulmonary_disease": chronic_pulmonary_disease,
+                "connective_tissue_disease": connective_tissue_disease,
+                "peptic_ulcer_disease": peptic_ulcer_disease,
+                "mild_liver_disease": mild_liver_disease,
+                "moderate_severe_liver_disease": moderate_severe_liver_disease,
+                "diabetes_uncomplicated": diabetes_uncomplicated,
+                "diabetes_with_end_organ_damage": diabetes_with_end_organ_damage,
+                "hemiplegia": hemiplegia,
+                "moderate_severe_renal_disease": moderate_severe_renal_disease,
+                "any_malignancy": any_malignancy,
+                "metastatic_solid_tumor": metastatic_solid_tumor,
+                "aids": aids,
+                "include_age_adjustment": include_age_adjustment,
             },
         )
         response = use_case.execute(request)

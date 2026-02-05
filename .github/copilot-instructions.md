@@ -7,11 +7,11 @@
 
 | 指標 | 數值 |
 |------|------|
-| **計算器數量** | 121 (涵蓋 24 個專科) |
-| **MCP Tools** | 128 (121 計算器 + 7 發現工具) |
-| **測試數量** | 1752+ |
+| **計算器數量** | 128 (涵蓋 26 個專科) |
+| **MCP Tools** | 135 (128 計算器 + 7 發現工具) |
+| **測試數量** | 2016+ |
 | **測試覆蓋率** | 92% |
-| **文獻引用** | 229 PMIDs, 190 DOIs (100% 覆蓋) |
+| **文獻引用** | 244 PMIDs, 205 DOIs (100% 覆蓋) |
 | **架構** | DDD Onion + FastMCP |
 | **Python 版本** | 3.11+ |
 | **套件管理** | uv |
@@ -54,7 +54,7 @@ src/
 ├── domain/           # 核心業務邏輯 (無依賴)
 │   ├── entities/     # ScoreResult, ToolMetadata
 │   ├── services/     # BaseCalculator, ToolRegistry
-│   │   └── calculators/  # 121 個計算器實作
+│   │   └── calculators/  # 128 個計算器實作
 │   ├── validation/   # ParameterValidator, BoundarySpec
 │   └── value_objects/    # Unit, Reference, Interpretation
 ├── application/      # 用例層
@@ -135,21 +135,23 @@ def calculate_my_tool(
 | `calculate(tool_id, params)` | 執行計算 |
 | `calculate_batch(calculations)` | 批次計算 |
 
-## 🏥 專科分類 (24 專科, 121 計算器)
+## 🏥 專科分類 (26 專科, 128 計算器)
 
 | 專科 | 數量 | 例子 |
 |------|------|------|
-| Critical Care | 17 | SOFA, APACHE II, qSOFA, NEWS2, RASS, CAM-ICU |
-| Cardiology | 10 | GRACE, CHA₂DS₂-VASc, HAS-BLED, HEART |
+| Critical Care | 18 | SOFA, APACHE II, qSOFA, NEWS2, RASS, SIRS |
+| Cardiology | 11 | GRACE, CHA₂DS₂-VASc, HAS-BLED, Framingham |
+| Emergency | 9 | GCS, Wells DVT/PE, PERC Rule, Shock Index |
 | Anesthesiology | 8 | ASA, RCRI, Mallampati, MABL, STOP-BANG |
-| Emergency | 8 | GCS, Wells DVT/PE, Centor, Shock Index |
 | Neurology | 7 | NIHSS, ABCD2, Hunt-Hess, ICH Score |
 | Psychiatry | 7 | PHQ-9, GAD-7, MADRS, HAM-D |
 | Geriatrics | 7 | Barthel, MoCA, MMSE, CFS |
+| Nephrology | 6 | CKD-EPI, FENa, Serum Osmolality |
 | Pediatrics | 6 | APGAR, PEWS, pSOFA, PIM3 |
 | Surgery/Trauma | 6 | ISS, TRISS, Caprini VTE, Parkland |
 | Endocrinology | 6 | FINDRISC, FRAX |
-| 其他 | 39 | 腎臟、肝臟、肺臟、血液等 |
+| Pain Medicine | 1 | MME Calculator |
+| 其他 | 36 | 肝臟、肺臟、血液、皮膚等 |
 
 ## 📋 臨床工作流程範例
 

@@ -50,6 +50,9 @@ from .chads2_va import Chads2VaCalculator  # 2024 ESC - sex-neutral
 # Phase 6: Cardiology
 from .chads2_vasc import Chads2VascCalculator
 
+# MedCalc-Bench P0: Comorbidity Assessment
+from .charlson_comorbidity import CharlsonComorbidityIndexCalculator
+
 # Phase 8: Guideline-Recommended Tools
 from .child_pugh import ChildPughCalculator
 from .ckd_epi_2021 import CkdEpi2021Calculator
@@ -78,6 +81,9 @@ from .epds import EPDSCalculator
 from .euroscore_ii import EuroSCOREIICalculator
 from .fib4_index import Fib4IndexCalculator
 
+# MedCalc-Bench P0: AKI Differential Diagnosis
+from .fena import FENaCalculator
+
 # Phase 26: Endocrinology (Guideline-Recommended)
 from .findrisc import FINDRISCCalculator
 from .fisher_grade import FisherGradeCalculator
@@ -85,6 +91,9 @@ from .four_at_delirium import FourATCalculator
 from .four_score import FourScoreCalculator
 from .four_ts_hit import FourTsHitCalculator
 from .frax import FRAXCalculator
+
+# MedCalc-Bench P0: Cardiovascular Risk Assessment
+from .framingham import FraminghamRiskScoreCalculator
 from .free_water_deficit import FreeWaterDeficitCalculator
 from .gad7 import GAD7Calculator
 from .gcs import GlasgowComaScaleCalculator
@@ -125,6 +134,9 @@ from .mascc_score import MasccScoreCalculator
 
 # Phase 6: Hepatology
 from .meld_score import MeldScoreCalculator
+
+# MedCalc-Bench P0: Opioid Risk Assessment
+from .mme_calculator import MMECalculator
 from .mmse import MMSECalculator
 from .mna import MNACalculator
 from .moca import MoCACalculator
@@ -150,6 +162,9 @@ from .pcl5 import PCL5Calculator
 from .pediatric_dosing import PediatricDosingCalculator
 from .pediatric_gcs import PediatricGCSCalculator
 from .pediatric_sofa import PediatricSOFACalculator
+
+# MedCalc-Bench P0: PE Rule-out
+from .perc_rule import PERCRuleCalculator
 from .pews import PEWSCalculator
 from .pf_ratio import PfRatioCalculator
 
@@ -170,8 +185,14 @@ from .scorad import SCORADCalculator
 
 # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
 from .score2 import SCORE2Calculator
+
+# MedCalc-Bench P0: Laboratory Calculations
+from .serum_osmolality import SerumOsmolalityCalculator
 from .sflt_plgf import SFltPlGFRatioCalculator
 from .shock_index import ShockIndexCalculator
+
+# MedCalc-Bench P0: Sepsis Assessment
+from .sirs import SIRSCriteriaCalculator
 from .sofa2_score import Sofa2ScoreCalculator  # SOFA-2 (JAMA 2025)
 
 # Phase 4: ICU/Emergency Calculators
@@ -352,6 +373,20 @@ __all__ = [
     "TUGCalculator",
     "BarthelIndexCalculator",
     "MNACalculator",
+    # MedCalc-Bench P0: Comorbidity Assessment
+    "CharlsonComorbidityIndexCalculator",
+    # MedCalc-Bench P0: AKI Differential Diagnosis
+    "FENaCalculator",
+    # MedCalc-Bench P0: Sepsis Assessment
+    "SIRSCriteriaCalculator",
+    # MedCalc-Bench P0: Laboratory Calculations
+    "SerumOsmolalityCalculator",
+    # MedCalc-Bench P0: PE Rule-out
+    "PERCRuleCalculator",
+    # MedCalc-Bench P0: Opioid Risk Assessment
+    "MMECalculator",
+    # MedCalc-Bench P0: Cardiovascular Risk Assessment
+    "FraminghamRiskScoreCalculator",
 ]
 
 
@@ -510,4 +545,18 @@ CALCULATORS: list[type[BaseCalculator]] = [
     TUGCalculator,
     BarthelIndexCalculator,
     MNACalculator,
+    # MedCalc-Bench P0: Comorbidity Assessment
+    CharlsonComorbidityIndexCalculator,
+    # MedCalc-Bench P0: AKI Differential Diagnosis
+    FENaCalculator,
+    # MedCalc-Bench P0: Sepsis Assessment
+    SIRSCriteriaCalculator,
+    # MedCalc-Bench P0: Laboratory Calculations
+    SerumOsmolalityCalculator,
+    # MedCalc-Bench P0: PE Rule-out
+    PERCRuleCalculator,
+    # MedCalc-Bench P0: Opioid Risk Assessment
+    MMECalculator,
+    # MedCalc-Bench P0: Cardiovascular Risk Assessment
+    FraminghamRiskScoreCalculator,
 ]

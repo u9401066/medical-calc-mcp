@@ -47,6 +47,8 @@ class Unit(Enum):
     MMOL_L = "mmol/L"  # Glucose, etc.
     G_DL = "g/dL"  # Hemoglobin
     CELLS_UL = "cells/µL"  # Cell counts
+    MOSM_KG = "mOsm/kg"  # Osmolality
+    MME_DAY = "MME/day"  # Morphine Milligram Equivalent per day
 
     # Time
     DAYS = "days"

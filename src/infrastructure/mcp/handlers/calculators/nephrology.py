@@ -87,3 +87,52 @@ def register_nephrology_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+
+    @mcp.tool()
+    def calculate_fena(
+        urine_sodium: Annotated[float, Field(ge=0, le=300, description="尿液鈉 Urine sodium (mEq/L) | Range: 0-300")],
+        plasma_sodium: Annotated[float, Field(ge=100, le=180, description="血漿鈉 Plasma/serum sodium (mEq/L) | Range: 100-180")],
+        urine_creatinine: Annotated[float, Field(gt=0, le=500, description="尿液肌酸酐 Urine creatinine (mg/dL) | Range: 0-500")],
+        plasma_creatinine: Annotated[float, Field(gt=0, le=30, description="血漿肌酸酐 Plasma/serum creatinine (mg/dL) | Range: 0-30")],
+        on_diuretics: Annotated[bool, Field(description="是否使用利尿劑 On diuretics? (affects interpretation reliability)")] = False,
+    ) -> dict[str, Any]:
+        """
+        🔬 FENa: 鈉排泄分數 (Fractional Excretion of Sodium)
+
+        FENa 用於區分急性腎損傷 (AKI) 的病因：前腎性氮血症 vs 急性腎小管壞死 (ATN)。
+
+        **公式:**
+        FENa (%) = (尿鈉 × 血肌酐) / (血鈉 × 尿肌酐) × 100
+
+        **解讀:**
+
+        | FENa | 可能病因 | 腎臟狀態 |
+        |------|---------|---------|
+        | <1% | 前腎性氮血症 | 腎臟正常保鈉 |
+        | 1-2% | 不確定 | 可能為過渡期 |
+        | >2% | 腎實質性 (ATN) | 腎小管受損無法保鈉 |
+
+        **注意事項:**
+        - 利尿劑會增加 FENa，造成結果不可靠
+        - 使用利尿劑時，建議改用 FEUrea (尿素排泄分數)
+        - FENa <1% 也可見於：對比劑腎病變、橫紋肌溶解症、早期阻塞性腎病、急性腎絲球腎炎
+
+        **參考文獻:**
+        - Espinel CH. JAMA. 1976;236(6):579-581. PMID: 947239
+        - Miller TR, et al. Ann Intern Med. 1978;89(1):47-50. PMID: 666184
+
+        Returns:
+            FENa 百分比與臨床解讀
+        """
+        request = CalculateRequest(
+            tool_id="fena",
+            params={
+                "urine_sodium": urine_sodium,
+                "plasma_sodium": plasma_sodium,
+                "urine_creatinine": urine_creatinine,
+                "plasma_creatinine": plasma_creatinine,
+                "on_diuretics": on_diuretics,
+            },
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
