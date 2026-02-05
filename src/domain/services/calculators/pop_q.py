@@ -17,6 +17,8 @@ Reference (Clinical Use):
     PMID: 21505577
 """
 
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -108,7 +110,7 @@ class POPQCalculator(BaseCalculator):
             ),
         )
 
-    def calculate(self, **params) -> ScoreResult:
+    def calculate(self, **params: Any) -> ScoreResult:
         """
         Calculate POP-Q stage.
 
@@ -206,7 +208,7 @@ class POPQCalculator(BaseCalculator):
 
         # Identify predominant compartment
         max_values = {"anterior": anterior_max, "posterior": posterior_max, "apical": apical_max}
-        predominant = max(max_values, key=max_values.get)
+        predominant = max(max_values, key=lambda k: max_values[k])
 
         # Recommendations
         recommendations = []
@@ -259,11 +261,11 @@ class POPQCalculator(BaseCalculator):
                 severity=severity,
                 stage=f"Stage {stage}",
                 stage_description=stage_description,
-                recommendations=recommendations,
-                warnings=warnings,
-                next_steps=next_steps,
+                recommendations=tuple(recommendations),
+                warnings=tuple(warnings),
+                next_steps=tuple(next_steps),
             ),
-            references=self.metadata.references,
+            references=list(self.metadata.references),
             tool_id=self.metadata.low_level.tool_id,
             tool_name=self.metadata.low_level.name,
             raw_inputs=params,

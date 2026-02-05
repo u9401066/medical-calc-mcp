@@ -266,7 +266,7 @@ class TestMyCalculator:
 
 | 指標 | 數值 |
 |------|------|
-| Calculators | 26 |
-| MCP Tools | 33 |
-| Tests | 128 |
-| Coverage | 67% |
+| Calculators | 121 |
+| MCP Tools | 128 |
+| Tests | 1721+ |
+| Coverage | 92% |

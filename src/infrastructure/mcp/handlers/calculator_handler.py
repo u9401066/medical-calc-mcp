@@ -562,7 +562,7 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
         Dictionary of param_name -> schema details
     """
     # Parameter source mapping (where to find these values clinically)
-    PARAM_SOURCES: dict[str, dict[str, Any]] = {
+    param_sources: dict[str, dict[str, Any]] = {
         # Lab values
         "serum_creatinine": {
             "type": "number",
@@ -759,8 +759,8 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
 
     schemas: dict[str, dict[str, Any]] = {}
     for param in param_names:
-        if param in PARAM_SOURCES:
-            schemas[param] = PARAM_SOURCES[param]
+        if param in param_sources:
+            schemas[param] = param_sources[param]
         else:
             # Generate generic schema
             schemas[param] = {

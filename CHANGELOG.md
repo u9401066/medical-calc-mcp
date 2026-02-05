@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SSL/TLS Certificate Path Configuration**: Flexible SSL configuration for HTTPS deployment
+  - New `SslConfig` dataclass in `src/infrastructure/mcp/config.py`
+  - CLI arguments: `--ssl-keyfile`, `--ssl-certfile`, `--ssl-ca-certs`
+  - Environment variables: `SSL_ENABLED`, `SSL_KEYFILE`, `SSL_CERTFILE`, `SSL_CA_CERTS`, `SSL_DIR`
+  - Three deployment modes: Docker (with custom SSL_DIR), Local (with env vars), CLI (with args)
+- **Unit enum extensions**: Added `STAGE`, `CATEGORY`, `CLASS` for classification systems
+
+### Changed
+- Updated HTTPS deployment documentation with custom certificate path examples
+- Improved type annotations across calculator files (mypy --strict compliant)
+- Fixed import sorting and code formatting (ruff check)
+
+### Fixed
+- Fixed 250+ mypy type errors across 34 calculator files
+- Fixed `Interpretation` argument types (list → tuple conversion)
+- Fixed `ScoreResult.references` type compatibility
+- Fixed missing type parameters for generic `dict` types
+- Fixed `networkx` import type annotation
+
 ## [1.5.0] - 2026-01-08
 
 ### Added

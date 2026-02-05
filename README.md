@@ -520,7 +520,7 @@ services:
 
 ## 🔒 HTTPS Deployment ⭐ NEW
 
-Enable HTTPS for secure communication in production environments.
+Enable HTTPS for secure communication in production environments with flexible certificate configuration.
 
 ### Architecture
 
@@ -569,6 +569,16 @@ Internal (HTTP, Docker network only):
 └── http://medical-calc-api:8080  → API Server
 ```
 
+### SSL Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SSL_ENABLED` | `false` | Enable SSL/TLS (`true`/`false`) |
+| `SSL_KEYFILE` | - | Path to SSL private key file |
+| `SSL_CERTFILE` | - | Path to SSL certificate file |
+| `SSL_CA_CERTS` | - | Path to CA certificates (optional) |
+| `SSL_DIR` | `./nginx/ssl` | SSL cert directory (Docker only) |
+
 ### Option 1: Docker Deployment (Recommended)
 
 Best for production and team environments.
@@ -588,6 +598,16 @@ chmod +x scripts/generate-ssl-certs.sh
 ./scripts/start-https-docker.sh status   # Check status
 ```
 
+**Custom Certificates (Docker):**
+
+```bash
+# Use custom certificate directory
+SSL_DIR=/path/to/your/certs docker-compose -f docker-compose.https.yml up -d
+
+# Use Let's Encrypt certificates
+SSL_DIR=/etc/letsencrypt/live/example.com docker-compose -f docker-compose.https.yml up -d
+```
+
 **Endpoints:**
 
 | Service | URL | Description |
@@ -601,16 +621,35 @@ chmod +x scripts/generate-ssl-certs.sh
 
 ### Option 2: Local Development (No Docker)
 
-Uses Uvicorn's native SSL support for quick local testing.
+Uses Python/Uvicorn native SSL support for quick local testing.
 
 ```bash
-# Step 1: Generate SSL certificates
+# Step 1: Generate SSL certificates (or use your own)
 ./scripts/generate-ssl-certs.sh
 
 # Step 2: Start HTTPS services
 ./scripts/start-https-local.sh          # Start both MCP and API
 ./scripts/start-https-local.sh sse      # Start MCP SSE only
 ./scripts/start-https-local.sh api      # Start REST API only
+```
+
+**Custom Certificates (Local):**
+
+```bash
+# Use custom certificate paths via environment variables
+SSL_KEYFILE=/path/to/server.key \
+SSL_CERTFILE=/path/to/server.crt \
+./scripts/start-https-local.sh
+
+# Custom ports
+SSL_KEYFILE=/certs/key.pem SSL_CERTFILE=/certs/cert.pem \
+MCP_PORT=9000 API_PORT=9001 \
+./scripts/start-https-local.sh
+
+# Direct command with CLI arguments
+python -m src.main --mode sse --port 8443 \
+    --ssl-keyfile /path/to/server.key \
+    --ssl-certfile /path/to/server.crt
 ```
 
 **Endpoints:**
@@ -634,7 +673,8 @@ ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
 sudo certbot certonly --webroot -w /var/www/certbot \
   -d your-domain.com -d api.your-domain.com
 
-# 3. Start services
+# 3. Start services with Let's Encrypt certs
+SSL_DIR=/etc/letsencrypt/live/your-domain.com \
 docker-compose -f docker-compose.https.yml up -d
 ```
 
@@ -643,18 +683,21 @@ docker-compose -f docker-compose.https.yml up -d
 To avoid browser warnings during development:
 
 **Linux (Ubuntu/Debian):**
+
 ```bash
 sudo cp nginx/ssl/ca.crt /usr/local/share/ca-certificates/medical-calc-dev.crt
 sudo update-ca-certificates
 ```
 
 **macOS:**
+
 ```bash
 sudo security add-trusted-cert -d -r trustRoot \
   -k /Library/Keychains/System.keychain nginx/ssl/ca.crt
 ```
 
 **Windows:**
+
 ```
 1. Double-click nginx/ssl/ca.crt
 2. Install Certificate → Local Machine
@@ -693,11 +736,24 @@ For production with a real domain:
 | `docker-compose.https.yml` | Docker Compose for HTTPS deployment |
 | `scripts/generate-ssl-certs.sh` | Generate self-signed SSL certificates |
 | `scripts/start-https-docker.sh` | Start/stop Docker HTTPS services |
-| `scripts/start-https-local.sh` | Start local HTTPS (Uvicorn SSL) |
+| `scripts/start-https-local.sh` | Start local HTTPS (supports custom certs) |
+| `src/infrastructure/mcp/config.py` | SslConfig class for SSL configuration |
+
+### SSL Configuration Reference
+
+| Scenario | Cert Location | Configuration Method |
+|----------|---------------|---------------------|
+| Docker (default) | `nginx/ssl/` | No config needed |
+| Docker (custom) | Custom path | `SSL_DIR` env var or volumes |
+| Docker (Let's Encrypt) | `/etc/letsencrypt/...` | Modify `nginx/nginx.conf` |
+| Local (default) | `nginx/ssl/` | No config needed |
+| Local (custom) | Custom path | `SSL_KEYFILE` + `SSL_CERTFILE` env vars |
+| CLI direct | Custom path | `--ssl-keyfile` + `--ssl-certfile` args |
 
 ### Troubleshooting
 
 **Certificate not trusted:**
+
 ```bash
 # Regenerate certificates
 rm -rf nginx/ssl/*
@@ -707,6 +763,7 @@ rm -rf nginx/ssl/*
 ```
 
 **Port already in use:**
+
 ```bash
 # Check what's using the port
 sudo lsof -i :443
@@ -716,6 +773,7 @@ sudo lsof -i :8443
 ```
 
 **Docker container not starting:**
+
 ```bash
 # Check logs
 docker-compose -f docker-compose.https.yml logs nginx
@@ -1129,9 +1187,9 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools
 
-> **MCP Primitives**: 82 Tools + 5 Prompts + 4 Resources
+> **MCP Primitives**: 128 Tools + 5 Prompts + 4 Resources
 >
-> **Current Stats**: 82 Tools | 1540+ Tests | 92% Coverage | Phase 19 Complete ✅
+> **Current Stats**: 128 Tools | 1721+ Tests | 92% Coverage | Phase 19 Complete ✅
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -1573,7 +1631,7 @@ uv run mcp dev src/main.py
 
 ### Testing Strategy
 
-We maintain a high-quality codebase with over **1540+ tests** and **90% code coverage**.
+We maintain a high-quality codebase with over **1721+ tests** and **92% code coverage**.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

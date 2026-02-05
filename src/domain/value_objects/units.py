@@ -72,5 +72,10 @@ class Unit(Enum):
     # Boolean/Binary
     BINARY = "present/absent"  # For yes/no results (e.g., delirium present)
 
+    # Classification/Staging
+    STAGE = "stage"  # For staging systems (POP-Q, CKD, etc.)
+    CATEGORY = "category"  # For classification systems (Bosniak, etc.)
+    CLASS = "class"  # For classification systems
+
     def __str__(self) -> str:
         return self.value

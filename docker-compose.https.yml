@@ -7,6 +7,25 @@
 #   1. 生成 SSL 憑證：./scripts/generate-ssl-certs.sh
 #   2. 啟動服務：docker-compose -f docker-compose.https.yml up -d
 #
+# 使用自訂憑證：
+#   方法 1: 修改 volumes 掛載路徑
+#   方法 2: 設定環境變數 (見下方 SSL_* 環境變數)
+#
+# 環境變數：
+#   SSL_DIR        - SSL 憑證目錄路徑 (預設: ./nginx/ssl)
+#   SSL_KEYFILE    - SSL 私鑰檔案名稱 (預設: server.key)
+#   SSL_CERTFILE   - SSL 憑證檔案名稱 (預設: server.crt)
+#
+# 範例：
+#   # 使用自訂憑證目錄
+#   SSL_DIR=/etc/my-certs docker-compose -f docker-compose.https.yml up -d
+#
+#   # 使用 Let's Encrypt 憑證
+#   SSL_DIR=/etc/letsencrypt/live/example.com \
+#   SSL_KEYFILE=privkey.pem \
+#   SSL_CERTFILE=fullchain.pem \
+#   docker-compose -f docker-compose.https.yml up -d
+#
 # 端口：
 #   - https://localhost/      → MCP SSE (443)
 #   - https://localhost:8443/ → REST API (8443)
@@ -25,7 +44,8 @@ services:
       - "8443:8443"   # HTTPS - REST API
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      # SSL 憑證掛載 - 可透過 SSL_DIR 環境變數自訂路徑
+      - ${SSL_DIR:-./nginx/ssl}:/etc/nginx/ssl:ro
     depends_on:
       medical-calc-mcp:
         condition: service_healthy
@@ -58,6 +78,13 @@ services:
       - MCP_HOST=0.0.0.0
       - MCP_PORT=8000
       - LOG_LEVEL=INFO
+      # SSL 設定 (在 Nginx 後不需啟用，但可用於直接 SSL)
+      # - SSL_ENABLED=false
+      # - SSL_KEYFILE=/certs/server.key
+      # - SSL_CERTFILE=/certs/server.crt
+    # 如需直接使用 SSL (不透過 Nginx)，取消註解以下 volumes
+    # volumes:
+    #   - ${SSL_DIR:-./nginx/ssl}:/certs:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8000/sse", "-o", "/dev/null", "-m", "5"]

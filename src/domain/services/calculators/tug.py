@@ -17,6 +17,8 @@ Reference (Fall Risk Prediction):
     PMID: 10960937
 """
 
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -97,7 +99,7 @@ class TUGCalculator(BaseCalculator):
             ),
         )
 
-    def calculate(self, **params) -> ScoreResult:
+    def calculate(self, **params: Any) -> ScoreResult:
         """
         Calculate TUG result.
 
@@ -130,16 +132,16 @@ class TUGCalculator(BaseCalculator):
                     severity=Severity.CRITICAL,
                     stage="Unable",
                     stage_description="Severe mobility impairment",
-                    recommendations=[
+                    recommendations=tuple([
                         "High fall risk - intensive fall prevention measures",
                         "Physical therapy evaluation",
                         "Home safety assessment",
                         "Consider assistive devices or mobility aids",
-                    ],
-                    warnings=["Unable to complete TUG - very high fall risk"],
-                    next_steps=["Comprehensive mobility assessment", "PT/OT evaluation"],
+                    ]),
+                    warnings=tuple(["Unable to complete TUG - very high fall risk"]),
+                    next_steps=tuple(["Comprehensive mobility assessment", "PT/OT evaluation"]),
                 ),
-                references=self.metadata.references,
+                references=list(self.metadata.references),
                 tool_id=self.metadata.low_level.tool_id,
                 tool_name=self.metadata.low_level.name,
                 raw_inputs=params,
@@ -237,11 +239,11 @@ class TUGCalculator(BaseCalculator):
                 severity=severity,
                 stage=stage,
                 stage_description=risk_text,
-                recommendations=recommendations,
-                warnings=warnings,
-                next_steps=next_steps,
+                recommendations=tuple(recommendations),
+                warnings=tuple(warnings),
+                next_steps=tuple(next_steps),
             ),
-            references=self.metadata.references,
+            references=list(self.metadata.references),
             tool_id=self.metadata.low_level.tool_id,
             tool_name=self.metadata.low_level.name,
             raw_inputs=params,

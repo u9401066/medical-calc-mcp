@@ -23,7 +23,6 @@ from src.application.dto import (
 from src.application.use_cases.calculate_use_case import CalculateUseCase
 from src.application.use_cases.discovery_use_case import DiscoveryUseCase
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -109,7 +108,7 @@ class TestDiscoveryFirstWorkflow:
         assert response.success, f"Failed to get tool info: {response.error}"
         assert response.tool_detail is not None
         assert response.tool_detail.tool_id == "news2_score"
-        print(f"\n✅ Step 3: Got NEWS2 info")
+        print("\n✅ Step 3: Got NEWS2 info")
         print(f"   Parameters: {response.tool_detail.input_params}")
 
         # Step 4: Execute calculation with sample values
@@ -164,7 +163,7 @@ class TestDiscoveryFirstWorkflow:
                 DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="qsofa_score")
             )
             assert response.success
-            print(f"\n✅ Step 2: Got qSOFA info")
+            print("\n✅ Step 2: Got qSOFA info")
             print(f"   Params: {response.tool_detail.input_params}")
 
             # Step 3: Calculate
@@ -750,7 +749,7 @@ class TestAgentSimulation:
             results["eGFR"] = f"{egfr_result.result} {egfr_result.unit}"
 
         # Step 3: Summarize
-        print(f"\n📋 Assessment Summary:")
+        print("\n📋 Assessment Summary:")
         for tool, result in results.items():
             print(f"   • {tool}: {result}")
 

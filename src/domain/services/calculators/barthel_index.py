@@ -15,6 +15,8 @@ Reference (Modified/Validation):
     PMID: 3403500
 """
 
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -106,7 +108,7 @@ class BarthelIndexCalculator(BaseCalculator):
             ),
         )
 
-    def calculate(self, **params) -> ScoreResult:
+    def calculate(self, **params: Any) -> ScoreResult:
         """
         Calculate Barthel Index.
 
@@ -126,7 +128,7 @@ class BarthelIndexCalculator(BaseCalculator):
             ScoreResult with Barthel Index (0-100) and interpretation
         """
         # Item definitions with valid values
-        items = {
+        items: dict[str, dict[str, list[int] | int]] = {
             "feeding": {"valid": [0, 5, 10], "max": 10},
             "bathing": {"valid": [0, 5], "max": 5},
             "grooming": {"valid": [0, 5], "max": 5},
@@ -140,7 +142,7 @@ class BarthelIndexCalculator(BaseCalculator):
         }
 
         # Calculate score
-        scores = {}
+        scores: dict[str, int] = {}
         total = 0
 
         for item, config in items.items():
@@ -149,8 +151,9 @@ class BarthelIndexCalculator(BaseCalculator):
                 raise ValueError(f"Missing required parameter: {item}")
 
             value = int(value)
-            if value not in config["valid"]:
-                raise ValueError(f"{item} must be one of {config['valid']}, got {value}")
+            valid_values = config["valid"]
+            if isinstance(valid_values, list) and value not in valid_values:
+                raise ValueError(f"{item} must be one of {valid_values}, got {value}")
 
             scores[item] = value
             total += value
@@ -185,7 +188,7 @@ class BarthelIndexCalculator(BaseCalculator):
         problem_areas = []
         for item, value in scores.items():
             max_val = items[item]["max"]
-            if value < max_val:
+            if isinstance(max_val, int) and value < max_val:
                 pct = (value / max_val) * 100
                 if pct == 0:
                     problem_areas.append(f"{item.replace('_', ' ')}: dependent")
@@ -241,11 +244,11 @@ class BarthelIndexCalculator(BaseCalculator):
                 severity=severity,
                 stage=level,
                 stage_description=detail,
-                recommendations=recommendations,
-                warnings=warnings,
-                next_steps=next_steps,
+                recommendations=tuple(recommendations),
+                warnings=tuple(warnings),
+                next_steps=tuple(next_steps),
             ),
-            references=self.metadata.references,
+            references=list(self.metadata.references),
             tool_id=self.metadata.low_level.tool_id,
             tool_name=self.metadata.low_level.name,
             raw_inputs=params,

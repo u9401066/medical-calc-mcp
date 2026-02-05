@@ -16,6 +16,8 @@ Reference (Palmar Method):
     PMID: 1806320
 """
 
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -105,7 +107,7 @@ class BSADermatologyCalculator(BaseCalculator):
             ),
         )
 
-    def calculate(self, **params) -> ScoreResult:
+    def calculate(self, **params: Any) -> ScoreResult:
         """
         Calculate BSA involvement.
 
@@ -183,14 +185,14 @@ class BSADermatologyCalculator(BaseCalculator):
             }
         else:  # infant
             # Infant (<1 year) - even larger head, smaller legs
-            weights = {
-                "head_neck": 18,
-                "trunk_anterior": 18,
-                "trunk_posterior": 18,
-                "arm_each": 9,
-                "hand_each": 1,
+            weights: dict[str, float] = {
+                "head_neck": 18.0,
+                "trunk_anterior": 18.0,
+                "trunk_posterior": 18.0,
+                "arm_each": 9.0,
+                "hand_each": 1.0,
                 "leg_each": 13.5,
-                "genital": 1,
+                "genital": 1.0,
             }
 
         # Calculate contributions (each region % of that region × weight)
@@ -274,11 +276,11 @@ class BSADermatologyCalculator(BaseCalculator):
                 severity=severity,
                 stage=stage,
                 stage_description=severity_text,
-                recommendations=recommendations,
-                warnings=warnings,
-                next_steps=next_steps,
+                recommendations=tuple(recommendations),
+                warnings=tuple(warnings),
+                next_steps=tuple(next_steps),
             ),
-            references=self.metadata.references,
+            references=list(self.metadata.references),
             tool_id=self.metadata.low_level.tool_id,
             tool_name=self.metadata.low_level.name,
             raw_inputs=params,

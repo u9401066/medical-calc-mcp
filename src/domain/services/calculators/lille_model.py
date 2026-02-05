@@ -177,10 +177,10 @@ class LilleModelCalculator(BaseCalculator):
         # Renal failure term (1 if Cr > 1.3 mg/dL, else 0)
         renal = 1 if creatinine_mgdl > 1.3 else 0
 
-        R = 3.19 - 0.101 * age + 0.147 * albumin_gl + 0.0165 * bilirubin_evolution - 0.206 * renal - 0.0065 * bili_day0_umol - 0.0096 * pt_seconds
+        r_value = 3.19 - 0.101 * age + 0.147 * albumin_gl + 0.0165 * bilirubin_evolution - 0.206 * renal - 0.0065 * bili_day0_umol - 0.0096 * pt_seconds
 
         # Calculate Lille score
-        lille = math.exp(-R) / (1 + math.exp(-R))
+        lille = math.exp(-r_value) / (1 + math.exp(-r_value))
 
         # Components
         components = [
@@ -191,7 +191,7 @@ class LilleModelCalculator(BaseCalculator):
             f"Renal term: -0.206 × {renal} = {-0.206 * renal:.3f}",
             f"Bilirubin D0 term: -0.0065 × {bili_day0_umol:.0f} = {-0.0065 * bili_day0_umol:.3f}",
             f"PT term: -0.0096 × {pt_seconds:.1f} = {-0.0096 * pt_seconds:.3f}",
-            f"R = {R:.4f}",
+            f"R = {r_value:.4f}",
             f"Lille = e^(-R)/(1+e^(-R)) = {lille:.4f}",
         ]
 
@@ -284,7 +284,7 @@ class LilleModelCalculator(BaseCalculator):
                 "renal_failure": renal == 1,
                 "pt_seconds": round(pt_seconds, 1),
                 "pt_type": pt_type,
-                "R_value": round(R, 4),
+                "R_value": round(r_value, 4),
                 "estimated_6mo_survival": survival_6mo,
                 "components": components,
             },

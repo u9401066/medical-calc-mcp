@@ -63,7 +63,10 @@ class TestArgumentParsing:
                 mock_create.return_value = mock_server
                 with patch('src.main.logger'):
                     main()
-                    mock_create.assert_called_once_with(host='0.0.0.0', port=8000)
+                    mock_create.assert_called_once_with(
+                        host='0.0.0.0', port=8000,
+                        ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None
+                    )
                     mock_server.run.assert_called_once_with(transport="sse")
 
     def test_sse_mode_with_custom_port(self) -> None:
@@ -76,7 +79,10 @@ class TestArgumentParsing:
                 mock_create.return_value = mock_server
                 with patch('src.main.logger'):
                     main()
-                    mock_create.assert_called_once_with(host='0.0.0.0', port=9000)
+                    mock_create.assert_called_once_with(
+                        host='0.0.0.0', port=9000,
+                        ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None
+                    )
 
     def test_http_mode(self) -> None:
         """Test HTTP mode is called correctly"""
@@ -100,7 +106,10 @@ class TestArgumentParsing:
                 mock_create.return_value = mock_server
                 with patch('src.main.logger'):
                     main()
-                    mock_create.assert_called_once_with(host='127.0.0.1', port=3000)
+                    mock_create.assert_called_once_with(
+                        host='127.0.0.1', port=3000,
+                        ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None
+                    )
 
     def test_env_mode_override(self) -> None:
         """Test environment variable mode override"""
@@ -115,7 +124,10 @@ class TestArgumentParsing:
                     mock_create.return_value = mock_server
                     with patch('src.main.logger'):
                         main()
-                        mock_create.assert_called_once_with(host='0.0.0.0', port=7000)
+                        mock_create.assert_called_once_with(
+                            host='0.0.0.0', port=7000,
+                            ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None
+                        )
                         mock_server.run.assert_called_once_with(transport="sse")
 
 

@@ -7,20 +7,16 @@ Tests the clinical parameter boundary validation system.
 import pytest
 
 from src.domain.validation.boundaries import (
-    BoundaryRegistry,
-    BoundarySpec,
+    CLINICAL_BOUNDARIES,
+    HARRISON_REFERENCE,
+    KDIGO_REFERENCE,
     BoundaryReference,
     EvidenceLevel,
     ValidationSeverity,
-    ValidationResult,
-    CLINICAL_BOUNDARIES,
     get_boundary,
     get_boundary_registry,
     validate_param,
-    HARRISON_REFERENCE,
-    KDIGO_REFERENCE,
 )
-
 
 # =============================================================================
 # BoundaryReference Tests

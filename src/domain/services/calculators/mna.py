@@ -18,6 +18,8 @@ Reference (MNA-SF Short Form):
     PMID: 11382797
 """
 
+from typing import Any
+
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
 from ...value_objects.interpretation import Interpretation, Severity
@@ -108,7 +110,7 @@ class MNACalculator(BaseCalculator):
             ),
         )
 
-    def calculate(self, **params) -> ScoreResult:
+    def calculate(self, **params: Any) -> ScoreResult:
         """
         Calculate MNA-SF (Short Form).
 
@@ -143,7 +145,7 @@ class MNACalculator(BaseCalculator):
             ScoreResult with MNA-SF score and nutritional status
         """
         # Validate and collect scores
-        items = {
+        items: dict[str, dict[str, list[int] | int]] = {
             "food_intake_decline": {"valid": [0, 1, 2], "max": 2},
             "weight_loss": {"valid": [0, 1, 2, 3], "max": 3},
             "mobility": {"valid": [0, 1, 2], "max": 2},
@@ -152,7 +154,7 @@ class MNACalculator(BaseCalculator):
             "bmi_or_calf": {"valid": [0, 1, 2, 3], "max": 3},
         }
 
-        scores = {}
+        scores: dict[str, int] = {}
         total = 0
 
         for item, config in items.items():
@@ -161,8 +163,9 @@ class MNACalculator(BaseCalculator):
                 raise ValueError(f"Missing required parameter: {item}")
 
             value = int(value)
-            if value not in config["valid"]:
-                raise ValueError(f"{item} must be one of {config['valid']}, got {value}")
+            valid_values = config["valid"]
+            if isinstance(valid_values, list) and value not in valid_values:
+                raise ValueError(f"{item} must be one of {valid_values}, got {value}")
 
             scores[item] = value
             total += value
@@ -245,11 +248,11 @@ class MNACalculator(BaseCalculator):
                 severity=severity,
                 stage=status,
                 stage_description=detail,
-                recommendations=recommendations,
-                warnings=warnings,
-                next_steps=next_steps,
+                recommendations=tuple(recommendations),
+                warnings=tuple(warnings),
+                next_steps=tuple(next_steps),
             ),
-            references=self.metadata.references,
+            references=list(self.metadata.references),
             tool_id=self.metadata.low_level.tool_id,
             tool_name=self.metadata.low_level.name,
             raw_inputs=params,

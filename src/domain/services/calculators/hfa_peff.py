@@ -22,7 +22,7 @@ Reference (Full Publication):
     PMID: 32133741
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
@@ -175,9 +175,9 @@ class HFAPEFFCalculator(BaseCalculator):
         morphological_score = 0
         biomarker_score = 0
 
-        functional_details: dict = {}
-        morphological_details: dict = {}
-        biomarker_details: dict = {}
+        functional_details: dict[str, Any] = {}
+        morphological_details: dict[str, Any] = {}
+        biomarker_details: dict[str, Any] = {}
 
         # FUNCTIONAL DOMAIN
         # Major criteria (2 points): E/e' ≥15 OR septal e' <7 OR lateral e' <10

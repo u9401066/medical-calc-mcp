@@ -21,7 +21,7 @@ Reference (Modified NUTRIC without IL-6):
     PMID: 25698099
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
@@ -149,7 +149,7 @@ class NUTRICScoreCalculator(BaseCalculator):
 
         # Calculate component scores
         score = 0
-        components: dict = {}
+        components: dict[str, Any] = {}
 
         # Age component
         if age < 50:
@@ -203,7 +203,7 @@ class NUTRICScoreCalculator(BaseCalculator):
         use_il6 = il6 is not None
         max_score = 10 if use_il6 else 9
 
-        if use_il6:
+        if il6 is not None:
             if il6 < 400:
                 il6_score = 0
             else:

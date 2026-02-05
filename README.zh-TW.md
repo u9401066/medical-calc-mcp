@@ -433,7 +433,7 @@ uv run python -m src.main --mode http
 
 ## 🔒 HTTPS 部署 ⭐ NEW
 
-為生產環境啟用 HTTPS 安全通訊。
+為生產環境啟用 HTTPS 安全通訊，支援彈性的憑證配置。
 
 ### 架構
 
@@ -482,6 +482,16 @@ uv run python -m src.main --mode http
 └── http://medical-calc-api:8080  → API Server
 ```
 
+### SSL 環境變數
+
+| 變數 | 預設值 | 說明 |
+|------|--------|------|
+| `SSL_ENABLED` | `false` | 啟用 SSL/TLS (`true`/`false`) |
+| `SSL_KEYFILE` | - | SSL 私鑰檔案路徑 |
+| `SSL_CERTFILE` | - | SSL 憑證檔案路徑 |
+| `SSL_CA_CERTS` | - | CA 憑證路徑（可選） |
+| `SSL_DIR` | `./nginx/ssl` | SSL 憑證目錄（僅 Docker） |
+
 ### 選項一：Docker 部署（推薦）
 
 適用於生產環境和團隊環境。
@@ -501,6 +511,16 @@ chmod +x scripts/generate-ssl-certs.sh
 ./scripts/start-https-docker.sh status   # 檢查狀態
 ```
 
+**自訂憑證（Docker）：**
+
+```bash
+# 使用自訂憑證目錄
+SSL_DIR=/path/to/your/certs docker-compose -f docker-compose.https.yml up -d
+
+# 使用 Let's Encrypt 憑證
+SSL_DIR=/etc/letsencrypt/live/example.com docker-compose -f docker-compose.https.yml up -d
+```
+
 **端點資訊：**
 
 | 服務 | URL | 說明 |
@@ -514,16 +534,35 @@ chmod +x scripts/generate-ssl-certs.sh
 
 ### 選項二：本地開發（無 Docker）
 
-使用 Uvicorn 原生 SSL 支援進行快速本地測試。
+使用 Python/Uvicorn 原生 SSL 支援進行快速本地測試。
 
 ```bash
-# 步驟一：生成 SSL 憑證
+# 步驟一：生成 SSL 憑證（或使用您自己的憑證）
 ./scripts/generate-ssl-certs.sh
 
 # 步驟二：啟動 HTTPS 服務
 ./scripts/start-https-local.sh          # 同時啟動 MCP 與 API
 ./scripts/start-https-local.sh sse      # 僅啟動 MCP SSE
 ./scripts/start-https-local.sh api      # 僅啟動 REST API
+```
+
+**自訂憑證（本地）：**
+
+```bash
+# 使用環境變數指定自訂憑證路徑
+SSL_KEYFILE=/path/to/server.key \
+SSL_CERTFILE=/path/to/server.crt \
+./scripts/start-https-local.sh
+
+# 自訂連接埠
+SSL_KEYFILE=/certs/key.pem SSL_CERTFILE=/certs/cert.pem \
+MCP_PORT=9000 API_PORT=9001 \
+./scripts/start-https-local.sh
+
+# 使用 CLI 參數直接指定
+python -m src.main --mode sse --port 8443 \
+    --ssl-keyfile /path/to/server.key \
+    --ssl-certfile /path/to/server.crt
 ```
 
 ### 選項三：生產環境使用 Let's Encrypt
@@ -539,7 +578,8 @@ ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
 sudo certbot certonly --webroot -w /var/www/certbot \
   -d your-domain.com -d api.your-domain.com
 
-# 3. 啟動服務
+# 3. 使用 Let's Encrypt 憑證啟動服務
+SSL_DIR=/etc/letsencrypt/live/your-domain.com \
 docker-compose -f docker-compose.https.yml up -d
 ```
 
@@ -551,7 +591,19 @@ docker-compose -f docker-compose.https.yml up -d
 | `docker-compose.https.yml` | HTTPS 部署用的 Docker Compose 設定 |
 | `scripts/generate-ssl-certs.sh` | 生成自簽名 SSL 憑證腳本 |
 | `scripts/start-https-docker.sh` | 啟動/停止 Docker HTTPS 服務 |
-| `scripts/start-https-local.sh` | 啟動本地 HTTPS (Uvicorn SSL) |
+| `scripts/start-https-local.sh` | 啟動本地 HTTPS（支援自訂憑證） |
+| `src/infrastructure/mcp/config.py` | SslConfig 類別用於 SSL 配置 |
+
+### SSL 配置參考
+
+| 情境 | 憑證位置 | 配置方式 |
+|------|----------|----------|
+| Docker（預設） | `nginx/ssl/` | 無需配置 |
+| Docker（自訂） | 自訂路徑 | `SSL_DIR` 環境變數或 volumes |
+| Docker（Let's Encrypt） | `/etc/letsencrypt/...` | 修改 `nginx/nginx.conf` |
+| 本地（預設） | `nginx/ssl/` | 無需配置 |
+| 本地（自訂） | 自訂路徑 | `SSL_KEYFILE` + `SSL_CERTFILE` 環境變數 |
+| CLI 直接指定 | 自訂路徑 | `--ssl-keyfile` + `--ssl-certfile` 參數 |
 
 ---
 
@@ -884,7 +936,7 @@ uv run mcp dev src/main.py
 
 ### 測試策略
 
-我們維持高品質的程式碼庫，擁有超過 **1540+ 個測試**與 **90% 的程式碼覆蓋率**。
+我們維持高品質的程式碼庫，擁有超過 **1721+ 個測試**與 **92% 的程式碼覆蓋率**。
 
 ```bash
 # 執行所有測試

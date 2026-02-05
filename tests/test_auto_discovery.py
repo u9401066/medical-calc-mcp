@@ -15,7 +15,6 @@ from src.domain.registry.auto_discovery import (
     PARAM_DOMAIN_MAP,
     AutoDiscoveryEngine,
     DiscoveryResult,
-    EnrichedHighLevelKey,
 )
 from src.domain.registry.tool_registry import ToolRegistry
 from src.domain.services.calculators import CALCULATORS

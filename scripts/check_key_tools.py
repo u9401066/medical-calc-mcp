@@ -35,14 +35,14 @@ def main():
         ("lille_model", "Hepat - Lille"),
         ("euroscore_ii", "Cardiac - EuroSCORE II"),
     ]
-    
+
     print("=" * 60)
     print("Key Tool Existence Check")
     print("=" * 60)
-    
+
     found = 0
     missing = []
-    
+
     for tool_id, desc in check_tools:
         exists = r.get_calculator(tool_id) is not None
         status = "YES" if exists else "NO"
@@ -51,16 +51,16 @@ def main():
             found += 1
         else:
             missing.append((tool_id, desc))
-    
+
     print("=" * 60)
     print(f"Found: {found}/{len(check_tools)}")
     print("=" * 60)
-    
+
     if missing:
         print("\nMissing (need to implement):")
         for tool_id, desc in missing:
             print(f"  - {tool_id} ({desc})")
-    
+
     return found
 
 

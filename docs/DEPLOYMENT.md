@@ -259,31 +259,36 @@ docker run -d -p 8080:8080 --name mcp-api \
 
 ## 🔒 HTTPS Deployment | HTTPS 部署
 
-為生產環境提供安全的 HTTPS 連線，使用 Nginx 反向代理處理 TLS 終止。
+為生產環境提供安全的 HTTPS 連線，支援多種憑證配置方式。
 
-Secure HTTPS connections for production using Nginx reverse proxy for TLS termination.
+Secure HTTPS connections for production with flexible certificate configuration.
 
 ### Architecture | 架構
 
 ```
-                    HTTPS (TLS 1.2/1.3)
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────┐
-│              Nginx Reverse Proxy                     │
-│  ┌────────────────────────────────────────────────┐ │
-│  │ • TLS Termination (SSL Certificates)           │ │
-│  │ • Rate Limiting (30/60 req/s)                  │ │
-│  │ • Security Headers (XSS, CSRF protection)      │ │
-│  │ • SSE Optimization (24h timeout, no buffer)    │ │
-│  └────────────────────────────────────────────────┘ │
-└───────────────────┬─────────────────┬───────────────┘
-                    │ HTTP            │ HTTP
-                    ▼                 ▼
-         ┌──────────────────┐ ┌──────────────────┐
-         │  MCP SSE Server  │ │  REST API Server │
-         │   (Port 8000)    │ │   (Port 8080)    │
-         └──────────────────┘ └──────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           SSL/TLS 配置方式                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  方式 1: Docker + Nginx (推薦生產環境)                                       │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │  Client (HTTPS) → Nginx (TLS 終止) → App (HTTP 內部)                   │ │
+│  │  憑證位置: 透過 volume 掛載至 /etc/nginx/ssl/                           │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  方式 2: 本地開發 (Python/Uvicorn 原生 SSL)                                  │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │  Client (HTTPS) → Python/Uvicorn (直接 SSL)                            │ │
+│  │  憑證位置: 透過 --ssl-keyfile, --ssl-certfile 或環境變數指定             │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  方式 3: 直接 MCP Server SSL (無 Nginx)                                      │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │  Client (HTTPS) → MCP Server (內建 SSL)                                │ │
+│  │  憑證位置: 透過環境變數 SSL_KEYFILE, SSL_CERTFILE 指定                   │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Quick Start | 快速開始
@@ -292,16 +297,140 @@ Secure HTTPS connections for production using Nginx reverse proxy for TLS termin
 # 1. 生成 SSL 憑證 (自簽，供開發使用)
 ./scripts/generate-ssl-certs.sh
 
-# 2. 啟動 HTTPS 服務 (Docker)
+# 2. 啟動 HTTPS 服務 (Docker + Nginx)
 ./scripts/start-https-docker.sh up
 
-# 或本地啟動 (不使用 Docker)
+# 或本地啟動 (Python 原生 SSL)
 ./scripts/start-https-local.sh
+```
+
+### SSL 環境變數 | SSL Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SSL_ENABLED` | `false` | 啟用 SSL/TLS (`true`, `false`) |
+| `SSL_KEYFILE` | - | SSL 私鑰檔案路徑 |
+| `SSL_CERTFILE` | - | SSL 憑證檔案路徑 |
+| `SSL_CA_CERTS` | - | CA 憑證檔案路徑 (選填，用於客戶端驗證) |
+| `SSL_DIR` | `./nginx/ssl` | Docker SSL 憑證目錄 (docker-compose 專用) |
+
+### 方式 1: Docker + Nginx (推薦)
+
+最安全的生產環境配置，Nginx 處理 TLS 終止。
+
+#### 使用預設憑證
+
+```bash
+# 生成自簽憑證
+./scripts/generate-ssl-certs.sh
+
+# 啟動服務
+docker-compose -f docker-compose.https.yml up -d
+```
+
+#### 使用自訂憑證路徑
+
+**方法 A: 環境變數**
+
+```bash
+# 指定憑證目錄
+SSL_DIR=/path/to/your/certs docker-compose -f docker-compose.https.yml up -d
+
+# 使用 Let's Encrypt
+SSL_DIR=/etc/letsencrypt/live/example.com docker-compose -f docker-compose.https.yml up -d
+```
+
+**方法 B: 修改 docker-compose.https.yml**
+
+```yaml
+nginx:
+  volumes:
+    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    # 修改為您的憑證路徑
+    - /path/to/your/certs:/etc/nginx/ssl:ro
+```
+
+**方法 C: 修改 nginx/nginx.conf (Let's Encrypt)**
+
+```nginx
+# 取消註解並修改以下行
+ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+```
+
+### 方式 2: 本地開發 (Python 原生 SSL)
+
+不使用 Docker，直接在 Python/Uvicorn 啟用 SSL。
+
+#### 使用預設憑證
+
+```bash
+./scripts/start-https-local.sh
+```
+
+#### 使用自訂憑證
+
+**方法 A: 環境變數**
+
+```bash
+# 指定憑證路徑
+SSL_KEYFILE=/path/to/server.key \
+SSL_CERTFILE=/path/to/server.crt \
+./scripts/start-https-local.sh
+
+# 也可以指定埠號
+SSL_KEYFILE=/path/to/key.pem \
+SSL_CERTFILE=/path/to/cert.pem \
+MCP_PORT=9000 \
+API_PORT=9001 \
+./scripts/start-https-local.sh
+```
+
+**方法 B: 命令列參數**
+
+```bash
+# MCP SSE Server
+python -m src.main --mode sse --port 8443 \
+    --ssl-keyfile /path/to/server.key \
+    --ssl-certfile /path/to/server.crt
+
+# REST API Server (使用 uvicorn)
+uv run uvicorn src.infrastructure.api.server:create_api_app \
+    --factory \
+    --host 0.0.0.0 \
+    --port 9443 \
+    --ssl-keyfile /path/to/server.key \
+    --ssl-certfile /path/to/server.crt
+```
+
+### 方式 3: Docker 直接 SSL (無 Nginx)
+
+容器內直接處理 SSL，適合簡單部署。
+
+```yaml
+# docker-compose-direct-ssl.yml (自行建立)
+services:
+  medical-calc-mcp:
+    build: .
+    ports:
+      - "8443:8443"
+    environment:
+      - MCP_MODE=sse
+      - MCP_PORT=8443
+      - SSL_ENABLED=true
+      - SSL_KEYFILE=/certs/server.key
+      - SSL_CERTFILE=/certs/server.crt
+    volumes:
+      - /path/to/your/certs:/certs:ro
+    command: >
+      python -m src.main --mode sse --port 8443
+      --ssl-keyfile /certs/server.key
+      --ssl-certfile /certs/server.crt
 ```
 
 ### HTTPS Endpoints | HTTPS 端點
 
-**Docker Deployment:**
+**Docker + Nginx:**
 
 | Service | URL | Description |
 |---------|-----|-------------|
@@ -310,7 +439,7 @@ Secure HTTPS connections for production using Nginx reverse proxy for TLS termin
 | REST API | `https://localhost:8443/` | REST API root |
 | Swagger UI | `https://localhost:8443/docs` | API documentation |
 
-**Local Development:**
+**本地開發 (預設埠號):**
 
 | Service | URL | Description |
 |---------|-----|-------------|
@@ -332,39 +461,65 @@ Secure HTTPS connections for production using Nginx reverse proxy for TLS termin
 ### Production with Let's Encrypt
 
 ```bash
-# 1. 編輯 nginx/nginx.conf，取消註解：
-ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
-
-# 2. 使用 certbot 獲取憑證
+# 1. 取得 Let's Encrypt 憑證
 sudo certbot certonly --webroot -w /var/www/certbot \
   -d your-domain.com -d api.your-domain.com
 
-# 3. 啟動服務
+# 2. 修改 docker-compose.https.yml
+# volumes:
+#   - /etc/letsencrypt/live/your-domain.com:/etc/nginx/ssl:ro
+
+# 3. 修改 nginx/nginx.conf
+# ssl_certificate /etc/nginx/ssl/fullchain.pem;
+# ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+
+# 4. 啟動服務
 docker-compose -f docker-compose.https.yml up -d
 ```
 
 ### Trust Self-Signed Certificates | 信任自簽憑證
 
+開發環境使用自簽憑證時，需將 CA 憑證加入系統信任。
+
+**Linux (Ubuntu/Debian):**
 ```bash
-# Linux (Ubuntu/Debian)
 sudo cp nginx/ssl/ca.crt /usr/local/share/ca-certificates/medical-calc-dev.crt
 sudo update-ca-certificates
+```
 
-# macOS
+**macOS:**
+```bash
 sudo security add-trusted-cert -d -r trustRoot \
   -k /Library/Keychains/System.keychain nginx/ssl/ca.crt
+```
+
+**Windows:**
+```
+1. 雙擊 nginx/ssl/ca.crt
+2. 安裝憑證 → 本機電腦 → 受信任的根憑證授權
 ```
 
 ### Files | 相關檔案
 
 | File | Description |
 |------|-------------|
-| `nginx/nginx.conf` | Nginx HTTPS 配置 |
+| `nginx/nginx.conf` | Nginx HTTPS 配置 (TLS 終止) |
 | `docker-compose.https.yml` | Docker HTTPS 編排 |
-| `scripts/generate-ssl-certs.sh` | SSL 憑證生成 |
-| `scripts/start-https-docker.sh` | Docker HTTPS 啟動 |
-| `scripts/start-https-local.sh` | 本地 HTTPS 啟動 |
+| `scripts/generate-ssl-certs.sh` | 自簽 SSL 憑證生成 |
+| `scripts/start-https-docker.sh` | Docker HTTPS 啟動腳本 |
+| `scripts/start-https-local.sh` | 本地 HTTPS 啟動腳本 |
+| `src/infrastructure/mcp/config.py` | SSL 配置類 (SslConfig) |
+
+### SSL 配置參考表
+
+| 情境 | 憑證位置 | 配置方式 |
+|------|---------|---------|
+| Docker 開發 | `nginx/ssl/` | 預設 (無需配置) |
+| Docker + 自訂憑證 | 任意路徑 | `SSL_DIR` 環境變數或修改 volumes |
+| Docker + Let's Encrypt | `/etc/letsencrypt/...` | 修改 `nginx/nginx.conf` |
+| 本地開發 | `nginx/ssl/` | 預設 (無需配置) |
+| 本地 + 自訂憑證 | 任意路徑 | `SSL_KEYFILE` + `SSL_CERTFILE` 環境變數 |
+| 命令列 | 任意路徑 | `--ssl-keyfile` + `--ssl-certfile` 參數 |
 
 > 📖 更多詳細說明請參考 [README.md HTTPS Deployment](../README.md#-https-deployment--https-部署--new)
 

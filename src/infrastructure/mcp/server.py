@@ -145,7 +145,7 @@ class MedicalCalculatorServer:
         from starlette.requests import Request
         from starlette.responses import JSONResponse
 
-        @self._mcp.custom_route("/health", methods=["GET", "HEAD"])
+        @self._mcp.custom_route("/health", methods=["GET", "HEAD"])  # type: ignore[misc]
         async def health_check(request: Request) -> JSONResponse:
             """
             Health check endpoint for Docker/Kubernetes liveness probes.
@@ -178,18 +178,43 @@ class MedicalCalculatorServer:
         """Get the security middleware"""
         return self._security
 
-    def run(self, transport: str = "stdio") -> None:
+    def run(
+        self,
+        transport: str = "stdio",
+        ssl_keyfile: str | None = None,
+        ssl_certfile: str | None = None,
+    ) -> None:
         """
         Run the MCP server.
 
         Args:
             transport: Transport type ("stdio", "sse", or "http")
+            ssl_keyfile: Path to SSL private key file (for HTTPS)
+            ssl_certfile: Path to SSL certificate file (for HTTPS)
+
+        Note:
+            SSL is only effective for "sse" and "http" transport modes.
+            For "stdio" mode, SSL parameters are ignored.
+
+        Examples:
+            # Run with SSL
+            server.run(transport="sse", ssl_keyfile="/path/to/key.pem", ssl_certfile="/path/to/cert.pem")
+
+            # Run without SSL
+            server.run(transport="sse")
         """
+        # Build run kwargs
+        run_kwargs: dict[str, str | None] = {}
+        if ssl_keyfile and ssl_certfile:
+            run_kwargs["ssl_keyfile"] = ssl_keyfile
+            run_kwargs["ssl_certfile"] = ssl_certfile
+
         if transport == "http":
-            self._mcp.run(transport="streamable-http")
+            self._mcp.run(transport="streamable-http", **run_kwargs)
         elif transport == "sse":
-            self._mcp.run(transport="sse")
+            self._mcp.run(transport="sse", **run_kwargs)
         else:
+            # stdio mode - SSL is not applicable
             self._mcp.run(transport="stdio")
 
 

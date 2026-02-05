@@ -7,12 +7,11 @@ Tests the full calculation flow with intelligent parameter matching:
 - Error message quality
 """
 
-import pytest
-from typing import Any
-from src.domain.registry.tool_registry import ToolRegistry
-from src.application.use_cases.calculate_use_case import CalculateUseCase
-from src.application.dto import CalculateRequest
 
+import pytest
+
+from src.application.dto import CalculateRequest
+from src.application.use_cases.calculate_use_case import CalculateUseCase
 
 # Note: 'registry' fixture is provided by conftest.py
 # It creates a ToolRegistry with all calculators registered

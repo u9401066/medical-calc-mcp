@@ -18,7 +18,7 @@ Reference (ESPEN Guideline):
     PMID: 30181091
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from ...entities.score_result import ScoreResult
 from ...entities.tool_metadata import ToolMetadata
@@ -152,7 +152,7 @@ class NRS2002Calculator(BaseCalculator):
 
         # Calculate nutritional status score (0-3)
         nutritional_score = 0
-        nutritional_details: dict = {}
+        nutritional_details: dict[str, Any] = {}
 
         # BMI component
         if bmi is not None:

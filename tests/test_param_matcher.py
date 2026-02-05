@@ -9,18 +9,18 @@ Tests the intelligent parameter matching functionality:
 - Fuzzy match
 """
 
-import pytest
-from dataclasses import dataclass
 from typing import Any
+
+import pytest
+
 from src.domain.services.param_matcher import (
-    ParamMatcher,
-    ParamMatchResult,
     PARAM_ALIASES,
     UNIT_SUFFIXES,
+    ParamMatcher,
+    ParamMatchResult,
     generate_param_template,
     get_param_matcher,
 )
-
 
 # =============================================================================
 # Mock Calculator Classes (using real method signatures)
@@ -33,7 +33,7 @@ class MockCalculatorBase:
 
 class MockCKDCalculator(MockCalculatorBase):
     """Mock CKD-EPI calculator with realistic signature."""
-    
+
     def calculate(
         self,
         serum_creatinine: float,
@@ -46,7 +46,7 @@ class MockCKDCalculator(MockCalculatorBase):
 
 class MockNEWS2Calculator(MockCalculatorBase):
     """Mock NEWS2 calculator with realistic signature."""
-    
+
     def calculate(
         self,
         respiratory_rate: int,
@@ -62,7 +62,7 @@ class MockNEWS2Calculator(MockCalculatorBase):
 
 class MockSimpleCalculator(MockCalculatorBase):
     """Simple mock calculator for basic tests."""
-    
+
     def calculate(
         self,
         param1: int,

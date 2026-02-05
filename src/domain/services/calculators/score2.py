@@ -247,7 +247,7 @@ class SCORE2Calculator(BaseCalculator):
             formula_used="SCORE2/SCORE2-OP based on age, sex, smoking, SBP, and non-HDL cholesterol",
         )
 
-    def _get_thresholds_for_age(self, age: int) -> dict:
+    def _get_thresholds_for_age(self, age: int) -> dict[str, str]:
         """Get risk category thresholds based on age"""
         if age < 50:
             return {"low": "<2.5%", "moderate": "2.5-7.5%", "high": "≥7.5%"}

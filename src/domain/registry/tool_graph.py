@@ -18,7 +18,7 @@ HAS_NETWORKX = False
 nx: Any = None
 
 try:
-    import networkx
+    import networkx  # type: ignore[import-untyped]
 
     nx = networkx
     HAS_NETWORKX = True

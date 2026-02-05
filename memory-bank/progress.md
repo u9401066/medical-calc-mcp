@@ -1,17 +1,25 @@
-# Progress (Updated: 2026-01-05)
+# Progress (Updated: 2026-02-05)
 
 ## Done
 
 - uv 套件管理遷移完成
 - mypy --strict 100% 類型覆蓋
 - ruff 程式碼清理
-- 測試套件通過 (1564 passed, 2 skipped)
+- 測試套件通過 (1721+ passed)
 - 文件更新 (README, CHANGELOG, ROADMAP, CONTRIBUTING)
 - Dockerfile 更新為 uv 多階段建構
 - Git 推送 (commit 47c1f3e)
 - MCP stdio logging 修正 (重導向至 stderr)
 - .vscode/mcp.json 配置修正
 - CI 流程遷移至 uv 並通過驗證 (Python 3.11, 3.12, 3.13)
+- 計算器數量達到 121 個 (涵蓋 24 個專科)
+- SSL/TLS 憑證路徑配置功能
+  - 新增 SslConfig dataclass (config.py)
+  - 支援 CLI 參數: --ssl-keyfile, --ssl-certfile, --ssl-ca-certs
+  - 支援環境變數: SSL_ENABLED, SSL_KEYFILE, SSL_CERTFILE, SSL_CA_CERTS, SSL_DIR
+  - 更新部署文件 (DEPLOYMENT.md, README.md, README.zh-TW.md)
+- mypy --strict src 全部通過 (195 files)
+- ruff check 全部通過
 
 ## Doing
 

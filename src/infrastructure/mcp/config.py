@@ -2,9 +2,80 @@
 MCP Server Configuration
 
 Configuration for the Medical Calculator MCP Server.
+
+Supports SSL/TLS configuration via environment variables or constructor arguments:
+    - SSL_ENABLED: Enable SSL/TLS (default: false)
+    - SSL_KEYFILE: Path to SSL private key file
+    - SSL_CERTFILE: Path to SSL certificate file
+    - SSL_CA_CERTS: Path to CA certificates file (optional, for client verification)
+    - SSL_CERT_REQUIRED: Require client certificate (default: false)
 """
 
-from dataclasses import dataclass
+import os
+from dataclasses import dataclass, field
+from typing import Optional
+
+
+@dataclass
+class SslConfig:
+    """SSL/TLS Configuration for secure connections"""
+
+    enabled: bool = False
+    keyfile: Optional[str] = None
+    certfile: Optional[str] = None
+    ca_certs: Optional[str] = None
+    cert_required: bool = False
+
+    @classmethod
+    def from_env(cls) -> "SslConfig":
+        """
+        Create SSL configuration from environment variables.
+
+        Environment Variables:
+            SSL_ENABLED: Enable SSL/TLS ("true", "1", "yes" to enable)
+            SSL_KEYFILE: Path to SSL private key file
+            SSL_CERTFILE: Path to SSL certificate file
+            SSL_CA_CERTS: Path to CA certificates file (optional)
+            SSL_CERT_REQUIRED: Require client certificate ("true", "1", "yes")
+
+        Returns:
+            SslConfig instance
+
+        Example:
+            SSL_ENABLED=true SSL_KEYFILE=/path/to/key.pem SSL_CERTFILE=/path/to/cert.pem
+        """
+        enabled_str = os.environ.get("SSL_ENABLED", "false").lower()
+        enabled = enabled_str in ("true", "1", "yes", "on")
+
+        cert_required_str = os.environ.get("SSL_CERT_REQUIRED", "false").lower()
+        cert_required = cert_required_str in ("true", "1", "yes", "on")
+
+        return cls(
+            enabled=enabled,
+            keyfile=os.environ.get("SSL_KEYFILE"),
+            certfile=os.environ.get("SSL_CERTFILE"),
+            ca_certs=os.environ.get("SSL_CA_CERTS"),
+            cert_required=cert_required,
+        )
+
+    def validate(self) -> None:
+        """
+        Validate SSL configuration.
+
+        Raises:
+            ValueError: If SSL is enabled but keyfile or certfile is missing
+        """
+        if self.enabled:
+            if not self.keyfile:
+                raise ValueError("SSL_KEYFILE is required when SSL is enabled")
+            if not self.certfile:
+                raise ValueError("SSL_CERTFILE is required when SSL is enabled")
+            if not os.path.exists(self.keyfile):
+                raise ValueError(f"SSL keyfile not found: {self.keyfile}")
+            if not os.path.exists(self.certfile):
+                raise ValueError(f"SSL certfile not found: {self.certfile}")
+            if self.ca_certs and not os.path.exists(self.ca_certs):
+                raise ValueError(f"SSL CA certs file not found: {self.ca_certs}")
 
 
 @dataclass
@@ -18,6 +89,9 @@ class McpServerConfig:
     # Server network settings (for SSE/HTTP transport)
     host: str = "0.0.0.0"  # Bind to all interfaces for remote access
     port: int = 8000
+
+    # SSL/TLS configuration
+    ssl: SslConfig = field(default_factory=SslConfig)
 
     # Instructions shown to AI agents
     instructions: str = """

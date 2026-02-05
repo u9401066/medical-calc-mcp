@@ -236,7 +236,7 @@ class ICDSCCalculator(BaseCalculator):
             formula_used="ICDSC = sum of 8 binary items (each 0 or 1)",
         )
 
-    def _get_interpretation(self, score: int, category: str, items: dict) -> Interpretation:
+    def _get_interpretation(self, score: int, category: str, items: dict[str, bool]) -> Interpretation:
         """Get interpretation based on ICDSC score"""
 
         positive_items = [k.replace("_", " ").title() for k, v in items.items() if v]
