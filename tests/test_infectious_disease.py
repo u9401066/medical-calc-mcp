@@ -431,6 +431,6 @@ class TestInfectiousDiseaseCalculatorRegistration:
         assert "CpisCalculator" in calculator_names
 
     def test_calculator_count_is_91(self) -> None:
-        """Test total calculator count after Phase 23 (CV Prevention & Bone Health)"""
+        """Test total calculator count after MedCalc-Bench P0 (7 new calculators)"""
         from src.domain.services.calculators import CALCULATORS
-        assert len(CALCULATORS) == 121
+        assert len(CALCULATORS) == 128

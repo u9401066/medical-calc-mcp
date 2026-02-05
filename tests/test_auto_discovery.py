@@ -59,7 +59,7 @@ class TestAutoDiscoveryEngineInit:
         stats = discovery_engine.get_statistics()
 
         assert stats["is_built"] is True
-        assert stats["total_tools"] == 121  # Phase 30 added MNA (120 → 121)
+        assert stats["total_tools"] == 128  # MedCalc-Bench P0 added 7 calculators (121 → 128)
         assert stats["total_conditions"] > 20  # Should extract many conditions
         assert stats["total_domains"] >= 6  # renal, cardiac, hepatic, etc.
 
