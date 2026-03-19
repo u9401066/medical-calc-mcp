@@ -26,7 +26,7 @@ uv sync
 uv run pytest
 
 # 執行型別檢查 (必須通過 --strict)
-uv run mypy --strict src tests
+uv run mypy --no-incremental --strict src tests
 
 # 執行 Lint 檢查
 uv run ruff check .
