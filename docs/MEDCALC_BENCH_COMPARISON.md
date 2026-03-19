@@ -51,7 +51,9 @@
 | wells_criteria_dvt | `wells_dvt` | ✅ |
 | wells_criteria_pe | `wells_pe` | ✅ |
 
-**覆蓋數: 27/55 = 49%**
+## 覆蓋數
+
+27/55 = 49%
 
 ---
 
@@ -92,7 +94,9 @@
 | weight_conversion | 體重轉換 | 🟢 低 |
 | convert_temperature | 溫度轉換 | 🟢 低 |
 
-**缺少數: 28/55**
+## 缺少數
+
+28/55
 
 ---
 
@@ -136,25 +140,31 @@ cd MedCalc-Bench/datasets
 # 2. 解壓測試集
 unzip test_data.csv.zip
 
-# 3. 篩選我們支援的計算器
-# (需要寫 script 對應 calculator_id → tool_id)
+# 3. 直接執行 benchmark script
+uv run python scripts/medcalc_bench_eval.py --dataset datasets/test_data.csv --format medcalc-bench-csv
 ```
 
 ### Phase B2: Evaluation Framework
 
-```python
-# scripts/medcalc_bench_eval.py (規劃中)
-"""
-MedCalc-Bench Evaluation Script
+`scripts/medcalc_bench_eval.py` 已實作，可直接：
 
-1. 載入測試資料集
-2. 對每個 instance:
-   - 解析 Patient Note
-   - 提取 Relevant Entities
-   - 呼叫對應 calculator
-   - 比較 Ground Truth
-3. 計算準確率
-"""
+- 載入 MedCalc-Bench 風格 CSV
+- 解析 `Relevant Entities`
+- 將 `Calculator Name` 映射到 repo 的 `tool_id`
+- 透過 registry + `CalculateUseCase` 執行真實 calculator
+- 依 `Lower Limit` / `Upper Limit` 或 tolerance 比較結果
+- 產出 console summary 與可選 JSON report
+
+```bash
+# 使用 repo 內建 sample dataset 快速驗證 pipeline
+uv run python scripts/medcalc_bench_eval.py \
+    --dataset data/benchmarks/medcalc_bench_sample.csv \
+    --fail-on-nonpassing
+
+# 輸出 JSON report，方便 CI 或 paper artifact 使用
+uv run python scripts/medcalc_bench_eval.py \
+    --dataset data/benchmarks/medcalc_bench_sample.csv \
+    --report-json data/benchmarks/sample_report.json
 ```
 
 ---
@@ -173,8 +183,8 @@ MedCalc-Bench Evaluation Script
 ## 參考資料
 
 - **Paper**: arXiv:2406.12036
-- **GitHub**: https://github.com/ncbi-nlp/MedCalc-Bench
-- **HuggingFace**: https://huggingface.co/datasets/nsk7153/MedCalc-Bench-Verified
+- **GitHub**: <https://github.com/ncbi-nlp/MedCalc-Bench>
+- **HuggingFace**: <https://huggingface.co/datasets/nsk7153/MedCalc-Bench-Verified>
 - **License**: CC-BY-SA 4.0
 
 ---
@@ -196,6 +206,7 @@ MedCalc-Bench **並非來自 MDCalc 網站**，而是：
 ### 原始測試方法 vs 我們的架構
 
 **原始 MedCalc-Bench 測試** (測試 LLM 能力):
+
 ```
 Patient Note → LLM (萃取 + 計算) → 比對 Ground Truth
 ```
@@ -206,6 +217,7 @@ Patient Note → LLM (萃取 + 計算) → 比對 Ground Truth
 3. 執行正確算術運算
 
 **我們的 Agent + MCP 架構**:
+
 ```
 User Query → Agent → 理解需求 → 呼叫 MCP Tool → 計算器執行 → 結果
 ```
@@ -230,7 +242,7 @@ result = calculate_bmi(weight_kg=70, height_m=1.75)
 assert test_case["Lower Limit"] <= result <= test_case["Upper Limit"]
 ```
 
-**優點**: 
+**優點**:
 - 可直接驗證我們的計算邏輯正確性
 - 不需要 LLM，純程式測試
 - 資料: 使用 `datasets/test_data.csv` 中已有 Relevant Entities 的案例
@@ -266,14 +278,22 @@ expected_tool = "calculate_cockcroft_gault"  # 或 "calculate_ckd_epi_2021"
 # 使用 discover() 或 find_tools_by_params() 測試
 ```
 
-### 建議實作步驟
+### 當前整合狀態
+
+- ✅ `scripts/medcalc_bench_eval.py` 已提供可執行 CLI
+- ✅ `src/shared/benchmarking.py` 已提供可重用 loader / adapter / evaluator
+- ✅ `data/benchmarks/medcalc_bench_sample.csv` 已提供 smoke-test dataset
+- ✅ `tests/test_medcalc_bench_eval.py` 已驗證 loader、evaluator 與 CLI JSON report
+- ⏳ 下一步是導入完整 `test_data.csv` 並擴充 calculator name mapping
+
+### 建議下一步
 
 ```
 Phase 1: 下載 MedCalc-Bench test_data.csv
          ↓
-Phase 2: 建立 calculator name mapping (他們的名稱 → 我們的 tool_id)
+Phase 2: 擴充 calculator name mapping (他們的名稱 → 我們的 tool_id)
          ↓
-Phase 3: 對 27 個已實作計算器執行方案 A (Unit Test)
+Phase 3: 對已支援 calculators 執行方案 A (Unit Test)
          ↓
 Phase 4: 產生精確度報告 (Accuracy Report)
          ↓
@@ -293,4 +313,6 @@ Phase 6: (可選) 執行方案 B (E2E with LLM)
 
 ---
 
-*此文件追蹤 MedCalc-Bench 整合進度*
+## 進度註記
+
+此文件追蹤 MedCalc-Bench 整合進度。

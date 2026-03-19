@@ -1,0 +1,7 @@
+case_id,Calculator Name,Relevant Entities,Ground Truth Answer,Lower Limit,Upper Limit
+bsa_001,bsa_calculator,"{""height_cm"": 175, ""weight_kg"": 70}",1.8447,1.8445,1.8448
+calcium_001,calcium_correction,"{""calcium_mg_dl"": 8.0, ""albumin_g_dl"": 2.0}",9.6,9.59,9.61
+sodium_001,sodium_correction_hyperglycemia,"{""measured_sodium"": 130, ""glucose"": 400}",134.8,134.79,134.81
+osm_001,serum_osmolality,"{""sodium"": 140, ""glucose"": 90, ""bun"": 14}",290.0,289.99,290.01
+crcl_001,creatinine_clearance,"{""age"": 65, ""weight_kg"": 70, ""creatinine_mg_dl"": 1.2, ""sex"": ""male""}",60.8,60.7,60.9
+fwd_001,free_water_deficit,"{""current_sodium"": 154, ""target_sodium"": 140, ""weight_kg"": 70, ""patient_type"": ""adult_male""}",4.2,4.19,4.21

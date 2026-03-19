@@ -1,0 +1,115 @@
+{
+  "total_cases": 6,
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "errored": 0,
+  "executed": 6,
+  "accuracy": 1.0,
+  "results": [
+    {
+      "case_id": "bsa_001",
+      "status": "passed",
+      "source": "medcalc_bench_sample.csv",
+      "calculator_name": "bsa_calculator",
+      "tool_id": "body_surface_area",
+      "expected_value": 1.8447,
+      "actual_value": 1.8447,
+      "lower_limit": 1.8445,
+      "upper_limit": 1.8448,
+      "error": null
+    },
+    {
+      "case_id": "calcium_001",
+      "status": "passed",
+      "source": "medcalc_bench_sample.csv",
+      "calculator_name": "calcium_correction",
+      "tool_id": "corrected_calcium",
+      "expected_value": 9.6,
+      "actual_value": 9.6,
+      "lower_limit": 9.59,
+      "upper_limit": 9.61,
+      "error": null
+    },
+    {
+      "case_id": "sodium_001",
+      "status": "passed",
+      "source": "medcalc_bench_sample.csv",
+      "calculator_name": "sodium_correction_hyperglycemia",
+      "tool_id": "corrected_sodium",
+      "expected_value": 134.8,
+      "actual_value": 134.8,
+      "lower_limit": 134.79,
+      "upper_limit": 134.81,
+      "error": null
+    },
+    {
+      "case_id": "osm_001",
+      "status": "passed",
+      "source": "medcalc_bench_sample.csv",
+      "calculator_name": "serum_osmolality",
+      "tool_id": "serum_osmolality",
+      "expected_value": 290.0,
+      "actual_value": 290.0,
+      "lower_limit": 289.99,
+      "upper_limit": 290.01,
+      "error": null
+    },
+    {
+      "case_id": "crcl_001",
+      "status": "passed",
+      "source": "medcalc_bench_sample.csv",
+      "calculator_name": "creatinine_clearance",
+      "tool_id": "cockcroft_gault",
+      "expected_value": 60.8,
+      "actual_value": 60.8,
+      "lower_limit": 60.7,
+      "upper_limit": 60.9,
+      "error": null
+    },
+    {
+      "case_id": "fwd_001",
+      "status": "passed",
+      "source": "medcalc_bench_sample.csv",
+      "calculator_name": "free_water_deficit",
+      "tool_id": "free_water_deficit",
+      "expected_value": 4.2,
+      "actual_value": 4.2,
+      "lower_limit": 4.19,
+      "upper_limit": 4.21,
+      "error": null
+    }
+  ],
+  "per_tool": {
+    "body_surface_area": {
+      "passed": 1,
+      "failed": 0,
+      "errored": 0
+    },
+    "corrected_calcium": {
+      "passed": 1,
+      "failed": 0,
+      "errored": 0
+    },
+    "corrected_sodium": {
+      "passed": 1,
+      "failed": 0,
+      "errored": 0
+    },
+    "serum_osmolality": {
+      "passed": 1,
+      "failed": 0,
+      "errored": 0
+    },
+    "cockcroft_gault": {
+      "passed": 1,
+      "failed": 0,
+      "errored": 0
+    },
+    "free_water_deficit": {
+      "passed": 1,
+      "failed": 0,
+      "errored": 0
+    }
+  }
+}
