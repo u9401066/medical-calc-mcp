@@ -71,6 +71,15 @@ OPIOID_MME_FACTORS: dict[str, float] = {
 }
 
 
+def _coerce_float(value: object, default: float = 0.0) -> float:
+    """Convert calculator inputs to float while preserving a safe default."""
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        return float(value)
+    return default
+
+
 OpioidName = Literal[
     "morphine",
     "codeine",
@@ -339,14 +348,14 @@ class MMECalculator(BaseCalculator):
 
         for opioid in opioids:
             name = str(opioid.get("name", "morphine"))
-            daily_dose = float(opioid.get("daily_dose_mg", 0))
+            daily_dose = _coerce_float(opioid.get("daily_dose_mg", 0))
             fentanyl_mcg = opioid.get("fentanyl_mcg_hr")
             methadone_range = opioid.get("methadone_dose_range")
             custom_factor = opioid.get("custom_conversion_factor")
 
             # Get conversion factor
             if name == "fentanyl_transdermal" and fentanyl_mcg is not None:
-                dose_value = float(fentanyl_mcg)
+                dose_value = _coerce_float(fentanyl_mcg)
                 factor = OPIOID_MME_FACTORS["fentanyl_transdermal"]
             elif name == "methadone":
                 dose_value = daily_dose

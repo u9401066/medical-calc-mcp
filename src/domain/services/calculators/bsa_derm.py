@@ -162,30 +162,31 @@ class BSADermatologyCalculator(BaseCalculator):
             raise ValueError("age_group must be 'adult', 'child', or 'infant'")
 
         # Rule of Nines percentages by age group
+        weights: dict[str, float]
         if age_group == "adult":
             weights = {
-                "head_neck": 9,
-                "trunk_anterior": 18,
-                "trunk_posterior": 18,
-                "arm_each": 9,
-                "hand_each": 1,  # Included in arm, but can be separate
-                "leg_each": 18,
-                "genital": 1,
+                "head_neck": 9.0,
+                "trunk_anterior": 18.0,
+                "trunk_posterior": 18.0,
+                "arm_each": 9.0,
+                "hand_each": 1.0,  # Included in arm, but can be separate
+                "leg_each": 18.0,
+                "genital": 1.0,
             }
         elif age_group == "child":
             # Child (1-9 years) - larger head, smaller legs
             weights = {
-                "head_neck": 15,
-                "trunk_anterior": 18,
-                "trunk_posterior": 18,
-                "arm_each": 9,
-                "hand_each": 1,
-                "leg_each": 14,
-                "genital": 1,
+                "head_neck": 15.0,
+                "trunk_anterior": 18.0,
+                "trunk_posterior": 18.0,
+                "arm_each": 9.0,
+                "hand_each": 1.0,
+                "leg_each": 14.0,
+                "genital": 1.0,
             }
         else:  # infant
             # Infant (<1 year) - even larger head, smaller legs
-            weights: dict[str, float] = {
+            weights = {
                 "head_neck": 18.0,
                 "trunk_anterior": 18.0,
                 "trunk_posterior": 18.0,

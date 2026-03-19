@@ -209,7 +209,7 @@ class PERCRuleCalculator(BaseCalculator):
         )
 
         # Build calculation details
-        calculation_details: dict[str, bool | int | list[str] | str] = {
+        calculation_details: dict[str, object] = {
             "criteria_evaluated": criteria,
             "positive_criteria_count": criteria_count,
             "positive_criteria": positive_criteria,

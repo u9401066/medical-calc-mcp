@@ -357,7 +357,7 @@ class FraminghamRiskScoreCalculator(BaseCalculator):
             smoker=smoker,
         )
 
-        total_points = point_breakdown["total"]
+        total_points = int(point_breakdown["total"])
 
         # Get risk percentage
         risk_percent, risk_numeric = self._get_risk(total_points, sex)
@@ -565,6 +565,9 @@ class FraminghamRiskScoreCalculator(BaseCalculator):
         hdl_cholesterol: float,
     ) -> Interpretation:
         """Generate clinical interpretation based on risk level."""
+
+        recommendations: tuple[str, ...]
+        next_steps: tuple[str, ...]
 
         # Determine risk category
         if diabetic or risk_numeric > 20:

@@ -11,12 +11,39 @@ References:
     Circulation. 2008;117(6):743-753. PMID: 18212285.
 """
 
+from typing import Any
+
 import pytest
 
+from src.domain.entities.score_result import ScoreResult
 from src.domain.services.calculators.framingham import (
     FraminghamRiskScoreCalculator,
 )
 from src.domain.value_objects.interpretation import RiskLevel
+
+
+def _value(result: ScoreResult) -> float:
+    value = result.value
+    assert value is not None
+    return value
+
+
+def _stage(result: ScoreResult) -> str:
+    stage = result.interpretation.stage
+    assert stage is not None
+    return stage
+
+
+def _details(result: ScoreResult) -> dict[str, Any]:
+    details = result.calculation_details
+    assert details is not None
+    return details
+
+
+def _formula(result: ScoreResult) -> str:
+    formula = result.formula_used
+    assert formula is not None
+    return formula
 
 
 @pytest.fixture
@@ -42,8 +69,8 @@ class TestFraminghamBasicCalculations:
             smoker=False,
             diabetic=False,
         )
-        assert result.value < 10
-        assert "Low" in result.interpretation.stage
+        assert _value(result) < 10
+        assert "Low" in _stage(result)
 
     def test_low_risk_young_female(
         self, calculator: FraminghamRiskScoreCalculator
@@ -59,7 +86,7 @@ class TestFraminghamBasicCalculations:
             smoker=False,
             diabetic=False,
         )
-        assert result.value < 10
+        assert _value(result) < 10
         assert result.interpretation.risk_level in [RiskLevel.VERY_LOW, RiskLevel.LOW]
 
     def test_moderate_risk_middle_aged_male(
@@ -77,7 +104,7 @@ class TestFraminghamBasicCalculations:
             diabetic=False,
         )
         # Should be in intermediate risk range
-        assert 5 <= result.value <= 20
+        assert 5 <= _value(result) <= 20
 
     def test_high_risk_elderly_male_smoker(
         self, calculator: FraminghamRiskScoreCalculator
@@ -93,7 +120,7 @@ class TestFraminghamBasicCalculations:
             smoker=True,
             diabetic=False,
         )
-        assert result.value >= 15
+        assert _value(result) >= 15
 
     def test_diabetic_automatic_high_risk(
         self, calculator: FraminghamRiskScoreCalculator
@@ -109,9 +136,9 @@ class TestFraminghamBasicCalculations:
             smoker=False,
             diabetic=True,
         )
-        assert result.value >= 20
+        assert _value(result) >= 20
         assert result.interpretation.risk_level == RiskLevel.HIGH
-        assert "CHD risk equivalent" in result.calculation_details["diabetes_status"]
+        assert "CHD risk equivalent" in _details(result)["diabetes_status"]
 
 
 class TestFraminghamMaleCalculations:
@@ -128,7 +155,7 @@ class TestFraminghamMaleCalculations:
             hdl_cholesterol=55,
             systolic_bp=115,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["age_points"] == -9  # 20-34 age group for men
 
     def test_male_age_points_elderly(
@@ -142,7 +169,7 @@ class TestFraminghamMaleCalculations:
             hdl_cholesterol=55,
             systolic_bp=115,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["age_points"] == 12  # 70-74 age group for men
 
     def test_male_smoking_points(
@@ -165,8 +192,8 @@ class TestFraminghamMaleCalculations:
             systolic_bp=125,
             smoker=True,
         )
-        nonsmoker_points = result_nonsmoker.calculation_details["point_breakdown"]["smoking_points"]
-        smoker_points = result_smoker.calculation_details["point_breakdown"]["smoking_points"]
+        nonsmoker_points = _details(result_nonsmoker)["point_breakdown"]["smoking_points"]
+        smoker_points = _details(result_smoker)["point_breakdown"]["smoking_points"]
         assert nonsmoker_points == 0
         assert smoker_points > 0
 
@@ -190,8 +217,8 @@ class TestFraminghamMaleCalculations:
             systolic_bp=145,
             bp_treated=True,
         )
-        untreated_points = result_untreated.calculation_details["point_breakdown"]["sbp_points"]
-        treated_points = result_treated.calculation_details["point_breakdown"]["sbp_points"]
+        untreated_points = _details(result_untreated)["point_breakdown"]["sbp_points"]
+        treated_points = _details(result_treated)["point_breakdown"]["sbp_points"]
         assert treated_points >= untreated_points
 
 
@@ -209,7 +236,7 @@ class TestFraminghamFemaleCalculations:
             hdl_cholesterol=60,
             systolic_bp=115,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["age_points"] == -7  # 20-34 age group for women
 
     def test_female_age_points_elderly(
@@ -223,7 +250,7 @@ class TestFraminghamFemaleCalculations:
             hdl_cholesterol=60,
             systolic_bp=115,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["age_points"] == 16  # 75-79 age group for women
 
     def test_female_generally_lower_risk(
@@ -245,7 +272,7 @@ class TestFraminghamFemaleCalculations:
             systolic_bp=140,
         )
         # Same risk factors, female typically has lower risk
-        assert female_result.value <= male_result.value
+        assert _value(female_result) <= _value(male_result)
 
 
 class TestFraminghamCholesterol:
@@ -262,7 +289,7 @@ class TestFraminghamCholesterol:
             hdl_cholesterol=50,
             systolic_bp=120,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["tc_points"] == 0
 
     def test_high_tc_adds_points(
@@ -276,7 +303,7 @@ class TestFraminghamCholesterol:
             hdl_cholesterol=50,
             systolic_bp=120,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["tc_points"] > 5
 
     def test_high_hdl_negative_points(
@@ -290,7 +317,7 @@ class TestFraminghamCholesterol:
             hdl_cholesterol=65,
             systolic_bp=120,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["hdl_points"] == -1
 
     def test_low_hdl_positive_points(
@@ -304,7 +331,7 @@ class TestFraminghamCholesterol:
             hdl_cholesterol=35,
             systolic_bp=120,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["hdl_points"] == 2
 
 
@@ -323,7 +350,7 @@ class TestFraminghamBloodPressure:
             systolic_bp=115,
             bp_treated=False,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["sbp_points"] == 0
 
     def test_high_bp_adds_points(
@@ -338,7 +365,7 @@ class TestFraminghamBloodPressure:
             systolic_bp=170,
             bp_treated=False,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert breakdown["sbp_points"] >= 2
 
 
@@ -356,7 +383,7 @@ class TestFraminghamRiskCategories:
             hdl_cholesterol=55,
             systolic_bp=115,
         )
-        assert result.interpretation.stage == "Low Risk"
+        assert _stage(result) == "Low Risk"
 
     def test_intermediate_risk_category(
         self, calculator: FraminghamRiskScoreCalculator
@@ -371,7 +398,7 @@ class TestFraminghamRiskCategories:
             smoker=True,
         )
         # Should be intermediate or high risk
-        assert result.interpretation.stage in ["Intermediate Risk", "High Risk"]
+        assert _stage(result) in ["Intermediate Risk", "High Risk"]
 
     def test_high_risk_category(
         self, calculator: FraminghamRiskScoreCalculator
@@ -386,7 +413,7 @@ class TestFraminghamRiskCategories:
             bp_treated=True,
             smoker=True,
         )
-        assert result.interpretation.stage == "High Risk"
+        assert _stage(result) == "High Risk"
         assert result.interpretation.risk_level == RiskLevel.HIGH
 
 
@@ -525,7 +552,7 @@ class TestFraminghamClinicalScenarios:
             smoker=False,
             diabetic=False,
         )
-        assert result.value < 10
+        assert _value(result) < 10
         # Low risk, lifestyle-focused recommendations
 
     def test_scenario_postmenopausal_woman_multiple_risk_factors(
@@ -543,7 +570,7 @@ class TestFraminghamClinicalScenarios:
             diabetic=False,
         )
         # Intermediate to high risk
-        assert result.value >= 5
+        assert _value(result) >= 5
 
     def test_scenario_young_male_smoker_family_history_concern(
         self, calculator: FraminghamRiskScoreCalculator
@@ -560,7 +587,7 @@ class TestFraminghamClinicalScenarios:
             diabetic=False,
         )
         # Even young patient can have elevated risk with smoking and lipids
-        assert result.value > 0
+        assert _value(result) > 0
         warnings = result.interpretation.warnings
         assert any("smoking" in w.lower() for w in warnings)
 
@@ -578,9 +605,9 @@ class TestFraminghamClinicalScenarios:
             smoker=False,
             diabetic=True,
         )
-        assert result.value >= 20
+        assert _value(result) >= 20
         assert result.interpretation.risk_level == RiskLevel.HIGH
-        assert "High Risk" in result.interpretation.stage
+        assert "High Risk" in _stage(result)
 
 
 class TestFraminghamMetadata:
@@ -623,7 +650,7 @@ class TestFraminghamMetadata:
             hdl_cholesterol=48,
             systolic_bp=135,
         )
-        params = result.calculation_details["parameters"]
+        params = _details(result)["parameters"]
         assert params["age"] == 50
         assert params["sex"] == "male"
         assert params["total_cholesterol_mg_dl"] == 210
@@ -670,7 +697,7 @@ class TestFraminghamEdgeCases:
             systolic_bp=120,
         )
         # Should still calculate, high risk
-        assert result.value > 0
+        assert _value(result) > 0
 
     def test_extreme_high_bp(
         self, calculator: FraminghamRiskScoreCalculator
@@ -683,7 +710,7 @@ class TestFraminghamEdgeCases:
             hdl_cholesterol=50,
             systolic_bp=200,
         )
-        assert result.value > 0
+        assert _value(result) > 0
 
     def test_negative_total_points_possible(
         self, calculator: FraminghamRiskScoreCalculator
@@ -696,7 +723,7 @@ class TestFraminghamEdgeCases:
             hdl_cholesterol=70,  # Very high HDL = -1
             systolic_bp=110,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         total = breakdown["total"]
         # Young male (-9) + optimal TC (0) + high HDL (-1) can be negative
         assert total < 0
@@ -716,7 +743,7 @@ class TestFraminghamCalculationDetails:
             hdl_cholesterol=50,
             systolic_bp=130,
         )
-        breakdown = result.calculation_details["point_breakdown"]
+        breakdown = _details(result)["point_breakdown"]
         assert "age_points" in breakdown
         assert "tc_points" in breakdown
         assert "hdl_points" in breakdown
@@ -735,7 +762,7 @@ class TestFraminghamCalculationDetails:
             hdl_cholesterol=50,
             systolic_bp=130,
         )
-        assert result.value == result.calculation_details["risk_numeric"]
+        assert _value(result) == _details(result)["risk_numeric"]
 
     def test_formula_description(
         self, calculator: FraminghamRiskScoreCalculator
@@ -748,5 +775,6 @@ class TestFraminghamCalculationDetails:
             hdl_cholesterol=50,
             systolic_bp=130,
         )
-        assert "Framingham" in result.formula_used
-        assert "ATP III" in result.formula_used
+        formula = _formula(result)
+        assert "Framingham" in formula
+        assert "ATP III" in formula

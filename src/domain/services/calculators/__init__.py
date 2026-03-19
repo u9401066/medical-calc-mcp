@@ -76,6 +76,7 @@ from .ecog_ps import ECOGPerformanceStatusCalculator
 
 # Phase 28: OB/GYN (Guideline-Recommended)
 from .epds import EPDSCalculator
+from .epworth_sleepiness_scale import EpworthSleepinessScaleCalculator
 
 # Phase 19: Guideline-Recommended Missing Tools (2025)
 from .euroscore_ii import EuroSCOREIICalculator
@@ -153,6 +154,7 @@ from .nrs_2002 import NRS2002Calculator
 from .nutric_score import NUTRICScoreCalculator
 from .osmolar_gap import OsmolarGapCalculator
 from .parkland_formula import ParklandFormulaCalculator
+from .palliative_performance_scale import PalliativePerformanceScaleCalculator
 
 # Phase 25: Dermatology (Guideline-Recommended)
 from .pasi import PASICalculator
@@ -185,6 +187,29 @@ from .scorad import SCORADCalculator
 
 # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
 from .score2 import SCORE2Calculator
+from .scale_expansion_batch import (
+    AthensInsomniaScaleCalculator,
+    AuditCalculator,
+    AuditCCalculator,
+    BerlinQuestionnaireCalculator,
+    BradenScaleCalculator,
+    CageCalculator,
+    CONUTCalculator,
+    FrailScaleCalculator,
+    GDS15Calculator,
+    GeriatricNutritionalRiskIndexCalculator,
+    ISICalculator,
+    KatzADLCalculator,
+    LawtonIADLCalculator,
+    MSTCalculator,
+    MiniCogCalculator,
+    NoSASScoreCalculator,
+    PalliativePrognosticIndexCalculator,
+    PcPtsd5Calculator,
+    PHQ2Calculator,
+    SarcFCalculator,
+    SCOFFCalculator,
+)
 
 # MedCalc-Bench P0: Laboratory Calculations
 from .serum_osmolality import SerumOsmolalityCalculator
@@ -336,6 +361,27 @@ __all__ = [
     "NUTRICScoreCalculator",
     # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
     "SCORE2Calculator",
+    "PHQ2Calculator",
+    "AuditCCalculator",
+    "AuditCalculator",
+    "CageCalculator",
+    "PcPtsd5Calculator",
+    "SCOFFCalculator",
+    "SarcFCalculator",
+    "FrailScaleCalculator",
+    "MSTCalculator",
+    "GDS15Calculator",
+    "BradenScaleCalculator",
+    "NoSASScoreCalculator",
+    "BerlinQuestionnaireCalculator",
+    "ISICalculator",
+    "LawtonIADLCalculator",
+    "KatzADLCalculator",
+    "GeriatricNutritionalRiskIndexCalculator",
+    "CONUTCalculator",
+    "AthensInsomniaScaleCalculator",
+    "PalliativePrognosticIndexCalculator",
+    "MiniCogCalculator",
     "FRAXCalculator",
     # Phase 24: Psychiatry (Guideline-Recommended)
     "PHQ9Calculator",
@@ -364,8 +410,10 @@ __all__ = [
     "BosniakClassificationCalculator",
     # Phase 28: OB/GYN (Guideline-Recommended)
     "EPDSCalculator",
+    "EpworthSleepinessScaleCalculator",
     "POPQCalculator",
     "SFltPlGFRatioCalculator",
+    "PalliativePerformanceScaleCalculator",
     # Phase 30: Geriatrics (Guideline-Recommended)
     "ClinicalFrailtyScaleCalculator",
     "MMSECalculator",
@@ -508,6 +556,27 @@ CALCULATORS: list[type[BaseCalculator]] = [
     NUTRICScoreCalculator,
     # Phase 23: CV Prevention & Bone Health (Guideline-Recommended)
     SCORE2Calculator,
+    PHQ2Calculator,
+    AuditCCalculator,
+    AuditCalculator,
+    CageCalculator,
+    PcPtsd5Calculator,
+    SCOFFCalculator,
+    SarcFCalculator,
+    FrailScaleCalculator,
+    MSTCalculator,
+    GDS15Calculator,
+    BradenScaleCalculator,
+    NoSASScoreCalculator,
+    BerlinQuestionnaireCalculator,
+    ISICalculator,
+    LawtonIADLCalculator,
+    KatzADLCalculator,
+    GeriatricNutritionalRiskIndexCalculator,
+    CONUTCalculator,
+    AthensInsomniaScaleCalculator,
+    PalliativePrognosticIndexCalculator,
+    MiniCogCalculator,
     FRAXCalculator,
     # Phase 24: Psychiatry (Guideline-Recommended)
     PHQ9Calculator,
@@ -536,8 +605,10 @@ CALCULATORS: list[type[BaseCalculator]] = [
     BosniakClassificationCalculator,
     # Phase 28: OB/GYN (Guideline-Recommended)
     EPDSCalculator,
+    EpworthSleepinessScaleCalculator,
     POPQCalculator,
     SFltPlGFRatioCalculator,
+    PalliativePerformanceScaleCalculator,
     # Phase 30: Geriatrics (Guideline-Recommended)
     ClinicalFrailtyScaleCalculator,
     MMSECalculator,

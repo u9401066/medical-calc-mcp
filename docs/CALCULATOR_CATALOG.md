@@ -1,4 +1,4 @@
-# Calculator Overview
+# Calculator Catalog
 
 > Generated from the live calculator registry. Do not edit manually.
 > Regenerate with `uv run python scripts/generate_tool_catalog_docs.py` (v1.5.0).

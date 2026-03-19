@@ -11,12 +11,27 @@ Reference:
     MMWR Recomm Rep. 2022;71(3):1-95. PMID: 36327391.
 """
 
+from typing import Any
+
 import pytest
 
-from src.domain.services.calculators.mme_calculator import (
-    MMECalculator,
-)
+from src.domain.entities.score_result import ScoreResult
+from src.domain.services.calculators.mme_calculator import MMECalculator
 from src.domain.value_objects.interpretation import RiskLevel, Severity
+
+OpioidDose = dict[str, float | str | None]
+
+
+def _details(result: ScoreResult) -> dict[str, Any]:
+    details = result.calculation_details
+    assert details is not None
+    return details
+
+
+def _stage(result: ScoreResult) -> str:
+    stage = result.interpretation.stage
+    assert stage is not None
+    return stage
 
 
 @pytest.fixture
@@ -32,7 +47,7 @@ class TestMMEBasicConversions:
         """Morphine 30mg = 30 MME (factor 1.0)."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=30)
         assert result.value == 30
-        assert result.calculation_details["conversion_factor"] == 1.0
+        assert _details(result)["conversion_factor"] == 1.0
 
     def test_morphine_zero_dose(self, calculator: MMECalculator) -> None:
         """Zero dose = 0 MME."""
@@ -44,19 +59,19 @@ class TestMMEBasicConversions:
         """Oxycodone 20mg = 30 MME (factor 1.5)."""
         result = calculator.calculate(opioid_name="oxycodone", daily_dose_mg=20)
         assert result.value == 30
-        assert result.calculation_details["conversion_factor"] == 1.5
+        assert _details(result)["conversion_factor"] == 1.5
 
     def test_hydrocodone_40mg(self, calculator: MMECalculator) -> None:
         """Hydrocodone 40mg = 40 MME (factor 1.0)."""
         result = calculator.calculate(opioid_name="hydrocodone", daily_dose_mg=40)
         assert result.value == 40
-        assert result.calculation_details["conversion_factor"] == 1.0
+        assert _details(result)["conversion_factor"] == 1.0
 
     def test_hydromorphone_8mg(self, calculator: MMECalculator) -> None:
         """Hydromorphone 8mg = 32 MME (factor 4.0)."""
         result = calculator.calculate(opioid_name="hydromorphone", daily_dose_mg=8)
         assert result.value == 32
-        assert result.calculation_details["conversion_factor"] == 4.0
+        assert _details(result)["conversion_factor"] == 4.0
 
     def test_oxymorphone_10mg(self, calculator: MMECalculator) -> None:
         """Oxymorphone 10mg = 30 MME (factor 3.0)."""
@@ -88,7 +103,7 @@ class TestFentanylTransdermal:
             opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=25
         )
         assert result.value == 60
-        assert result.calculation_details["dose_unit"] == "mcg/hr"
+        assert _details(result)["dose_unit"] == "mcg/hr"
 
     def test_fentanyl_50mcg_hr(self, calculator: MMECalculator) -> None:
         """Fentanyl 50mcg/hr = 120 MME."""
@@ -124,7 +139,7 @@ class TestMethadone:
             methadone_dose_range="1_20",
         )
         assert result.value == 40
-        assert result.calculation_details["conversion_factor"] == 4.0
+        assert _details(result)["conversion_factor"] == 4.0
 
     def test_methadone_30mg_mid_range(self, calculator: MMECalculator) -> None:
         """Methadone 30mg (21-40 range) = 240 MME (factor 8.0)."""
@@ -157,11 +172,11 @@ class TestMethadone:
         """Methadone auto-selects range when not specified."""
         # 15mg should use 1-20 range
         result = calculator.calculate(opioid_name="methadone", daily_dose_mg=15)
-        assert result.calculation_details["methadone_dose_range"] == "1_20"
+        assert _details(result)["methadone_dose_range"] == "1_20"
 
         # 35mg should use 21-40 range
         result2 = calculator.calculate(opioid_name="methadone", daily_dose_mg=35)
-        assert result2.calculation_details["methadone_dose_range"] == "21_40"
+        assert _details(result2)["methadone_dose_range"] == "21_40"
 
 
 class TestBuprenorphine:
@@ -230,25 +245,25 @@ class TestRiskStratification:
         """<20 MME = low risk."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=15)
         assert result.interpretation.risk_level == RiskLevel.VERY_LOW
-        assert "Low" in result.interpretation.stage
+        assert "Low" in _stage(result)
 
     def test_moderate_mme_20_49(self, calculator: MMECalculator) -> None:
         """20-49 MME = moderate risk."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=30)
         assert result.interpretation.risk_level == RiskLevel.LOW
-        assert "Moderate" in result.interpretation.stage
+        assert "Moderate" in _stage(result)
 
     def test_elevated_mme_50_89(self, calculator: MMECalculator) -> None:
         """50-89 MME = elevated risk."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=60)
         assert result.interpretation.risk_level == RiskLevel.INTERMEDIATE
-        assert "Elevated" in result.interpretation.stage
+        assert "Elevated" in _stage(result)
 
     def test_high_mme_90_plus(self, calculator: MMECalculator) -> None:
         """≥90 MME = high risk."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=100)
         assert result.interpretation.risk_level == RiskLevel.HIGH
-        assert "High" in result.interpretation.stage
+        assert "High" in _stage(result)
         assert result.interpretation.severity == Severity.SEVERE
 
 
@@ -295,18 +310,18 @@ class TestMultipleOpioids:
 
     def test_two_opioids(self, calculator: MMECalculator) -> None:
         """Calculate total from two opioids."""
-        opioids = [
+        opioids: list[OpioidDose] = [
             {"name": "morphine", "daily_dose_mg": 30},
             {"name": "oxycodone", "daily_dose_mg": 10},
         ]
         result = calculator.calculate_multiple(opioids)
         # 30 * 1.0 + 10 * 1.5 = 45
         assert result.value == 45
-        assert result.calculation_details["opioid_count"] == 2
+        assert _details(result)["opioid_count"] == 2
 
     def test_three_opioids_mixed(self, calculator: MMECalculator) -> None:
         """Three opioids with different factors."""
-        opioids = [
+        opioids: list[OpioidDose] = [
             {"name": "morphine", "daily_dose_mg": 20},
             {"name": "hydrocodone", "daily_dose_mg": 20},
             {"name": "oxycodone", "daily_dose_mg": 10},
@@ -317,7 +332,7 @@ class TestMultipleOpioids:
 
     def test_with_fentanyl_patch(self, calculator: MMECalculator) -> None:
         """Include fentanyl patch in total."""
-        opioids = [
+        opioids: list[OpioidDose] = [
             {"name": "fentanyl_transdermal", "fentanyl_mcg_hr": 25},
             {"name": "oxycodone", "daily_dose_mg": 10},
         ]
@@ -332,12 +347,12 @@ class TestMultipleOpioids:
 
     def test_itemized_breakdown(self, calculator: MMECalculator) -> None:
         """Result includes itemized breakdown."""
-        opioids = [
+        opioids: list[OpioidDose] = [
             {"name": "morphine", "daily_dose_mg": 20},
             {"name": "oxycodone", "daily_dose_mg": 10},
         ]
         result = calculator.calculate_multiple(opioids)
-        breakdown = result.calculation_details["individual_opioids"]
+        breakdown = _details(result)["individual_opioids"]
         assert len(breakdown) == 2
         assert breakdown[0]["opioid"] == "morphine"
         assert breakdown[0]["mme"] == 20
@@ -374,7 +389,7 @@ class TestClinicalScenarios:
 
     def test_scenario_polypharmacy(self, calculator: MMECalculator) -> None:
         """Patient on multiple opioids (common in escalation)."""
-        opioids = [
+        opioids: list[OpioidDose] = [
             {"name": "fentanyl_transdermal", "fentanyl_mcg_hr": 50},
             {"name": "oxycodone", "daily_dose_mg": 20},  # Breakthrough
         ]
@@ -392,12 +407,11 @@ class TestClinicalScenarios:
         assert current.value == 60  # Already at threshold
 
         # Adding hydrocodone 10mg PRN = 10 MME more
-        total = calculator.calculate_multiple(
-            [
-                {"name": "oxycodone", "daily_dose_mg": 40},
-                {"name": "hydrocodone", "daily_dose_mg": 10},
-            ]
-        )
+        opioids: list[OpioidDose] = [
+            {"name": "oxycodone", "daily_dose_mg": 40},
+            {"name": "hydrocodone", "daily_dose_mg": 10},
+        ]
+        total = calculator.calculate_multiple(opioids)
         assert total.value == 70  # Now 70 MME, approaching 90
 
 
@@ -467,9 +481,10 @@ class TestEdgeCases:
     def test_calculation_details_formula(self, calculator: MMECalculator) -> None:
         """Calculation details include formula string."""
         result = calculator.calculate(opioid_name="oxycodone", daily_dose_mg=20)
-        assert "formula" in result.calculation_details
-        assert "20" in result.calculation_details["formula"]
-        assert "1.5" in result.calculation_details["formula"]
+        details = _details(result)
+        assert "formula" in details
+        assert "20" in details["formula"]
+        assert "1.5" in details["formula"]
 
     def test_methadone_zero_dose_error(self, calculator: MMECalculator) -> None:
         """Methadone with zero dose raises error."""
