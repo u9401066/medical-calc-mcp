@@ -2,7 +2,7 @@
 
 See the full [ROADMAP.md](https://github.com/u9401066/medical-calc-mcp/blob/main/ROADMAP.md) for detailed plans.
 
-## Current Status (v1.5.0)
+## Current Status (v1.6.0)
 
 - ✅ 151 Medical Calculators
 - ✅ 2,067 Collected Tests

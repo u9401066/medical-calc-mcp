@@ -1,7 +1,7 @@
 # REST API Reference
 
 > Generated from the FastAPI OpenAPI schema. Do not edit manually.
-> Source: [openapi.json](openapi.json) | OpenAPI 3.1.0 | v1.5.0
+> Source: [openapi.json](openapi.json) | OpenAPI 3.1.0 | v1.6.0
 
 This API currently publishes **12 operations** across **12 paths**, backed by **6 shared schemas**.
 
@@ -16,7 +16,7 @@ Health and docs remain available at the server root: `/health`, `/docs`, `/redoc
 ## API Metadata
 
 - Title: Medical Calculator API
-- Version: 1.5.0
+- Version: 1.6.0
 
 ### Description
 
