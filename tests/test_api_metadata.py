@@ -20,3 +20,11 @@ def test_openapi_info_uses_generated_description() -> None:
 
     assert schema["info"]["description"] == build_api_description()
     assert f"提供 {summary.calculator_count} 個經過驗證的臨床評分工具" in schema["info"]["description"]
+
+
+def test_api_description_keeps_blank_lines_after_section_headings() -> None:
+    description = build_api_description()
+
+    assert "### 功能特色\n\n- " in description
+    assert "### 使用流程\n\n1. " in description
+    assert "### 代表性專科覆蓋\n\n- " in description

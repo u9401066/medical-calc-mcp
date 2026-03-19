@@ -70,6 +70,31 @@ OPIOID_MME_FACTORS: dict[str, float] = {
     "dihydrocodeine": 0.25,
 }
 
+SUPPORTED_OPIOID_NAMES: frozenset[str] = frozenset(
+    {
+        "morphine",
+        "codeine",
+        "hydrocodone",
+        "oxycodone",
+        "oxymorphone",
+        "hydromorphone",
+        "tramadol",
+        "tapentadol",
+        "methadone",
+        "fentanyl_transdermal",
+        "buprenorphine_transdermal",
+        "buprenorphine_sublingual",
+        "buprenorphine_film",
+        "meperidine",
+        "levorphanol",
+        "pentazocine",
+        "butorphanol",
+        "nalbuphine",
+        "dihydrocodeine",
+        "other",
+    }
+)
+
 
 def _coerce_float(value: object, default: float = 0.0) -> float:
     """Convert calculator inputs to float while preserving a safe default."""
@@ -93,11 +118,23 @@ OpioidName = Literal[
     "fentanyl_transdermal",
     "buprenorphine_transdermal",
     "buprenorphine_sublingual",
+    "buprenorphine_film",
     "meperidine",
     "levorphanol",
     "pentazocine",
+    "butorphanol",
+    "nalbuphine",
+    "dihydrocodeine",
     "other",
 ]
+
+
+def _normalize_supported_opioid_name(opioid_name: str) -> str:
+    """Normalize and validate an opioid name exposed by the calculator API."""
+    normalized_name = opioid_name.strip().lower()
+    if normalized_name not in SUPPORTED_OPIOID_NAMES:
+        raise ValueError(f"Unsupported opioid_name: {opioid_name}")
+    return normalized_name
 
 
 class MMECalculator(BaseCalculator):
@@ -217,9 +254,7 @@ class MMECalculator(BaseCalculator):
         opioid_name: OpioidName = "morphine",
         daily_dose_mg: float = 0.0,
         fentanyl_mcg_hr: float | None = None,
-        methadone_dose_range: Literal[
-            "1_20", "21_40", "41_60", "over_60"
-        ] | None = None,
+        methadone_dose_range: Literal["1_20", "21_40", "41_60", "over_60"] | None = None,
         custom_conversion_factor: float | None = None,
     ) -> ScoreResult:
         """
@@ -240,17 +275,16 @@ class MMECalculator(BaseCalculator):
             For fentanyl transdermal patches, use fentanyl_mcg_hr parameter.
             The patch delivers a continuous dose; MME = mcg/hr × 2.4
         """
+        normalized_opioid_name = _normalize_supported_opioid_name(opioid_name)
+
         # Validate inputs
-        if opioid_name == "fentanyl_transdermal":
+        if normalized_opioid_name == "fentanyl_transdermal":
             if fentanyl_mcg_hr is None or fentanyl_mcg_hr < 0:
-                raise ValueError(
-                    "For fentanyl transdermal, fentanyl_mcg_hr must be provided "
-                    "and non-negative"
-                )
+                raise ValueError("For fentanyl transdermal, fentanyl_mcg_hr must be provided and non-negative")
             dose_value = fentanyl_mcg_hr
             conversion_factor = OPIOID_MME_FACTORS["fentanyl_transdermal"]
             dose_unit = "mcg/hr"
-        elif opioid_name == "methadone":
+        elif normalized_opioid_name == "methadone":
             if daily_dose_mg <= 0:
                 raise ValueError("daily_dose_mg must be positive for methadone")
             # Use dose range to select appropriate conversion factor
@@ -267,11 +301,9 @@ class MMECalculator(BaseCalculator):
             conversion_factor = OPIOID_MME_FACTORS[f"methadone_{methadone_dose_range}"]
             dose_value = daily_dose_mg
             dose_unit = "mg/day"
-        elif opioid_name == "other":
+        elif normalized_opioid_name == "other":
             if custom_conversion_factor is None:
-                raise ValueError(
-                    "For 'other' opioid, custom_conversion_factor must be provided"
-                )
+                raise ValueError("For 'other' opioid, custom_conversion_factor must be provided")
             if daily_dose_mg < 0:
                 raise ValueError("daily_dose_mg must be non-negative")
             conversion_factor = custom_conversion_factor
@@ -281,15 +313,11 @@ class MMECalculator(BaseCalculator):
             if daily_dose_mg < 0:
                 raise ValueError("daily_dose_mg must be non-negative")
             dose_value = daily_dose_mg
-            # Handle buprenorphine variants
-            if opioid_name in ["buprenorphine_transdermal", "buprenorphine_sublingual"]:
-                conversion_factor = OPIOID_MME_FACTORS[opioid_name]
-            else:
-                conversion_factor = OPIOID_MME_FACTORS.get(opioid_name, 1.0)
+            conversion_factor = OPIOID_MME_FACTORS[normalized_opioid_name]
             dose_unit = "mg/day"
 
         # Override with custom factor if provided
-        if custom_conversion_factor is not None and opioid_name != "other":
+        if custom_conversion_factor is not None and normalized_opioid_name != "other":
             conversion_factor = custom_conversion_factor
 
         # Calculate MME
@@ -300,7 +328,7 @@ class MMECalculator(BaseCalculator):
 
         # Build calculation details
         calculation_details: dict[str, object] = {
-            "opioid": opioid_name,
+            "opioid": normalized_opioid_name,
             "dose": dose_value,
             "dose_unit": dose_unit,
             "conversion_factor": conversion_factor,
@@ -308,7 +336,7 @@ class MMECalculator(BaseCalculator):
             "formula": f"{dose_value} {dose_unit} × {conversion_factor} = {round(mme_per_day, 1)} MME/day",
         }
 
-        if opioid_name == "methadone" and methadone_dose_range:
+        if normalized_opioid_name == "methadone" and methadone_dose_range:
             calculation_details["methadone_dose_range"] = methadone_dose_range
 
         return ScoreResult(
@@ -347,7 +375,7 @@ class MMECalculator(BaseCalculator):
         breakdown: list[dict[str, object]] = []
 
         for opioid in opioids:
-            name = str(opioid.get("name", "morphine"))
+            name = _normalize_supported_opioid_name(str(opioid.get("name", "morphine")))
             daily_dose = _coerce_float(opioid.get("daily_dose_mg", 0))
             fentanyl_mcg = opioid.get("fentanyl_mcg_hr")
             methadone_range = opioid.get("methadone_dose_range")
@@ -369,11 +397,16 @@ class MMECalculator(BaseCalculator):
                     else:
                         methadone_range = "over_60"
                 factor = OPIOID_MME_FACTORS[f"methadone_{methadone_range}"]
+            elif name == "other":
+                if custom_factor is None:
+                    raise ValueError("For 'other' opioid, custom_conversion_factor must be provided")
+                dose_value = daily_dose
+                factor = float(custom_factor)
             else:
                 dose_value = daily_dose
-                factor = OPIOID_MME_FACTORS.get(name, 1.0)
+                factor = OPIOID_MME_FACTORS[name]
 
-            if custom_factor is not None:
+            if custom_factor is not None and name != "other":
                 factor = float(custom_factor)
 
             mme = dose_value * factor
@@ -418,9 +451,7 @@ class MMECalculator(BaseCalculator):
                 risk_level=RiskLevel.VERY_LOW,
                 stage="None",
                 stage_description="No opioid use",
-                recommendations=(
-                    "Continue non-opioid pain management strategies if applicable",
-                ),
+                recommendations=("Continue non-opioid pain management strategies if applicable",),
                 next_steps=(),
                 warnings=(),
             )
@@ -428,8 +459,7 @@ class MMECalculator(BaseCalculator):
         if mme < 20:
             return Interpretation(
                 summary=f"Low opioid dose: {round(mme, 1)} MME/day",
-                detail="This opioid dose is below typical risk thresholds. "
-                "Continue to monitor for efficacy and side effects.",
+                detail="This opioid dose is below typical risk thresholds. Continue to monitor for efficacy and side effects.",
                 severity=Severity.NORMAL,
                 risk_level=RiskLevel.VERY_LOW,
                 stage="Low MME",
@@ -571,4 +601,4 @@ class MMECalculator(BaseCalculator):
                     "unit": "mcg/hr" if name == "fentanyl_transdermal" else "mg",
                 }
             )
-        return result
+        return sorted(result, key=lambda opioid: str(opioid["opioid"]))

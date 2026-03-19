@@ -11,7 +11,7 @@ Reference:
     MMWR Recomm Rep. 2022;71(3):1-95. PMID: 36327391.
 """
 
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -99,30 +99,22 @@ class TestFentanylTransdermal:
 
     def test_fentanyl_25mcg_hr(self, calculator: MMECalculator) -> None:
         """Fentanyl 25mcg/hr = 60 MME (factor 2.4)."""
-        result = calculator.calculate(
-            opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=25
-        )
+        result = calculator.calculate(opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=25)
         assert result.value == 60
         assert _details(result)["dose_unit"] == "mcg/hr"
 
     def test_fentanyl_50mcg_hr(self, calculator: MMECalculator) -> None:
         """Fentanyl 50mcg/hr = 120 MME."""
-        result = calculator.calculate(
-            opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=50
-        )
+        result = calculator.calculate(opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=50)
         assert result.value == 120
 
     def test_fentanyl_100mcg_hr(self, calculator: MMECalculator) -> None:
         """Fentanyl 100mcg/hr = 240 MME (very high)."""
-        result = calculator.calculate(
-            opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=100
-        )
+        result = calculator.calculate(opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=100)
         assert result.value == 240
         assert result.interpretation.risk_level == RiskLevel.HIGH
 
-    def test_fentanyl_requires_mcg_hr_parameter(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_fentanyl_requires_mcg_hr_parameter(self, calculator: MMECalculator) -> None:
         """Fentanyl transdermal requires fentanyl_mcg_hr."""
         with pytest.raises(ValueError, match="fentanyl_mcg_hr must be provided"):
             calculator.calculate(opioid_name="fentanyl_transdermal", daily_dose_mg=25)
@@ -185,32 +177,24 @@ class TestBuprenorphine:
     def test_buprenorphine_transdermal(self, calculator: MMECalculator) -> None:
         """Buprenorphine transdermal 10mcg/hr equivalent."""
         # Buprenorphine transdermal: factor ~12.6
-        result = calculator.calculate(
-            opioid_name="buprenorphine_transdermal", daily_dose_mg=5
-        )
+        result = calculator.calculate(opioid_name="buprenorphine_transdermal", daily_dose_mg=5)
         assert result.value == 63  # 5 * 12.6
 
     def test_buprenorphine_sublingual(self, calculator: MMECalculator) -> None:
         """Buprenorphine sublingual 8mg."""
-        result = calculator.calculate(
-            opioid_name="buprenorphine_sublingual", daily_dose_mg=8
-        )
+        result = calculator.calculate(opioid_name="buprenorphine_sublingual", daily_dose_mg=8)
         assert result.value == 80  # 8 * 10
 
 
 class TestCustomConversionFactor:
     """Test custom conversion factor override."""
 
-    def test_other_opioid_requires_custom_factor(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_other_opioid_requires_custom_factor(self, calculator: MMECalculator) -> None:
         """'other' opioid requires custom conversion factor."""
         with pytest.raises(ValueError, match="custom_conversion_factor must be provided"):
             calculator.calculate(opioid_name="other", daily_dose_mg=10)
 
-    def test_other_opioid_with_custom_factor(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_other_opioid_with_custom_factor(self, calculator: MMECalculator) -> None:
         """'other' opioid uses custom factor."""
         result = calculator.calculate(
             opioid_name="other",
@@ -219,9 +203,7 @@ class TestCustomConversionFactor:
         )
         assert result.value == 25
 
-    def test_override_standard_opioid_factor(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_override_standard_opioid_factor(self, calculator: MMECalculator) -> None:
         """Override standard opioid conversion factor."""
         # Normally morphine factor is 1.0
         result = calculator.calculate(
@@ -276,17 +258,13 @@ class TestRecommendations:
         recommendations = result.interpretation.recommendations
         assert any("monitor" in r.lower() for r in recommendations)
 
-    def test_moderate_dose_naloxone_discussion(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_moderate_dose_naloxone_discussion(self, calculator: MMECalculator) -> None:
         """Moderate dose: discuss naloxone."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=30)
         recommendations = result.interpretation.recommendations
         assert any("naloxone" in r.lower() for r in recommendations)
 
-    def test_elevated_dose_naloxone_recommended(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_elevated_dose_naloxone_recommended(self, calculator: MMECalculator) -> None:
         """Elevated dose: naloxone strongly recommended."""
         result = calculator.calculate(opioid_name="morphine", daily_dose_mg=60)
         recommendations = result.interpretation.recommendations
@@ -380,9 +358,7 @@ class TestClinicalScenarios:
     def test_scenario_cancer_pain_high_dose(self, calculator: MMECalculator) -> None:
         """Cancer pain patient on high-dose opioids."""
         # Fentanyl patch 75mcg/hr
-        result = calculator.calculate(
-            opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=75
-        )
+        result = calculator.calculate(opioid_name="fentanyl_transdermal", fentanyl_mcg_hr=75)
         # 75 * 2.4 = 180 MME
         assert result.value == 180
         assert result.interpretation.risk_level == RiskLevel.HIGH
@@ -398,9 +374,7 @@ class TestClinicalScenarios:
         assert result.value == 150
         assert result.interpretation.severity == Severity.SEVERE
 
-    def test_scenario_prescriber_threshold_check(
-        self, calculator: MMECalculator
-    ) -> None:
+    def test_scenario_prescriber_threshold_check(self, calculator: MMECalculator) -> None:
         """Prescriber checking if adding PRN would exceed threshold."""
         # Current: oxycodone 40mg/day = 60 MME
         current = calculator.calculate(opioid_name="oxycodone", daily_dose_mg=40)
@@ -452,10 +426,13 @@ class TestHelperMethods:
         """Test list_supported_opioids method."""
         opioids = calculator.list_supported_opioids()
         assert len(opioids) > 10
-        names = [o["opioid"] for o in opioids]
+        names = [cast(str, o["opioid"]) for o in opioids]
+        assert names == sorted(names)
         assert "morphine" in names
         assert "oxycodone" in names
         assert "fentanyl_transdermal" in names
+        assert "buprenorphine_film" in names
+        assert "nalbuphine" in names
 
 
 class TestEdgeCases:
@@ -490,3 +467,13 @@ class TestEdgeCases:
         """Methadone with zero dose raises error."""
         with pytest.raises(ValueError, match="positive"):
             calculator.calculate(opioid_name="methadone", daily_dose_mg=0)
+
+    def test_unknown_opioid_name_raises_error(self, calculator: MMECalculator) -> None:
+        """Unsupported opioid names must fail instead of defaulting to morphine factor."""
+        with pytest.raises(ValueError, match="Unsupported opioid_name"):
+            calculator.calculate(opioid_name=cast(Any, "unknown_opioid"), daily_dose_mg=10)
+
+    def test_multiple_unknown_opioid_name_raises_error(self, calculator: MMECalculator) -> None:
+        """Polypharmacy path must also reject unsupported opioid names."""
+        with pytest.raises(ValueError, match="Unsupported opioid_name"):
+            calculator.calculate_multiple([{"name": "unknown_opioid", "daily_dose_mg": 10}])

@@ -1,5 +1,7 @@
 """Production readiness helpers for runtime endpoints and deployment gates."""
 
+# ruff: noqa: I001
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -83,9 +85,7 @@ def build_readiness_report(
         ReadinessCheck(
             name="calculator_registry",
             status=calculator_status,
-            detail=(
-                f"Loaded {calculator_count} calculators; expected at least {expected_calculator_count}."
-            ),
+            detail=(f"Loaded {calculator_count} calculators; expected at least {expected_calculator_count}."),
             recommendation="Ensure all calculator classes are registered during startup.",
         )
     )
@@ -143,7 +143,7 @@ def build_readiness_report(
         )
     )
 
-    ssl_status = READINESS_PASS if ssl_enabled else READINESS_WARN
+    ssl_status = READINESS_PASS if ssl_enabled else (READINESS_FAIL if production else READINESS_WARN)
     checks.append(
         ReadinessCheck(
             name="transport_security",

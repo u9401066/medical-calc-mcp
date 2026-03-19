@@ -28,6 +28,42 @@ def _escape(text: str) -> str:
     return " ".join(text.replace("|", "\\|").split())
 
 
+def _append_markdown_block(lines: list[str], text: str) -> None:
+    just_closed_fence = False
+
+    for raw_line in text.splitlines():
+        line = raw_line.rstrip()
+
+        if not line:
+            if lines and lines[-1] != "":
+                lines.append("")
+            just_closed_fence = False
+            continue
+
+        if just_closed_fence and lines and lines[-1] != "":
+            lines.append("")
+        just_closed_fence = False
+
+        if line.startswith("#"):
+            if lines and lines[-1] != "":
+                lines.append("")
+            lines.append(line)
+            lines.append("")
+            continue
+
+        if line.startswith("```"):
+            if lines and lines[-1] != "":
+                lines.append("")
+            lines.append(line)
+            just_closed_fence = True
+            continue
+
+        lines.append(line)
+
+    if lines and lines[-1] != "":
+        lines.append("")
+
+
 def render_rest_api_docs() -> str:
     schema = app.openapi()
     info = schema["info"]
@@ -35,6 +71,8 @@ def render_rest_api_docs() -> str:
     component_schemas = schema.get("components", {}).get("schemas", {})
 
     lines = [
+        "<!-- markdownlint-disable MD024 -->",
+        "",
         "# REST API Reference",
         "",
         "> Generated from the FastAPI OpenAPI schema. Do not edit manually.",
@@ -48,10 +86,12 @@ def render_rest_api_docs() -> str:
         "## Base URL",
         "",
         "```",
-        "http://localhost:8000/api/v1",
+        "http://localhost:8000",
         "```",
         "",
-        "Health and docs remain available at the server root: `/health`, `/docs`, `/redoc`, and `/openapi.json`.",
+        "Endpoint paths below are shown in full, including `/api/v1` where applicable.",
+        "",
+        "Health and docs remain available at the server root: `/health`, `/ready`, `/docs`, `/redoc`, and `/openapi.json`.",
         "",
         "## API Metadata",
         "",
@@ -62,9 +102,7 @@ def render_rest_api_docs() -> str:
     description = str(info.get("description", "")).strip()
     if description:
         lines.extend(["", "### Description", ""])
-        for paragraph in description.split("\n\n"):
-            lines.append(paragraph)
-            lines.append("")
+        _append_markdown_block(lines, description)
 
     lines.extend(["## Endpoints", ""])
 
@@ -74,23 +112,21 @@ def render_rest_api_docs() -> str:
             lines.append(f"### {method.upper()} {path}")
             lines.append("")
             if summary:
-                lines.append(f"**Summary:** {_escape(summary)}")
-                lines.append("")
+                lines.extend(["#### Summary", "", _escape(summary), ""])
             description = str(operation.get("description", "")).strip()
             if description:
-                lines.append(description)
-                lines.append("")
+                lines.extend(["#### Description", ""])
+                _append_markdown_block(lines, description)
 
             tags = operation.get("tags", [])
             if tags:
-                lines.append(f"**Tags:** {', '.join(tags)}")
-                lines.append("")
+                lines.extend(["#### Tags", "", ", ".join(tags), ""])
 
             parameters = operation.get("parameters", [])
             if parameters:
                 lines.extend(
                     [
-                        "**Parameters**",
+                        "#### Parameters",
                         "",
                         "| Name | In | Required | Type | Description |",
                         "|------|----|----------|------|-------------|",
@@ -110,7 +146,7 @@ def render_rest_api_docs() -> str:
             if request_body:
                 lines.extend(
                     [
-                        "**Request Body**",
+                        "#### Request Body",
                         "",
                         "| Content-Type | Schema | Required |",
                         "|--------------|--------|----------|",
@@ -124,7 +160,7 @@ def render_rest_api_docs() -> str:
 
             lines.extend(
                 [
-                    "**Responses**",
+                    "#### Responses",
                     "",
                     "| Status | Schema | Description |",
                     "|--------|--------|-------------|",
@@ -136,9 +172,7 @@ def render_rest_api_docs() -> str:
                 if content:
                     first_content = next(iter(content.values()))
                     schema_label = _schema_label(first_content.get("schema"))
-                lines.append(
-                    f"| {_escape(status_code)} | {_escape(schema_label)} | {_escape(response.get('description', '-'))} |"
-                )
+                lines.append(f"| {_escape(status_code)} | {_escape(schema_label)} | {_escape(response.get('description', '-'))} |")
             lines.append("")
 
     lines.extend(["## Shared Schemas", "", "| Schema | Description |", "|--------|-------------|"])
