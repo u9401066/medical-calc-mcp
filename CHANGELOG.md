@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD022 MD024 -->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -7,31 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **SSL/TLS Certificate Path Configuration**: Flexible SSL configuration for HTTPS deployment
-  - New `SslConfig` dataclass in `src/infrastructure/mcp/config.py`
-  - CLI arguments: `--ssl-keyfile`, `--ssl-certfile`, `--ssl-ca-certs`
-  - Environment variables: `SSL_ENABLED`, `SSL_KEYFILE`, `SSL_CERTFILE`, `SSL_CA_CERTS`, `SSL_DIR`
-  - Three deployment modes: Docker (with custom SSL_DIR), Local (with env vars), CLI (with args)
-  - **29 SSL unit tests** in `tests/test_ssl_config.py` (dataclass, from_env, validation, integration)
-- **Reference Statistics Script**: `scripts/count_references.py` for tracking literature citations
-  - 229 unique PMIDs, 190 unique DOIs
-  - 100% calculators have peer-reviewed citations
-  - Average 2.14 references per calculator
-- **Unit enum extensions**: Added `STAGE`, `CATEGORY`, `CLASS` for classification systems
+## [1.6.2] - 2026-03-19
 
 ### Changed
-- Updated HTTPS deployment documentation with custom certificate path examples
-- Improved type annotations across calculator files (mypy --strict compliant)
-- Fixed import sorting and code formatting (ruff check)
-- **Total tests: 1752** (was 1721, +31 new tests)
+
+- Tightened the production readiness gate so production deployments without transport security fail readiness instead of only warning
+- Corrected stale registry-count assertions to follow the expanded 151-calculator catalog
+- Normalized generated REST API documentation to use the server root as the base URL and emit markdown-lint-friendly section formatting
 
 ### Fixed
-- Fixed 250+ mypy type errors across 34 calculator files
-- Fixed `Interpretation` argument types (list → tuple conversion)
-- Fixed `ScoreResult.references` type compatibility
-- Fixed missing type parameters for generic `dict` types
-- Fixed `networkx` import type annotation
+
+- Rejected unsupported opioid names in the MME calculator instead of silently defaulting to a morphine-equivalent factor of `1.0`
+- Realigned the MME calculator public opioid type surface with the supported conversion table and sorted the published support list deterministically
+- Added regression coverage for unsupported MME opioid names and TLS-gated production readiness
+
+## [1.6.0] - 2026-03-19
+
+### Added
+
+- **151 clinical calculators across 31 primary specialties** with expanded evidence-backed screening, sleep, palliative, nutrition, psychiatry, and geriatrics coverage
+- **Production readiness framework** with readiness report generation, CLI validation, API metadata support, and security-profile checks
+- **MedCalc-Bench evaluation pipeline** with benchmarking utilities, sample dataset, sample report, and automated tests
+- **Registry-backed documentation generation** for calculator catalog, guideline coverage, specialty coverage gap analysis, OpenAPI snapshot, and REST API reference
+- **Dependency governance and automation** through Dependabot lanes, lockfile refresh workflow, git hooks, and commit message validation
+- **2,067 collected tests** with updated readiness and release coverage
+
+### Changed
+
+- Hardened MCP discovery, guidance, and calculator handling flows around the active high-level and low-level registry metadata model
+- Regenerated `docs/` and `docs_site/` release artifacts for version `1.6.0`
+- Tightened project consistency checks, formula provenance validation, project metadata handling, fuzzy matching, and smart input normalization
+- Updated CI and contributor workflows to use frozen `uv` dependency flows and stricter review lanes
+
+### Fixed
+
+- Corrected stale documentation quality snapshots so release consistency checks pass against current calculator, citation, and test counts
+- Cleaned up lint-sensitive formatting in batch-maintained modules to stabilize CI
 
 ## [1.5.0] - 2026-01-08
 
@@ -149,6 +162,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.6.2 | 2026-03-19 | MME safety fix, TLS-gated readiness, stale test cleanup, REST docs correction |
+| 1.6.0 | 2026-03-19 | 151 calculators, readiness checks, benchmark pipeline, release automation |
 | 1.5.0 | 2026-01-08 | 121 calculators, Phase 26-30 complete |
 | 1.2.0 | 2026-01-06 | 82 MCP tools, uv migration |
 | 1.1.0 | 2025-12-09 | 697 E2E tests, comprehensive API testing |
@@ -156,7 +171,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/u9401066/medical-calc-mcp/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/u9401066/medical-calc-mcp/compare/v1.6.2...HEAD
+[1.6.2]: https://github.com/u9401066/medical-calc-mcp/compare/v1.6.0...v1.6.2
+[1.6.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.2.0...v1.5.0
 [1.2.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/u9401066/medical-calc-mcp/compare/v1.0.0...v1.1.0

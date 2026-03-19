@@ -8,7 +8,7 @@
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1752%20passed-brightgreen.svg)](#-開發指南)
+[![Tests](https://img.shields.io/badge/tests-2071%20collected-brightgreen.svg)](#-開發指南)
 [![References](https://img.shields.io/badge/references-229%20PMIDs%20|%20190%20DOIs-blue.svg)](#-參考文獻)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
@@ -793,7 +793,7 @@ LowLevelKey(
 
 > **Registry Snapshot**: 128 個計算器，涵蓋 26 個專科
 >
-> **品質快照**: 2067 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用
+> **品質快照**: 2071 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用
 
 ### 📑 快速導覽
 <!-- BEGIN GENERATED:CATALOG_OVERVIEW_ZH -->

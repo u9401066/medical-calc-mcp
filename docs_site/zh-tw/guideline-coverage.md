@@ -1,7 +1,7 @@
 # 網站版指引覆蓋摘要
 
 > 由 2023-2025 指引整理與 live registry 自動產生，請勿手動編輯。
-> 重新產生指令：`uv run python scripts/generate_tool_catalog_docs.py` (v1.6.0)。
+> 重新產生指令：`uv run python scripts/generate_tool_catalog_docs.py` (v1.6.2)。
 
 目前共追蹤 **65/65** 個指引建議工具，涵蓋 **16** 個臨床領域。
 

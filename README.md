@@ -8,7 +8,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-1752%20passed-brightgreen.svg)](#-development)
+[![Tests](https://img.shields.io/badge/tests-2071%20collected-brightgreen.svg)](#-development)
 [![References](https://img.shields.io/badge/references-229%20PMIDs%20|%20190%20DOIs-blue.svg)](#references)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
@@ -1264,7 +1264,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 > **Registry Snapshot**: 128 calculators across 26 specialties
 >
-> **Quality Snapshot**: 2067 collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage
+> **Quality Snapshot**: 2071 collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 

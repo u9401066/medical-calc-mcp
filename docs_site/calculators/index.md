@@ -1,7 +1,7 @@
 # Calculator Overview
 
 > Generated from the live calculator registry. Do not edit manually.
-> Regenerate with `uv run python scripts/generate_tool_catalog_docs.py` (v1.6.0).
+> Regenerate with `uv run python scripts/generate_tool_catalog_docs.py` (v1.6.2).
 
 This snapshot contains **151 calculators** across **31 primary specialties**.
 

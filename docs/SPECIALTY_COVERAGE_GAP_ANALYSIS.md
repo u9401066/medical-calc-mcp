@@ -1,7 +1,7 @@
 # Specialty Coverage Gap Analysis
 
 > Generated from the live calculator registry. Do not edit manually.
-> Regenerate with `uv run python scripts/generate_specialty_coverage_gap_analysis.py` (v1.6.0).
+> Regenerate with `uv run python scripts/generate_specialty_coverage_gap_analysis.py` (v1.6.2).
 
 ## Current Status
 

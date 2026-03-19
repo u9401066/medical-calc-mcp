@@ -1,7 +1,7 @@
 # Guideline Coverage
 
 > Generated from the 2023-2025 guideline review and the live registry. Do not edit manually.
-> Regenerate with `uv run python scripts/generate_tool_catalog_docs.py` (v1.6.0).
+> Regenerate with `uv run python scripts/generate_tool_catalog_docs.py` (v1.6.2).
 
 Current coverage tracks **65/65** guideline-recommended tools across **16** clinical domains.
 

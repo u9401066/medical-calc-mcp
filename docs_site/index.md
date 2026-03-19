@@ -7,7 +7,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/u9401066/medical-calc-mcp/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-2067%20collected-brightgreen.svg)](https://github.com/u9401066/medical-calc-mcp)
+[![Tests](https://img.shields.io/badge/tests-2071%20collected-brightgreen.svg)](https://github.com/u9401066/medical-calc-mcp)
 
 </div>
 
@@ -24,25 +24,25 @@
 
 <div class="grid cards" markdown>
 
--   :material-calculator:{ .lg .middle } **151 Clinical Calculators**
+- :material-calculator:{ .lg .middle } **151 Clinical Calculators**
 
     ---
 
     Evidence-based formulas across 31 medical specialties with peer-reviewed citations
 
--   :material-robot:{ .lg .middle } **MCP Native**
+- :material-robot:{ .lg .middle } **MCP Native**
 
     ---
 
     Built with FastMCP SDK for seamless AI agent integration
 
--   :material-magnify:{ .lg .middle } **Intelligent Discovery**
+- :material-magnify:{ .lg .middle } **Intelligent Discovery**
 
     ---
 
     Two-level key system for smart tool selection by context
 
--   :material-shield-check:{ .lg .middle } **Validated & Safe**
+- :material-shield-check:{ .lg .middle } **Validated & Safe**
 
     ---
 

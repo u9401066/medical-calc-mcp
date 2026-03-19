@@ -1,22 +1,26 @@
+<!-- markdownlint-disable MD024 -->
+
 # REST API Reference
 
 > Generated from the FastAPI OpenAPI schema. Do not edit manually.
-> Source: [openapi.json](openapi.json) | OpenAPI 3.1.0 | v1.6.0
+> Source: [openapi.json](openapi.json) | OpenAPI 3.1.0 | v1.6.2
 
 This API currently publishes **12 operations** across **12 paths**, backed by **6 shared schemas**.
 
 ## Base URL
 
 ```
-http://localhost:8000/api/v1
+http://localhost:8000
 ```
 
-Health and docs remain available at the server root: `/health`, `/docs`, `/redoc`, and `/openapi.json`.
+Endpoint paths below are shown in full, including `/api/v1` where applicable.
+
+Health and docs remain available at the server root: `/health`, `/ready`, `/docs`, `/redoc`, and `/openapi.json`.
 
 ## API Metadata
 
 - Title: Medical Calculator API
-- Version: 1.6.0
+- Version: 1.6.2
 
 ### Description
 
@@ -25,16 +29,19 @@ Health and docs remain available at the server root: `/health`, `/docs`, `/redoc
 提供 151 個經過驗證的臨床評分工具，涵蓋 31 個主要專科；所有計算器均引用同儕審查研究論文。
 
 ### 功能特色
+
 - 智慧工具探索 (依專科、臨床情境搜尋)
 - 循證醫學 (所有公式引用原始論文)
 - 參數驗證 (範圍檢查、必填檢查)
 
 ### 使用流程
+
 1. `GET /api/v1/calculators` - 列出所有計算器
 2. `GET /api/v1/calculators/{tool_id}` - 取得計算器詳情
 3. `POST /api/v1/calculate/{tool_id}` - 執行計算
 
 ### 代表性專科覆蓋
+
 - Critical Care: 18 tools (APACHE II Score, Anion Gap, CAM-ICU (Confusion Assessment Method for ICU), Clinical Pulmonary Infection Score (CPIS))
 - Geriatrics: 13 tools (4AT (Rapid Assessment Test for Delirium), Barthel Index (ADL Assessment), CFS (Clinical Frailty Scale), FRAIL Scale)
 - Cardiology: 11 tools (ACEF II Score, CHA₂DS₂-VA Score (2024 ESC), CHA₂DS₂-VASc Score, Corrected QT Interval (QTc))
@@ -44,13 +51,19 @@ Health and docs remain available at the server root: `/health`, `/docs`, `/redoc
 
 ### GET /
 
-**Summary:** Root
+#### Summary
+
+Root
+
+#### Description
 
 API root with service information
 
-**Tags:** Info
+#### Tags
 
-**Responses**
+Info
+
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -58,14 +71,20 @@ API root with service information
 
 ### POST /api/v1/calculate/{tool_id}
 
-**Summary:** Calculate
+#### Summary
+
+Calculate
+
+#### Description
 
 執行計算
 
 Execute a medical calculation with the given parameters.
 
 Example for CKD-EPI 2021:
+
 ```json
+
 {
     "params": {
         "serum_creatinine": 1.2,
@@ -73,23 +92,26 @@ Example for CKD-EPI 2021:
         "sex": "female"
     }
 }
+
 ```
 
-**Tags:** Calculate
+#### Tags
 
-**Parameters**
+Calculate
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
 | tool_id | path | yes | string | - |
 
-**Request Body**
+#### Request Body
 
 | Content-Type | Schema | Required |
 |--------------|--------|----------|
 | application/json | CalculatorInput | yes |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -98,21 +120,27 @@ Example for CKD-EPI 2021:
 
 ### GET /api/v1/calculators
 
-**Summary:** List Calculators
+#### Summary
+
+List Calculators
+
+#### Description
 
 列出所有可用的計算器
 
 List all available calculators with their metadata.
 
-**Tags:** Discovery
+#### Tags
 
-**Parameters**
+Discovery
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
 | limit | query | no | integer | Maximum results |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -121,22 +149,28 @@ List all available calculators with their metadata.
 
 ### GET /api/v1/calculators/{tool_id}
 
-**Summary:** Get Calculator Info
+#### Summary
+
+Get Calculator Info
+
+#### Description
 
 取得特定計算器的詳細資訊
 
 Get detailed information about a specific calculator including
 parameters, references, and usage examples.
 
-**Tags:** Discovery
+#### Tags
 
-**Parameters**
+Discovery
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
 | tool_id | path | yes | string | - |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -145,15 +179,21 @@ parameters, references, and usage examples.
 
 ### POST /api/v1/ckd-epi
 
-**Summary:** Calculate Ckd Epi
+#### Summary
+
+Calculate Ckd Epi
+
+#### Description
 
 快速計算 CKD-EPI 2021 eGFR
 
 Calculate eGFR using CKD-EPI 2021 equation (race-free).
 
-**Tags:** Quick Calculate
+#### Tags
 
-**Parameters**
+Quick Calculate
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
@@ -161,7 +201,7 @@ Calculate eGFR using CKD-EPI 2021 equation (race-free).
 | age | query | yes | integer | Age in years |
 | sex | query | yes | string | Sex (male/female) |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -170,15 +210,21 @@ Calculate eGFR using CKD-EPI 2021 equation (race-free).
 
 ### GET /api/v1/contexts
 
-**Summary:** List Contexts
+#### Summary
+
+List Contexts
+
+#### Description
 
 列出所有臨床情境
 
 List all available clinical contexts.
 
-**Tags:** Discovery
+#### Tags
 
-**Responses**
+Discovery
+
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -186,22 +232,28 @@ List all available clinical contexts.
 
 ### GET /api/v1/search
 
-**Summary:** Search Calculators
+#### Summary
+
+Search Calculators
+
+#### Description
 
 依關鍵字搜尋計算器
 
 Search calculators by keyword (name, specialty, condition, etc.)
 
-**Tags:** Discovery
+#### Tags
 
-**Parameters**
+Discovery
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
 | q | query | yes | string | Search keyword |
 | limit | query | no | integer | Maximum results |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -210,15 +262,21 @@ Search calculators by keyword (name, specialty, condition, etc.)
 
 ### POST /api/v1/sofa
 
-**Summary:** Calculate Sofa
+#### Summary
+
+Calculate Sofa
+
+#### Description
 
 快速計算 SOFA Score
 
 Calculate Sequential Organ Failure Assessment score.
 
-**Tags:** Quick Calculate
+#### Tags
 
-**Parameters**
+Quick Calculate
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
@@ -229,7 +287,7 @@ Calculate Sequential Organ Failure Assessment score.
 | gcs_score | query | yes | integer | GCS score |
 | creatinine | query | yes | number | Creatinine (mg/dL) |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -238,15 +296,21 @@ Calculate Sequential Organ Failure Assessment score.
 
 ### GET /api/v1/specialties
 
-**Summary:** List Specialties
+#### Summary
+
+List Specialties
+
+#### Description
 
 列出所有可用的專科分類
 
 List all available medical specialties.
 
-**Tags:** Discovery
+#### Tags
 
-**Responses**
+Discovery
+
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -254,22 +318,28 @@ List all available medical specialties.
 
 ### GET /api/v1/specialties/{specialty}
 
-**Summary:** List By Specialty
+#### Summary
+
+List By Specialty
+
+#### Description
 
 列出特定專科的所有計算器
 
 List all calculators for a specific medical specialty.
 
-**Tags:** Discovery
+#### Tags
 
-**Parameters**
+Discovery
+
+#### Parameters
 
 | Name | In | Required | Type | Description |
 |------|----|----------|------|-------------|
 | specialty | path | yes | string | - |
 | limit | query | no | integer | Maximum results |
 
-**Responses**
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -278,13 +348,19 @@ List all calculators for a specific medical specialty.
 
 ### GET /health
 
-**Summary:** Health Check
+#### Summary
+
+Health Check
+
+#### Description
 
 Health check endpoint for Docker/K8s
 
-**Tags:** Health
+#### Tags
 
-**Responses**
+Health
+
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|
@@ -292,13 +368,19 @@ Health check endpoint for Docker/K8s
 
 ### GET /ready
 
-**Summary:** Readiness Check
+#### Summary
+
+Readiness Check
+
+#### Description
 
 Readiness endpoint for production traffic and deployment gates.
 
-**Tags:** Health
+#### Tags
 
-**Responses**
+Health
+
+#### Responses
 
 | Status | Schema | Description |
 |--------|--------|-------------|

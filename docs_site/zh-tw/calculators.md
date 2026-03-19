@@ -1,7 +1,7 @@
 # 網站版計算器總覽
 
 > 由目前 registry 自動產生，請勿手動編輯。
-> 重新產生指令：`uv run python scripts/generate_tool_catalog_docs.py` (v1.6.0)。
+> 重新產生指令：`uv run python scripts/generate_tool_catalog_docs.py` (v1.6.2)。
 
 此快照包含 **151 個計算器**，涵蓋 **31 個主要專科**。
 
