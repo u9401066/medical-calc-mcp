@@ -1,6 +1,9 @@
 # Pre-commit configuration for Medical Calculator MCP Server
-# Install: uv tool install pre-commit && pre-commit install
-# Run all: uv run pre-commit run --all-files
+# Install env: uv sync --extra dev --group dev
+# Install hooks: .\\scripts\\install_hooks.ps1
+# Run all: .\\.venv\\Scripts\\python.exe -m pre_commit run --all-files
+
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
 
 repos:
   # Ruff - Fast Python linter (replaces flake8, isort, pyupgrade, etc.)
@@ -34,6 +37,37 @@ repos:
       - id: bandit
         args: ["-c", "pyproject.toml", "-r", "src/"]
         additional_dependencies: ["bandit[toml]"]
+
+  - repo: local
+    hooks:
+      - id: project-consistency
+        name: project consistency
+        entry: python scripts/check_project_consistency.py
+        language: system
+        pass_filenames: false
+      - id: project-consistency-strict
+        name: project consistency strict
+        entry: python scripts/check_project_consistency.py --check-tests
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: mypy
+        name: mypy
+        entry: python -m mypy --no-incremental src tests
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: pytest
+        name: pytest
+        entry: python -m pytest tests -q
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: commit-message
+        name: commit message
+        entry: python scripts/validate_commit_message.py
+        language: system
+        stages: [commit-msg]
 
 # CI configuration
 ci:

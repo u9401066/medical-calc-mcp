@@ -1,0 +1,95 @@
+version: 2
+
+updates:
+  # Low-blast-radius Python tooling can be grouped and reviewed together.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Taipei"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "python"
+      - "tooling"
+      - "safe-upgrade"
+    commit-message:
+      prefix: "build(deps)"
+    rebase-strategy: "auto"
+    allow:
+      - dependency-name: "ruff"
+      - dependency-name: "pre-commit"
+      - dependency-name: "pytest-cov"
+      - dependency-name: "mkdocs-awesome-pages-plugin"
+    groups:
+      tooling-safe:
+        patterns:
+          - "ruff"
+          - "pre-commit"
+          - "pytest-cov"
+          - "mkdocs-awesome-pages-plugin"
+
+  # Runtime, protocol, typing, and test-engine upgrades should remain isolated.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "10:00"
+      timezone: "Asia/Taipei"
+    open-pull-requests-limit: 6
+    labels:
+      - "dependencies"
+      - "python"
+      - "manual-review"
+    commit-message:
+      prefix: "build(deps)"
+    rebase-strategy: "auto"
+    allow:
+      - dependency-name: "mcp"
+      - dependency-name: "mcp[cli]"
+      - dependency-name: "fastapi"
+      - dependency-name: "starlette"
+      - dependency-name: "pydantic"
+      - dependency-name: "uvicorn"
+      - dependency-name: "sse-starlette"
+      - dependency-name: "pytest"
+      - dependency-name: "pytest-asyncio"
+      - dependency-name: "mypy"
+      - dependency-name: "rapidfuzz"
+
+  # Dockerfile base image and compose image references should be reviewed manually.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "11:00"
+      timezone: "Asia/Taipei"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "docker"
+      - "manual-review"
+    commit-message:
+      prefix: "build(deps)"
+    rebase-strategy: "auto"
+
+  # GitHub Actions upgrades should be visible but not grouped with runtime changes.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "12:00"
+      timezone: "Asia/Taipei"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "manual-review"
+    commit-message:
+      prefix: "ci(deps)"
+    rebase-strategy: "auto"

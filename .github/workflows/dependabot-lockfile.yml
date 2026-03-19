@@ -1,0 +1,60 @@
+name: Dependabot Lockfile
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh-uv-lock:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Dependabot branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect Python dependency manifest changes
+        id: manifest
+        shell: bash
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          CHANGED_FILES="$(git diff --name-only FETCH_HEAD...HEAD)"
+          echo "$CHANGED_FILES"
+
+          if echo "$CHANGED_FILES" | grep -Eq '^(pyproject.toml)$'; then
+            echo "needs_lock_refresh=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_lock_refresh=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install uv
+        if: steps.manifest.outputs.needs_lock_refresh == 'true'
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python 3.12
+        if: steps.manifest.outputs.needs_lock_refresh == 'true'
+        run: uv python install 3.12
+
+      - name: Refresh uv lockfile
+        if: steps.manifest.outputs.needs_lock_refresh == 'true'
+        run: uv lock
+
+      - name: Commit refreshed lockfile
+        if: steps.manifest.outputs.needs_lock_refresh == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "build(lockfile): refresh uv.lock for Dependabot"
+          file_pattern: "uv.lock"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"

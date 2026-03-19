@@ -10,17 +10,68 @@
 
 ```bash
 # 安裝依賴
-uv sync
+uv sync --extra dev --group dev
 
 # 執行測試
 uv run pytest
 
 # 執行型別檢查 (必須通過 --strict)
-uv run mypy --strict src tests
+uv run mypy --no-incremental --strict src tests
 
 # 執行 Lint 檢查
 uv run ruff check .
+
+# 安裝 Git hooks
+./scripts/install_hooks.ps1
 ```
+
+## 依賴版本策略
+
+- 使用 `uv.lock` 作為團隊與 CI 的實際已驗證版本來源。
+- CI 一律使用 `uv sync --frozen --extra dev --group dev`，避免未審查的浮動升級。
+- `pyproject.toml` 中的版本下限應對齊「目前已驗證且實際使用的 API 能力」，不要只寫非常寬鬆的最低版本。
+- 升級套件時，優先逐包升級，而不是一次全部刷新。
+
+```bash
+# 範例：只升級關鍵框架
+uv lock --upgrade-package mcp --upgrade-package fastapi --upgrade-package pydantic
+
+# 同步到本機環境
+uv sync --extra dev --group dev
+
+# 驗證
+uv run ruff check .
+uv run mypy --no-incremental --strict src tests
+uv run pytest
+uv run python scripts/generate_openapi_spec.py
+uv run python scripts/generate_rest_api_docs.py
+uv run python scripts/check_project_consistency.py --check-tests
+```
+
+## Git Hook 流程
+
+- `pre-commit`: `ruff`、格式修正、Bandit、專案一致性檢查
+- `pre-push`: `mypy src tests`、`pytest tests -q`、嚴格版一致性檢查
+- `commit-msg`: Conventional Commit 格式驗證
+
+如需手動執行全部 hooks：
+
+```bash
+.venv\Scripts\python.exe -m pre_commit run --all-files
+```
+
+## 生成文件
+
+- 計算器目錄由 registry 自動產生：`uv run python scripts/generate_tool_catalog_docs.py`
+- REST API OpenAPI contract 由 FastAPI app 自動產生：`uv run python scripts/generate_openapi_spec.py`
+- REST API 參考文件由 OpenAPI schema 自動產生：`uv run python scripts/generate_rest_api_docs.py`
+- `scripts/check_project_consistency.py` 會檢查這些生成物是否過期
+
+## 依賴升級指南
+
+- 完整升級策略見 [docs/DEPENDENCY_UPGRADE_PLAYBOOK.md](docs/DEPENDENCY_UPGRADE_PLAYBOOK.md)
+- `.github/dependabot.yml` 現在分成 safe tooling grouped lane 與 manual-review lanes；低風險 tooling 可自動 grouped，其餘 runtime / protocol / Docker / Actions 仍逐項審核
+- `mcp`、`fastapi`、`pydantic`、`starlette`、`pytest`、`mypy` 一律逐包升級與驗證
 
 ## 開發流程
 
@@ -106,7 +157,7 @@ CALCULATORS = [
 
 位置: `src/infrastructure/mcp/handlers/calculators/[specialty].py`
 
-**關鍵原則: 使用 Literal + Field 約束**
+#### 關鍵原則: 使用 Literal + Field 約束
 
 ```python
 from typing import Annotated, Literal
@@ -195,11 +246,13 @@ def calculate_my_tool(
 ### 預設值語法
 
 ✅ 正確:
+
 ```python
 param: Annotated[bool, Field(description="...")] = False
 ```
 
 ❌ 錯誤 (會導致語法錯誤):
+
 ```python
 param: Annotated[bool, Field(description="...", default=False)]  # 混用會錯誤
 ```
@@ -243,12 +296,14 @@ class TestMyCalculator:
 ## 品質檢查清單
 
 ### Calculator 層
+
 - [ ] 繼承 `BaseCalculator`
 - [ ] 實作 `tool_id`, `metadata`, `references`
 - [ ] 有完整 docstring
 - [ ] 有 PMID/DOI 引用
 
 ### MCP Handler 層
+
 - [ ] 枚舉參數使用 `Literal`
 - [ ] 數值參數有 `Field(ge=, le=)` 約束
 - [ ] Description 包含單位和範圍
@@ -256,6 +311,7 @@ class TestMyCalculator:
 - [ ] Docstring 有參考文獻 PMID
 
 ### 測試層
+
 - [ ] 基本計算測試
 - [ ] 邊界值測試
 - [ ] 有效選項測試
@@ -266,7 +322,7 @@ class TestMyCalculator:
 
 | 指標 | 數值 |
 |------|------|
-| Calculators | 121 |
+| Calculators | 128 |
 | MCP Tools | 128 |
-| Tests | 1721+ |
+| Tests | 2019 collected |
 | Coverage | 92% |

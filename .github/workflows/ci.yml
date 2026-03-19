@@ -36,7 +36,7 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --frozen --extra dev --group dev
 
       - name: Auto-fix linting issues
         run: |
@@ -79,17 +79,19 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --frozen --extra dev --group dev
 
-      # TODO: Re-enable after codebase stabilizes
-      # - name: Lint with ruff
-      #   run: uv run ruff check src/ tests/ --output-format=github
+      - name: Lint with ruff
+        run: uv run ruff check . --output-format=github
 
-      # - name: Check formatting
-      #   run: uv run ruff format src/ tests/ --check
+      - name: Check formatting
+        run: uv run ruff format src/ tests/ scripts/ --check
 
-      # - name: Type check with mypy
-      #   run: uv run mypy src/ tests/
+      - name: Type check with mypy
+        run: uv run mypy --no-incremental src tests
+
+      - name: Check project consistency
+        run: uv run python scripts/check_project_consistency.py --check-tests
 
       - name: Run tests with coverage
         run: |
@@ -105,11 +107,44 @@ jobs:
           verbose: true
 
   # =============================================================================
+  # Production readiness: enforce deploy-time controls under a prod-like profile
+  # =============================================================================
+  production-readiness:
+    runs-on: ubuntu-latest
+    needs: test
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    env:
+      APP_ENV: production
+      SECURITY_AUTH_ENABLED: "true"
+      SECURITY_API_KEYS: ci-production-key
+      SECURITY_RATE_LIMIT_ENABLED: "true"
+      CORS_ORIGINS: https://ci.example.com
+      TRUST_REVERSE_PROXY_SSL: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev --group dev
+
+      - name: Check production readiness
+        run: uv run python scripts/check_production_readiness.py --service all --environment production
+
+  # =============================================================================
   # Docker: Build and test Docker image (main branch only)
   # =============================================================================
   docker:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, production-readiness]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -120,7 +155,14 @@ jobs:
 
       - name: Test Docker image
         run: |
-          docker run -d --name test-server -p 8000:8000 medical-calc-mcp:latest
+          docker run -d --name test-server -p 8000:8000 \
+            -e APP_ENV=production \
+            -e SECURITY_AUTH_ENABLED=true \
+            -e SECURITY_API_KEYS=ci-production-key \
+            -e SECURITY_RATE_LIMIT_ENABLED=true \
+            -e CORS_ORIGINS=https://ci.example.com \
+            -e TRUST_REVERSE_PROXY_SSL=true \
+            medical-calc-mcp:latest
           echo "Waiting for server to start..."
           for i in {1..15}; do
             if curl -sf http://localhost:8000/health -o /dev/null -m 2; then
@@ -136,6 +178,7 @@ jobs:
               exit 1
             fi
           done
+          curl -sf http://localhost:8000/ready | jq .
           docker stop test-server
           docker rm test-server
 
@@ -144,7 +187,7 @@ jobs:
   # =============================================================================
   release:
     runs-on: ubuntu-latest
-    needs: [test, docker]
+    needs: [test, production-readiness, docker]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write

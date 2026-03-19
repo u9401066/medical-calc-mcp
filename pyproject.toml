@@ -16,7 +16,15 @@ keywords = [
     "medical",
     "calculator",
     "mcp",
+    "mcp-server",
     "model-context-protocol",
+    "model-context-protocol-server",
+    "fastmcp",
+    "medical-calculator",
+    "clinical-decision-support",
+    "ai-agent-tools",
+    "agent-tooling",
+    "openclaw",
     "clinical",
     "healthcare",
     "ddd"
@@ -30,24 +38,33 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
 ]
-
 dependencies = [
-    "mcp[cli]>=1.22.0",
-    "pydantic>=2.11.0,<3.0.0",
-    "starlette>=0.32.0",
-    "uvicorn>=0.38.0",
-    "sse-starlette>=2.0.0",
-    "fastapi>=0.115.0",
+    "mcp[cli]>=1.25.0,<2.0.0",
+    "pydantic>=2.12.5,<3.0.0",
+    "starlette>=0.50.0,<1.0.0",
+    "uvicorn>=0.40.0,<1.0.0",
+    "sse-starlette>=3.1.2,<4.0.0",
+    "fastapi>=0.128.0,<1.0.0",
+    "rapidfuzz>=3.14.3,<4.0.0",
     # Note: networkx is optional (tool_graph.py has fallback)
 ]
 
+[project.urls]
+Homepage = "https://github.com/u9401066/medical-calc-mcp"
+Repository = "https://github.com/u9401066/medical-calc-mcp"
+Documentation = "https://github.com/u9401066/medical-calc-mcp/blob/main/README.md"
+Changelog = "https://github.com/u9401066/medical-calc-mcp/blob/main/CHANGELOG.md"
+Issues = "https://github.com/u9401066/medical-calc-mcp/issues"
+OpenClaw = "https://github.com/u9401066/medical-calc-mcp/blob/main/docs/OPENCLAW.md"
+
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.23.0",
-    "mypy>=1.8.0",
-    "ruff>=0.2.0",
+    "pytest>=9.0.2,<10.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
+    "pytest-asyncio>=1.3.0,<2.0.0",
+    "mypy>=1.19.1,<2.0.0",
+    "ruff>=0.15.6,<1.0.0",
+    "pre-commit>=4.5.1,<5.0.0",
 ]
 # Note: NO ML dependencies (torch, transformers) required
 # networkx is pure Python, ~2MB, no native compilation
@@ -78,6 +95,9 @@ skips = ["B101"]  # Allow assert statements
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "docker: tests that require a running Dockerized API instance",
+]
 
 [dependency-groups]
 dev = [
