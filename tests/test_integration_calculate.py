@@ -50,65 +50,92 @@ class TestCalculateUseCase:
 
     # ==================== Core Calculator Tests ====================
 
-    @pytest.mark.parametrize("tool_id,params", [
-        # Critical Care - use correct tool_ids
-        ("news2_score", {
-            "respiratory_rate": 18,
-            "spo2": 96,
-            "on_supplemental_o2": False,
-            "temperature": 37.0,
-            "systolic_bp": 120,
-            "heart_rate": 80,
-            "consciousness": "A",
-        }),
-        ("apache_ii", {
-            "temperature": 37.0,
-            "mean_arterial_pressure": 70,
-            "heart_rate": 80,
-            "respiratory_rate": 18,
-            "fio2": 0.21,
-            "pao2": 90,
-            "arterial_ph": 7.4,
-            "serum_sodium": 140,
-            "serum_potassium": 4.0,
-            "serum_creatinine": 1.0,
-            "hematocrit": 40,
-            "wbc_count": 10,
-            "gcs_score": 15,
-        }),
-        ("glasgow_coma_scale", {
-            "eye_response": 4,
-            "verbal_response": 5,
-            "motor_response": 6,
-        }),
-        ("qsofa_score", {
-            "respiratory_rate": 24,  # >= 22
-            "altered_mentation": True,
-            "systolic_bp": 90,  # <= 100
-        }),
-        # Nephrology
-        ("ckd_epi_2021", {
-            "serum_creatinine": 1.2,
-            "age": 65,
-            "sex": "male",
-        }),
-        # Anesthesiology
-        ("asa_physical_status", {
-            "asa_class": 2,
-            "is_emergency": False,
-        }),
-        ("mallampati_score", {
-            "mallampati_class": 2,
-        }),
-        # Cardiology
-        ("heart_score", {
-            "history_score": 1,
-            "ecg_score": 1,
-            "age_score": 2,
-            "risk_factors_score": 1,
-            "troponin_score": 0,
-        }),
-    ])
+    @pytest.mark.parametrize(
+        "tool_id,params",
+        [
+            # Critical Care - use correct tool_ids
+            (
+                "news2_score",
+                {
+                    "respiratory_rate": 18,
+                    "spo2": 96,
+                    "on_supplemental_o2": False,
+                    "temperature": 37.0,
+                    "systolic_bp": 120,
+                    "heart_rate": 80,
+                    "consciousness": "A",
+                },
+            ),
+            (
+                "apache_ii",
+                {
+                    "temperature": 37.0,
+                    "mean_arterial_pressure": 70,
+                    "heart_rate": 80,
+                    "respiratory_rate": 18,
+                    "fio2": 0.21,
+                    "pao2": 90,
+                    "arterial_ph": 7.4,
+                    "serum_sodium": 140,
+                    "serum_potassium": 4.0,
+                    "serum_creatinine": 1.0,
+                    "hematocrit": 40,
+                    "wbc_count": 10,
+                    "gcs_score": 15,
+                },
+            ),
+            (
+                "glasgow_coma_scale",
+                {
+                    "eye_response": 4,
+                    "verbal_response": 5,
+                    "motor_response": 6,
+                },
+            ),
+            (
+                "qsofa_score",
+                {
+                    "respiratory_rate": 24,  # >= 22
+                    "altered_mentation": True,
+                    "systolic_bp": 90,  # <= 100
+                },
+            ),
+            # Nephrology
+            (
+                "ckd_epi_2021",
+                {
+                    "serum_creatinine": 1.2,
+                    "age": 65,
+                    "sex": "male",
+                },
+            ),
+            # Anesthesiology
+            (
+                "asa_physical_status",
+                {
+                    "asa_class": 2,
+                    "is_emergency": False,
+                },
+            ),
+            (
+                "mallampati_score",
+                {
+                    "mallampati_class": 2,
+                },
+            ),
+            # Cardiology
+            (
+                "heart_score",
+                {
+                    "history_score": 1,
+                    "ecg_score": 1,
+                    "age_score": 2,
+                    "risk_factors_score": 1,
+                    "troponin_score": 0,
+                },
+            ),
+        ],
+    )
     def test_core_calculators(self, use_case: CalculateUseCase, tool_id: str, params: dict[str, Any]) -> None:
         """Test core calculators with valid parameters."""
         request = CalculateRequest(tool_id=tool_id, params=params)
@@ -128,7 +155,7 @@ class TestCalculateUseCase:
                 "cr": 1.2,  # alias
                 "age": 65,
                 "sex": "male",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -150,7 +177,7 @@ class TestCalculateUseCase:
                 "systolic_bp": 120,
                 "hr": 80,  # alias for heart_rate
                 "consciousness": "A",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -171,7 +198,7 @@ class TestCalculateUseCase:
                 "sbp": 120,  # alias for systolic_bp
                 "heart_rate": 80,
                 "consciousness": "A",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -187,7 +214,7 @@ class TestCalculateUseCase:
             params={
                 "serum_creatinine": 1.2,
                 # missing age and sex
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -207,7 +234,7 @@ class TestCalculateUseCase:
                 "creatinin": 1.2,  # typo
                 "age": 65,
                 "sex": "male",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -220,7 +247,7 @@ class TestCalculateUseCase:
         """Test tool not found error has suggestions."""
         request = CalculateRequest(
             tool_id="ckdepi2021",  # typo
-            params={}
+            params={},
         )
         response = use_case.execute(request)
 
@@ -235,7 +262,7 @@ class TestCalculateUseCase:
         """Test that errors include fillable param template."""
         request = CalculateRequest(
             tool_id="news2_score",
-            params={}  # no params
+            params={},  # no params
         )
         response = use_case.execute(request)
 
@@ -263,7 +290,7 @@ class TestCalculateUseCase:
                 "systolic_bp": 120,
                 "heart_rate": 80,
                 "consciousness": "A",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -277,7 +304,7 @@ class TestCalculateUseCase:
                 "serum_creatinine": 1.2,
                 "age": 65,
                 "sex": "female",  # string enum
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -291,7 +318,7 @@ class TestCalculateUseCase:
                 "serum_creatinine": -1.2,  # invalid negative
                 "age": 65,
                 "sex": "male",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -308,7 +335,7 @@ class TestCalculateUseCase:
                 "serum_creatinine": 15.0,  # very high but valid
                 "age": 100,  # old but valid
                 "sex": "male",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -327,10 +354,7 @@ class TestCalculatorCoverage:
 
     def test_critical_care_calculators(self, registry: ToolRegistry) -> None:
         """Verify critical care calculators are available."""
-        critical_care = [
-            "news2_score", "apache_ii", "sofa_score", "qsofa_score", "glasgow_coma_scale", "four_score",
-            "rass", "cam_icu"
-        ]
+        critical_care = ["news2_score", "apache_ii", "sofa_score", "qsofa_score", "glasgow_coma_scale", "four_score", "rass", "cam_icu"]
         available = registry.list_all_ids()
 
         for calc in critical_care:
@@ -377,7 +401,7 @@ class TestResponseFormat:
                 "eye_response": 4,
                 "verbal_response": 5,
                 "motor_response": 6,
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -389,10 +413,7 @@ class TestResponseFormat:
 
     def test_error_response_format(self, use_case: CalculateUseCase) -> None:
         """Test error response has all required fields."""
-        request = CalculateRequest(
-            tool_id="nonexistent",
-            params={}
-        )
+        request = CalculateRequest(tool_id="nonexistent", params={})
         response = use_case.execute(request)
 
         assert response.success is False
@@ -412,7 +433,7 @@ class TestResponseFormat:
                 "systolic_bp": 100,  # borderline
                 "heart_rate": 110,  # elevated
                 "consciousness": "A",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -440,7 +461,7 @@ class TestBoundaryValidation:
                 "systolic_bp": 120,  # normal
                 "heart_rate": 75,  # normal
                 "consciousness": "A",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -462,7 +483,7 @@ class TestBoundaryValidation:
                 "systolic_bp": 120,
                 "heart_rate": 200,  # severely elevated (>warning_max=180)
                 "consciousness": "A",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -495,7 +516,7 @@ class TestBoundaryValidation:
                 "serum_creatinine": 20.0,  # severely elevated (>warning_max=15)
                 "age": 50,
                 "sex": "male",
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -524,7 +545,7 @@ class TestBoundaryValidation:
                 "respiratory_rate": 50,  # abnormal (triggers scoring + warning)
                 "systolic_bp": 50,  # abnormal (triggers scoring + warning)
                 "altered_mental_status": True,
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -551,7 +572,7 @@ class TestBoundaryValidation:
                 "systolic_bp": 80,  # low (triggers scoring)
                 "heart_rate": 200,  # triggers boundary warning + scoring
                 "consciousness": "V",  # altered
-            }
+            },
         )
         response = use_case.execute(request)
 
@@ -567,4 +588,3 @@ class TestBoundaryValidation:
 
         print(f"\n📊 Boundary warnings (input check): {len(boundary_warnings)}")
         print(f"📋 Clinical interpretation: {response.interpretation.summary}")
-

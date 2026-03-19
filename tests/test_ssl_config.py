@@ -28,13 +28,7 @@ class TestSslConfigDataclass:
 
     def test_custom_values(self) -> None:
         """Test SslConfig with custom values"""
-        config = SslConfig(
-            enabled=True,
-            keyfile="/path/to/key.pem",
-            certfile="/path/to/cert.pem",
-            ca_certs="/path/to/ca.pem",
-            cert_required=True
-        )
+        config = SslConfig(enabled=True, keyfile="/path/to/key.pem", certfile="/path/to/cert.pem", ca_certs="/path/to/ca.pem", cert_required=True)
         assert config.enabled is True
         assert config.keyfile == "/path/to/key.pem"
         assert config.certfile == "/path/to/cert.pem"
@@ -55,11 +49,7 @@ class TestSslConfigFromEnv:
 
     def test_from_env_ssl_enabled_true(self) -> None:
         """Test SSL_ENABLED=true"""
-        env = {
-            "SSL_ENABLED": "true",
-            "SSL_KEYFILE": "/path/to/key.pem",
-            "SSL_CERTFILE": "/path/to/cert.pem"
-        }
+        env = {"SSL_ENABLED": "true", "SSL_KEYFILE": "/path/to/key.pem", "SSL_CERTFILE": "/path/to/cert.pem"}
         with patch.dict(os.environ, env, clear=True):
             config = SslConfig.from_env()
             assert config.enabled is True
@@ -103,34 +93,21 @@ class TestSslConfigFromEnv:
 
     def test_from_env_with_ca_certs(self) -> None:
         """Test SSL_CA_CERTS environment variable"""
-        env = {
-            "SSL_ENABLED": "true",
-            "SSL_KEYFILE": "/path/to/key.pem",
-            "SSL_CERTFILE": "/path/to/cert.pem",
-            "SSL_CA_CERTS": "/path/to/ca.pem"
-        }
+        env = {"SSL_ENABLED": "true", "SSL_KEYFILE": "/path/to/key.pem", "SSL_CERTFILE": "/path/to/cert.pem", "SSL_CA_CERTS": "/path/to/ca.pem"}
         with patch.dict(os.environ, env, clear=True):
             config = SslConfig.from_env()
             assert config.ca_certs == "/path/to/ca.pem"
 
     def test_from_env_cert_required(self) -> None:
         """Test SSL_CERT_REQUIRED=true"""
-        env = {
-            "SSL_ENABLED": "true",
-            "SSL_KEYFILE": "/path/to/key.pem",
-            "SSL_CERTFILE": "/path/to/cert.pem",
-            "SSL_CERT_REQUIRED": "true"
-        }
+        env = {"SSL_ENABLED": "true", "SSL_KEYFILE": "/path/to/key.pem", "SSL_CERTFILE": "/path/to/cert.pem", "SSL_CERT_REQUIRED": "true"}
         with patch.dict(os.environ, env, clear=True):
             config = SslConfig.from_env()
             assert config.cert_required is True
 
     def test_from_env_case_insensitive(self) -> None:
         """Test environment variable values are case-insensitive"""
-        env = {
-            "SSL_ENABLED": "TRUE",
-            "SSL_CERT_REQUIRED": "YES"
-        }
+        env = {"SSL_ENABLED": "TRUE", "SSL_CERT_REQUIRED": "YES"}
         with patch.dict(os.environ, env, clear=True):
             config = SslConfig.from_env()
             assert config.enabled is True
@@ -160,11 +137,7 @@ class TestSslConfigValidation:
 
     def test_validate_keyfile_not_found(self) -> None:
         """Test validation fails when keyfile doesn't exist"""
-        config = SslConfig(
-            enabled=True,
-            keyfile="/nonexistent/key.pem",
-            certfile="/nonexistent/cert.pem"
-        )
+        config = SslConfig(enabled=True, keyfile="/nonexistent/key.pem", certfile="/nonexistent/cert.pem")
         with pytest.raises(ValueError, match="SSL keyfile not found"):
             config.validate()
 
@@ -174,11 +147,7 @@ class TestSslConfigValidation:
             key_path = Path(tmpdir) / "key.pem"
             key_path.write_text("dummy key")
 
-            config = SslConfig(
-                enabled=True,
-                keyfile=str(key_path),
-                certfile="/nonexistent/cert.pem"
-            )
+            config = SslConfig(enabled=True, keyfile=str(key_path), certfile="/nonexistent/cert.pem")
             with pytest.raises(ValueError, match="SSL certfile not found"):
                 config.validate()
 
@@ -191,12 +160,7 @@ class TestSslConfigValidation:
             key_path.write_text("dummy key")
             cert_path.write_text("dummy cert")
 
-            config = SslConfig(
-                enabled=True,
-                keyfile=str(key_path),
-                certfile=str(cert_path),
-                ca_certs="/nonexistent/ca.pem"
-            )
+            config = SslConfig(enabled=True, keyfile=str(key_path), certfile=str(cert_path), ca_certs="/nonexistent/ca.pem")
             with pytest.raises(ValueError, match="SSL CA certs file not found"):
                 config.validate()
 
@@ -212,12 +176,7 @@ class TestSslConfigValidation:
             cert_path.write_text("dummy cert")
             ca_path.write_text("dummy ca")
 
-            config = SslConfig(
-                enabled=True,
-                keyfile=str(key_path),
-                certfile=str(cert_path),
-                ca_certs=str(ca_path)
-            )
+            config = SslConfig(enabled=True, keyfile=str(key_path), certfile=str(cert_path), ca_certs=str(ca_path))
             # Should not raise
             config.validate()
 
@@ -230,11 +189,7 @@ class TestSslConfigValidation:
             key_path.write_text("dummy key")
             cert_path.write_text("dummy cert")
 
-            config = SslConfig(
-                enabled=True,
-                keyfile=str(key_path),
-                certfile=str(cert_path)
-            )
+            config = SslConfig(enabled=True, keyfile=str(key_path), certfile=str(cert_path))
             # Should not raise
             config.validate()
 
@@ -253,10 +208,7 @@ class TestSslConfigIntegration:
             key_path.write_text("dummy key")
             cert_path.write_text("dummy cert")
 
-            server = create_server(
-                ssl_keyfile=str(key_path),
-                ssl_certfile=str(cert_path)
-            )
+            server = create_server(ssl_keyfile=str(key_path), ssl_certfile=str(cert_path))
 
             assert server is not None
             # Verify SSL config was applied
@@ -294,22 +246,17 @@ class TestSslConfigIntegration:
             key_path.write_text("dummy key")
             cert_path.write_text("dummy cert")
 
-            with patch('sys.argv', [
-                'main.py',
-                '--mode', 'sse',
-                '--ssl-keyfile', str(key_path),
-                '--ssl-certfile', str(cert_path)
-            ]):
-                with patch('src.main.create_server') as mock_create:
+            with patch("sys.argv", ["main.py", "--mode", "sse", "--ssl-keyfile", str(key_path), "--ssl-certfile", str(cert_path)]):
+                with patch("src.main.create_server") as mock_create:
                     mock_server = MagicMock()
                     mock_create.return_value = mock_server
-                    with patch('src.main.logger'):
+                    with patch("src.main.logger"):
                         main()
                         # Verify SSL params were passed
                         mock_create.assert_called_once()
                         call_kwargs = mock_create.call_args[1]
-                        assert call_kwargs['ssl_keyfile'] == str(key_path)
-                        assert call_kwargs['ssl_certfile'] == str(cert_path)
+                        assert call_kwargs["ssl_keyfile"] == str(key_path)
+                        assert call_kwargs["ssl_certfile"] == str(cert_path)
 
     def test_main_with_ssl_env_vars(self) -> None:
         """Test main() reads SSL config from environment"""
@@ -324,18 +271,14 @@ class TestSslConfigIntegration:
             key_path.write_text("dummy key")
             cert_path.write_text("dummy cert")
 
-            env = {
-                'MCP_MODE': 'sse',
-                'SSL_KEYFILE': str(key_path),
-                'SSL_CERTFILE': str(cert_path)
-            }
+            env = {"MCP_MODE": "sse", "SSL_KEYFILE": str(key_path), "SSL_CERTFILE": str(cert_path)}
 
             with patch.dict(os.environ, env, clear=False):
-                with patch('sys.argv', ['main.py']):
-                    with patch('src.main.create_server') as mock_create:
+                with patch("sys.argv", ["main.py"]):
+                    with patch("src.main.create_server") as mock_create:
                         mock_server = MagicMock()
                         mock_create.return_value = mock_server
-                        with patch('src.main.logger'):
+                        with patch("src.main.logger"):
                             main()
                             # Verify server was created (env vars read by config)
                             mock_create.assert_called_once()
@@ -346,21 +289,13 @@ class TestSslConfigEdgeCases:
 
     def test_empty_string_paths(self) -> None:
         """Test behavior with empty string paths"""
-        config = SslConfig(
-            enabled=True,
-            keyfile="",
-            certfile=""
-        )
+        config = SslConfig(enabled=True, keyfile="", certfile="")
         with pytest.raises(ValueError, match="SSL_KEYFILE is required"):
             config.validate()
 
     def test_whitespace_paths(self) -> None:
         """Test paths with only whitespace"""
-        config = SslConfig(
-            enabled=False,
-            keyfile="   ",
-            certfile="   "
-        )
+        config = SslConfig(enabled=False, keyfile="   ", certfile="   ")
         # Should pass because SSL is disabled
         config.validate()
 
@@ -379,11 +314,7 @@ class TestSslConfigEdgeCases:
                 key_path.write_text("dummy key")
                 cert_path.write_text("dummy cert")
 
-                config = SslConfig(
-                    enabled=True,
-                    keyfile="ssl/key.pem",
-                    certfile="ssl/cert.pem"
-                )
+                config = SslConfig(enabled=True, keyfile="ssl/key.pem", certfile="ssl/cert.pem")
                 # Should not raise
                 config.validate()
             finally:
@@ -398,10 +329,6 @@ class TestSslConfigEdgeCases:
             key_path.write_text("dummy key")
             cert_path.write_text("dummy cert")
 
-            config = SslConfig(
-                enabled=True,
-                keyfile=str(key_path),
-                certfile=str(cert_path)
-            )
+            config = SslConfig(enabled=True, keyfile=str(key_path), certfile=str(cert_path))
             # Should not raise
             config.validate()

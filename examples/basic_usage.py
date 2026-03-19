@@ -22,6 +22,7 @@ if str(project_root) not in sys.path:
 # Example 1: CKD-EPI 2021 (eGFR Calculation)
 # =============================================================================
 
+
 def example_ckd_epi() -> None:
     """Calculate eGFR using CKD-EPI 2021 equation"""
     from src.domain.services.calculators import CkdEpi2021Calculator
@@ -29,11 +30,7 @@ def example_ckd_epi() -> None:
     calc = CkdEpi2021Calculator()
 
     # 65-year-old female with creatinine 1.2 mg/dL
-    result: Any = calc.calculate(
-        serum_creatinine=1.2,
-        age=65,
-        sex="female"
-    )
+    result: Any = calc.calculate(serum_creatinine=1.2, age=65, sex="female")
 
     print("=" * 60)
     print("CKD-EPI 2021 Example")
@@ -48,6 +45,7 @@ def example_ckd_epi() -> None:
 # Example 2: SOFA Score (Sepsis Assessment)
 # =============================================================================
 
+
 def example_sofa() -> None:
     """Calculate SOFA score for sepsis assessment"""
     from src.domain.services.calculators import SofaScoreCalculator
@@ -56,12 +54,12 @@ def example_sofa() -> None:
 
     # ICU patient with moderate organ dysfunction
     result: Any = calc.calculate(
-        pao2_fio2_ratio=200,      # Respiratory: 2 points
-        platelets=80,              # Coagulation: 2 points
-        bilirubin=2.5,             # Liver: 1 point
-        dopamine_dose=5.0,         # Cardiovascular: 2 points
-        gcs_score=13,              # Neurological: 1 point
-        creatinine=2.0             # Renal: 1 point
+        pao2_fio2_ratio=200,  # Respiratory: 2 points
+        platelets=80,  # Coagulation: 2 points
+        bilirubin=2.5,  # Liver: 1 point
+        dopamine_dose=5.0,  # Cardiovascular: 2 points
+        gcs_score=13,  # Neurological: 1 point
+        creatinine=2.0,  # Renal: 1 point
     )
 
     print("=" * 60)
@@ -77,6 +75,7 @@ def example_sofa() -> None:
 # Example 3: RCRI (Cardiac Risk for Non-Cardiac Surgery)
 # =============================================================================
 
+
 def example_rcri() -> None:
     """Calculate RCRI for preoperative cardiac risk"""
     from src.domain.services.calculators import RcriCalculator
@@ -85,12 +84,7 @@ def example_rcri() -> None:
 
     # Patient undergoing major surgery with cardiac history
     result: Any = calc.calculate(
-        high_risk_surgery=True,
-        ischemic_heart_disease=True,
-        heart_failure=False,
-        cerebrovascular_disease=False,
-        insulin_diabetes=True,
-        creatinine_above_2=False
+        high_risk_surgery=True, ischemic_heart_disease=True, heart_failure=False, cerebrovascular_disease=False, insulin_diabetes=True, creatinine_above_2=False
     )
 
     print("=" * 60)
@@ -108,6 +102,7 @@ def example_rcri() -> None:
 # Example 4: CHA₂DS₂-VASc (AF Stroke Risk)
 # =============================================================================
 
+
 def example_chads2_vasc() -> None:
     """Calculate CHA₂DS₂-VASc for atrial fibrillation"""
     from src.domain.services.calculators import Chads2VascCalculator
@@ -123,7 +118,7 @@ def example_chads2_vasc() -> None:
         stroke_tia_or_te_history=False,
         vascular_disease=False,
         age_65_to_74=True,
-        female_sex=False
+        female_sex=False,
     )
 
     print("=" * 60)
@@ -141,6 +136,7 @@ def example_chads2_vasc() -> None:
 # Example 5: Wells PE Score
 # =============================================================================
 
+
 def example_wells_pe() -> None:
     """Calculate Wells score for PE probability"""
     from src.domain.services.calculators import WellsPeCalculator
@@ -155,7 +151,7 @@ def example_wells_pe() -> None:
         immobilization_or_surgery=False,
         previous_dvt_pe=False,
         hemoptysis=False,
-        malignancy=False
+        malignancy=False,
     )
 
     print("=" * 60)
@@ -172,6 +168,7 @@ def example_wells_pe() -> None:
 # =============================================================================
 # Example 6: Tool Discovery
 # =============================================================================
+
 
 def example_discovery() -> None:
     """Demonstrate tool discovery capabilities"""
@@ -195,6 +192,7 @@ def example_discovery() -> None:
 
     # List by specialty
     from src.domain.value_objects.tool_keys import Specialty
+
     cardio_tools = registry.list_by_specialty(Specialty.CARDIOLOGY)
     print(f"\nCardiology tools: {len(cardio_tools)}")
     for tool in cardio_tools[:3]:

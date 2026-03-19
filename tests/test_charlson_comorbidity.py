@@ -52,10 +52,7 @@ class TestCharlsonComorbidityIndex:
 
     def test_single_1point_condition(self, calculator: Any) -> None:
         """Test single 1-point condition (MI)"""
-        result = calculator.calculate(
-            myocardial_infarction=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(myocardial_infarction=True, include_age_adjustment=False)
         assert result.value == 1
         assert "Myocardial infarction" in result.calculation_details
 
@@ -70,7 +67,7 @@ class TestCharlsonComorbidityIndex:
             chronic_pulmonary_disease=True,
             connective_tissue_disease=True,
             peptic_ulcer_disease=True,
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         # 8 × 1 point = 8
         assert result.value == 8
@@ -80,7 +77,7 @@ class TestCharlsonComorbidityIndex:
         result = calculator.calculate(
             hemiplegia=True,  # 2
             moderate_severe_renal_disease=True,  # 2
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         assert result.value == 4
 
@@ -89,7 +86,7 @@ class TestCharlsonComorbidityIndex:
         result = calculator.calculate(
             metastatic_solid_tumor=True,  # 6
             aids=True,  # 6
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         assert result.value == 12
 
@@ -97,83 +94,53 @@ class TestCharlsonComorbidityIndex:
 
     def test_liver_hierarchy_mild_only(self, calculator: Any) -> None:
         """Test mild liver disease scores 1 point"""
-        result = calculator.calculate(
-            mild_liver_disease=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(mild_liver_disease=True, include_age_adjustment=False)
         assert result.value == 1
         assert "Mild liver disease" in result.calculation_details
 
     def test_liver_hierarchy_severe_only(self, calculator: Any) -> None:
         """Test moderate/severe liver disease scores 3 points"""
-        result = calculator.calculate(
-            moderate_severe_liver_disease=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(moderate_severe_liver_disease=True, include_age_adjustment=False)
         assert result.value == 3
         assert "Moderate/severe liver disease" in result.calculation_details
 
     def test_liver_hierarchy_both_severe_wins(self, calculator: Any) -> None:
         """Test that when both liver conditions present, only severe counts"""
-        result = calculator.calculate(
-            mild_liver_disease=True,
-            moderate_severe_liver_disease=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(mild_liver_disease=True, moderate_severe_liver_disease=True, include_age_adjustment=False)
         # Should be 3, not 1+3=4
         assert result.value == 3
         assert "Mild liver disease" not in result.calculation_details
 
     def test_diabetes_hierarchy_uncomplicated_only(self, calculator: Any) -> None:
         """Test diabetes without complications scores 1 point"""
-        result = calculator.calculate(
-            diabetes_uncomplicated=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(diabetes_uncomplicated=True, include_age_adjustment=False)
         assert result.value == 1
 
     def test_diabetes_hierarchy_complicated_only(self, calculator: Any) -> None:
         """Test diabetes with complications scores 2 points"""
-        result = calculator.calculate(
-            diabetes_with_end_organ_damage=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(diabetes_with_end_organ_damage=True, include_age_adjustment=False)
         assert result.value == 2
 
     def test_diabetes_hierarchy_both_complicated_wins(self, calculator: Any) -> None:
         """Test that when both diabetes conditions present, complicated wins"""
-        result = calculator.calculate(
-            diabetes_uncomplicated=True,
-            diabetes_with_end_organ_damage=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(diabetes_uncomplicated=True, diabetes_with_end_organ_damage=True, include_age_adjustment=False)
         # Should be 2, not 1+2=3
         assert result.value == 2
         assert "Diabetes uncomplicated" not in result.calculation_details
 
     def test_cancer_hierarchy_localized_only(self, calculator: Any) -> None:
         """Test localized malignancy scores 2 points"""
-        result = calculator.calculate(
-            any_malignancy=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(any_malignancy=True, include_age_adjustment=False)
         assert result.value == 2
 
     def test_cancer_hierarchy_metastatic_only(self, calculator: Any) -> None:
         """Test metastatic tumor scores 6 points"""
-        result = calculator.calculate(
-            metastatic_solid_tumor=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(metastatic_solid_tumor=True, include_age_adjustment=False)
         assert result.value == 6
 
     def test_cancer_hierarchy_both_metastatic_wins(self, calculator: Any) -> None:
         """Test that when both cancer conditions present, metastatic wins"""
-        result = calculator.calculate(
-            any_malignancy=True,
-            metastatic_solid_tumor=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(any_malignancy=True, metastatic_solid_tumor=True, include_age_adjustment=False)
         # Should be 6, not 2+6=8
         assert result.value == 6
         assert "non-metastatic" not in str(result.calculation_details).lower()
@@ -182,43 +149,28 @@ class TestCharlsonComorbidityIndex:
 
     def test_age_adjustment_under_50(self, calculator: Any) -> None:
         """Test no age adjustment for patients under 50"""
-        result = calculator.calculate(
-            age_years=45,
-            include_age_adjustment=True
-        )
+        result = calculator.calculate(age_years=45, include_age_adjustment=True)
         assert result.value == 0
 
     def test_age_adjustment_50_to_59(self, calculator: Any) -> None:
         """Test +1 age adjustment for 50-59 years"""
-        result = calculator.calculate(
-            age_years=55,
-            include_age_adjustment=True
-        )
+        result = calculator.calculate(age_years=55, include_age_adjustment=True)
         assert result.value == 1
         assert "Age adjustment" in str(result.calculation_details)
 
     def test_age_adjustment_60_to_69(self, calculator: Any) -> None:
         """Test +2 age adjustment for 60-69 years"""
-        result = calculator.calculate(
-            age_years=65,
-            include_age_adjustment=True
-        )
+        result = calculator.calculate(age_years=65, include_age_adjustment=True)
         assert result.value == 2
 
     def test_age_adjustment_70_to_79(self, calculator: Any) -> None:
         """Test +3 age adjustment for 70-79 years"""
-        result = calculator.calculate(
-            age_years=75,
-            include_age_adjustment=True
-        )
+        result = calculator.calculate(age_years=75, include_age_adjustment=True)
         assert result.value == 3
 
     def test_age_adjustment_80_plus(self, calculator: Any) -> None:
         """Test +4 age adjustment for ≥80 years"""
-        result = calculator.calculate(
-            age_years=85,
-            include_age_adjustment=True
-        )
+        result = calculator.calculate(age_years=85, include_age_adjustment=True)
         assert result.value == 4
 
     def test_age_adjustment_disabled(self, calculator: Any) -> None:
@@ -226,7 +178,7 @@ class TestCharlsonComorbidityIndex:
         result = calculator.calculate(
             age_years=75,
             congestive_heart_failure=True,  # 1 point
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         assert result.value == 1  # Only CHF, no age points
 
@@ -246,7 +198,7 @@ class TestCharlsonComorbidityIndex:
             chronic_pulmonary_disease=True,  # 1
             diabetes_with_end_organ_damage=True,  # 2
             moderate_severe_renal_disease=True,  # 2
-            include_age_adjustment=True  # +3
+            include_age_adjustment=True,  # +3
         )
         # 1+1+2+2+3 = 9
         assert result.value == 9
@@ -257,7 +209,7 @@ class TestCharlsonComorbidityIndex:
         result = calculator.calculate(
             age_years=65,
             metastatic_solid_tumor=True,  # 6
-            include_age_adjustment=True  # +2
+            include_age_adjustment=True,  # +2
         )
         # 6+2 = 8
         assert result.value == 8
@@ -267,7 +219,7 @@ class TestCharlsonComorbidityIndex:
         result = calculator.calculate(
             age_years=45,
             aids=True,  # 6
-            include_age_adjustment=True  # 0 (under 50)
+            include_age_adjustment=True,  # 0 (under 50)
         )
         assert result.value == 6
 
@@ -275,7 +227,7 @@ class TestCharlsonComorbidityIndex:
         """Test healthy middle-aged patient"""
         result = calculator.calculate(
             age_years=55,
-            include_age_adjustment=True  # +1
+            include_age_adjustment=True,  # +1
         )
         assert result.value == 1
         assert "98%" in result.interpretation.detail or "96%" in result.interpretation.detail
@@ -291,7 +243,7 @@ class TestCharlsonComorbidityIndex:
         """Test 10-year survival for CCI 5"""
         result = calculator.calculate(
             metastatic_solid_tumor=True,  # 6 points, but we need 5
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         # Actually this gives 6, let's use different conditions
         result = calculator.calculate(
@@ -299,7 +251,7 @@ class TestCharlsonComorbidityIndex:
             chronic_pulmonary_disease=True,  # 1
             diabetes_with_end_organ_damage=True,  # 2
             myocardial_infarction=True,  # 1
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         assert result.value == 5
         assert "21%" in result.interpretation.detail
@@ -308,7 +260,7 @@ class TestCharlsonComorbidityIndex:
         """Test 10-year survival for CCI ≥6"""
         result = calculator.calculate(
             metastatic_solid_tumor=True,  # 6
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         assert result.value == 6
         assert "2%" in result.interpretation.detail or "≤2%" in result.interpretation.detail
@@ -333,7 +285,7 @@ class TestCharlsonComorbidityIndex:
             moderate_severe_renal_disease=True,  # 2
             metastatic_solid_tumor=True,  # 6
             aids=True,  # 6
-            include_age_adjustment=True  # +4
+            include_age_adjustment=True,  # +4
         )
         # 8×1 + 3 + 2 + 2 + 2 + 6 + 6 + 4 = 33
         assert result.value == 33
@@ -347,7 +299,7 @@ class TestCharlsonComorbidityIndex:
             diabetes_with_end_organ_damage=True,  # 2
             any_malignancy=True,  # ignored
             metastatic_solid_tumor=True,  # 6
-            include_age_adjustment=False
+            include_age_adjustment=False,
         )
         # Only severe counts: 3+2+6 = 11
         assert result.value == 11
@@ -361,45 +313,27 @@ class TestCharlsonComorbidityIndex:
         assert result0.interpretation.severity.value == "normal"
 
         # Mild (1-2)
-        result1 = calculator.calculate(
-            myocardial_infarction=True,
-            include_age_adjustment=False
-        )
+        result1 = calculator.calculate(myocardial_infarction=True, include_age_adjustment=False)
         assert result1.interpretation.severity.value == "mild"
 
         # Moderate (3-4)
-        result3 = calculator.calculate(
-            myocardial_infarction=True,
-            diabetes_with_end_organ_damage=True,
-            include_age_adjustment=False
-        )
+        result3 = calculator.calculate(myocardial_infarction=True, diabetes_with_end_organ_damage=True, include_age_adjustment=False)
         assert result3.value == 3
         assert result3.interpretation.severity.value == "moderate"
 
         # Severe (5-6)
-        result5 = calculator.calculate(
-            metastatic_solid_tumor=True,
-            include_age_adjustment=False
-        )
+        result5 = calculator.calculate(metastatic_solid_tumor=True, include_age_adjustment=False)
         assert result5.value == 6
         assert result5.interpretation.severity.value in ["severe", "critical"]
 
     def test_recommendations_present(self, calculator: Any) -> None:
         """Test that recommendations are provided"""
-        result = calculator.calculate(
-            age_years=75,
-            congestive_heart_failure=True,
-            include_age_adjustment=True
-        )
+        result = calculator.calculate(age_years=75, congestive_heart_failure=True, include_age_adjustment=True)
         assert len(result.interpretation.recommendations) > 0
         assert len(result.interpretation.next_steps) > 0
 
     def test_warnings_for_high_score(self, calculator: Any) -> None:
         """Test that warnings are provided for high scores"""
-        result = calculator.calculate(
-            metastatic_solid_tumor=True,
-            aids=True,
-            include_age_adjustment=False
-        )
+        result = calculator.calculate(metastatic_solid_tumor=True, aids=True, include_age_adjustment=False)
         assert result.value == 12
         assert len(result.interpretation.warnings) > 0

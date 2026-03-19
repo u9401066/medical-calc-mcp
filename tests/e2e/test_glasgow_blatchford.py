@@ -25,7 +25,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": False,
                 "hepatic_disease": False,
                 "cardiac_failure": False,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -45,7 +45,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": False,
                 "hepatic_disease": False,
                 "cardiac_failure": False,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -64,7 +64,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": True,
                 "hepatic_disease": True,
                 "cardiac_failure": False,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -84,7 +84,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": False,
                 "hepatic_disease": False,
                 "cardiac_failure": False,
-                "sex": "female"
+                "sex": "female",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -104,7 +104,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": False,
                 "hepatic_disease": False,
                 "cardiac_failure": False,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -124,7 +124,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": False,
                 "hepatic_disease": False,
                 "cardiac_failure": False,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -144,7 +144,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": True,
                 "hepatic_disease": False,
                 "cardiac_failure": False,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -164,7 +164,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": False,
                 "hepatic_disease": True,
                 "cardiac_failure": True,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -184,7 +184,7 @@ class TestGlasgowBlatchfordE2E:
                 "syncope": True,
                 "hepatic_disease": True,
                 "cardiac_failure": True,
-                "sex": "male"
+                "sex": "male",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -194,11 +194,6 @@ class TestGlasgowBlatchfordE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "bun_mg_dl": 25,
-                "hemoglobin_g_dl": 12.0
-            }
-        }
+        payload = {"params": {"bun_mg_dl": 25, "hemoglobin_g_dl": 12.0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

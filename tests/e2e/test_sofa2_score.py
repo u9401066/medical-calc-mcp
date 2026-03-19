@@ -15,16 +15,7 @@ class TestSofa2ScoreE2E:
 
     def test_minimal_dysfunction(self, test_client: Any) -> None:
         """Test minimal organ dysfunction"""
-        payload = {
-            "params": {
-                "gcs_score": 15,
-                "pao2_fio2_ratio": 400,
-                "bilirubin": 0.8,
-                "creatinine": 0.9,
-                "platelets": 200,
-                "map_value": 75
-            }
-        }
+        payload = {"params": {"gcs_score": 15, "pao2_fio2_ratio": 400, "bilirubin": 0.8, "creatinine": 0.9, "platelets": 200, "map_value": 75}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
@@ -39,7 +30,7 @@ class TestSofa2ScoreE2E:
                 "creatinine": 1.2,
                 "platelets": 150,
                 "map_value": 70,
-                "receiving_sedation_or_delirium_drugs": True
+                "receiving_sedation_or_delirium_drugs": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -57,7 +48,7 @@ class TestSofa2ScoreE2E:
                 "platelets": 80,
                 "map_value": 60,
                 "on_ecmo": True,
-                "advanced_ventilatory_support": True
+                "advanced_ventilatory_support": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -66,17 +57,7 @@ class TestSofa2ScoreE2E:
 
     def test_on_rrt(self, test_client: Any) -> None:
         """Test patient on renal replacement therapy"""
-        payload = {
-            "params": {
-                "gcs_score": 14,
-                "pao2_fio2_ratio": 250,
-                "bilirubin": 2.0,
-                "creatinine": 4.5,
-                "platelets": 100,
-                "map_value": 65,
-                "on_rrt": True
-            }
-        }
+        payload = {"params": {"gcs_score": 14, "pao2_fio2_ratio": 250, "bilirubin": 2.0, "creatinine": 4.5, "platelets": 100, "map_value": 65, "on_rrt": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # RRT = maximum renal points
@@ -92,7 +73,7 @@ class TestSofa2ScoreE2E:
                 "creatinine": 1.5,
                 "platelets": 120,
                 "map_value": 55,
-                "norepinephrine_epinephrine_dose": 0.15
+                "norepinephrine_epinephrine_dose": 0.15,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -102,15 +83,7 @@ class TestSofa2ScoreE2E:
     def test_with_urine_output(self, test_client: Any) -> None:
         """Test with various urine output periods"""
         payload = {
-            "params": {
-                "gcs_score": 15,
-                "pao2_fio2_ratio": 350,
-                "bilirubin": 1.0,
-                "creatinine": 2.0,
-                "platelets": 180,
-                "map_value": 70,
-                "urine_output_24h": 400
-            }
+            "params": {"gcs_score": 15, "pao2_fio2_ratio": 350, "bilirubin": 1.0, "creatinine": 2.0, "platelets": 180, "map_value": 70, "urine_output_24h": 400}
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
@@ -127,7 +100,7 @@ class TestSofa2ScoreE2E:
                 "platelets": 20,
                 "map_value": 50,
                 "norepinephrine_epinephrine_dose": 0.3,
-                "advanced_ventilatory_support": True
+                "advanced_ventilatory_support": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -136,10 +109,6 @@ class TestSofa2ScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "gcs_score": 15
-            }
-        }
+        payload = {"params": {"gcs_score": 15}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

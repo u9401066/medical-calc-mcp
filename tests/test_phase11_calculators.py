@@ -34,6 +34,7 @@ from src.domain.value_objects.interpretation import RiskLevel, Severity
 # Ideal Body Weight Tests
 # =============================================================================
 
+
 class TestIdealBodyWeightCalculator:
     """Tests for IdealBodyWeightCalculator"""
 
@@ -102,6 +103,7 @@ class TestIdealBodyWeightCalculator:
 # =============================================================================
 # P/F Ratio Tests
 # =============================================================================
+
 
 class TestPfRatioCalculator:
     """Tests for PfRatioCalculator"""
@@ -180,6 +182,7 @@ class TestPfRatioCalculator:
 # ROX Index Tests
 # =============================================================================
 
+
 class TestRoxIndexCalculator:
     """Tests for RoxIndexCalculator"""
 
@@ -246,6 +249,7 @@ class TestRoxIndexCalculator:
 # GRACE Score Tests
 # =============================================================================
 
+
 class TestGraceScoreCalculator:
     """Tests for GraceScoreCalculator"""
 
@@ -311,12 +315,10 @@ class TestGraceScoreCalculator:
     def test_killip_class_impact(self, calculator: Any) -> None:
         """Test that Killip class impacts score"""
         base = calculator.calculate(
-            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0,
-            killip_class=1, cardiac_arrest=False, st_deviation=False, elevated_markers=False
+            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0, killip_class=1, cardiac_arrest=False, st_deviation=False, elevated_markers=False
         )
         killip4 = calculator.calculate(
-            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0,
-            killip_class=4, cardiac_arrest=False, st_deviation=False, elevated_markers=False
+            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0, killip_class=4, cardiac_arrest=False, st_deviation=False, elevated_markers=False
         )
         assert killip4.value is not None
         assert killip4.value > base.value
@@ -324,12 +326,10 @@ class TestGraceScoreCalculator:
     def test_cardiac_arrest_impact(self, calculator: Any) -> None:
         """Test that cardiac arrest impacts score"""
         no_arrest = calculator.calculate(
-            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0,
-            killip_class=1, cardiac_arrest=False, st_deviation=False, elevated_markers=False
+            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0, killip_class=1, cardiac_arrest=False, st_deviation=False, elevated_markers=False
         )
         with_arrest = calculator.calculate(
-            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0,
-            killip_class=1, cardiac_arrest=True, st_deviation=False, elevated_markers=False
+            age=60, heart_rate=80, systolic_bp=120, creatinine=1.0, killip_class=1, cardiac_arrest=True, st_deviation=False, elevated_markers=False
         )
         assert with_arrest.value is not None
         assert with_arrest.value > no_arrest.value
@@ -338,6 +338,7 @@ class TestGraceScoreCalculator:
 # =============================================================================
 # 4Ts HIT Score Tests
 # =============================================================================
+
 
 class TestFourTsHitCalculator:
     """Tests for FourTsHitCalculator"""
@@ -427,6 +428,7 @@ class TestFourTsHitCalculator:
 # =============================================================================
 # ACEF II Score Tests
 # =============================================================================
+
 
 class TestAcefIiScoreCalculator:
     """Tests for AcefIiScoreCalculator"""
@@ -521,6 +523,7 @@ class TestAcefIiScoreCalculator:
 # Integration Tests
 # =============================================================================
 
+
 class TestPhase11Integration:
     """Integration tests for Phase 11 calculators"""
 
@@ -566,12 +569,9 @@ class TestPhase11Integration:
             PfRatioCalculator().calculate(pao2=90, fio2=0.21),
             RoxIndexCalculator().calculate(spo2=95, fio2=0.4, respiratory_rate=20),
             GraceScoreCalculator().calculate(
-                age=60, heart_rate=80, systolic_bp=120, creatinine=1.0,
-                killip_class=1, cardiac_arrest=False, st_deviation=False, elevated_markers=False
+                age=60, heart_rate=80, systolic_bp=120, creatinine=1.0, killip_class=1, cardiac_arrest=False, st_deviation=False, elevated_markers=False
             ),
-            FourTsHitCalculator().calculate(
-                thrombocytopenia=1, timing=1, thrombosis=1, other_causes=1
-            ),
+            FourTsHitCalculator().calculate(thrombocytopenia=1, timing=1, thrombosis=1, other_causes=1),
             AcefIiScoreCalculator().calculate(age=60, lvef=50, creatinine=1.0),
         ]
 

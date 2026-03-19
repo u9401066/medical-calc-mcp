@@ -41,7 +41,7 @@ class TestGlasgowBlatchford:
             melena=False,
             syncope=False,
             hepatic_disease=False,
-            cardiac_failure=False
+            cardiac_failure=False,
         )
         assert result.value is not None
         assert result.value == 0
@@ -59,7 +59,7 @@ class TestGlasgowBlatchford:
             melena=True,  # +1
             syncope=True,  # +2
             hepatic_disease=True,  # +2
-            cardiac_failure=True  # +2
+            cardiac_failure=True,  # +2
         )
         # Total = 4+6+3+1+1+2+2+2 = 21
         assert result.value is not None
@@ -96,13 +96,7 @@ class TestAIMS65:
 
     def test_aims65_zero_very_low_risk(self, calc: Any) -> None:
         """AIMS65 = 0 should be very low mortality risk"""
-        result = calc.calculate(
-            albumin_lt_3=False,
-            inr_gt_1_5=False,
-            altered_mental_status=False,
-            sbp_lte_90=False,
-            age_gte_65=False
-        )
+        result = calc.calculate(albumin_lt_3=False, inr_gt_1_5=False, altered_mental_status=False, sbp_lte_90=False, age_gte_65=False)
         assert result.value is not None
         assert result.value == 0
         assert result.calculation_details is not None
@@ -110,13 +104,7 @@ class TestAIMS65:
 
     def test_aims65_high_risk(self, calc: Any) -> None:
         """AIMS65 ≥3 should be high risk"""
-        result = calc.calculate(
-            albumin_lt_3=True,
-            inr_gt_1_5=True,
-            altered_mental_status=True,
-            sbp_lte_90=True,
-            age_gte_65=True
-        )
+        result = calc.calculate(albumin_lt_3=True, inr_gt_1_5=True, altered_mental_status=True, sbp_lte_90=True, age_gte_65=True)
         assert result.value is not None
         assert result.value == 5
         assert result.interpretation.severity is not None
@@ -124,13 +112,7 @@ class TestAIMS65:
 
     def test_aims65_intermediate_risk(self, calc: Any) -> None:
         """AIMS65 = 2 should be intermediate risk"""
-        result = calc.calculate(
-            albumin_lt_3=True,
-            inr_gt_1_5=True,
-            altered_mental_status=False,
-            sbp_lte_90=False,
-            age_gte_65=False
-        )
+        result = calc.calculate(albumin_lt_3=True, inr_gt_1_5=True, altered_mental_status=False, sbp_lte_90=False, age_gte_65=False)
         assert result.value is not None
         assert result.value == 2
         assert result.calculation_details is not None
@@ -146,11 +128,7 @@ class TestTBSA:
 
     def test_tbsa_no_burns(self, calc: Any) -> None:
         """No burns should return 0% TBSA"""
-        result = calc.calculate(
-            head_neck=0,
-            chest=0,
-            abdomen=0
-        )
+        result = calc.calculate(head_neck=0, chest=0, abdomen=0)
         assert result.value is not None
         assert result.value == 0
 
@@ -158,7 +136,7 @@ class TestTBSA:
         """Small burn area should be minor severity"""
         result = calc.calculate(
             right_arm=50,  # 50% of 9% = 4.5%
-            patient_type="adult"
+            patient_type="adult",
         )
         assert result.value is not None
         assert result.value < 10
@@ -172,7 +150,7 @@ class TestTBSA:
             chest=100,  # 9%
             abdomen=100,  # 9%
             right_arm=100,  # 9%
-            patient_type="adult"
+            patient_type="adult",
         )
         # 9+9+9+9 = 36%
         assert result.value is not None
@@ -205,7 +183,7 @@ class TestInjurySeverityScore:
             chest_ais=0,
             abdomen_ais=0,
             extremity_ais=0,
-            external_ais=0
+            external_ais=0,
         )
         assert result.value is not None
         assert result.value == 1
@@ -260,7 +238,7 @@ class TestSimplifiedPESI:
             chronic_cardiopulmonary_disease=False,
             heart_rate=90,  # <110
             systolic_bp=120,  # ≥100
-            spo2=95  # ≥90
+            spo2=95,  # ≥90
         )
         assert result.value is not None
         assert result.value == 0
@@ -277,7 +255,7 @@ class TestSimplifiedPESI:
             chronic_cardiopulmonary_disease=False,
             heart_rate=90,
             systolic_bp=120,
-            spo2=95
+            spo2=95,
         )
         assert result.value is not None
         assert result.value >= 1
@@ -292,7 +270,7 @@ class TestSimplifiedPESI:
             chronic_cardiopulmonary_disease=True,  # +1
             heart_rate=120,  # +1 (≥110)
             systolic_bp=85,  # +1 (<100)
-            spo2=88  # +1 (<90)
+            spo2=88,  # +1 (<90)
         )
         assert result.value is not None
         assert result.value == 6
@@ -301,12 +279,7 @@ class TestSimplifiedPESI:
 
     def test_spesi_alternative_boolean_params(self, calc: Any) -> None:
         """Test using direct boolean parameters"""
-        result = calc.calculate(
-            age=50,
-            heart_rate_gte_110=True,
-            sbp_lt_100=True,
-            spo2_lt_90=True
-        )
+        result = calc.calculate(age=50, heart_rate_gte_110=True, sbp_lt_100=True, spo2_lt_90=True)
         assert result.value is not None
         assert result.value == 3
 

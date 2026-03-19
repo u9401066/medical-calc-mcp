@@ -5,7 +5,6 @@ Tests CHA₂DS₂-VASc, CHA₂DS₂-VA (2024 ESC), HEART Score, and HAS-BLED cal
 """
 
 
-
 class TestChads2VascCalculator:
     """Tests for CHA₂DS₂-VASc Score (original version)."""
 
@@ -110,14 +109,14 @@ class TestChads2VascCalculator:
 
         calc = Chads2VascCalculator()
         result = calc.calculate(
-            chf_or_lvef_lte_40=True,      # +1
-            hypertension=True,             # +1
-            age_gte_75=True,              # +2
-            diabetes=True,                 # +1
-            stroke_tia_or_te_history=True, # +2
-            vascular_disease=True,         # +1
-            age_65_to_74=False,           # 0 (age ≥75 takes precedence)
-            female_sex=True,              # +1
+            chf_or_lvef_lte_40=True,  # +1
+            hypertension=True,  # +1
+            age_gte_75=True,  # +2
+            diabetes=True,  # +1
+            stroke_tia_or_te_history=True,  # +2
+            vascular_disease=True,  # +1
+            age_65_to_74=False,  # 0 (age ≥75 takes precedence)
+            female_sex=True,  # +1
         )
 
         assert result.value is not None
@@ -195,12 +194,12 @@ class TestChads2VaCalculator:
 
         calc = Chads2VaCalculator()
         result = calc.calculate(
-            chf_or_lvef_lte_40=True,       # +1
-            hypertension=True,             # +1
-            age_gte_75=True,              # +2
-            diabetes=True,                 # +1
-            stroke_tia_or_te_history=True, # +2
-            vascular_disease=True,         # +1
+            chf_or_lvef_lte_40=True,  # +1
+            hypertension=True,  # +1
+            age_gte_75=True,  # +2
+            diabetes=True,  # +1
+            stroke_tia_or_te_history=True,  # +2
+            vascular_disease=True,  # +1
             age_65_to_74=False,
         )
 
@@ -340,24 +339,15 @@ class TestHeartScoreCalculator:
 
         calc = HeartScoreCalculator()
 
-        result1 = calc.calculate(
-            history_score=0, ecg_score=0, age_score=0,
-            risk_factors_score=0, troponin_score=0
-        )
+        result1 = calc.calculate(history_score=0, ecg_score=0, age_score=0, risk_factors_score=0, troponin_score=0)
         assert result1.value is not None
         assert result1.value == 0
 
-        result2 = calc.calculate(
-            history_score=0, ecg_score=0, age_score=1,
-            risk_factors_score=0, troponin_score=0
-        )
+        result2 = calc.calculate(history_score=0, ecg_score=0, age_score=1, risk_factors_score=0, troponin_score=0)
         assert result2.value is not None
         assert result2.value == 1
 
-        result3 = calc.calculate(
-            history_score=0, ecg_score=0, age_score=2,
-            risk_factors_score=0, troponin_score=0
-        )
+        result3 = calc.calculate(history_score=0, ecg_score=0, age_score=2, risk_factors_score=0, troponin_score=0)
         assert result3.value is not None
         assert result3.value == 2
 
@@ -423,9 +413,9 @@ class TestHasBledCalculator:
         calc = HasBledCalculator()
         result = calc.calculate(
             hypertension_uncontrolled=True,  # +1
-            renal_disease=True,              # +1
+            renal_disease=True,  # +1
             liver_disease=False,
-            stroke_history=True,             # +1
+            stroke_history=True,  # +1
             bleeding_history=False,
             labile_inr=False,
             elderly_gt_65=False,
@@ -444,15 +434,15 @@ class TestHasBledCalculator:
 
         calc = HasBledCalculator()
         result = calc.calculate(
-            hypertension_uncontrolled=True,   # +1
-            renal_disease=True,               # +1
-            liver_disease=True,               # +1
-            stroke_history=True,              # +1
-            bleeding_history=True,            # +1
-            labile_inr=True,                  # +1
-            elderly_gt_65=True,               # +1
-            drugs_antiplatelet_nsaid=True,    # +1
-            alcohol_excess=True,              # +1
+            hypertension_uncontrolled=True,  # +1
+            renal_disease=True,  # +1
+            liver_disease=True,  # +1
+            stroke_history=True,  # +1
+            bleeding_history=True,  # +1
+            labile_inr=True,  # +1
+            elderly_gt_65=True,  # +1
+            drugs_antiplatelet_nsaid=True,  # +1
+            alcohol_excess=True,  # +1
         )
 
         assert result.value is not None

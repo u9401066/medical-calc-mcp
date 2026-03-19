@@ -27,8 +27,10 @@ from src.domain.services.param_matcher import (
 # Mock Calculator Classes (using real method signatures)
 # =============================================================================
 
+
 class MockCalculatorBase:
     """Base class for mock calculators."""
+
     pass
 
 
@@ -99,10 +101,7 @@ class TestParamAliases:
         for canonical, aliases in PARAM_ALIASES.items():
             for alias in aliases:
                 if alias in all_aliases:
-                    pytest.fail(
-                        f"Alias '{alias}' maps to both "
-                        f"'{all_aliases[alias]}' and '{canonical}'"
-                    )
+                    pytest.fail(f"Alias '{alias}' maps to both '{all_aliases[alias]}' and '{canonical}'")
                 all_aliases[alias] = canonical
 
 
@@ -355,10 +354,7 @@ class TestEdgeCases:
 
     def test_none_value_params(self, matcher: ParamMatcher, simple_calculator: BaseCalculator) -> None:
         """Test with None values in parameters."""
-        result = matcher.match(
-            {"param1": None, "param2": None},
-            simple_calculator
-        )
+        result = matcher.match({"param1": None, "param2": None}, simple_calculator)
 
         # Should accept None as a value (type checking is calculator's job)
         assert result.matched_params.get("param1") is None
@@ -366,10 +362,7 @@ class TestEdgeCases:
 
     def test_numeric_string_params(self, matcher: ParamMatcher, simple_calculator: BaseCalculator) -> None:
         """Test with numeric string values."""
-        result = matcher.match(
-            {"param1": "65", "param2": "1.5"},
-            simple_calculator
-        )
+        result = matcher.match({"param1": "65", "param2": "1.5"}, simple_calculator)
 
         # Should preserve the value as-is (type conversion is calculator's job)
         assert result.matched_params.get("param1") == "65"
@@ -448,4 +441,3 @@ class TestAliasMatching:
         assert result.matched_params.get("respiratory_rate") == 18
         assert result.matched_params.get("heart_rate") == 80
         assert result.matched_params.get("systolic_bp") == 120
-

@@ -24,7 +24,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": False,
                 "chest_xray": "no_infiltrate",
                 "culture_growth": "none_light",
-                "gram_stain_matches": False
+                "gram_stain_matches": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -43,7 +43,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": True,
                 "chest_xray": "localized",
                 "culture_growth": "moderate_heavy",
-                "gram_stain_matches": True
+                "gram_stain_matches": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -62,7 +62,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": True,
                 "chest_xray": "diffuse",
                 "culture_growth": "none_light",
-                "gram_stain_matches": False
+                "gram_stain_matches": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -80,7 +80,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": False,
                 "chest_xray": "localized",
                 "culture_growth": "none_light",
-                "gram_stain_matches": False
+                "gram_stain_matches": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -98,7 +98,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": False,
                 "chest_xray": "diffuse",
                 "culture_growth": "moderate_heavy",
-                "gram_stain_matches": True
+                "gram_stain_matches": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -116,7 +116,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": True,
                 "chest_xray": "diffuse",
                 "culture_growth": "none_light",
-                "gram_stain_matches": False
+                "gram_stain_matches": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -134,7 +134,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": False,
                 "chest_xray": "diffuse",
                 "culture_growth": "none_light",
-                "gram_stain_matches": False
+                "gram_stain_matches": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -152,7 +152,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": False,
                 "chest_xray": "no_infiltrate",
                 "culture_growth": "moderate_heavy",
-                "gram_stain_matches": False
+                "gram_stain_matches": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -171,7 +171,7 @@ class TestCpisE2E:
                 "pao2_fio2_lte_240_no_ards": True,
                 "chest_xray": "localized",
                 "culture_growth": "moderate_heavy",
-                "gram_stain_matches": True
+                "gram_stain_matches": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -180,10 +180,6 @@ class TestCpisE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "temperature_category": "normal"
-            }
-        }
+        payload = {"params": {"temperature_category": "normal"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

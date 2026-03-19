@@ -141,7 +141,7 @@ class TestSIRSCriteriaCalculator:
         """Test 2/4 criteria = SIRS positive"""
         result = calculator.calculate(
             temperature=39.0,  # 1
-            heart_rate=100,    # 2
+            heart_rate=100,  # 2
         )
         assert result.value == 2
         assert result.calculation_details["sirs_positive"] is True
@@ -151,7 +151,7 @@ class TestSIRSCriteriaCalculator:
         """Test 3/4 criteria = SIRS positive"""
         result = calculator.calculate(
             temperature=39.0,  # 1
-            heart_rate=100,    # 2
+            heart_rate=100,  # 2
             respiratory_rate=24,  # 3
         )
         assert result.value == 3
@@ -161,7 +161,7 @@ class TestSIRSCriteriaCalculator:
         """Test 4/4 criteria = SIRS positive"""
         result = calculator.calculate(
             temperature=39.0,  # 1
-            heart_rate=100,    # 2
+            heart_rate=100,  # 2
             respiratory_rate=24,  # 3
             wbc=15.0,  # 4
         )

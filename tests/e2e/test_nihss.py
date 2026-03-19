@@ -31,7 +31,7 @@ class TestNihssE2E:
                 "sensory": 0,
                 "best_language": 0,
                 "dysarthria": 0,
-                "extinction_inattention": 0
+                "extinction_inattention": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -56,7 +56,7 @@ class TestNihssE2E:
                 "sensory": 1,
                 "best_language": 0,
                 "dysarthria": 0,
-                "extinction_inattention": 0
+                "extinction_inattention": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -81,7 +81,7 @@ class TestNihssE2E:
                 "sensory": 1,
                 "best_language": 1,
                 "dysarthria": 1,
-                "extinction_inattention": 0
+                "extinction_inattention": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -106,7 +106,7 @@ class TestNihssE2E:
                 "sensory": 1,
                 "best_language": 2,
                 "dysarthria": 1,
-                "extinction_inattention": 1
+                "extinction_inattention": 1,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -131,7 +131,7 @@ class TestNihssE2E:
                 "sensory": 2,
                 "best_language": 3,
                 "dysarthria": 2,
-                "extinction_inattention": 2
+                "extinction_inattention": 2,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -156,7 +156,7 @@ class TestNihssE2E:
                 "sensory": 1,
                 "best_language": 0,
                 "dysarthria": 0,
-                "extinction_inattention": 2
+                "extinction_inattention": 2,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -181,7 +181,7 @@ class TestNihssE2E:
                 "sensory": 1,
                 "best_language": 2,
                 "dysarthria": 2,
-                "extinction_inattention": 0
+                "extinction_inattention": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -206,7 +206,7 @@ class TestNihssE2E:
                 "sensory": 0,
                 "best_language": 0,
                 "dysarthria": 0,
-                "extinction_inattention": 0
+                "extinction_inattention": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -215,11 +215,6 @@ class TestNihssE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "loc": 0,
-                "loc_questions": 0
-            }
-        }
+        payload = {"params": {"loc": 0, "loc_questions": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

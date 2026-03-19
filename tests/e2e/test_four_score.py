@@ -15,28 +15,14 @@ class TestFourScoreE2E:
 
     def test_maximum_score_normal(self, test_client: Any) -> None:
         """Test maximum score (16) - fully conscious"""
-        payload = {
-            "params": {
-                "eye_response": 4,
-                "motor_response": 4,
-                "brainstem_reflexes": 4,
-                "respiration": 4
-            }
-        }
+        payload = {"params": {"eye_response": 4, "motor_response": 4, "brainstem_reflexes": 4, "respiration": 4}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 16
 
     def test_minimum_score_coma(self, test_client: Any) -> None:
         """Test minimum score (0) - deep coma"""
-        payload = {
-            "params": {
-                "eye_response": 0,
-                "motor_response": 0,
-                "brainstem_reflexes": 0,
-                "respiration": 0
-            }
-        }
+        payload = {"params": {"eye_response": 0, "motor_response": 0, "brainstem_reflexes": 0, "respiration": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
@@ -48,7 +34,7 @@ class TestFourScoreE2E:
                 "eye_response": 4,  # Can blink/track
                 "motor_response": 0,  # No motor response
                 "brainstem_reflexes": 4,  # Preserved
-                "respiration": 4  # Normal breathing
+                "respiration": 4,  # Normal breathing
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -63,7 +49,7 @@ class TestFourScoreE2E:
                 "eye_response": 1,
                 "motor_response": 2,
                 "brainstem_reflexes": 4,
-                "respiration": 1  # Intubated
+                "respiration": 1,  # Intubated
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -72,14 +58,7 @@ class TestFourScoreE2E:
 
     def test_brainstem_death_pattern(self, test_client: Any) -> None:
         """Test pattern consistent with brainstem death"""
-        payload = {
-            "params": {
-                "eye_response": 0,
-                "motor_response": 0,
-                "brainstem_reflexes": 0,
-                "respiration": 0
-            }
-        }
+        payload = {"params": {"eye_response": 0, "motor_response": 0, "brainstem_reflexes": 0, "respiration": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # All zeros suggest brain death
@@ -87,28 +66,14 @@ class TestFourScoreE2E:
 
     def test_improving_patient(self, test_client: Any) -> None:
         """Test patient showing improvement"""
-        payload = {
-            "params": {
-                "eye_response": 3,
-                "motor_response": 3,
-                "brainstem_reflexes": 4,
-                "respiration": 3
-            }
-        }
+        payload = {"params": {"eye_response": 3, "motor_response": 3, "brainstem_reflexes": 4, "respiration": 3}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 13
 
     def test_poor_prognosis_indicators(self, test_client: Any) -> None:
         """Test patient with poor prognostic indicators"""
-        payload = {
-            "params": {
-                "eye_response": 0,
-                "motor_response": 1,
-                "brainstem_reflexes": 2,
-                "respiration": 1
-            }
-        }
+        payload = {"params": {"eye_response": 0, "motor_response": 1, "brainstem_reflexes": 2, "respiration": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Low score indicates poor prognosis
@@ -116,14 +81,7 @@ class TestFourScoreE2E:
 
     def test_eye_tracking_present(self, test_client: Any) -> None:
         """Test patient with eye tracking"""
-        payload = {
-            "params": {
-                "eye_response": 4,
-                "motor_response": 2,
-                "brainstem_reflexes": 3,
-                "respiration": 2
-            }
-        }
+        payload = {"params": {"eye_response": 4, "motor_response": 2, "brainstem_reflexes": 3, "respiration": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 11
@@ -135,7 +93,7 @@ class TestFourScoreE2E:
                 "eye_response": 1,
                 "motor_response": 1,  # Posturing
                 "brainstem_reflexes": 3,
-                "respiration": 2
+                "respiration": 2,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -144,11 +102,6 @@ class TestFourScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "eye_response": 4,
-                "motor_response": 4
-            }
-        }
+        payload = {"params": {"eye_response": 4, "motor_response": 4}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

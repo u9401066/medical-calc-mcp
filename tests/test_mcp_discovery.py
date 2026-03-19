@@ -30,6 +30,7 @@ class TestDiscoveryHandler:
             def decorator(func: Any) -> Any:
                 mcp._tools[func.__name__] = func
                 return func
+
             return decorator
 
         mcp.tool = mock_tool
@@ -51,6 +52,7 @@ class TestDiscoveryHandler:
     def handler(self, mock_mcp: Any, populated_registry: Any) -> Any:
         """Create handler instance"""
         from src.infrastructure.mcp.handlers.discovery_handler import DiscoveryHandler
+
         return DiscoveryHandler(mock_mcp, populated_registry)
 
     def test_handler_registers_tools(self, handler: Any, mock_mcp: Any) -> None:
@@ -252,6 +254,7 @@ class TestDiscoveryWorkflow:
             def decorator(func: Any) -> Any:
                 mcp._tools[func.__name__] = func
                 return func
+
             return decorator
 
         mcp.tool = mock_tool
@@ -317,6 +320,7 @@ class TestDiscoveryIntegration:
     def server(self) -> Any:
         """Create real server instance"""
         from src.infrastructure.mcp.server import MedicalCalculatorServer
+
         return MedicalCalculatorServer()
 
     def test_server_has_discovery_tools(self, server: Any) -> None:

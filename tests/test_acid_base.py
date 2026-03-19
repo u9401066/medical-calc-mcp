@@ -64,8 +64,10 @@ class TestAnionGapCalculator:
         """Test albumin-corrected AG (Figge formula)"""
         # Low albumin increases corrected AG
         result = self.calc.calculate(
-            sodium=140, chloride=104, bicarbonate=24,
-            albumin=2.0  # Low albumin (normal 4.0)
+            sodium=140,
+            chloride=104,
+            bicarbonate=24,
+            albumin=2.0,  # Low albumin (normal 4.0)
         )
 
         # Raw AG = 12, Corrected = 12 + 2.5*(4.0-2.0) = 17
@@ -141,10 +143,7 @@ class TestDeltaRatioCalculator:
     def test_custom_baseline_values(self) -> None:
         """Test with custom baseline AG and HCO3"""
         # Note: parameter is normal_ag and normal_hco3
-        result = self.calc.calculate(
-            anion_gap=28, bicarbonate=12,
-            normal_ag=10, normal_hco3=24
-        )
+        result = self.calc.calculate(anion_gap=28, bicarbonate=12, normal_ag=10, normal_hco3=24)
 
         # ΔAG = 28 - 10 = 18, ΔHCO3 = 24 - 12 = 12
         # Delta Ratio = 18/12 = 1.5

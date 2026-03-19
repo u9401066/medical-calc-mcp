@@ -23,7 +23,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": True,
-                "age_lt_60": True
+                "age_lt_60": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -41,7 +41,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": False,
                 "no_dehydration": False,
                 "outpatient_status": False,
-                "age_lt_60": False
+                "age_lt_60": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -59,7 +59,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": True,
-                "age_lt_60": False
+                "age_lt_60": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -76,7 +76,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": False,
-                "age_lt_60": True
+                "age_lt_60": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -93,7 +93,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": False,
-                "age_lt_60": True
+                "age_lt_60": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -111,7 +111,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": False,
-                "age_lt_60": False
+                "age_lt_60": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -128,7 +128,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": False,
-                "age_lt_60": False
+                "age_lt_60": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -145,7 +145,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": False,
                 "outpatient_status": False,
-                "age_lt_60": False
+                "age_lt_60": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -162,7 +162,7 @@ class TestMasccScoreE2E:
                 "solid_tumor_or_no_fungal_hx": True,
                 "no_dehydration": True,
                 "outpatient_status": True,
-                "age_lt_60": False
+                "age_lt_60": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -172,10 +172,6 @@ class TestMasccScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "burden_of_illness": "moderate"
-            }
-        }
+        payload = {"params": {"burden_of_illness": "moderate"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

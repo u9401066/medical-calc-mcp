@@ -23,7 +23,7 @@ class TestChads2VaE2E:
                 "diabetes": False,
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
-                "age_65_to_74": False
+                "age_65_to_74": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -40,7 +40,7 @@ class TestChads2VaE2E:
                 "diabetes": False,
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
-                "age_65_to_74": False
+                "age_65_to_74": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -57,7 +57,7 @@ class TestChads2VaE2E:
                 "diabetes": False,
                 "stroke_tia_or_te_history": True,
                 "vascular_disease": False,
-                "age_65_to_74": False
+                "age_65_to_74": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -74,7 +74,7 @@ class TestChads2VaE2E:
                 "diabetes": False,
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
-                "age_65_to_74": False
+                "age_65_to_74": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -91,7 +91,7 @@ class TestChads2VaE2E:
                 "diabetes": True,
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": True,
-                "age_65_to_74": True
+                "age_65_to_74": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -109,7 +109,7 @@ class TestChads2VaE2E:
                 "diabetes": True,
                 "stroke_tia_or_te_history": True,
                 "vascular_disease": True,
-                "age_65_to_74": False  # Not applicable if ≥75
+                "age_65_to_74": False,  # Not applicable if ≥75
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -127,7 +127,7 @@ class TestChads2VaE2E:
                 "diabetes": False,
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
-                "age_65_to_74": False
+                "age_65_to_74": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -136,11 +136,7 @@ class TestChads2VaE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "hypertension": True
-            }
-        }
+        payload = {"params": {"hypertension": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         # May have defaults or fail
         assert response.status_code in [200, 400, 422, 500]

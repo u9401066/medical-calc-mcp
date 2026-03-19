@@ -48,9 +48,7 @@ def calculator() -> PERCRuleCalculator:
 class TestPERCRuleBasicCriteria:
     """Test individual PERC criteria."""
 
-    def test_all_criteria_absent_perc_negative(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_all_criteria_absent_perc_negative(self, calculator: PERCRuleCalculator) -> None:
         """All criteria absent = PERC-negative."""
         result = calculator.calculate(
             age_50_or_older=False,
@@ -67,17 +65,13 @@ class TestPERCRuleBasicCriteria:
         assert "PERC-Negative" in result.interpretation.summary
         assert result.interpretation.risk_level == RiskLevel.VERY_LOW
 
-    def test_default_parameters_perc_negative(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_default_parameters_perc_negative(self, calculator: PERCRuleCalculator) -> None:
         """Default parameters (all False) = PERC-negative."""
         result = calculator.calculate()
         assert result.value == 0
         assert _details(result)["perc_negative"] is True
 
-    def test_only_age_criterion_perc_positive(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_age_criterion_perc_positive(self, calculator: PERCRuleCalculator) -> None:
         """Age ≥50 alone = PERC-positive (1 criterion)."""
         result = calculator.calculate(age_50_or_older=True)
         assert result.value == 1
@@ -86,9 +80,7 @@ class TestPERCRuleBasicCriteria:
         assert "PERC-Positive" in result.interpretation.summary
         assert "Age ≥50 years" in details["positive_criteria"]
 
-    def test_only_heart_rate_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_heart_rate_criterion(self, calculator: PERCRuleCalculator) -> None:
         """HR ≥100 alone = PERC-positive."""
         result = calculator.calculate(heart_rate_100_or_higher=True)
         assert result.value == 1
@@ -96,9 +88,7 @@ class TestPERCRuleBasicCriteria:
         assert details["perc_negative"] is False
         assert "Heart rate ≥100 bpm" in details["positive_criteria"]
 
-    def test_only_o2_saturation_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_o2_saturation_criterion(self, calculator: PERCRuleCalculator) -> None:
         """O2 sat <95% alone = PERC-positive."""
         result = calculator.calculate(o2_sat_below_95=True)
         assert result.value == 1
@@ -106,41 +96,31 @@ class TestPERCRuleBasicCriteria:
         assert details["perc_negative"] is False
         assert "O2 saturation <95%" in details["positive_criteria"]
 
-    def test_only_leg_swelling_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_leg_swelling_criterion(self, calculator: PERCRuleCalculator) -> None:
         """Unilateral leg swelling alone = PERC-positive."""
         result = calculator.calculate(unilateral_leg_swelling=True)
         assert result.value == 1
         assert "Unilateral leg swelling" in _details(result)["positive_criteria"]
 
-    def test_only_hemoptysis_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_hemoptysis_criterion(self, calculator: PERCRuleCalculator) -> None:
         """Hemoptysis alone = PERC-positive."""
         result = calculator.calculate(hemoptysis=True)
         assert result.value == 1
         assert "Hemoptysis" in _details(result)["positive_criteria"]
 
-    def test_only_recent_surgery_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_recent_surgery_criterion(self, calculator: PERCRuleCalculator) -> None:
         """Recent surgery/trauma alone = PERC-positive."""
         result = calculator.calculate(recent_surgery_trauma=True)
         assert result.value == 1
         assert "Recent surgery/trauma (≤4 weeks)" in _details(result)["positive_criteria"]
 
-    def test_only_prior_pe_dvt_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_prior_pe_dvt_criterion(self, calculator: PERCRuleCalculator) -> None:
         """Prior PE/DVT alone = PERC-positive."""
         result = calculator.calculate(prior_pe_dvt=True)
         assert result.value == 1
         assert "Prior PE or DVT" in _details(result)["positive_criteria"]
 
-    def test_only_hormone_use_criterion(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_only_hormone_use_criterion(self, calculator: PERCRuleCalculator) -> None:
         """Hormone use alone = PERC-positive."""
         result = calculator.calculate(hormone_use=True)
         assert result.value == 1
@@ -150,9 +130,7 @@ class TestPERCRuleBasicCriteria:
 class TestPERCRuleMultipleCriteria:
     """Test combinations of PERC criteria."""
 
-    def test_two_criteria_positive(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_two_criteria_positive(self, calculator: PERCRuleCalculator) -> None:
         """Two criteria present."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -164,9 +142,7 @@ class TestPERCRuleMultipleCriteria:
         assert len(details["positive_criteria"]) == 2
         assert result.interpretation.severity == Severity.MILD
 
-    def test_three_criteria_positive(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_three_criteria_positive(self, calculator: PERCRuleCalculator) -> None:
         """Three criteria = moderate severity."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -177,9 +153,7 @@ class TestPERCRuleMultipleCriteria:
         assert result.interpretation.severity == Severity.MODERATE
         assert result.interpretation.risk_level == RiskLevel.INTERMEDIATE
 
-    def test_four_criteria_positive(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_four_criteria_positive(self, calculator: PERCRuleCalculator) -> None:
         """Four criteria present."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -190,9 +164,7 @@ class TestPERCRuleMultipleCriteria:
         assert result.value == 4
         assert result.interpretation.severity == Severity.MODERATE
 
-    def test_five_or_more_criteria_high_severity(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_five_or_more_criteria_high_severity(self, calculator: PERCRuleCalculator) -> None:
         """Five+ criteria = severe with high risk."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -205,9 +177,7 @@ class TestPERCRuleMultipleCriteria:
         assert result.interpretation.severity == Severity.SEVERE
         assert result.interpretation.risk_level == RiskLevel.HIGH
 
-    def test_all_eight_criteria_positive(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_all_eight_criteria_positive(self, calculator: PERCRuleCalculator) -> None:
         """All 8 criteria present = maximum risk."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -229,42 +199,32 @@ class TestPERCRuleMultipleCriteria:
 class TestPERCRuleRecommendations:
     """Test PERC Rule recommendations."""
 
-    def test_perc_negative_no_d_dimer_needed(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_perc_negative_no_d_dimer_needed(self, calculator: PERCRuleCalculator) -> None:
         """PERC-negative: no D-dimer needed."""
         result = calculator.calculate()  # All criteria absent
         recommendations = result.interpretation.recommendations
         assert any("No D-dimer" in r for r in recommendations)
         assert any("No CT" in r for r in recommendations)
 
-    def test_perc_positive_d_dimer_recommended(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_perc_positive_d_dimer_recommended(self, calculator: PERCRuleCalculator) -> None:
         """PERC-positive: D-dimer recommended."""
         result = calculator.calculate(age_50_or_older=True)
         recommendations = result.interpretation.recommendations
         assert any("D-dimer" in r for r in recommendations)
 
-    def test_prior_pe_dvt_imaging_threshold_recommendation(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_prior_pe_dvt_imaging_threshold_recommendation(self, calculator: PERCRuleCalculator) -> None:
         """Prior PE/DVT: lower imaging threshold."""
         result = calculator.calculate(prior_pe_dvt=True)
         recommendations = result.interpretation.recommendations
         assert any("lower threshold" in r.lower() for r in recommendations)
 
-    def test_low_o2_oxygenation_recommendation(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_low_o2_oxygenation_recommendation(self, calculator: PERCRuleCalculator) -> None:
         """Low O2 sat: oxygenation recommendation."""
         result = calculator.calculate(o2_sat_below_95=True)
         recommendations = result.interpretation.recommendations
         assert any("oxygen" in r.lower() for r in recommendations)
 
-    def test_leg_swelling_ultrasound_recommendation(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_leg_swelling_ultrasound_recommendation(self, calculator: PERCRuleCalculator) -> None:
         """Leg swelling: US recommendation."""
         result = calculator.calculate(unilateral_leg_swelling=True)
         recommendations = result.interpretation.recommendations
@@ -274,25 +234,19 @@ class TestPERCRuleRecommendations:
 class TestPERCRuleNextSteps:
     """Test PERC Rule next steps."""
 
-    def test_perc_negative_alternative_diagnoses(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_perc_negative_alternative_diagnoses(self, calculator: PERCRuleCalculator) -> None:
         """PERC-negative: consider alternative diagnoses."""
         result = calculator.calculate()
         next_steps = result.interpretation.next_steps
         assert any("alternative" in s.lower() for s in next_steps)
 
-    def test_perc_positive_d_dimer_next_step(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_perc_positive_d_dimer_next_step(self, calculator: PERCRuleCalculator) -> None:
         """PERC-positive: D-dimer as next step."""
         result = calculator.calculate(heart_rate_100_or_higher=True)
         next_steps = result.interpretation.next_steps
         assert any("D-dimer" in s for s in next_steps)
 
-    def test_perc_positive_wells_recommendation(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_perc_positive_wells_recommendation(self, calculator: PERCRuleCalculator) -> None:
         """PERC-positive: Wells PE Score recommendation."""
         result = calculator.calculate(hormone_use=True)
         next_steps = result.interpretation.next_steps
@@ -302,17 +256,13 @@ class TestPERCRuleNextSteps:
 class TestPERCRuleWarnings:
     """Test PERC Rule warnings."""
 
-    def test_perc_negative_low_pretest_warning(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_perc_negative_low_pretest_warning(self, calculator: PERCRuleCalculator) -> None:
         """PERC-negative: warns about low pretest requirement."""
         result = calculator.calculate()
         warnings = result.interpretation.warnings
         assert any("low" in w.lower() and "pretest" in w.lower() for w in warnings)
 
-    def test_multiple_criteria_high_suspicion_warning(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_multiple_criteria_high_suspicion_warning(self, calculator: PERCRuleCalculator) -> None:
         """Multiple criteria: warn about high suspicion."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -327,9 +277,7 @@ class TestPERCRuleWarnings:
 class TestPERCRuleClinicalScenarios:
     """Test realistic clinical scenarios."""
 
-    def test_scenario_young_healthy_patient(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_young_healthy_patient(self, calculator: PERCRuleCalculator) -> None:
         """Young healthy patient with atypical chest pain."""
         result = calculator.calculate(
             age_50_or_older=False,  # 28 years old
@@ -345,9 +293,7 @@ class TestPERCRuleClinicalScenarios:
         assert _details(result)["perc_negative"] is True
         # PE can be ruled out without D-dimer
 
-    def test_scenario_elderly_with_tachycardia(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_elderly_with_tachycardia(self, calculator: PERCRuleCalculator) -> None:
         """Elderly patient with tachycardia - needs workup."""
         result = calculator.calculate(
             age_50_or_older=True,  # 72 years old
@@ -362,9 +308,7 @@ class TestPERCRuleClinicalScenarios:
         assert result.value == 2
         assert _details(result)["perc_negative"] is False
 
-    def test_scenario_postop_patient(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_postop_patient(self, calculator: PERCRuleCalculator) -> None:
         """Post-operative patient - automatic PERC-positive."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -379,9 +323,7 @@ class TestPERCRuleClinicalScenarios:
         assert result.value == 2
         assert _details(result)["perc_negative"] is False
 
-    def test_scenario_woman_on_ocp(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_woman_on_ocp(self, calculator: PERCRuleCalculator) -> None:
         """Young woman on oral contraceptives."""
         result = calculator.calculate(
             age_50_or_older=False,  # 25 years old
@@ -397,9 +339,7 @@ class TestPERCRuleClinicalScenarios:
         assert _details(result)["perc_negative"] is False
         # Single criterion makes PERC-positive
 
-    def test_scenario_prior_dvt(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_prior_dvt(self, calculator: PERCRuleCalculator) -> None:
         """Patient with prior DVT history."""
         result = calculator.calculate(
             age_50_or_older=True,  # 55 years old
@@ -415,9 +355,7 @@ class TestPERCRuleClinicalScenarios:
         assert _details(result)["perc_negative"] is False
         # Multiple high-risk features including prior VTE
 
-    def test_scenario_classic_pe_presentation(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_classic_pe_presentation(self, calculator: PERCRuleCalculator) -> None:
         """Classic PE presentation - many criteria positive."""
         result = calculator.calculate(
             age_50_or_older=True,  # 62 years old
@@ -433,9 +371,7 @@ class TestPERCRuleClinicalScenarios:
         assert result.interpretation.severity == Severity.SEVERE
         assert result.interpretation.risk_level == RiskLevel.HIGH
 
-    def test_scenario_hypoxic_patient(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_scenario_hypoxic_patient(self, calculator: PERCRuleCalculator) -> None:
         """Hypoxic patient - oxygenation recommendation."""
         result = calculator.calculate(
             age_50_or_older=False,
@@ -494,9 +430,7 @@ class TestPERCRuleMetadata:
 class TestPERCRuleEdgeCases:
     """Test edge cases for PERC Rule."""
 
-    def test_explicit_false_values(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_explicit_false_values(self, calculator: PERCRuleCalculator) -> None:
         """All criteria explicitly set to False."""
         result = calculator.calculate(
             age_50_or_older=False,
@@ -511,9 +445,7 @@ class TestPERCRuleEdgeCases:
         assert result.value == 0
         assert _details(result)["perc_negative"] is True
 
-    def test_calculation_details_structure(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_calculation_details_structure(self, calculator: PERCRuleCalculator) -> None:
         """Test calculation_details contains expected fields."""
         result = calculator.calculate(age_50_or_older=True)
         details = _details(result)
@@ -523,9 +455,7 @@ class TestPERCRuleEdgeCases:
         assert "perc_negative" in details
         assert "result" in details
 
-    def test_criteria_evaluated_dict(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_criteria_evaluated_dict(self, calculator: PERCRuleCalculator) -> None:
         """Test criteria_evaluated is a proper dict."""
         result = calculator.calculate(
             age_50_or_older=True,
@@ -536,9 +466,7 @@ class TestPERCRuleEdgeCases:
         assert criteria["Age ≥50 years"] is True
         assert criteria["Heart rate ≥100 bpm"] is False
 
-    def test_result_string_format(
-        self, calculator: PERCRuleCalculator
-    ) -> None:
+    def test_result_string_format(self, calculator: PERCRuleCalculator) -> None:
         """Test result string formatting."""
         result_negative = calculator.calculate()
         assert "ruled out" in _details(result_negative)["result"].lower()

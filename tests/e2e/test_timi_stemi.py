@@ -45,7 +45,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": False,
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -63,7 +63,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,  # 0 points
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": True,  # +1 point
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -82,7 +82,7 @@ class TestTimiStemiE2E:
                 "killip_class": 2,  # +2 points
                 "weight_lt_67kg": True,  # +1 point
                 "anterior_ste_or_lbbb": True,  # +1 point
-                "time_to_treatment_gt_4h": True  # +1 point
+                "time_to_treatment_gt_4h": True,  # +1 point
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -101,7 +101,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": False,
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -120,7 +120,7 @@ class TestTimiStemiE2E:
                 "killip_class": 4,  # +2 points (Killip ≥2)
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": True,  # +1 point
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -139,7 +139,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": True,  # +1 point
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -158,7 +158,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": False,
-                "time_to_treatment_gt_4h": True  # +1 point
+                "time_to_treatment_gt_4h": True,  # +1 point
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -177,7 +177,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,
                 "weight_lt_67kg": True,  # +1 point
                 "anterior_ste_or_lbbb": False,
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -195,7 +195,7 @@ class TestTimiStemiE2E:
                 "killip_class": 1,
                 "weight_lt_67kg": False,
                 "anterior_ste_or_lbbb": False,
-                "time_to_treatment_gt_4h": False
+                "time_to_treatment_gt_4h": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -205,10 +205,6 @@ class TestTimiStemiE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "age_years": 55
-            }
-        }
+        payload = {"params": {"age_years": 55}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

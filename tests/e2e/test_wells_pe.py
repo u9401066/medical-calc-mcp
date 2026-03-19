@@ -23,7 +23,7 @@ class TestWellsPeE2E:
                 "immobilization_or_surgery": False,
                 "previous_dvt_pe": False,
                 "hemoptysis": False,
-                "malignancy": False
+                "malignancy": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -40,7 +40,7 @@ class TestWellsPeE2E:
                 "immobilization_or_surgery": False,
                 "previous_dvt_pe": False,
                 "hemoptysis": False,
-                "malignancy": False
+                "malignancy": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -57,7 +57,7 @@ class TestWellsPeE2E:
                 "immobilization_or_surgery": True,
                 "previous_dvt_pe": False,
                 "hemoptysis": False,
-                "malignancy": False
+                "malignancy": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -74,7 +74,7 @@ class TestWellsPeE2E:
                 "immobilization_or_surgery": True,
                 "previous_dvt_pe": True,
                 "hemoptysis": False,
-                "malignancy": False
+                "malignancy": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -91,7 +91,7 @@ class TestWellsPeE2E:
                 "immobilization_or_surgery": False,
                 "previous_dvt_pe": False,
                 "hemoptysis": False,
-                "malignancy": False
+                "malignancy": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -108,7 +108,7 @@ class TestWellsPeE2E:
                 "immobilization_or_surgery": True,
                 "previous_dvt_pe": True,
                 "hemoptysis": True,
-                "malignancy": True
+                "malignancy": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -118,10 +118,6 @@ class TestWellsPeE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "clinical_signs_dvt": True
-            }
-        }
+        payload = {"params": {"clinical_signs_dvt": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert response.status_code in [200, 400, 422, 500]

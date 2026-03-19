@@ -21,7 +21,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": False,
                 "mechanical_ventilation": False,
                 "cardiac_arrest": False,
-                "mental_status": "alert"
+                "mental_status": "alert",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -36,7 +36,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": True,
                 "mechanical_ventilation": False,
                 "cardiac_arrest": False,
-                "mental_status": "disoriented"
+                "mental_status": "disoriented",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -51,7 +51,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": True,
                 "mechanical_ventilation": True,
                 "cardiac_arrest": False,
-                "mental_status": "stuporous"
+                "mental_status": "stuporous",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -66,7 +66,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": True,
                 "mechanical_ventilation": True,
                 "cardiac_arrest": True,
-                "mental_status": "comatose"
+                "mental_status": "comatose",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -82,7 +82,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": False,
                 "mechanical_ventilation": False,
                 "cardiac_arrest": False,
-                "mental_status": "alert"
+                "mental_status": "alert",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -97,7 +97,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": True,
                 "mechanical_ventilation": True,
                 "cardiac_arrest": False,
-                "mental_status": "disoriented"
+                "mental_status": "disoriented",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -112,7 +112,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": False,
                 "mechanical_ventilation": False,
                 "cardiac_arrest": False,
-                "mental_status": "comatose"
+                "mental_status": "comatose",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -128,7 +128,7 @@ class TestPittBacteremiaE2E:
                 "hypotension": True,
                 "mechanical_ventilation": False,
                 "cardiac_arrest": False,
-                "mental_status": "disoriented"
+                "mental_status": "disoriented",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -137,10 +137,6 @@ class TestPittBacteremiaE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "temperature_category": "normal"
-            }
-        }
+        payload = {"params": {"temperature_category": "normal"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

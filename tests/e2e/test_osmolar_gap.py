@@ -15,14 +15,7 @@ class TestOsmolarGapE2E:
 
     def test_normal_osmolar_gap(self, test_client: Any) -> None:
         """Test normal osmolar gap (<10)"""
-        payload = {
-            "params": {
-                "measured_osm": 290,
-                "sodium": 140,
-                "glucose": 100,
-                "bun": 14
-            }
-        }
+        payload = {"params": {"measured_osm": 290, "sodium": 140, "glucose": 100, "bun": 14}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Normal osmolar gap is <10
@@ -30,14 +23,7 @@ class TestOsmolarGapE2E:
 
     def test_elevated_osmolar_gap(self, test_client: Any) -> None:
         """Test elevated osmolar gap (toxic alcohol)"""
-        payload = {
-            "params": {
-                "measured_osm": 340,
-                "sodium": 140,
-                "glucose": 100,
-                "bun": 14
-            }
-        }
+        payload = {"params": {"measured_osm": 340, "sodium": 140, "glucose": 100, "bun": 14}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Elevated gap suggests unmeasured osmoles
@@ -51,7 +37,7 @@ class TestOsmolarGapE2E:
                 "sodium": 140,
                 "glucose": 100,
                 "bun": 14,
-                "ethanol": 100  # mg/dL
+                "ethanol": 100,  # mg/dL
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -61,15 +47,7 @@ class TestOsmolarGapE2E:
 
     def test_methanol_poisoning(self, test_client: Any) -> None:
         """Test pattern suggestive of methanol poisoning"""
-        payload = {
-            "params": {
-                "measured_osm": 360,
-                "sodium": 138,
-                "glucose": 90,
-                "bun": 20,
-                "ethanol": 0
-            }
-        }
+        payload = {"params": {"measured_osm": 360, "sodium": 138, "glucose": 90, "bun": 20, "ethanol": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # High gap without ethanol suggests toxic alcohol
@@ -77,14 +55,7 @@ class TestOsmolarGapE2E:
 
     def test_hyperglycemia_effect(self, test_client: Any) -> None:
         """Test with hyperglycemia"""
-        payload = {
-            "params": {
-                "measured_osm": 310,
-                "sodium": 130,
-                "glucose": 500,
-                "bun": 30
-            }
-        }
+        payload = {"params": {"measured_osm": 310, "sodium": 130, "glucose": 500, "bun": 30}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Hyperglycemia increases calculated osm
@@ -92,25 +63,13 @@ class TestOsmolarGapE2E:
 
     def test_uremia_effect(self, test_client: Any) -> None:
         """Test with elevated BUN (uremia)"""
-        payload = {
-            "params": {
-                "measured_osm": 320,
-                "sodium": 140,
-                "glucose": 100,
-                "bun": 80
-            }
-        }
+        payload = {"params": {"measured_osm": 320, "sodium": 140, "glucose": 100, "bun": 80}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 0
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "measured_osm": 290,
-                "sodium": 140
-            }
-        }
+        payload = {"params": {"measured_osm": 290, "sodium": 140}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

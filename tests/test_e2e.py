@@ -24,6 +24,7 @@ import pytest
 # Check if httpx is available for async testing
 try:
     import httpx  # noqa: F401
+
     HTTPX_AVAILABLE = True
 except ImportError:
     HTTPX_AVAILABLE = False
@@ -32,6 +33,7 @@ except ImportError:
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture(scope="module")
 def initialized_registry() -> Any:
@@ -62,12 +64,14 @@ def test_client(initialized_registry: Any) -> Any:
     from starlette.testclient import TestClient
 
     from src.infrastructure.api.server import app
+
     return TestClient(app)
 
 
 # =============================================================================
 # REST API E2E Tests
 # =============================================================================
+
 
 class TestRestApiE2E:
     """End-to-end tests for REST API"""
@@ -115,15 +119,7 @@ class TestRestApiE2E:
         """Calculate SOFA score via REST API"""
         # API expects params wrapped in {"params": {...}}
         # SOFA requires: pao2_fio2_ratio, platelets, bilirubin, gcs_score, creatinine
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 300,
-                "platelets": 150,
-                "bilirubin": 1.0,
-                "gcs_score": 15,
-                "creatinine": 1.0
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 300, "platelets": 150, "bilirubin": 1.0, "gcs_score": 15, "creatinine": 1.0}}
         response = test_client.post("/api/v1/calculate/sofa_score", json=payload)
         assert response.status_code == 200
         data = response.json()
@@ -132,13 +128,7 @@ class TestRestApiE2E:
 
     def test_calculate_gcs(self, test_client: Any) -> None:
         """Calculate GCS score via REST API"""
-        payload = {
-            "params": {
-                "eye_response": 4,
-                "verbal_response": 5,
-                "motor_response": 6
-            }
-        }
+        payload = {"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}}
         response = test_client.post("/api/v1/calculate/glasgow_coma_scale", json=payload)
         assert response.status_code == 200
         data = response.json()
@@ -147,16 +137,7 @@ class TestRestApiE2E:
 
     def test_calculate_news2(self, test_client: Any) -> None:
         """Calculate NEWS2 score via REST API"""
-        payload = {
-            "params": {
-                "respiratory_rate": 18,
-                "spo2": 96,
-                "on_supplemental_o2": False,
-                "temperature": 37.0,
-                "systolic_bp": 120,
-                "heart_rate": 80
-            }
-        }
+        payload = {"params": {"respiratory_rate": 18, "spo2": 96, "on_supplemental_o2": False, "temperature": 37.0, "systolic_bp": 120, "heart_rate": 80}}
         response = test_client.post("/api/v1/calculate/news2_score", json=payload)
         assert response.status_code == 200
         data = response.json()
@@ -179,7 +160,7 @@ class TestRestApiE2E:
                 "hematocrit": 40,
                 "wbc_count": 10,
                 "gcs_score": 15,
-                "age": 50
+                "age": 50,
             }
         }
         response = test_client.post("/api/v1/calculate/apache_ii", json=payload)
@@ -213,6 +194,7 @@ class TestRestApiE2E:
 # Clinical Workflow E2E Tests
 # =============================================================================
 
+
 class TestClinicalWorkflowE2E:
     """End-to-end tests for clinical workflows"""
 
@@ -220,28 +202,14 @@ class TestClinicalWorkflowE2E:
         """Complete sepsis evaluation workflow: qSOFA -> SOFA"""
         # Step 1: qSOFA screening
         # qSOFA params: respiratory_rate, systolic_bp, altered_mentation, gcs_score
-        qsofa_payload = {
-            "params": {
-                "respiratory_rate": 24,
-                "systolic_bp": 95,
-                "altered_mentation": False
-            }
-        }
+        qsofa_payload = {"params": {"respiratory_rate": 24, "systolic_bp": 95, "altered_mentation": False}}
         response = test_client.post("/api/v1/calculate/qsofa_score", json=qsofa_payload)
         assert response.status_code == 200
         qsofa_result = response.json()
 
         # Step 2: Full SOFA if indicated
         # SOFA params: pao2_fio2_ratio, platelets, bilirubin, gcs_score, creatinine
-        sofa_payload = {
-            "params": {
-                "pao2_fio2_ratio": 350,
-                "platelets": 140,
-                "bilirubin": 1.5,
-                "gcs_score": 14,
-                "creatinine": 1.3
-            }
-        }
+        sofa_payload = {"params": {"pao2_fio2_ratio": 350, "platelets": 140, "bilirubin": 1.5, "gcs_score": 14, "creatinine": 1.3}}
         response = test_client.post("/api/v1/calculate/sofa_score", json=sofa_payload)
         assert response.status_code == 200
         sofa_result = response.json()
@@ -265,7 +233,7 @@ class TestClinicalWorkflowE2E:
                 "heart_failure": False,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
-                "creatinine_above_2": False
+                "creatinine_above_2": False,
             }
         }
         response = test_client.post("/api/v1/calculate/rcri", json=rcri_payload)
@@ -279,25 +247,12 @@ class TestClinicalWorkflowE2E:
     def test_aki_assessment_workflow(self, test_client: Any) -> None:
         """AKI assessment workflow: CKD-EPI -> KDIGO staging"""
         # Step 1: Baseline CKD-EPI
-        ckd_payload = {
-            "params": {
-                "serum_creatinine": 1.2,
-                "age": 65,
-                "sex": "male"
-            }
-        }
+        ckd_payload = {"params": {"serum_creatinine": 1.2, "age": 65, "sex": "male"}}
         response = test_client.post("/api/v1/calculate/ckd_epi_2021", json=ckd_payload)
         assert response.status_code == 200
 
         # Step 2: KDIGO AKI staging
-        kdigo_payload = {
-            "params": {
-                "baseline_creatinine": 1.0,
-                "current_creatinine": 2.2,
-                "urine_output_ml_kg_hr": 0.4,
-                "hours_of_oliguria": 8
-            }
-        }
+        kdigo_payload = {"params": {"baseline_creatinine": 1.0, "current_creatinine": 2.2, "urine_output_ml_kg_hr": 0.4, "hours_of_oliguria": 8}}
         response = test_client.post("/api/v1/calculate/kdigo_aki", json=kdigo_payload)
         assert response.status_code == 200
 
@@ -310,7 +265,7 @@ class TestClinicalWorkflowE2E:
                 "bun_gt_19_or_urea_gt_7": True,
                 "respiratory_rate_gte_30": False,
                 "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": True
+                "age_gte_65": True,
             }
         }
         response = test_client.post("/api/v1/calculate/curb65", json=curb_payload)
@@ -320,6 +275,7 @@ class TestClinicalWorkflowE2E:
 # =============================================================================
 # MCP Tool Invocation E2E Tests
 # =============================================================================
+
 
 class TestMCPToolE2E:
     """E2E tests for MCP tool invocations"""
@@ -351,6 +307,7 @@ class TestMCPToolE2E:
 # Performance E2E Tests
 # =============================================================================
 
+
 class TestPerformanceE2E:
     """Performance-related E2E tests"""
 
@@ -365,13 +322,7 @@ class TestPerformanceE2E:
 
     def test_response_time_calculation(self, test_client: Any) -> None:
         """Calculation should respond quickly"""
-        payload = {
-            "params": {
-                "eye_response": 4,
-                "verbal_response": 5,
-                "motor_response": 6
-            }
-        }
+        payload = {"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}}
 
         start = time.time()
         response = test_client.post("/api/v1/calculate/glasgow_coma_scale", json=payload)
@@ -399,6 +350,7 @@ class TestPerformanceE2E:
 # Integration Tests (API + Calculator)
 # =============================================================================
 
+
 class TestIntegrationE2E:
     """Integration tests between API and calculators"""
 
@@ -406,14 +358,7 @@ class TestIntegrationE2E:
         """Verify calculator result structure is consistent"""
         calculators_to_test = [
             ("glasgow_coma_scale", {"eye_response": 4, "verbal_response": 5, "motor_response": 6}),
-            ("news2_score", {
-                "respiratory_rate": 18,
-                "spo2": 96,
-                "on_supplemental_o2": False,
-                "temperature": 37.0,
-                "systolic_bp": 120,
-                "heart_rate": 80
-            }),
+            ("news2_score", {"respiratory_rate": 18, "spo2": 96, "on_supplemental_o2": False, "temperature": 37.0, "systolic_bp": 120, "heart_rate": 80}),
         ]
 
         for calc_id, params in calculators_to_test:
@@ -440,6 +385,7 @@ class TestIntegrationE2E:
 # =============================================================================
 # Docker-based E2E Tests (marked for separate execution)
 # =============================================================================
+
 
 @pytest.mark.docker
 class TestDockerE2E:
@@ -468,11 +414,7 @@ class TestDockerE2E:
 
         try:
             payload = {"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}}
-            response = httpx.post(
-                f"{docker_api_url}/api/v1/calculate/glasgow_coma_scale",
-                json=payload,
-                timeout=5.0
-            )
+            response = httpx.post(f"{docker_api_url}/api/v1/calculate/glasgow_coma_scale", json=payload, timeout=5.0)
             assert response.status_code == 200
             data = response.json()
             assert data.get("success") is True
@@ -483,6 +425,7 @@ class TestDockerE2E:
 # =============================================================================
 # SSE Transport E2E Tests
 # =============================================================================
+
 
 class TestSSETransportE2E:
     """E2E tests for SSE transport"""
@@ -497,19 +440,14 @@ class TestSSETransportE2E:
 # Data Validation E2E Tests
 # =============================================================================
 
+
 class TestDataValidationE2E:
     """E2E tests for data validation"""
 
     def test_boundary_values(self, test_client: Any) -> None:
         """Test boundary value handling"""
         # Minimum valid values
-        payload = {
-            "params": {
-                "eye_response": 1,
-                "verbal_response": 1,
-                "motor_response": 1
-            }
-        }
+        payload = {"params": {"eye_response": 1, "verbal_response": 1, "motor_response": 1}}
         response = test_client.post("/api/v1/calculate/glasgow_coma_scale", json=payload)
         assert response.status_code == 200
         data = response.json()
@@ -517,13 +455,7 @@ class TestDataValidationE2E:
         assert data.get("result", {}).get("value") == 3
 
         # Maximum valid values
-        payload = {
-            "params": {
-                "eye_response": 4,
-                "verbal_response": 5,
-                "motor_response": 6
-            }
-        }
+        payload = {"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}}
         response = test_client.post("/api/v1/calculate/glasgow_coma_scale", json=payload)
         assert response.status_code == 200
         data = response.json()
@@ -536,7 +468,7 @@ class TestDataValidationE2E:
             "params": {
                 "eye_response": 10,  # Invalid: max is 4
                 "verbal_response": 5,
-                "motor_response": 6
+                "motor_response": 6,
             }
         }
         response = test_client.post("/api/v1/calculate/glasgow_coma_scale", json=payload)
@@ -553,7 +485,7 @@ class TestDataValidationE2E:
             "params": {
                 "eye_response": "4",  # String instead of int
                 "verbal_response": "5",
-                "motor_response": "6"
+                "motor_response": "6",
             }
         }
         response = test_client.post("/api/v1/calculate/glasgow_coma_scale", json=payload)

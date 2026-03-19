@@ -15,15 +15,7 @@ class TestMeldScoreE2E:
 
     def test_low_meld_score(self, test_client: Any) -> None:
         """Test low MELD score (good liver function)"""
-        payload = {
-            "params": {
-                "creatinine": 0.8,
-                "bilirubin": 1.0,
-                "inr": 1.0,
-                "sodium": 140,
-                "on_dialysis": False
-            }
-        }
+        payload = {"params": {"creatinine": 0.8, "bilirubin": 1.0, "inr": 1.0, "sodium": 140, "on_dialysis": False}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Low MELD should be < 10
@@ -31,30 +23,14 @@ class TestMeldScoreE2E:
 
     def test_moderate_meld_score(self, test_client: Any) -> None:
         """Test moderate MELD score"""
-        payload = {
-            "params": {
-                "creatinine": 1.5,
-                "bilirubin": 3.0,
-                "inr": 1.5,
-                "sodium": 135,
-                "on_dialysis": False
-            }
-        }
+        payload = {"params": {"creatinine": 1.5, "bilirubin": 3.0, "inr": 1.5, "sodium": 135, "on_dialysis": False}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert 10 <= data["result"]["value"] <= 25
 
     def test_high_meld_score(self, test_client: Any) -> None:
         """Test high MELD score (severe liver disease)"""
-        payload = {
-            "params": {
-                "creatinine": 3.0,
-                "bilirubin": 10.0,
-                "inr": 2.5,
-                "sodium": 128,
-                "on_dialysis": False
-            }
-        }
+        payload = {"params": {"creatinine": 3.0, "bilirubin": 10.0, "inr": 2.5, "sodium": 128, "on_dialysis": False}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 25
@@ -67,7 +43,7 @@ class TestMeldScoreE2E:
                 "bilirubin": 5.0,
                 "inr": 2.0,
                 "sodium": 130,
-                "on_dialysis": True
+                "on_dialysis": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -82,7 +58,7 @@ class TestMeldScoreE2E:
                 "bilirubin": 5.0,
                 "inr": 1.8,
                 "sodium": 125,  # Low sodium adds to score
-                "on_dialysis": False
+                "on_dialysis": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -91,15 +67,7 @@ class TestMeldScoreE2E:
 
     def test_minimum_values(self, test_client: Any) -> None:
         """Test with minimum lab values"""
-        payload = {
-            "params": {
-                "creatinine": 0.5,
-                "bilirubin": 0.5,
-                "inr": 0.8,
-                "sodium": 140,
-                "on_dialysis": False
-            }
-        }
+        payload = {"params": {"creatinine": 0.5, "bilirubin": 0.5, "inr": 0.8, "sodium": 140, "on_dialysis": False}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # MELD has minimum score of 6
@@ -107,25 +75,13 @@ class TestMeldScoreE2E:
 
     def test_maximum_score(self, test_client: Any) -> None:
         """Test maximum MELD score (capped at 40)"""
-        payload = {
-            "params": {
-                "creatinine": 4.0,
-                "bilirubin": 30.0,
-                "inr": 4.0,
-                "sodium": 120,
-                "on_dialysis": True
-            }
-        }
+        payload = {"params": {"creatinine": 4.0, "bilirubin": 30.0, "inr": 4.0, "sodium": 120, "on_dialysis": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 40
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "creatinine": 1.0
-            }
-        }
+        payload = {"params": {"creatinine": 1.0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

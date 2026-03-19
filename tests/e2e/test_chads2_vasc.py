@@ -24,7 +24,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
                 "age_65_to_74": False,
-                "female_sex": False
+                "female_sex": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -42,7 +42,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
                 "age_65_to_74": False,
-                "female_sex": True
+                "female_sex": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -60,7 +60,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
                 "age_65_to_74": False,
-                "female_sex": False
+                "female_sex": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -78,7 +78,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": True,
                 "vascular_disease": False,
                 "age_65_to_74": False,
-                "female_sex": False
+                "female_sex": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -96,7 +96,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
                 "age_65_to_74": False,
-                "female_sex": False
+                "female_sex": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -114,7 +114,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": False,
                 "age_65_to_74": False,
-                "female_sex": False
+                "female_sex": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -132,7 +132,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": True,
                 "vascular_disease": True,
                 "age_65_to_74": False,
-                "female_sex": True
+                "female_sex": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -151,7 +151,7 @@ class TestChads2VascE2E:
                 "stroke_tia_or_te_history": False,
                 "vascular_disease": True,
                 "age_65_to_74": True,
-                "female_sex": False
+                "female_sex": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -160,11 +160,7 @@ class TestChads2VascE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "hypertension": True
-            }
-        }
+        payload = {"params": {"hypertension": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         # May have defaults or fail
         assert response.status_code in [200, 400, 422, 500]

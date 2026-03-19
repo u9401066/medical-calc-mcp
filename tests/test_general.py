@@ -34,11 +34,7 @@ class TestBodySurfaceArea:
 
     def test_mosteller_formula_70kg_170cm(self, calculator: Any) -> None:
         """Test Mosteller formula with typical adult"""
-        result = calculator.calculate(
-            weight_kg=70,
-            height_cm=170,
-            formula="mosteller"
-        )
+        result = calculator.calculate(weight_kg=70, height_cm=170, formula="mosteller")
         # Mosteller: √(70 × 170 / 3600) ≈ 1.81 m²
         assert result.value is not None
         assert 1.7 <= result.value <= 1.9
@@ -47,22 +43,14 @@ class TestBodySurfaceArea:
 
     def test_dubois_formula(self, calculator: Any) -> None:
         """Test Du Bois formula"""
-        result = calculator.calculate(
-            weight_kg=70,
-            height_cm=170,
-            formula="dubois"
-        )
+        result = calculator.calculate(weight_kg=70, height_cm=170, formula="dubois")
         # Du Bois: 0.007184 × 70^0.425 × 170^0.725 ≈ 1.82 m²
         assert result.value is not None
         assert 1.7 <= result.value <= 1.9
 
     def test_haycock_formula_pediatric(self, calculator: Any) -> None:
         """Test Haycock formula for pediatric (preferred for children)"""
-        result = calculator.calculate(
-            weight_kg=20,
-            height_cm=115,
-            formula="haycock"
-        )
+        result = calculator.calculate(weight_kg=20, height_cm=115, formula="haycock")
         # Expected ~0.75-0.85 m² for a child
         assert result.value is not None
         assert 0.7 <= result.value <= 0.9
@@ -95,12 +83,7 @@ class TestCockcroftGault:
 
     def test_young_male_normal_creatinine(self, calculator: Any) -> None:
         """Test young male with normal kidney function"""
-        result = calculator.calculate(
-            age=30,
-            weight_kg=70,
-            creatinine_mg_dl=1.0,
-            sex="male"
-        )
+        result = calculator.calculate(age=30, weight_kg=70, creatinine_mg_dl=1.0, sex="male")
         # CrCl = (140-30) × 70 / (72 × 1.0) ≈ 107 mL/min
         assert result.value is not None
         assert 100 <= result.value <= 115
@@ -109,24 +92,14 @@ class TestCockcroftGault:
 
     def test_female_adjustment(self, calculator: Any) -> None:
         """Test female (0.85 factor)"""
-        result = calculator.calculate(
-            age=30,
-            weight_kg=60,
-            creatinine_mg_dl=1.0,
-            sex="female"
-        )
+        result = calculator.calculate(age=30, weight_kg=60, creatinine_mg_dl=1.0, sex="female")
         # CrCl = (140-30) × 60 / (72 × 1.0) × 0.85 ≈ 77 mL/min
         assert result.value is not None
         assert 70 <= result.value <= 85
 
     def test_elderly_reduced_crcl(self, calculator: Any) -> None:
         """Test elderly patient with reduced CrCl"""
-        result = calculator.calculate(
-            age=80,
-            weight_kg=60,
-            creatinine_mg_dl=1.5,
-            sex="male"
-        )
+        result = calculator.calculate(age=80, weight_kg=60, creatinine_mg_dl=1.5, sex="male")
         # CrCl = (140-80) × 60 / (72 × 1.5) ≈ 33 mL/min
         assert result.value is not None
         assert 28 <= result.value <= 38
@@ -191,8 +164,7 @@ class TestCorrectedCalcium:
         assert result.value is not None
         assert result.value < 8.5
         assert result.interpretation.summary is not None
-        assert "hypocalcemia" in result.interpretation.summary.lower() or \
-               "低血鈣" in result.interpretation.summary
+        assert "hypocalcemia" in result.interpretation.summary.lower() or "低血鈣" in result.interpretation.summary
 
     def test_hypercalcemia_detection(self, calculator: Any) -> None:
         """Test hypercalcemia classification"""
@@ -204,8 +176,7 @@ class TestCorrectedCalcium:
         assert result.value is not None
         assert result.value > 10.5
         assert result.interpretation.summary is not None
-        assert "hypercalcemia" in result.interpretation.summary.lower() or \
-               "高血鈣" in result.interpretation.summary
+        assert "hypercalcemia" in result.interpretation.summary.lower() or "高血鈣" in result.interpretation.summary
 
 
 class TestParklandFormula:
@@ -221,11 +192,7 @@ class TestParklandFormula:
 
     def test_standard_burn(self, calculator: Any) -> None:
         """Test 30% TBSA burn in 70kg patient"""
-        result = calculator.calculate(
-            weight_kg=70,
-            tbsa_percent=30,
-            hours_since_burn=0
-        )
+        result = calculator.calculate(weight_kg=70, tbsa_percent=30, hours_since_burn=0)
         # 24h fluid = 4 mL × 70 kg × 30% = 8400 mL
         assert result.value is not None
         assert result.value == pytest.approx(8400, abs=100)
@@ -234,22 +201,14 @@ class TestParklandFormula:
 
     def test_large_burn(self, calculator: Any) -> None:
         """Test 50% TBSA burn"""
-        result = calculator.calculate(
-            weight_kg=80,
-            tbsa_percent=50,
-            hours_since_burn=0
-        )
+        result = calculator.calculate(weight_kg=80, tbsa_percent=50, hours_since_burn=0)
         # 24h fluid = 4 × 80 × 50 = 16000 mL
         assert result.value is not None
         assert result.value == pytest.approx(16000, abs=100)
 
     def test_delayed_presentation(self, calculator: Any) -> None:
         """Test delayed presentation (4 hours post-burn)"""
-        result = calculator.calculate(
-            weight_kg=70,
-            tbsa_percent=30,
-            hours_since_burn=4
-        )
+        result = calculator.calculate(weight_kg=70, tbsa_percent=30, hours_since_burn=4)
         # Should still calculate 24h total but adjust remaining time
         assert result.value is not None
         assert result.value == pytest.approx(8400, abs=100)
@@ -257,11 +216,7 @@ class TestParklandFormula:
 
     def test_details_include_rate(self, calculator: Any) -> None:
         """Test that calculation_details include infusion rates"""
-        result = calculator.calculate(
-            weight_kg=70,
-            tbsa_percent=30,
-            hours_since_burn=0
-        )
+        result = calculator.calculate(weight_kg=70, tbsa_percent=30, hours_since_burn=0)
         # 8400 mL total
         # First 8h: 4200 mL = 525 mL/h
         # Next 16h: 4200 mL = 262.5 mL/h
@@ -269,11 +224,7 @@ class TestParklandFormula:
 
     def test_small_burn_warning(self, calculator: Any) -> None:
         """Test that small burns get appropriate guidance"""
-        result = calculator.calculate(
-            weight_kg=70,
-            tbsa_percent=10,
-            hours_since_burn=0
-        )
+        result = calculator.calculate(weight_kg=70, tbsa_percent=10, hours_since_burn=0)
         # 10% TBSA may not need formal resuscitation
         # But calculator should still provide values
         assert result.value is not None
@@ -307,11 +258,11 @@ class TestIntegration:
         ]
 
         for calc in calculators:
-            assert hasattr(calc, 'calculate')
-            assert hasattr(calc, 'tool_id')
-            assert hasattr(calc, 'name')
+            assert hasattr(calc, "calculate")
+            assert hasattr(calc, "tool_id")
+            assert hasattr(calc, "name")
             # description is in metadata, not a direct property
-            assert hasattr(calc, 'references')
+            assert hasattr(calc, "references")
 
 
 if __name__ == "__main__":

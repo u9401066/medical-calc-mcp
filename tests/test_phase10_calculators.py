@@ -185,12 +185,7 @@ class TestAaGradientCalculator:
     def test_altitude_adjustment(self, calculator: Any) -> None:
         """A-a gradient at high altitude (lower Patm)"""
         # Denver ~650 mmHg
-        result = calculator.calculate(
-            pao2=60,
-            paco2=35,
-            fio2=0.21,
-            atmospheric_pressure=650
-        )
+        result = calculator.calculate(pao2=60, paco2=35, fio2=0.21, atmospheric_pressure=650)
         # PAO2 will be lower
         expected_pao2 = 0.21 * (650 - 47) - (35 / 0.8)
         expected_aa = expected_pao2 - 60
@@ -279,7 +274,7 @@ class TestShockIndexCalculator:
         """SI = HR / SBP"""
         result = calculator.calculate(heart_rate=100, systolic_bp=120)
         assert result.value is not None
-        assert result.value == pytest.approx(100/120, abs=0.01)
+        assert result.value == pytest.approx(100 / 120, abs=0.01)
 
     def test_normal_shock_index(self, calculator: Any) -> None:
         """Normal SI (0.5-0.7)"""
@@ -330,11 +325,7 @@ class TestShockIndexCalculator:
     # Modified Shock Index
     def test_modified_shock_index(self, calculator: Any) -> None:
         """MSI = HR / MAP when diastolic provided"""
-        result = calculator.calculate(
-            heart_rate=100,
-            systolic_bp=120,
-            diastolic_bp=80
-        )
+        result = calculator.calculate(heart_rate=100, systolic_bp=120, diastolic_bp=80)
         # MAP = (120 + 2*80) / 3 = 93.33
         # MSI = 100 / 93.33 ≈ 1.07
         assert "Modified_Shock_Index" in result.calculation_details
@@ -343,22 +334,14 @@ class TestShockIndexCalculator:
     # Patient type adjustments
     def test_obstetric_patient(self, calculator: Any) -> None:
         """Obstetric patients have different thresholds"""
-        result = calculator.calculate(
-            heart_rate=90,
-            systolic_bp=100,
-            patient_type="obstetric"
-        )
+        result = calculator.calculate(heart_rate=90, systolic_bp=100, patient_type="obstetric")
         # SI=0.9 which is borderline for obstetric
         assert result.interpretation.severity is not None
         assert result.interpretation.severity in (Severity.NORMAL, Severity.MILD)
 
     def test_pediatric_patient(self, calculator: Any) -> None:
         """Pediatric patients have higher baseline HR"""
-        result = calculator.calculate(
-            heart_rate=110,
-            systolic_bp=100,
-            patient_type="pediatric"
-        )
+        result = calculator.calculate(heart_rate=110, systolic_bp=100, patient_type="pediatric")
         # SI=1.1 - different interpretation for children
         assert result.calculation_details is not None
         assert "Pediatric" in result.calculation_details["Patient_type"]
@@ -429,7 +412,7 @@ class TestClinicalScenarios:
             pao2=50,  # Lower PaO2 for more severe hypoxemia
             paco2=60,  # Hypercapnia
             fio2=0.21,
-            age=70
+            age=70,
         )
         # Elevated A-a indicates V/Q mismatch
         assert result.value is not None
@@ -449,11 +432,7 @@ class TestClinicalScenarios:
         """Scenario: Postpartum hemorrhage"""
         calc = ShockIndexCalculator()
 
-        result = calc.calculate(
-            heart_rate=120,
-            systolic_bp=85,
-            patient_type="obstetric"
-        )
+        result = calc.calculate(heart_rate=120, systolic_bp=85, patient_type="obstetric")
         assert result.value is not None
         assert result.value > 1.3
         assert result.interpretation.severity is not None

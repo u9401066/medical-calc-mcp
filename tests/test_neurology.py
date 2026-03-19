@@ -5,7 +5,6 @@ Tests NIHSS and other neurology-related calculators.
 """
 
 
-
 class TestNihssCalculator:
     """Tests for NIHSS (NIH Stroke Scale) Calculator."""
 
@@ -29,7 +28,7 @@ class TestNihssCalculator:
             sensory=0,
             best_language=0,
             dysarthria=0,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.value is not None
@@ -57,7 +56,7 @@ class TestNihssCalculator:
             sensory=1,
             best_language=0,
             dysarthria=1,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.value is not None
@@ -85,7 +84,7 @@ class TestNihssCalculator:
             sensory=1,
             best_language=1,
             dysarthria=1,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.value is not None
@@ -113,7 +112,7 @@ class TestNihssCalculator:
             sensory=1,
             best_language=2,
             dysarthria=1,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.value is not None
@@ -139,7 +138,7 @@ class TestNihssCalculator:
             sensory=2,
             best_language=3,
             dysarthria=2,
-            extinction_inattention=2
+            extinction_inattention=2,
         )
 
         assert result.value is not None
@@ -167,7 +166,7 @@ class TestNihssCalculator:
             sensory=1,  # Left-sided sensory loss
             best_language=0,  # Usually preserved in right MCA
             dysarthria=1,
-            extinction_inattention=2  # Left neglect
+            extinction_inattention=2,  # Left neglect
         )
 
         assert result.value is not None
@@ -198,7 +197,7 @@ class TestNihssCalculator:
             sensory=1,
             best_language=2,  # Aphasia - hallmark of left MCA
             dysarthria=1,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.value is not None
@@ -231,7 +230,7 @@ class TestNihssCalculator:
             sensory=2,
             best_language=3,
             dysarthria=2,
-            extinction_inattention=2
+            extinction_inattention=2,
         )
 
         assert result.value is not None
@@ -257,7 +256,7 @@ class TestNihssCalculator:
             sensory=0,
             best_language=0,
             dysarthria=0,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.references is not None
@@ -292,7 +291,7 @@ class TestNihssCalculator:
             sensory=1,
             best_language=1,
             dysarthria=1,
-            extinction_inattention=0
+            extinction_inattention=0,
         )
 
         assert result.calculation_details is not None
@@ -318,13 +317,7 @@ class TestAbcd2Calculator:
         from src.domain.services.calculators import Abcd2Calculator
 
         calc = Abcd2Calculator()
-        result = calc.calculate(
-            age_gte_60=False,
-            bp_gte_140_90=False,
-            clinical_features="none",
-            duration_minutes="lt_10",
-            diabetes=False
-        )
+        result = calc.calculate(age_gte_60=False, bp_gte_140_90=False, clinical_features="none", duration_minutes="lt_10", diabetes=False)
 
         assert result.value is not None
         assert result.value == 0
@@ -337,11 +330,11 @@ class TestAbcd2Calculator:
 
         calc = Abcd2Calculator()
         result = calc.calculate(
-            age_gte_60=True,    # +1
-            bp_gte_140_90=True, # +1
+            age_gte_60=True,  # +1
+            bp_gte_140_90=True,  # +1
             clinical_features="speech_only",  # +1
             duration_minutes="lt_10",
-            diabetes=False
+            diabetes=False,
         )
 
         assert result.value is not None
@@ -355,11 +348,11 @@ class TestAbcd2Calculator:
 
         calc = Abcd2Calculator()
         result = calc.calculate(
-            age_gte_60=True,    # +1
-            bp_gte_140_90=True, # +1
+            age_gte_60=True,  # +1
+            bp_gte_140_90=True,  # +1
             clinical_features="unilateral_weakness",  # +2
             duration_minutes="lt_10",
-            diabetes=False
+            diabetes=False,
         )
 
         assert result.value is not None
@@ -373,11 +366,11 @@ class TestAbcd2Calculator:
 
         calc = Abcd2Calculator()
         result = calc.calculate(
-            age_gte_60=True,    # +1
-            bp_gte_140_90=True, # +1
+            age_gte_60=True,  # +1
+            bp_gte_140_90=True,  # +1
             clinical_features="unilateral_weakness",  # +2
             duration_minutes="lt_10",
-            diabetes=True       # +1
+            diabetes=True,  # +1
         )
 
         assert result.value is not None
@@ -391,11 +384,11 @@ class TestAbcd2Calculator:
 
         calc = Abcd2Calculator()
         result = calc.calculate(
-            age_gte_60=True,    # +1
-            bp_gte_140_90=True, # +1
+            age_gte_60=True,  # +1
+            bp_gte_140_90=True,  # +1
             clinical_features="unilateral_weakness",  # +2
             duration_minutes="10_to_59",  # +1
-            diabetes=True       # +1
+            diabetes=True,  # +1
         )
 
         assert result.value is not None
@@ -409,11 +402,11 @@ class TestAbcd2Calculator:
 
         calc = Abcd2Calculator()
         result = calc.calculate(
-            age_gte_60=True,    # +1
-            bp_gte_140_90=True, # +1
+            age_gte_60=True,  # +1
+            bp_gte_140_90=True,  # +1
             clinical_features="unilateral_weakness",  # +2
             duration_minutes="gte_60",  # +2
-            diabetes=True       # +1
+            diabetes=True,  # +1
         )
 
         assert result.value is not None
@@ -426,13 +419,7 @@ class TestAbcd2Calculator:
         from src.domain.services.calculators import Abcd2Calculator
 
         calc = Abcd2Calculator()
-        result = calc.calculate(
-            age_gte_60=True,
-            bp_gte_140_90=True,
-            clinical_features="unilateral_weakness",
-            duration_minutes="gte_60",
-            diabetes=True
-        )
+        result = calc.calculate(age_gte_60=True, bp_gte_140_90=True, clinical_features="unilateral_weakness", duration_minutes="gte_60", diabetes=True)
 
         assert result.calculation_details is not None
         details = result.calculation_details
@@ -446,13 +433,7 @@ class TestAbcd2Calculator:
         from src.domain.services.calculators import Abcd2Calculator
 
         calc = Abcd2Calculator()
-        result = calc.calculate(
-            age_gte_60=True,
-            bp_gte_140_90=False,
-            clinical_features="speech_only",
-            duration_minutes="10_to_59",
-            diabetes=True
-        )
+        result = calc.calculate(age_gte_60=True, bp_gte_140_90=False, clinical_features="speech_only", duration_minutes="10_to_59", diabetes=True)
 
         assert result.calculation_details is not None
         details = result.calculation_details
@@ -478,13 +459,7 @@ class TestAbcd2Calculator:
         from src.domain.services.calculators import Abcd2Calculator
 
         calc = Abcd2Calculator()
-        result = calc.calculate(
-            age_gte_60=False,
-            bp_gte_140_90=False,
-            clinical_features="none",
-            duration_minutes="lt_10",
-            diabetes=False
-        )
+        result = calc.calculate(age_gte_60=False, bp_gte_140_90=False, clinical_features="none", duration_minutes="lt_10", diabetes=False)
 
         assert result.references is not None
         assert len(result.references) >= 1
@@ -609,5 +584,3 @@ class TestModifiedRankinScaleCalculator:
 
         assert result.references is not None
         assert len(result.references) >= 1
-
-

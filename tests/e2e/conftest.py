@@ -30,6 +30,7 @@ def initialized_registry() -> Any:
 def test_client(initialized_registry: Any) -> TestClient:
     """Create test client for REST API"""
     from src.infrastructure.api.server import app
+
     return TestClient(app)
 
 

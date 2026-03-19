@@ -20,6 +20,7 @@ from src.domain.value_objects.units import Unit
 # Winter's Formula Calculator Tests
 # ============================================================
 
+
 class TestWintersFormulaCalculator:
     """Tests for Winter's Formula Calculator"""
 
@@ -145,6 +146,7 @@ class TestWintersFormulaCalculator:
 # Osmolar Gap Calculator Tests
 # ============================================================
 
+
 class TestOsmolarGapCalculator:
     """Tests for Osmolar Gap Calculator"""
 
@@ -157,12 +159,7 @@ class TestOsmolarGapCalculator:
     def test_normal_osmolar_gap(self, calculator: Any) -> None:
         """Test normal osmolar gap"""
         # Calculated = 2*140 + 100/18 + 14/2.8 = 280 + 5.56 + 5 = 290.56
-        result = calculator.calculate(
-            measured_osm=295,
-            sodium=140,
-            glucose=100,
-            bun=14
-        )
+        result = calculator.calculate(measured_osm=295, sodium=140, glucose=100, bun=14)
         gap = result.value
         assert -10 <= gap <= 10
         assert result.interpretation.severity is not None
@@ -171,12 +168,7 @@ class TestOsmolarGapCalculator:
     def test_elevated_osmolar_gap(self, calculator: Any) -> None:
         """Test elevated osmolar gap (10-20)"""
         # Create gap > 10
-        result = calculator.calculate(
-            measured_osm=315,
-            sodium=140,
-            glucose=100,
-            bun=14
-        )
+        result = calculator.calculate(measured_osm=315, sodium=140, glucose=100, bun=14)
         gap = result.value
         assert 10 < gap <= 25
         assert result.interpretation.summary is not None
@@ -184,12 +176,7 @@ class TestOsmolarGapCalculator:
 
     def test_significantly_elevated_gap(self, calculator: Any) -> None:
         """Test significantly elevated osmolar gap (>20)"""
-        result = calculator.calculate(
-            measured_osm=340,
-            sodium=140,
-            glucose=100,
-            bun=14
-        )
+        result = calculator.calculate(measured_osm=340, sodium=140, glucose=100, bun=14)
         gap = result.value
         assert gap > 20
         assert result.interpretation.severity is not None
@@ -203,18 +190,13 @@ class TestOsmolarGapCalculator:
             sodium=140,
             glucose=100,
             bun=14,
-            ethanol=100  # 100 mg/dL ethanol = ~21.7 mOsm contribution
+            ethanol=100,  # 100 mg/dL ethanol = ~21.7 mOsm contribution
         )
         assert "ethanol" in str(result.calculation_details).lower()
 
     def test_high_glucose(self, calculator: Any) -> None:
         """Test with high glucose (DKA scenario)"""
-        result = calculator.calculate(
-            measured_osm=330,
-            sodium=135,
-            glucose=400,
-            bun=30
-        )
+        result = calculator.calculate(measured_osm=330, sodium=135, glucose=400, bun=30)
         assert "glucose" in str(result.calculation_details).lower()
 
     # --- Clinical Scenario Tests ---
@@ -222,23 +204,12 @@ class TestOsmolarGapCalculator:
     def test_methanol_poisoning_scenario(self, calculator: Any) -> None:
         """Test scenario suggestive of methanol poisoning"""
         # High osmolar gap without ethanol
-        result = calculator.calculate(
-            measured_osm=340,
-            sodium=140,
-            glucose=100,
-            bun=14
-        )
-        assert any("methanol" in r.lower() or "toxic" in r.lower()
-                   for r in result.interpretation.recommendations)
+        result = calculator.calculate(measured_osm=340, sodium=140, glucose=100, bun=14)
+        assert any("methanol" in r.lower() or "toxic" in r.lower() for r in result.interpretation.recommendations)
 
     def test_ethylene_glycol_scenario(self, calculator: Any) -> None:
         """Test scenario suggestive of ethylene glycol poisoning"""
-        result = calculator.calculate(
-            measured_osm=350,
-            sodium=138,
-            glucose=120,
-            bun=20
-        )
+        result = calculator.calculate(measured_osm=350, sodium=138, glucose=120, bun=20)
         assert result.value is not None
         assert result.value > 20
         assert result.interpretation.risk_level is not None
@@ -254,6 +225,7 @@ class TestOsmolarGapCalculator:
     def test_specialties(self, calculator: Any) -> None:
         """Test that appropriate specialties are listed"""
         from src.domain.value_objects.tool_keys import Specialty
+
         specs = calculator.metadata.high_level.specialties
         assert Specialty.EMERGENCY_MEDICINE in specs
         assert Specialty.TOXICOLOGY in specs or Specialty.CRITICAL_CARE in specs
@@ -275,6 +247,7 @@ class TestOsmolarGapCalculator:
 # Free Water Deficit Calculator Tests
 # ============================================================
 
+
 class TestFreeWaterDeficitCalculator:
     """Tests for Free Water Deficit Calculator"""
 
@@ -286,11 +259,7 @@ class TestFreeWaterDeficitCalculator:
 
     def test_mild_hypernatremia(self, calculator: Any) -> None:
         """Test free water deficit for mild hypernatremia (Na 150)"""
-        result = calculator.calculate(
-            current_sodium=150,
-            weight_kg=70,
-            target_sodium=140
-        )
+        result = calculator.calculate(current_sodium=150, weight_kg=70, target_sodium=140)
         # TBW = 70 * 0.6 = 42 L
         # FWD = 42 * ((150/140) - 1) = 42 * 0.0714 = 3.0 L
         assert result.value is not None
@@ -300,11 +269,7 @@ class TestFreeWaterDeficitCalculator:
 
     def test_moderate_hypernatremia(self, calculator: Any) -> None:
         """Test free water deficit for moderate hypernatremia (Na 160)"""
-        result = calculator.calculate(
-            current_sodium=160,
-            weight_kg=70,
-            target_sodium=140
-        )
+        result = calculator.calculate(current_sodium=160, weight_kg=70, target_sodium=140)
         # TBW = 70 * 0.6 = 42 L
         # FWD = 42 * ((160/140) - 1) = 42 * 0.143 = 6.0 L
         assert result.value is not None
@@ -312,11 +277,7 @@ class TestFreeWaterDeficitCalculator:
 
     def test_severe_hypernatremia(self, calculator: Any) -> None:
         """Test free water deficit for severe hypernatremia (Na 170)"""
-        result = calculator.calculate(
-            current_sodium=170,
-            weight_kg=70,
-            target_sodium=140
-        )
+        result = calculator.calculate(current_sodium=170, weight_kg=70, target_sodium=140)
         # TBW = 70 * 0.6 = 42 L
         # FWD = 42 * ((170/140) - 1) = 42 * 0.214 = 9.0 L
         assert result.value is not None
@@ -328,12 +289,7 @@ class TestFreeWaterDeficitCalculator:
 
     def test_adult_female(self, calculator: Any) -> None:
         """Test with adult female (50% TBW)"""
-        result = calculator.calculate(
-            current_sodium=160,
-            weight_kg=70,
-            target_sodium=140,
-            patient_type="adult_female"
-        )
+        result = calculator.calculate(current_sodium=160, weight_kg=70, target_sodium=140, patient_type="adult_female")
         # TBW = 70 * 0.5 = 35 L
         # FWD = 35 * 0.143 = 5.0 L
         assert result.value is not None
@@ -341,12 +297,7 @@ class TestFreeWaterDeficitCalculator:
 
     def test_elderly_female(self, calculator: Any) -> None:
         """Test with elderly female (45% TBW)"""
-        result = calculator.calculate(
-            current_sodium=160,
-            weight_kg=70,
-            target_sodium=140,
-            patient_type="elderly_female"
-        )
+        result = calculator.calculate(current_sodium=160, weight_kg=70, target_sodium=140, patient_type="elderly_female")
         # TBW = 70 * 0.45 = 31.5 L
         # FWD = 31.5 * 0.143 = 4.5 L
         assert result.value is not None
@@ -354,12 +305,7 @@ class TestFreeWaterDeficitCalculator:
 
     def test_child(self, calculator: Any) -> None:
         """Test with child (60% TBW)"""
-        result = calculator.calculate(
-            current_sodium=150,
-            weight_kg=20,
-            target_sodium=140,
-            patient_type="child"
-        )
+        result = calculator.calculate(current_sodium=150, weight_kg=20, target_sodium=140, patient_type="child")
         # TBW = 20 * 0.6 = 12 L
         # FWD = 12 * 0.0714 = 0.86 L
         assert result.value is not None
@@ -369,40 +315,23 @@ class TestFreeWaterDeficitCalculator:
 
     def test_safe_correction_rate(self, calculator: Any) -> None:
         """Test safe correction rate (≤12 mEq/L per 24h)"""
-        result = calculator.calculate(
-            current_sodium=150,
-            weight_kg=70,
-            target_sodium=140,
-            correction_time_hours=24
-        )
+        result = calculator.calculate(current_sodium=150, weight_kg=70, target_sodium=140, correction_time_hours=24)
         # 10 mEq/L change over 24h = 10 mEq/L per 24h (safe)
         # Check that the interpretation mentions "within safe limits"
         assert result.interpretation.detail is not None
-        assert "safe limits" in result.interpretation.detail.lower() or \
-               len(result.interpretation.warnings) == 0
+        assert "safe limits" in result.interpretation.detail.lower() or len(result.interpretation.warnings) == 0
 
     def test_rapid_correction_warning(self, calculator: Any) -> None:
         """Test warning for too rapid correction"""
-        result = calculator.calculate(
-            current_sodium=170,
-            weight_kg=70,
-            target_sodium=140,
-            correction_time_hours=12
-        )
+        result = calculator.calculate(current_sodium=170, weight_kg=70, target_sodium=140, correction_time_hours=12)
         # 30 mEq/L over 12h = 60 mEq/L per 24h (too fast)
-        assert any("rapid" in w.lower() or "slow" in w.lower()
-                   for w in result.interpretation.warnings)
+        assert any("rapid" in w.lower() or "slow" in w.lower() for w in result.interpretation.warnings)
 
     # --- Infusion Rate Tests ---
 
     def test_infusion_rate_calculation(self, calculator: Any) -> None:
         """Test that infusion rate is calculated"""
-        result = calculator.calculate(
-            current_sodium=160,
-            weight_kg=70,
-            target_sodium=140,
-            correction_time_hours=24
-        )
+        result = calculator.calculate(current_sodium=160, weight_kg=70, target_sodium=140, correction_time_hours=24)
         details = result.calculation_details
         assert "Infusion_rate" in str(details)
 
@@ -445,6 +374,7 @@ class TestFreeWaterDeficitCalculator:
 # ============================================================
 # Integration Tests
 # ============================================================
+
 
 class TestPhase9bIntegration:
     """Integration tests for Phase 9b calculators"""
@@ -489,12 +419,7 @@ class TestPhase9bIntegration:
     def test_clinical_workflow_toxic_ingestion(self) -> None:
         """Test clinical workflow for toxic alcohol screening"""
         osmolar = OsmolarGapCalculator()
-        result = osmolar.calculate(
-            measured_osm=340,
-            sodium=140,
-            glucose=100,
-            bun=14
-        )
+        result = osmolar.calculate(measured_osm=340, sodium=140, glucose=100, bun=14)
         # High osmolar gap = screen positive for toxic alcohols
         assert result.value is not None
         assert result.value > 20
@@ -502,12 +427,7 @@ class TestPhase9bIntegration:
     def test_clinical_workflow_hypernatremia(self) -> None:
         """Test clinical workflow for hypernatremia treatment"""
         fwd = FreeWaterDeficitCalculator()
-        result = fwd.calculate(
-            current_sodium=160,
-            weight_kg=70,
-            target_sodium=145,
-            correction_time_hours=48
-        )
+        result = fwd.calculate(current_sodium=160, weight_kg=70, target_sodium=145, correction_time_hours=48)
         # Safe, gradual correction over 48 hours
         assert result.value is not None
         assert result.value > 0

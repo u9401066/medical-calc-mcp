@@ -4,6 +4,7 @@
 class TestCkdEpi2021Calculator:
     def test_ckd_epi_basic(self) -> None:
         from src.domain.services.calculators import CkdEpi2021Calculator
+
         calc = CkdEpi2021Calculator()
         result = calc.calculate(age=50, sex="male", serum_creatinine=1.0)
         assert result.value is not None
@@ -13,6 +14,7 @@ class TestCkdEpi2021Calculator:
 
     def test_ckd_epi_female(self) -> None:
         from src.domain.services.calculators import CkdEpi2021Calculator
+
         calc = CkdEpi2021Calculator()
         result = calc.calculate(age=50, sex="female", serum_creatinine=1.0)
         assert result.value is not None
@@ -20,6 +22,7 @@ class TestCkdEpi2021Calculator:
 
     def test_tool_id(self) -> None:
         from src.domain.services.calculators import CkdEpi2021Calculator
+
         calc = CkdEpi2021Calculator()
         assert calc.tool_id == "ckd_epi_2021"
 
@@ -30,6 +33,7 @@ class TestKdigoAkiCalculator:
     def test_no_aki_normal_creatinine(self) -> None:
         """Test no AKI when creatinine is normal"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.0,
@@ -43,6 +47,7 @@ class TestKdigoAkiCalculator:
     def test_stage_1_by_ratio(self) -> None:
         """Test Stage 1 by creatinine ratio (1.5-1.9x)"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.6,
@@ -56,6 +61,7 @@ class TestKdigoAkiCalculator:
     def test_stage_1_by_absolute_increase(self) -> None:
         """Test Stage 1 by ≥0.3 mg/dL increase in 48h"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.3,
@@ -67,6 +73,7 @@ class TestKdigoAkiCalculator:
     def test_stage_2_by_ratio(self) -> None:
         """Test Stage 2 by creatinine ratio (2.0-2.9x)"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=2.4,
@@ -80,6 +87,7 @@ class TestKdigoAkiCalculator:
     def test_stage_3_by_ratio(self) -> None:
         """Test Stage 3 by creatinine ratio (≥3.0x)"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=3.5,
@@ -93,6 +101,7 @@ class TestKdigoAkiCalculator:
     def test_stage_3_by_absolute_value(self) -> None:
         """Test Stage 3 by absolute creatinine ≥4.0"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=4.5,  # ≥4.0 mg/dL
@@ -103,6 +112,7 @@ class TestKdigoAkiCalculator:
     def test_stage_3_by_rrt(self) -> None:
         """Test Stage 3 automatically when on RRT"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=2.0,
@@ -117,6 +127,7 @@ class TestKdigoAkiCalculator:
     def test_stage_1_by_urine_output(self) -> None:
         """Test Stage 1 by UO <0.5 mL/kg/h for 6-12h"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.0,  # Normal Cr
@@ -129,6 +140,7 @@ class TestKdigoAkiCalculator:
     def test_stage_2_by_urine_output(self) -> None:
         """Test Stage 2 by UO <0.5 mL/kg/h for ≥12h"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.0,
@@ -141,6 +153,7 @@ class TestKdigoAkiCalculator:
     def test_stage_3_by_anuria(self) -> None:
         """Test Stage 3 by anuria for ≥12h"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.5,
@@ -153,6 +166,7 @@ class TestKdigoAkiCalculator:
     def test_higher_stage_wins(self) -> None:
         """Test that higher stage from Cr or UO is used"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         result = calc.calculate(
             current_creatinine=1.8,
@@ -166,6 +180,7 @@ class TestKdigoAkiCalculator:
     def test_references_include_kdigo(self) -> None:
         """Test that references include KDIGO guideline"""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
         refs = calc.references
         dois = [r.doi for r in refs if r.doi]
@@ -173,4 +188,5 @@ class TestKdigoAkiCalculator:
 
     def test_tool_id(self) -> None:
         from src.domain.services.calculators import KdigoAkiCalculator
+
         assert KdigoAkiCalculator().tool_id == "kdigo_aki"

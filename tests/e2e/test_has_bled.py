@@ -25,7 +25,7 @@ class TestHasBledE2E:
                 "labile_inr": False,
                 "elderly_gt_65": False,
                 "drugs_antiplatelet_nsaid": False,
-                "alcohol_excess": False
+                "alcohol_excess": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -44,7 +44,7 @@ class TestHasBledE2E:
                 "labile_inr": False,
                 "elderly_gt_65": False,
                 "drugs_antiplatelet_nsaid": False,
-                "alcohol_excess": False
+                "alcohol_excess": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -63,7 +63,7 @@ class TestHasBledE2E:
                 "labile_inr": False,
                 "elderly_gt_65": True,
                 "drugs_antiplatelet_nsaid": False,
-                "alcohol_excess": False
+                "alcohol_excess": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -82,7 +82,7 @@ class TestHasBledE2E:
                 "labile_inr": False,
                 "elderly_gt_65": True,
                 "drugs_antiplatelet_nsaid": False,
-                "alcohol_excess": False
+                "alcohol_excess": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -101,7 +101,7 @@ class TestHasBledE2E:
                 "labile_inr": False,
                 "elderly_gt_65": True,
                 "drugs_antiplatelet_nsaid": False,
-                "alcohol_excess": False
+                "alcohol_excess": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -120,7 +120,7 @@ class TestHasBledE2E:
                 "labile_inr": True,
                 "elderly_gt_65": True,
                 "drugs_antiplatelet_nsaid": True,
-                "alcohol_excess": True
+                "alcohol_excess": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -140,7 +140,7 @@ class TestHasBledE2E:
                 "labile_inr": True,
                 "elderly_gt_65": True,
                 "drugs_antiplatelet_nsaid": True,
-                "alcohol_excess": False
+                "alcohol_excess": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -149,11 +149,7 @@ class TestHasBledE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "hypertension_uncontrolled": True
-            }
-        }
+        payload = {"params": {"hypertension_uncontrolled": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         # May have defaults or fail
         assert response.status_code in [200, 400, 422, 500]

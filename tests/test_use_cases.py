@@ -42,7 +42,7 @@ class TestCalculateUseCase:
                 "eye_response": 4,
                 "verbal_response": 5,
                 "motor_response": 6,
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -61,7 +61,7 @@ class TestCalculateUseCase:
                 "serum_creatinine": 1.2,  # Correct param name
                 "age": 65,
                 "sex": "male",
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -81,7 +81,7 @@ class TestCalculateUseCase:
                 "gcs_score": 14,
                 "creatinine": 1.5,
                 "map_value": 65,
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -112,7 +112,7 @@ class TestCalculateUseCase:
                 "age": 65,
                 "chronic_health_conditions": [],
                 "admission_type": "nonoperative",
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -133,7 +133,7 @@ class TestCalculateUseCase:
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
                 "creatinine_above_2": False,
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -151,10 +151,7 @@ class TestCalculateUseCase:
 
     def test_calculator_not_found(self, use_case: Any) -> None:
         """Test error when calculator doesn't exist"""
-        request = CalculateRequest(
-            tool_id="nonexistent_calculator",
-            params={}
-        )
+        request = CalculateRequest(tool_id="nonexistent_calculator", params={})
 
         response = use_case.execute(request)
 
@@ -167,7 +164,7 @@ class TestCalculateUseCase:
         """Test that error suggests similar calculators when typo is detected"""
         request = CalculateRequest(
             tool_id="sofa_scor",  # Typo - close to sofa_score
-            params={}
+            params={},
         )
 
         response = use_case.execute(request)
@@ -219,7 +216,7 @@ class TestCalculateUseCase:
             params={
                 "eye_response": 4,
                 # Missing verbal_response and motor_response
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -235,7 +232,7 @@ class TestCalculateUseCase:
                 "eye_response": "four",  # Should be int
                 "verbal_response": 5,
                 "motor_response": 6,
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -251,7 +248,7 @@ class TestCalculateUseCase:
                 "eye_response": 10,  # Max is 4
                 "verbal_response": 5,
                 "motor_response": 6,
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -269,7 +266,7 @@ class TestCalculateUseCase:
                 "verbal_response": 5,
                 "motor_response": 6,
                 "unexpected_param": "value",
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -284,10 +281,7 @@ class TestCalculateUseCase:
 
     def test_empty_params(self, use_case: Any) -> None:
         """Test with empty parameters"""
-        request = CalculateRequest(
-            tool_id="glasgow_coma_scale",
-            params={}
-        )
+        request = CalculateRequest(tool_id="glasgow_coma_scale", params={})
 
         response = use_case.execute(request)
 
@@ -301,7 +295,7 @@ class TestCalculateUseCase:
                 "serum_creatinine": None,
                 "age": 65,
                 "sex": "male",
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -320,7 +314,7 @@ class TestCalculateUseCase:
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
                 "creatinine_above_2": False,
-            }
+            },
         )
 
         response = use_case.execute(request)
@@ -366,10 +360,7 @@ class TestDiscoveryUseCase:
 
     def test_search_by_keyword(self, use_case: Any) -> None:
         """Test searching by keyword"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.SEARCH,
-            query="sepsis"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="sepsis")
 
         response = use_case.execute(request)
 
@@ -380,10 +371,7 @@ class TestDiscoveryUseCase:
 
     def test_search_by_specialty_keyword(self, use_case: Any) -> None:
         """Test searching by specialty keyword"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.SEARCH,
-            query="cardiac"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="cardiac")
 
         response = use_case.execute(request)
 
@@ -393,10 +381,7 @@ class TestDiscoveryUseCase:
 
     def test_search_empty_query(self, use_case: Any) -> None:
         """Test search with empty query"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.SEARCH,
-            query=""
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="")
 
         response = use_case.execute(request)
 
@@ -409,10 +394,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_specialty(self, use_case: Any) -> None:
         """Test filtering by specialty"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_SPECIALTY,
-            specialty="critical_care"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="critical_care")
 
         response = use_case.execute(request)
 
@@ -424,10 +406,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_specialty_not_found(self, use_case: Any) -> None:
         """Test filtering by unknown specialty"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_SPECIALTY,
-            specialty="unknown_specialty"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="unknown_specialty")
 
         response = use_case.execute(request)
 
@@ -450,10 +429,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_specialty_missing(self, use_case: Any) -> None:
         """Test filtering without specialty specified"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_SPECIALTY,
-            specialty=None
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty=None)
 
         response = use_case.execute(request)
 
@@ -466,10 +442,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_context(self, use_case: Any) -> None:
         """Test filtering by clinical context"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_CONTEXT,
-            context="preoperative_assessment"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context="preoperative_assessment")
 
         response = use_case.execute(request)
 
@@ -479,10 +452,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_context_not_found(self, use_case: Any) -> None:
         """Test filtering by unknown context"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_CONTEXT,
-            context="unknown_context"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context="unknown_context")
 
         response = use_case.execute(request)
 
@@ -491,10 +461,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_context_missing(self, use_case: Any) -> None:
         """Test filtering without context specified"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_CONTEXT,
-            context=None
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context=None)
 
         response = use_case.execute(request)
 
@@ -506,10 +473,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_condition(self, use_case: Any) -> None:
         """Test filtering by condition"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_CONDITION,
-            condition="pneumonia"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_CONDITION, condition="pneumonia")
 
         response = use_case.execute(request)
 
@@ -518,10 +482,7 @@ class TestDiscoveryUseCase:
 
     def test_filter_by_condition_missing(self, use_case: Any) -> None:
         """Test filtering without condition specified"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.BY_CONDITION,
-            condition=None
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.BY_CONDITION, condition=None)
 
         response = use_case.execute(request)
 
@@ -533,10 +494,7 @@ class TestDiscoveryUseCase:
 
     def test_get_tool_info(self, use_case: Any) -> None:
         """Test getting detailed tool info"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.GET_INFO,
-            tool_id="sofa_score"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="sofa_score")
 
         response = use_case.execute(request)
 
@@ -549,10 +507,7 @@ class TestDiscoveryUseCase:
 
     def test_get_tool_info_not_found(self, use_case: Any) -> None:
         """Test getting info for unknown tool"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.GET_INFO,
-            tool_id="unknown_tool"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="unknown_tool")
 
         response = use_case.execute(request)
 
@@ -575,10 +530,7 @@ class TestDiscoveryUseCase:
 
     def test_get_tool_info_missing_id(self, use_case: Any) -> None:
         """Test getting info without tool_id"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.GET_INFO,
-            tool_id=None
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id=None)
 
         response = use_case.execute(request)
 
@@ -640,10 +592,7 @@ class TestDiscoveryUseCase:
 
     def test_tool_detail_dto_structure(self, use_case: Any) -> None:
         """Test ToolDetailDTO has expected fields"""
-        request = DiscoveryRequest(
-            mode=DiscoveryMode.GET_INFO,
-            tool_id="glasgow_coma_scale"
-        )
+        request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="glasgow_coma_scale")
 
         response = use_case.execute(request)
 
@@ -677,10 +626,7 @@ class TestUseCaseIntegration:
         CalculateUseCase(registry)
 
         # Step 1: Discover tools for sepsis
-        disc_request = DiscoveryRequest(
-            mode=DiscoveryMode.SEARCH,
-            query="sepsis"
-        )
+        disc_request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="sepsis")
         disc_response = discovery.execute(disc_request)
 
         assert disc_response.success is True
@@ -688,10 +634,7 @@ class TestUseCaseIntegration:
 
         # Step 2: Get info about first tool
         tool_id = disc_response.tools[0].tool_id
-        info_request = DiscoveryRequest(
-            mode=DiscoveryMode.GET_INFO,
-            tool_id=tool_id
-        )
+        info_request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id=tool_id)
         info_response = discovery.execute(info_request)
 
         assert info_response.success is True

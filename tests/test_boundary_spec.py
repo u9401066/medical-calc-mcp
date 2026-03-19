@@ -30,11 +30,7 @@ class TestBoundaryReference:
     def test_reference_creation(self) -> None:
         """Test creating a reference"""
         ref = BoundaryReference(
-            source="Test Source",
-            citation="Test Author. Test Journal. 2025.",
-            year=2025,
-            level_of_evidence=EvidenceLevel.A,
-            pmid="12345678"
+            source="Test Source", citation="Test Author. Test Journal. 2025.", year=2025, level_of_evidence=EvidenceLevel.A, pmid="12345678"
         )
         assert ref.source == "Test Source"
         assert ref.year == 2025
@@ -216,41 +212,47 @@ class TestBoundaryRegistry:
 class TestClinicalBoundariesCoverage:
     """Test that key clinical parameters have boundaries defined"""
 
-    @pytest.mark.parametrize("param_name", [
-        "temperature",
-        "heart_rate",
-        "respiratory_rate",
-        "systolic_bp",
-        "mean_arterial_pressure",
-        "spo2",
-        "serum_creatinine",
-        "hemoglobin",
-        "hematocrit",
-        "platelets",
-        "bilirubin",
-        "age",
-        "weight_kg",
-        "fio2",
-        "pao2_fio2_ratio",
-        "gcs_score",
-        "rass_score",
-    ])
+    @pytest.mark.parametrize(
+        "param_name",
+        [
+            "temperature",
+            "heart_rate",
+            "respiratory_rate",
+            "systolic_bp",
+            "mean_arterial_pressure",
+            "spo2",
+            "serum_creatinine",
+            "hemoglobin",
+            "hematocrit",
+            "platelets",
+            "bilirubin",
+            "age",
+            "weight_kg",
+            "fio2",
+            "pao2_fio2_ratio",
+            "gcs_score",
+            "rass_score",
+        ],
+    )
     def test_boundary_defined(self, param_name: str) -> None:
         """Test that boundary is defined for key parameter"""
         spec = get_boundary(param_name)
         assert spec is not None, f"Boundary not defined for {param_name}"
         assert spec.reference is not None, f"No reference for {param_name}"
 
-    @pytest.mark.parametrize("param_name,normal_value", [
-        ("temperature", 37.0),
-        ("heart_rate", 75),
-        ("respiratory_rate", 16),
-        ("systolic_bp", 120),
-        ("serum_creatinine", 1.0),
-        ("hemoglobin", 14.0),
-        ("age", 50),
-        ("gcs_score", 15),
-    ])
+    @pytest.mark.parametrize(
+        "param_name,normal_value",
+        [
+            ("temperature", 37.0),
+            ("heart_rate", 75),
+            ("respiratory_rate", 16),
+            ("systolic_bp", 120),
+            ("serum_creatinine", 1.0),
+            ("hemoglobin", 14.0),
+            ("age", 50),
+            ("gcs_score", 15),
+        ],
+    )
     def test_normal_values_pass(self, param_name: str, normal_value: float | int) -> None:
         """Test that normal values pass validation"""
         result = validate_param(param_name, normal_value)
@@ -300,14 +302,14 @@ class TestBoundaryIntegration:
 
         # Septic shock patient with values outside warning ranges
         critical_params = {
-            "temperature": 39.5,       # High fever (within warning range)
-            "heart_rate": 195,         # Severe tachycardia (above warning_max=180)
-            "respiratory_rate": 45,    # Severe tachypnea (above warning_max=40)
-            "systolic_bp": 65,         # Severe hypotension (below warning_min=70)
+            "temperature": 39.5,  # High fever (within warning range)
+            "heart_rate": 195,  # Severe tachycardia (above warning_max=180)
+            "respiratory_rate": 45,  # Severe tachypnea (above warning_max=40)
+            "systolic_bp": 65,  # Severe hypotension (below warning_min=70)
             "mean_arterial_pressure": 50,  # Very low MAP (below warning_min=55)
             "serum_creatinine": 18.0,  # Severe AKI (above warning_max=15)
-            "platelets": 15,           # Severe thrombocytopenia (below warning_min=20)
-            "bilirubin": 25.0,         # Severe hyperbilirubinemia (above warning_max=20)
+            "platelets": 15,  # Severe thrombocytopenia (below warning_min=20)
+            "bilirubin": 25.0,  # Severe hyperbilirubinemia (above warning_max=20)
         }
 
         results = registry.validate_all(critical_params)
@@ -319,11 +321,11 @@ class TestBoundaryIntegration:
     def test_impossible_values_blocked(self) -> None:
         """Test that physiologically impossible values are rejected"""
         impossible_params = [
-            ("temperature", 50.0),    # Impossible
-            ("heart_rate", 350),      # Impossible
-            ("spo2", 105),            # > 100%
-            ("age", 150),             # > 120 years
-            ("fio2", 1.5),            # > 1.0
+            ("temperature", 50.0),  # Impossible
+            ("heart_rate", 350),  # Impossible
+            ("spo2", 105),  # > 100%
+            ("age", 150),  # > 120 years
+            ("fio2", 1.5),  # > 1.0
         ]
 
         for param_name, value in impossible_params:

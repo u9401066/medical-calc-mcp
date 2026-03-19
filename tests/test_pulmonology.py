@@ -7,28 +7,23 @@ import pytest
 class TestCurb65Calculator:
     def test_curb65_zero(self) -> None:
         from src.domain.services.calculators import Curb65Calculator
+
         calc = Curb65Calculator()
-        result = calc.calculate(
-            confusion=False, bun_gt_19_or_urea_gt_7=False,
-            respiratory_rate_gte_30=False, sbp_lt_90_or_dbp_lte_60=False,
-            age_gte_65=False
-        )
+        result = calc.calculate(confusion=False, bun_gt_19_or_urea_gt_7=False, respiratory_rate_gte_30=False, sbp_lt_90_or_dbp_lte_60=False, age_gte_65=False)
         assert result.value is not None
         assert result.value == 0
 
     def test_curb65_max(self) -> None:
         from src.domain.services.calculators import Curb65Calculator
+
         calc = Curb65Calculator()
-        result = calc.calculate(
-            confusion=True, bun_gt_19_or_urea_gt_7=True,
-            respiratory_rate_gte_30=True, sbp_lt_90_or_dbp_lte_60=True,
-            age_gte_65=True
-        )
+        result = calc.calculate(confusion=True, bun_gt_19_or_urea_gt_7=True, respiratory_rate_gte_30=True, sbp_lt_90_or_dbp_lte_60=True, age_gte_65=True)
         assert result.value is not None
         assert result.value == 5
 
     def test_tool_id(self) -> None:
         from src.domain.services.calculators import Curb65Calculator
+
         assert Curb65Calculator().tool_id == "curb65"
 
 
@@ -38,6 +33,7 @@ class TestPsiPortCalculator:
     @pytest.fixture
     def calc(self) -> Any:
         from src.domain.services.calculators import PsiPortCalculator
+
         return PsiPortCalculator()
 
     def test_tool_id(self, calc: Any) -> None:

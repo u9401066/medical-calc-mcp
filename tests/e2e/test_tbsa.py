@@ -44,7 +44,7 @@ class TestTbsaE2E:
         payload = {
             "params": {
                 "head_neck": 50,  # 50% of head burned = 4.5% TBSA
-                "patient_type": "adult"
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -56,9 +56,9 @@ class TestTbsaE2E:
         """Test moderate burn (10-20% TBSA)"""
         payload = {
             "params": {
-                "head_neck": 100,   # 9%
-                "chest": 50,        # 4.5%
-                "patient_type": "adult"
+                "head_neck": 100,  # 9%
+                "chest": 50,  # 4.5%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -70,11 +70,11 @@ class TestTbsaE2E:
         """Test severe burn (>20% TBSA)"""
         payload = {
             "params": {
-                "head_neck": 100,    # 9%
-                "chest": 100,        # 9%
-                "abdomen": 100,      # 9%
-                "right_arm": 100,    # 9%
-                "patient_type": "adult"
+                "head_neck": 100,  # 9%
+                "chest": 100,  # 9%
+                "abdomen": 100,  # 9%
+                "right_arm": 100,  # 9%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -86,14 +86,14 @@ class TestTbsaE2E:
         """Test massive burn (>50% TBSA)"""
         payload = {
             "params": {
-                "head_neck": 100,    # 9%
-                "chest": 100,        # 9%
-                "abdomen": 100,      # 9%
-                "upper_back": 100,   # 9%
-                "lower_back": 100,   # 9%
-                "right_arm": 100,    # 9%
-                "left_arm": 100,     # 9%
-                "patient_type": "adult"
+                "head_neck": 100,  # 9%
+                "chest": 100,  # 9%
+                "abdomen": 100,  # 9%
+                "upper_back": 100,  # 9%
+                "lower_back": 100,  # 9%
+                "right_arm": 100,  # 9%
+                "left_arm": 100,  # 9%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -105,10 +105,10 @@ class TestTbsaE2E:
         """Test burn to face and hands (critical areas)"""
         payload = {
             "params": {
-                "head_neck": 100,    # 9%
-                "right_hand": 100,   # 1%
-                "left_hand": 100,    # 1%
-                "patient_type": "adult"
+                "head_neck": 100,  # 9%
+                "right_hand": 100,  # 1%
+                "left_hand": 100,  # 1%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -120,11 +120,11 @@ class TestTbsaE2E:
         """Test trunk burns only"""
         payload = {
             "params": {
-                "chest": 100,        # 9%
-                "abdomen": 100,      # 9%
-                "upper_back": 100,   # 9%
-                "lower_back": 100,   # 9%
-                "patient_type": "adult"
+                "chest": 100,  # 9%
+                "abdomen": 100,  # 9%
+                "upper_back": 100,  # 9%
+                "lower_back": 100,  # 9%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -137,10 +137,10 @@ class TestTbsaE2E:
         payload = {
             "params": {
                 "right_thigh": 100,  # 9%
-                "left_thigh": 100,   # 9%
-                "right_leg": 100,    # 9%
-                "left_leg": 100,     # 9%
-                "patient_type": "adult"
+                "left_thigh": 100,  # 9%
+                "right_leg": 100,  # 9%
+                "left_leg": 100,  # 9%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -152,10 +152,10 @@ class TestTbsaE2E:
         """Test scattered burns across body"""
         payload = {
             "params": {
-                "head_neck": 50,     # 4.5%
-                "chest": 50,         # 4.5%
-                "right_arm": 50,     # 4.5%
-                "patient_type": "adult"
+                "head_neck": 50,  # 4.5%
+                "chest": 50,  # 4.5%
+                "right_arm": 50,  # 4.5%
+                "patient_type": "adult",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -167,8 +167,8 @@ class TestTbsaE2E:
         """Test burn calculation for a child (different percentages)"""
         payload = {
             "params": {
-                "head_neck": 100,    # 15% in child (vs 9% in adult)
-                "patient_type": "child"
+                "head_neck": 100,  # 15% in child (vs 9% in adult)
+                "patient_type": "child",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -180,8 +180,8 @@ class TestTbsaE2E:
         """Test burn calculation for an infant (different percentages)"""
         payload = {
             "params": {
-                "head_neck": 100,    # 18% in infant
-                "patient_type": "infant"
+                "head_neck": 100,  # 18% in infant
+                "patient_type": "infant",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -191,11 +191,7 @@ class TestTbsaE2E:
 
     def test_all_default_params(self, test_client: Any) -> None:
         """Test with minimal parameters (all have defaults)"""
-        payload = {
-            "params": {
-                "head_neck": 100
-            }
-        }
+        payload = {"params": {"head_neck": 100}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # 9% TBSA with default adult

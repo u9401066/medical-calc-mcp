@@ -85,9 +85,7 @@ class TestHealthEndpoint:
 
         assert data["version"] == server._config.version
 
-    def test_health_calculators_count_matches_registry(
-        self, client: TestClient, server: Any
-    ) -> None:
+    def test_health_calculators_count_matches_registry(self, client: TestClient, server: Any) -> None:
         """Test that reported calculator count matches registry"""
         response = client.get("/health")
         data = response.json()

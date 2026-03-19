@@ -1,3 +1,5 @@
+# ruff: noqa: I001
+
 import json
 import subprocess
 import sys

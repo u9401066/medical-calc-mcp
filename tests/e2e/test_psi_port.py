@@ -29,7 +29,7 @@ class TestPsiPortE2E:
                 "respiratory_rate_gte_30": False,
                 "systolic_bp_lt_90": False,
                 "temperature_abnormal": False,
-                "pulse_gte_125": False
+                "pulse_gte_125": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -53,7 +53,7 @@ class TestPsiPortE2E:
                 "respiratory_rate_gte_30": False,
                 "systolic_bp_lt_90": False,
                 "temperature_abnormal": True,
-                "pulse_gte_125": False
+                "pulse_gte_125": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -76,7 +76,7 @@ class TestPsiPortE2E:
                 "respiratory_rate_gte_30": True,
                 "systolic_bp_lt_90": False,
                 "temperature_abnormal": True,
-                "pulse_gte_125": False
+                "pulse_gte_125": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -99,7 +99,7 @@ class TestPsiPortE2E:
                 "respiratory_rate_gte_30": True,
                 "systolic_bp_lt_90": False,
                 "temperature_abnormal": True,
-                "pulse_gte_125": True
+                "pulse_gte_125": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -129,7 +129,7 @@ class TestPsiPortE2E:
                 "glucose_gte_250": True,
                 "hematocrit_lt_30": True,
                 "pao2_lt_60_or_sao2_lt_90": True,
-                "pleural_effusion": True
+                "pleural_effusion": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -152,7 +152,7 @@ class TestPsiPortE2E:
                 "respiratory_rate_gte_30": False,
                 "systolic_bp_lt_90": False,
                 "temperature_abnormal": False,
-                "pulse_gte_125": False
+                "pulse_gte_125": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -162,11 +162,7 @@ class TestPsiPortE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "age_years": 65
-            }
-        }
+        payload = {"params": {"age_years": 65}}
         response = test_client.post(self.ENDPOINT, json=payload)
         # May have defaults or fail
         assert response.status_code in [200, 400, 422, 500]

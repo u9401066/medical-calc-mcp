@@ -55,6 +55,7 @@ async def client() -> Any:
 # Health Check Tests
 # =============================================================================
 
+
 class TestHealthCheck:
     """Test health check endpoint"""
 
@@ -91,9 +92,7 @@ class TestHealthCheck:
         assert data["warning_count"] >= 1
 
     @pytest.mark.anyio
-    async def test_readiness_check_production_profile_requires_controls(
-        self, client: AsyncClient, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_readiness_check_production_profile_requires_controls(self, client: AsyncClient, monkeypatch: pytest.MonkeyPatch) -> None:
         """Production readiness should reject traffic when perimeter controls are missing."""
         monkeypatch.delenv("SECURITY_AUTH_ENABLED", raising=False)
         monkeypatch.delenv("SECURITY_API_KEYS", raising=False)
@@ -114,6 +113,7 @@ class TestHealthCheck:
 # =============================================================================
 # Calculator Discovery Tests
 # =============================================================================
+
 
 class TestCalculatorDiscovery:
     """Test calculator discovery endpoints"""
@@ -211,22 +211,14 @@ class TestCalculatorDiscovery:
 # Calculator Execution Tests
 # =============================================================================
 
+
 class TestCalculatorExecution:
     """Test calculator execution endpoints"""
 
     @pytest.mark.anyio
     async def test_calculate_gcs(self, client: AsyncClient) -> None:
         """Test GCS calculation"""
-        response = await client.post(
-            "/api/v1/calculate/glasgow_coma_scale",
-            json={
-                "params": {
-                    "eye_response": 4,
-                    "verbal_response": 5,
-                    "motor_response": 6
-                }
-            }
-        )
+        response = await client.post("/api/v1/calculate/glasgow_coma_scale", json={"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}})
         assert response.status_code == 200
 
         data = response.json()
@@ -238,16 +230,7 @@ class TestCalculatorExecution:
     async def test_calculate_sofa(self, client: AsyncClient) -> None:
         """Test SOFA score calculation"""
         response = await client.post(
-            "/api/v1/calculate/sofa_score",
-            json={
-                "params": {
-                    "pao2_fio2_ratio": 200,
-                    "platelets": 100,
-                    "bilirubin": 2.0,
-                    "gcs_score": 13,
-                    "creatinine": 2.5
-                }
-            }
+            "/api/v1/calculate/sofa_score", json={"params": {"pao2_fio2_ratio": 200, "platelets": 100, "bilirubin": 2.0, "gcs_score": 13, "creatinine": 2.5}}
         )
         assert response.status_code == 200
 
@@ -260,16 +243,7 @@ class TestCalculatorExecution:
     @pytest.mark.anyio
     async def test_calculate_ckd_epi(self, client: AsyncClient) -> None:
         """Test CKD-EPI eGFR calculation"""
-        response = await client.post(
-            "/api/v1/calculate/ckd_epi_2021",
-            json={
-                "params": {
-                    "serum_creatinine": 1.2,
-                    "age": 65,
-                    "sex": "female"
-                }
-            }
-        )
+        response = await client.post("/api/v1/calculate/ckd_epi_2021", json={"params": {"serum_creatinine": 1.2, "age": 65, "sex": "female"}})
         assert response.status_code == 200
 
         data = response.json()
@@ -281,16 +255,7 @@ class TestCalculatorExecution:
     @pytest.mark.anyio
     async def test_calculate_meld(self, client: AsyncClient) -> None:
         """Test MELD score calculation"""
-        response = await client.post(
-            "/api/v1/calculate/meld_score",
-            json={
-                "params": {
-                    "creatinine": 1.5,
-                    "bilirubin": 2.0,
-                    "inr": 1.5
-                }
-            }
-        )
+        response = await client.post("/api/v1/calculate/meld_score", json={"params": {"creatinine": 1.5, "bilirubin": 2.0, "inr": 1.5}})
         assert response.status_code == 200
 
         data = response.json()
@@ -302,16 +267,7 @@ class TestCalculatorExecution:
         """Test NEWS2 calculation"""
         response = await client.post(
             "/api/v1/calculate/news2_score",
-            json={
-                "params": {
-                    "respiratory_rate": 18,
-                    "spo2": 96,
-                    "on_supplemental_o2": False,
-                    "temperature": 37.0,
-                    "systolic_bp": 120,
-                    "heart_rate": 80
-                }
-            }
+            json={"params": {"respiratory_rate": 18, "spo2": 96, "on_supplemental_o2": False, "temperature": 37.0, "systolic_bp": 120, "heart_rate": 80}},
         )
         assert response.status_code == 200
 
@@ -328,9 +284,9 @@ class TestCalculatorExecution:
                 "params": {
                     "eye_response": 10,  # Invalid: max is 4
                     "verbal_response": 5,
-                    "motor_response": 6
+                    "motor_response": 6,
                 }
-            }
+            },
         )
         # Should return error
         assert response.status_code in [400, 422, 200]  # May vary by implementation
@@ -349,7 +305,7 @@ class TestCalculatorExecution:
                     "eye_response": 4
                     # Missing verbal_response and motor_response
                 }
-            }
+            },
         )
         # Should return error
         assert response.status_code in [400, 422, 200]
@@ -357,10 +313,7 @@ class TestCalculatorExecution:
     @pytest.mark.anyio
     async def test_calculate_nonexistent_calculator(self, client: AsyncClient) -> None:
         """Test calculation with non-existent calculator"""
-        response = await client.post(
-            "/api/v1/calculate/nonexistent_calc",
-            json={"params": {}}
-        )
+        response = await client.post("/api/v1/calculate/nonexistent_calc", json={"params": {}})
         # API returns 200 with success=False for not found calculator
         assert response.status_code in [200, 404]
         if response.status_code == 200:
@@ -372,6 +325,7 @@ class TestCalculatorExecution:
 # Quick Calculate Endpoint Tests
 # =============================================================================
 
+
 class TestQuickCalculate:
     """Test quick calculate endpoints (if available)"""
 
@@ -379,11 +333,7 @@ class TestQuickCalculate:
     async def test_quick_calculate_exists(self, client: AsyncClient) -> None:
         """Test if quick calculate endpoints exist"""
         # This may vary by implementation
-        response = await client.get("/api/v1/ckd-epi", params={
-            "serum_creatinine": 1.2,
-            "age": 65,
-            "sex": "female"
-        })
+        response = await client.get("/api/v1/ckd-epi", params={"serum_creatinine": 1.2, "age": 65, "sex": "female"})
         # May or may not exist
         if response.status_code == 200:
             data = response.json()
@@ -394,17 +344,14 @@ class TestQuickCalculate:
 # Error Handling Tests
 # =============================================================================
 
+
 class TestErrorHandling:
     """Test API error handling"""
 
     @pytest.mark.anyio
     async def test_invalid_json(self, client: AsyncClient) -> None:
         """Test handling of invalid JSON"""
-        response = await client.post(
-            "/api/v1/calculate/gcs",
-            content="invalid json",
-            headers={"Content-Type": "application/json"}
-        )
+        response = await client.post("/api/v1/calculate/gcs", content="invalid json", headers={"Content-Type": "application/json"})
         assert response.status_code == 422
 
     @pytest.mark.anyio
@@ -423,6 +370,7 @@ class TestErrorHandling:
 # =============================================================================
 # Integration Tests
 # =============================================================================
+
 
 class TestIntegration:
     """Integration tests for complete workflows"""
@@ -467,6 +415,7 @@ class TestIntegration:
 # Performance Tests
 # =============================================================================
 
+
 class TestPerformance:
     """Basic performance tests"""
 
@@ -474,6 +423,7 @@ class TestPerformance:
     async def test_health_check_fast(self, client: AsyncClient) -> None:
         """Health check should be fast"""
         import time
+
         start = time.time()
         response = await client.get("/health")
         elapsed = time.time() - start
@@ -485,17 +435,9 @@ class TestPerformance:
     async def test_calculation_reasonable_time(self, client: AsyncClient) -> None:
         """Calculation should complete in reasonable time"""
         import time
+
         start = time.time()
-        response = await client.post(
-            "/api/v1/calculate/glasgow_coma_scale",
-            json={
-                "params": {
-                    "eye_response": 4,
-                    "verbal_response": 5,
-                    "motor_response": 6
-                }
-            }
-        )
+        response = await client.post("/api/v1/calculate/glasgow_coma_scale", json={"params": {"eye_response": 4, "verbal_response": 5, "motor_response": 6}})
         elapsed = time.time() - start
 
         assert response.status_code == 200

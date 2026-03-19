@@ -269,9 +269,7 @@ class TestSerumOsmolalityCalculator:
     def test_invalid_measured_osmolality(self, calculator: Any) -> None:
         """Test validation for measured osmolality out of range"""
         with pytest.raises(ValueError, match="[Mm]easured"):
-            calculator.calculate(
-                sodium=140, glucose=100, bun=15, measured_osmolality=100
-            )
+            calculator.calculate(sodium=140, glucose=100, bun=15, measured_osmolality=100)
 
     # === Edge Cases ===
 

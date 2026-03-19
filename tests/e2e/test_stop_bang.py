@@ -24,7 +24,7 @@ class TestStopBangE2E:
                 "bmi_over_35": False,
                 "age_over_50": False,
                 "neck_over_40cm": False,
-                "male_gender": False
+                "male_gender": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -42,7 +42,7 @@ class TestStopBangE2E:
                 "bmi_over_35": False,
                 "age_over_50": False,
                 "neck_over_40cm": False,
-                "male_gender": False
+                "male_gender": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -60,7 +60,7 @@ class TestStopBangE2E:
                 "bmi_over_35": True,
                 "age_over_50": False,
                 "neck_over_40cm": False,
-                "male_gender": False
+                "male_gender": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -78,7 +78,7 @@ class TestStopBangE2E:
                 "bmi_over_35": True,
                 "age_over_50": True,
                 "neck_over_40cm": True,
-                "male_gender": True
+                "male_gender": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -96,7 +96,7 @@ class TestStopBangE2E:
                 "bmi_over_35": False,
                 "age_over_50": True,
                 "neck_over_40cm": False,
-                "male_gender": True
+                "male_gender": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -114,7 +114,7 @@ class TestStopBangE2E:
                 "bmi_over_35": True,
                 "age_over_50": False,
                 "neck_over_40cm": True,
-                "male_gender": False
+                "male_gender": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -132,7 +132,7 @@ class TestStopBangE2E:
                 "bmi_over_35": False,
                 "age_over_50": False,
                 "neck_over_40cm": False,
-                "male_gender": False
+                "male_gender": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -150,7 +150,7 @@ class TestStopBangE2E:
                 "bmi_over_35": True,
                 "age_over_50": True,
                 "neck_over_40cm": True,
-                "male_gender": True
+                "male_gender": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -168,7 +168,7 @@ class TestStopBangE2E:
                 "bmi_over_35": False,
                 "age_over_50": False,
                 "neck_over_40cm": False,
-                "male_gender": False
+                "male_gender": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -177,10 +177,6 @@ class TestStopBangE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "snoring": True
-            }
-        }
+        payload = {"params": {"snoring": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

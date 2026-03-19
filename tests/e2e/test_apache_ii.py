@@ -30,7 +30,7 @@ class TestApacheIiE2E:
                 "hematocrit": 40,
                 "wbc_count": 10,
                 "gcs_score": 15,
-                "age": 45
+                "age": 45,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -55,7 +55,7 @@ class TestApacheIiE2E:
                 "hematocrit": 35,
                 "wbc_count": 15,
                 "gcs_score": 12,
-                "age": 65
+                "age": 65,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -79,7 +79,7 @@ class TestApacheIiE2E:
                 "hematocrit": 25,
                 "wbc_count": 25,
                 "gcs_score": 6,
-                "age": 75
+                "age": 75,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -103,7 +103,7 @@ class TestApacheIiE2E:
                 "hematocrit": 40,
                 "wbc_count": 10,
                 "gcs_score": 15,
-                "age": 80
+                "age": 80,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -129,7 +129,7 @@ class TestApacheIiE2E:
                 "wbc_count": 10,
                 "gcs_score": 15,
                 "age": 50,
-                "chronic_health_conditions": ["liver_cirrhosis"]
+                "chronic_health_conditions": ["liver_cirrhosis"],
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -153,7 +153,7 @@ class TestApacheIiE2E:
                 "hematocrit": 32,
                 "wbc_count": 20,
                 "gcs_score": 13,
-                "age": 60
+                "age": 60,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -165,7 +165,7 @@ class TestApacheIiE2E:
         payload = {
             "params": {
                 "temperature": 37.0,
-                "age": 50
+                "age": 50,
                 # Missing many required parameters
             }
         }

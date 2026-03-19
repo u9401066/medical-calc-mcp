@@ -15,42 +15,21 @@ class TestCentorScoreE2E:
 
     def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk patient (score 0)"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 0,
-                "tender_anterior_cervical_nodes": 0,
-                "fever": 0,
-                "absence_of_cough": 0
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 0, "tender_anterior_cervical_nodes": 0, "fever": 0, "absence_of_cough": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
 
     def test_low_risk_score_1(self, test_client: Any) -> None:
         """Test low risk patient (score 1)"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 0,
-                "fever": 0,
-                "absence_of_cough": 0
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 0, "fever": 0, "absence_of_cough": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
 
     def test_moderate_risk_score_2(self, test_client: Any) -> None:
         """Test moderate risk patient (score 2)"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 1,
-                "fever": 0,
-                "absence_of_cough": 0
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 1, "fever": 0, "absence_of_cough": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Score 2 = ~15% probability of GAS
@@ -58,14 +37,7 @@ class TestCentorScoreE2E:
 
     def test_moderate_high_risk_score_3(self, test_client: Any) -> None:
         """Test moderate-high risk patient (score 3)"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 1,
-                "fever": 1,
-                "absence_of_cough": 0
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 1, "fever": 1, "absence_of_cough": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Score 3 = ~32% probability of GAS
@@ -73,14 +45,7 @@ class TestCentorScoreE2E:
 
     def test_high_risk_score_4(self, test_client: Any) -> None:
         """Test high risk patient (score 4)"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 1,
-                "fever": 1,
-                "absence_of_cough": 1
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 1, "fever": 1, "absence_of_cough": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Score 4 = ~56% probability of GAS
@@ -88,14 +53,7 @@ class TestCentorScoreE2E:
 
     def test_classic_strep_presentation(self, test_client: Any) -> None:
         """Test classic strep pharyngitis presentation"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 1,
-                "fever": 1,
-                "absence_of_cough": 1
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 1, "fever": 1, "absence_of_cough": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
@@ -107,7 +65,7 @@ class TestCentorScoreE2E:
                 "tonsillar_exudates": 1,
                 "tender_anterior_cervical_nodes": 0,
                 "fever": 1,
-                "absence_of_cough": 0  # Cough present
+                "absence_of_cough": 0,  # Cough present
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -117,39 +75,20 @@ class TestCentorScoreE2E:
 
     def test_fever_and_lymphadenopathy(self, test_client: Any) -> None:
         """Test fever with lymphadenopathy only"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 0,
-                "tender_anterior_cervical_nodes": 1,
-                "fever": 1,
-                "absence_of_cough": 0
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 0, "tender_anterior_cervical_nodes": 1, "fever": 1, "absence_of_cough": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 2
 
     def test_exudates_only(self, test_client: Any) -> None:
         """Test tonsillar exudates only"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 0,
-                "fever": 0,
-                "absence_of_cough": 0
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 0, "fever": 0, "absence_of_cough": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 1
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "tonsillar_exudates": 1,
-                "tender_anterior_cervical_nodes": 1
-            }
-        }
+        payload = {"params": {"tonsillar_exudates": 1, "tender_anterior_cervical_nodes": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

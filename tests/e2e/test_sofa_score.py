@@ -15,60 +15,28 @@ class TestSofaScoreE2E:
 
     def test_minimal_organ_dysfunction(self, test_client: Any) -> None:
         """Test minimal organ dysfunction - SOFA 0-1"""
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 400,
-                "platelets": 200,
-                "bilirubin": 0.8,
-                "gcs_score": 15,
-                "creatinine": 0.9
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 400, "platelets": 200, "bilirubin": 0.8, "gcs_score": 15, "creatinine": 0.9}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 2
 
     def test_mild_organ_dysfunction(self, test_client: Any) -> None:
         """Test mild organ dysfunction"""
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 350,
-                "platelets": 120,
-                "bilirubin": 1.5,
-                "gcs_score": 14,
-                "creatinine": 1.5
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 350, "platelets": 120, "bilirubin": 1.5, "gcs_score": 14, "creatinine": 1.5}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
 
     def test_moderate_organ_dysfunction(self, test_client: Any) -> None:
         """Test moderate multi-organ dysfunction"""
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 200,
-                "platelets": 80,
-                "bilirubin": 3.0,
-                "gcs_score": 12,
-                "creatinine": 2.5
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 200, "platelets": 80, "bilirubin": 3.0, "gcs_score": 12, "creatinine": 2.5}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 6
 
     def test_severe_organ_failure(self, test_client: Any) -> None:
         """Test severe multi-organ failure"""
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 100,
-                "platelets": 30,
-                "bilirubin": 8.0,
-                "gcs_score": 6,
-                "creatinine": 5.0
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 100, "platelets": 30, "bilirubin": 8.0, "gcs_score": 6, "creatinine": 5.0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 12
@@ -83,7 +51,7 @@ class TestSofaScoreE2E:
                 "gcs_score": 15,
                 "creatinine": 1.0,
                 "map_value": 65,
-                "norepinephrine_dose": 0.1
+                "norepinephrine_dose": 0.1,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -94,14 +62,7 @@ class TestSofaScoreE2E:
     def test_mechanically_ventilated(self, test_client: Any) -> None:
         """Test mechanically ventilated patient"""
         payload = {
-            "params": {
-                "pao2_fio2_ratio": 150,
-                "platelets": 100,
-                "bilirubin": 2.0,
-                "gcs_score": 10,
-                "creatinine": 1.8,
-                "is_mechanically_ventilated": True
-            }
+            "params": {"pao2_fio2_ratio": 150, "platelets": 100, "bilirubin": 2.0, "gcs_score": 10, "creatinine": 1.8, "is_mechanically_ventilated": True}
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
@@ -109,16 +70,7 @@ class TestSofaScoreE2E:
 
     def test_with_low_urine_output(self, test_client: Any) -> None:
         """Test with low urine output (renal dysfunction)"""
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 350,
-                "platelets": 180,
-                "bilirubin": 1.0,
-                "gcs_score": 15,
-                "creatinine": 3.0,
-                "urine_output_24h": 300
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 350, "platelets": 180, "bilirubin": 1.0, "gcs_score": 15, "creatinine": 3.0, "urine_output_24h": 300}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 2
@@ -134,7 +86,7 @@ class TestSofaScoreE2E:
                 "creatinine": 2.2,
                 "map_value": 55,
                 "norepinephrine_dose": 0.2,
-                "is_mechanically_ventilated": True
+                "is_mechanically_ventilated": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -154,15 +106,7 @@ class TestSofaScoreE2E:
 
     def test_boundary_pf_ratio_low(self, test_client: Any) -> None:
         """Test boundary P/F ratio (severe ARDS)"""
-        payload = {
-            "params": {
-                "pao2_fio2_ratio": 50,
-                "platelets": 150,
-                "bilirubin": 1.0,
-                "gcs_score": 15,
-                "creatinine": 1.0
-            }
-        }
+        payload = {"params": {"pao2_fio2_ratio": 50, "platelets": 150, "bilirubin": 1.0, "gcs_score": 15, "creatinine": 1.0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Very low P/F = 3+ respiratory points

@@ -24,7 +24,7 @@ class TestPim3E2E:
                 "elective_admission": True,
                 "recovery_post_procedure": True,
                 "cardiac_bypass": False,
-                "low_risk_diagnosis": True
+                "low_risk_diagnosis": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -43,7 +43,7 @@ class TestPim3E2E:
                 "elective_admission": False,
                 "recovery_post_procedure": False,
                 "cardiac_bypass": False,
-                "high_risk_diagnosis": True
+                "high_risk_diagnosis": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -61,7 +61,7 @@ class TestPim3E2E:
                 "base_excess": -2,
                 "elective_admission": True,
                 "recovery_post_procedure": True,
-                "cardiac_bypass": True
+                "cardiac_bypass": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -78,7 +78,7 @@ class TestPim3E2E:
                 "base_excess": -8,
                 "elective_admission": False,
                 "recovery_post_procedure": False,
-                "cardiac_bypass": False
+                "cardiac_bypass": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -95,7 +95,7 @@ class TestPim3E2E:
                 "base_excess": -20,
                 "elective_admission": False,
                 "recovery_post_procedure": False,
-                "cardiac_bypass": False
+                "cardiac_bypass": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -112,7 +112,7 @@ class TestPim3E2E:
                 "base_excess": -5,
                 "elective_admission": False,
                 "recovery_post_procedure": False,
-                "cardiac_bypass": False
+                "cardiac_bypass": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -129,7 +129,7 @@ class TestPim3E2E:
                 "base_excess": -1,
                 "elective_admission": False,
                 "recovery_post_procedure": False,
-                "cardiac_bypass": False
+                "cardiac_bypass": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -147,7 +147,7 @@ class TestPim3E2E:
                 "elective_admission": False,
                 "recovery_post_procedure": False,
                 "cardiac_bypass": False,
-                "very_high_risk_diagnosis": True
+                "very_high_risk_diagnosis": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -156,10 +156,6 @@ class TestPim3E2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "systolic_bp": 100
-            }
-        }
+        payload = {"params": {"systolic_bp": 100}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

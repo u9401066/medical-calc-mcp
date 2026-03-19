@@ -34,14 +34,7 @@ class TestAPGARScore:
     def test_perfect_score(self) -> None:
         """Test perfect APGAR score (10)."""
         calc = APGARScoreCalculator()
-        result = calc.calculate(
-            appearance=2,
-            pulse=2,
-            grimace=2,
-            activity=2,
-            respiration=2,
-            assessment_time="1_minute"
-        )
+        result = calc.calculate(appearance=2, pulse=2, grimace=2, activity=2, respiration=2, assessment_time="1_minute")
         assert result.value is not None
         assert result.value == 10
         assert result.calculation_details is not None
@@ -50,14 +43,7 @@ class TestAPGARScore:
     def test_moderate_depression(self) -> None:
         """Test moderate depression (score 4-6)."""
         calc = APGARScoreCalculator()
-        result = calc.calculate(
-            appearance=1,
-            pulse=2,
-            grimace=1,
-            activity=1,
-            respiration=1,
-            assessment_time="1_minute"
-        )
+        result = calc.calculate(appearance=1, pulse=2, grimace=1, activity=1, respiration=1, assessment_time="1_minute")
         assert result.value is not None
         assert result.value == 6
         assert result.calculation_details is not None
@@ -66,14 +52,7 @@ class TestAPGARScore:
     def test_severe_depression(self) -> None:
         """Test severe depression (score 0-3)."""
         calc = APGARScoreCalculator()
-        result = calc.calculate(
-            appearance=0,
-            pulse=1,
-            grimace=0,
-            activity=0,
-            respiration=0,
-            assessment_time="5_minute"
-        )
+        result = calc.calculate(appearance=0, pulse=1, grimace=0, activity=0, respiration=0, assessment_time="5_minute")
         assert result.value is not None
         assert result.value == 1
         assert result.calculation_details is not None
@@ -88,7 +67,7 @@ class TestAPGARScore:
                 pulse=2,
                 grimace=2,
                 activity=2,
-                respiration=2
+                respiration=2,
             )
 
     def test_invalid_time(self) -> None:
@@ -101,7 +80,7 @@ class TestAPGARScore:
                 grimace=2,
                 activity=2,
                 respiration=2,
-                assessment_time="3_minute"  # Invalid
+                assessment_time="3_minute",  # Invalid
             )
 
 
@@ -118,11 +97,7 @@ class TestPEWS:
     def test_low_risk(self) -> None:
         """Test low risk score (0-2)."""
         calc = PEWSCalculator()
-        result = calc.calculate(
-            behavior_score=0,
-            cardiovascular_score=0,
-            respiratory_score=0
-        )
+        result = calc.calculate(behavior_score=0, cardiovascular_score=0, respiratory_score=0)
         assert result.value is not None
         assert result.value == 0
         assert result.calculation_details is not None
@@ -131,11 +106,7 @@ class TestPEWS:
     def test_high_risk(self) -> None:
         """Test high risk score (≥5)."""
         calc = PEWSCalculator()
-        result = calc.calculate(
-            behavior_score=2,
-            cardiovascular_score=2,
-            respiratory_score=2
-        )
+        result = calc.calculate(behavior_score=2, cardiovascular_score=2, respiratory_score=2)
         assert result.value is not None
         assert result.value == 6
         assert result.calculation_details is not None
@@ -144,12 +115,7 @@ class TestPEWS:
     def test_oxygen_bonus(self) -> None:
         """Test +2 for supplemental oxygen."""
         calc = PEWSCalculator()
-        result = calc.calculate(
-            behavior_score=1,
-            cardiovascular_score=1,
-            respiratory_score=1,
-            supplemental_oxygen=True
-        )
+        result = calc.calculate(behavior_score=1, cardiovascular_score=1, respiratory_score=1, supplemental_oxygen=True)
         assert result.value is not None
         assert result.value == 5  # 3 + 2 for O2
 
@@ -163,7 +129,7 @@ class TestPEWS:
             age_group="1-4y",
             heart_rate=160,  # Tachycardia for this age
             respiratory_rate=40,  # Tachypnea for this age
-            spo2=92
+            spo2=92,
         )
         assert result.value is not None
         assert result.value == 5
@@ -183,15 +149,7 @@ class TestPediatricSOFA:
     def test_normal_values(self) -> None:
         """Test with normal values (low score)."""
         calc = PediatricSOFACalculator()
-        result = calc.calculate(
-            age_group="5-12y",
-            pao2_fio2_ratio=450,
-            platelets=200,
-            bilirubin=0.5,
-            gcs_score=15,
-            creatinine=0.5,
-            map_value=75
-        )
+        result = calc.calculate(age_group="5-12y", pao2_fio2_ratio=450, platelets=200, bilirubin=0.5, gcs_score=15, creatinine=0.5, map_value=75)
         assert result.value is not None
         assert result.value <= 2
         assert result.calculation_details is not None
@@ -209,7 +167,7 @@ class TestPediatricSOFA:
             creatinine=2.0,  # Elevated for age
             vasopressor_type="epinephrine",
             vasopressor_dose=0.15,
-            on_mechanical_ventilation=True
+            on_mechanical_ventilation=True,
         )
         assert result.value is not None
         assert result.value >= 10
@@ -221,14 +179,7 @@ class TestPediatricSOFA:
         """Test invalid age group raises error."""
         calc = PediatricSOFACalculator()
         with pytest.raises(ValueError):
-            calc.calculate(
-                age_group="invalid",
-                pao2_fio2_ratio=400,
-                platelets=200,
-                bilirubin=1.0,
-                gcs_score=15,
-                creatinine=0.5
-            )
+            calc.calculate(age_group="invalid", pao2_fio2_ratio=400, platelets=200, bilirubin=1.0, gcs_score=15, creatinine=0.5)
 
 
 class TestPIM3:
@@ -251,7 +202,7 @@ class TestPIM3:
             base_excess=0,
             elective_admission=True,
             recovery_post_procedure=True,
-            low_risk_diagnosis=True
+            low_risk_diagnosis=True,
         )
         # Elective, post-procedure, low-risk dx should be low mortality
         assert result.value is not None
@@ -267,7 +218,7 @@ class TestPIM3:
             pupillary_reaction="both_fixed",  # Both fixed
             mechanical_ventilation=True,
             base_excess=-15,  # Severe acidosis
-            very_high_risk_diagnosis=True
+            very_high_risk_diagnosis=True,
         )
         # Should be high predicted mortality
         assert result.value is not None
@@ -279,12 +230,7 @@ class TestPIM3:
         """Test invalid pupillary reaction raises error."""
         calc = PIM3Calculator()
         with pytest.raises(ValueError):
-            calc.calculate(
-                systolic_bp=100,
-                pupillary_reaction="invalid",
-                mechanical_ventilation=False,
-                base_excess=0
-            )
+            calc.calculate(systolic_bp=100, pupillary_reaction="invalid", mechanical_ventilation=False, base_excess=0)
 
     def test_multiple_dx_categories(self) -> None:
         """Test multiple diagnosis categories raises error."""
@@ -296,7 +242,7 @@ class TestPIM3:
                 mechanical_ventilation=False,
                 base_excess=0,
                 high_risk_diagnosis=True,
-                low_risk_diagnosis=True  # Can't be both
+                low_risk_diagnosis=True,  # Can't be both
             )
 
 
@@ -313,12 +259,7 @@ class TestPediatricGCS:
     def test_normal_score(self) -> None:
         """Test normal GCS (15)."""
         calc = PediatricGCSCalculator()
-        result = calc.calculate(
-            eye_response=4,
-            verbal_response=5,
-            motor_response=6,
-            age_group="child"
-        )
+        result = calc.calculate(eye_response=4, verbal_response=5, motor_response=6, age_group="child")
         assert result.value is not None
         assert result.value == 15
         assert result.calculation_details is not None
@@ -331,7 +272,7 @@ class TestPediatricGCS:
             eye_response=4,
             verbal_response=5,  # Coos, babbles
             motor_response=6,
-            age_group="infant"
+            age_group="infant",
         )
         assert result.value is not None
         assert result.value == 15
@@ -341,12 +282,7 @@ class TestPediatricGCS:
     def test_severe_impairment(self) -> None:
         """Test severe impairment (≤8)."""
         calc = PediatricGCSCalculator()
-        result = calc.calculate(
-            eye_response=1,
-            verbal_response=2,
-            motor_response=3,
-            age_group="child"
-        )
+        result = calc.calculate(eye_response=1, verbal_response=2, motor_response=3, age_group="child")
         assert result.value is not None
         assert result.value == 6
         assert result.calculation_details is not None
@@ -357,13 +293,7 @@ class TestPediatricGCS:
     def test_intubated_notation(self) -> None:
         """Test intubated patient notation."""
         calc = PediatricGCSCalculator()
-        result = calc.calculate(
-            eye_response=2,
-            verbal_response=1,
-            motor_response=4,
-            age_group="child",
-            intubated=True
-        )
+        result = calc.calculate(eye_response=2, verbal_response=1, motor_response=4, age_group="child", intubated=True)
         assert result.calculation_details is not None
         assert "T" in result.calculation_details["gcs_notation"]
         assert result.calculation_details is not None
@@ -377,7 +307,7 @@ class TestPediatricGCS:
                 eye_response=4,
                 verbal_response=5,
                 motor_response=7,  # Invalid: max is 6
-                age_group="child"
+                age_group="child",
             )
 
 

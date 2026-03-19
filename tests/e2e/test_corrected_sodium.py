@@ -15,12 +15,7 @@ class TestCorrectedSodiumE2E:
 
     def test_normal_glucose_no_correction(self, test_client: Any) -> None:
         """Test normal glucose (no significant correction needed)"""
-        payload = {
-            "params": {
-                "measured_sodium": 140,
-                "glucose": 100
-            }
-        }
+        payload = {"params": {"measured_sodium": 140, "glucose": 100}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Minimal correction at normal glucose
@@ -28,12 +23,7 @@ class TestCorrectedSodiumE2E:
 
     def test_moderate_hyperglycemia(self, test_client: Any) -> None:
         """Test moderate hyperglycemia correction"""
-        payload = {
-            "params": {
-                "measured_sodium": 130,
-                "glucose": 400
-            }
-        }
+        payload = {"params": {"measured_sodium": 130, "glucose": 400}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Katz: add 1.6 mEq/L per 100 mg/dL glucose above 100
@@ -43,12 +33,7 @@ class TestCorrectedSodiumE2E:
 
     def test_severe_hyperglycemia(self, test_client: Any) -> None:
         """Test severe hyperglycemia (DKA/HHS)"""
-        payload = {
-            "params": {
-                "measured_sodium": 125,
-                "glucose": 800
-            }
-        }
+        payload = {"params": {"measured_sodium": 125, "glucose": 800}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Large correction expected
@@ -56,13 +41,7 @@ class TestCorrectedSodiumE2E:
 
     def test_hillier_formula(self, test_client: Any) -> None:
         """Test using Hillier formula"""
-        payload = {
-            "params": {
-                "measured_sodium": 130,
-                "glucose": 500,
-                "formula": "hillier"
-            }
-        }
+        payload = {"params": {"measured_sodium": 130, "glucose": 500, "formula": "hillier"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Hillier uses 2.4 mEq/L per 100 mg/dL
@@ -74,7 +53,7 @@ class TestCorrectedSodiumE2E:
             "params": {
                 "measured_sodium": 130,
                 "glucose": 22.2,  # ~400 mg/dL
-                "glucose_unit": "mmol/L"
+                "glucose_unit": "mmol/L",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -83,12 +62,7 @@ class TestCorrectedSodiumE2E:
 
     def test_hypoglycemia_minimal_effect(self, test_client: Any) -> None:
         """Test normal glucose (no correction needed)"""
-        payload = {
-            "params": {
-                "measured_sodium": 140,
-                "glucose": 100
-            }
-        }
+        payload = {"params": {"measured_sodium": 140, "glucose": 100}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Glucose at 100 should have minimal correction
@@ -96,12 +70,7 @@ class TestCorrectedSodiumE2E:
 
     def test_borderline_hyperglycemia(self, test_client: Any) -> None:
         """Test borderline hyperglycemia"""
-        payload = {
-            "params": {
-                "measured_sodium": 138,
-                "glucose": 200
-            }
-        }
+        payload = {"params": {"measured_sodium": 138, "glucose": 200}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Small correction: 1.6 * 1 = 1.6
@@ -109,10 +78,6 @@ class TestCorrectedSodiumE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "measured_sodium": 140
-            }
-        }
+        payload = {"params": {"measured_sodium": 140}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

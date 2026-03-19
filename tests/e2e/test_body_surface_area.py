@@ -21,12 +21,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_average_adult(self, test_client: Any) -> None:
         """Test average adult BSA"""
-        payload = {
-            "params": {
-                "height_cm": 170,
-                "weight_kg": 70
-            }
-        }
+        payload = {"params": {"height_cm": 170, "weight_kg": 70}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Average adult BSA is ~1.7-1.9 m²
@@ -34,12 +29,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_tall_heavy_adult(self, test_client: Any) -> None:
         """Test tall, heavy adult"""
-        payload = {
-            "params": {
-                "height_cm": 190,
-                "weight_kg": 100
-            }
-        }
+        payload = {"params": {"height_cm": 190, "weight_kg": 100}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Larger BSA
@@ -47,12 +37,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_short_light_adult(self, test_client: Any) -> None:
         """Test short, light adult"""
-        payload = {
-            "params": {
-                "height_cm": 150,
-                "weight_kg": 45
-            }
-        }
+        payload = {"params": {"height_cm": 150, "weight_kg": 45}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Smaller BSA
@@ -60,12 +45,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_pediatric_toddler(self, test_client: Any) -> None:
         """Test toddler BSA"""
-        payload = {
-            "params": {
-                "height_cm": 90,
-                "weight_kg": 13
-            }
-        }
+        payload = {"params": {"height_cm": 90, "weight_kg": 13}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Toddler BSA ~0.5-0.6 m²
@@ -73,12 +53,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_pediatric_school_age(self, test_client: Any) -> None:
         """Test school-age child BSA"""
-        payload = {
-            "params": {
-                "height_cm": 120,
-                "weight_kg": 25
-            }
-        }
+        payload = {"params": {"height_cm": 120, "weight_kg": 25}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # School-age child BSA ~0.9-1.0 m²
@@ -86,12 +61,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_obese_patient(self, test_client: Any) -> None:
         """Test obese patient"""
-        payload = {
-            "params": {
-                "height_cm": 165,
-                "weight_kg": 120
-            }
-        }
+        payload = {"params": {"height_cm": 165, "weight_kg": 120}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Higher BSA in obese patients
@@ -99,12 +69,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_cachectic_patient(self, test_client: Any) -> None:
         """Test cachectic/underweight patient"""
-        payload = {
-            "params": {
-                "height_cm": 170,
-                "weight_kg": 40
-            }
-        }
+        payload = {"params": {"height_cm": 170, "weight_kg": 40}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Lower BSA in underweight patients
@@ -112,12 +77,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_infant(self, test_client: Any) -> None:
         """Test infant BSA"""
-        payload = {
-            "params": {
-                "height_cm": 60,
-                "weight_kg": 6
-            }
-        }
+        payload = {"params": {"height_cm": 60, "weight_kg": 6}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Infant BSA ~0.25-0.35 m²
@@ -125,12 +85,7 @@ class TestBodySurfaceAreaE2E:
 
     def test_very_tall_adult(self, test_client: Any) -> None:
         """Test very tall adult"""
-        payload = {
-            "params": {
-                "height_cm": 200,
-                "weight_kg": 85
-            }
-        }
+        payload = {"params": {"height_cm": 200, "weight_kg": 85}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Taller individuals have higher BSA
@@ -138,10 +93,6 @@ class TestBodySurfaceAreaE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "height_cm": 170
-            }
-        }
+        payload = {"params": {"height_cm": 170}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

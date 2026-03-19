@@ -15,12 +15,7 @@ class TestPfRatioE2E:
 
     def test_normal_pf_ratio(self, test_client: Any) -> None:
         """Test normal P/F ratio (>400)"""
-        payload = {
-            "params": {
-                "pao2": 95,
-                "fio2": 0.21
-            }
-        }
+        payload = {"params": {"pao2": 95, "fio2": 0.21}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 95/0.21 = ~452
@@ -28,12 +23,7 @@ class TestPfRatioE2E:
 
     def test_mild_ards(self, test_client: Any) -> None:
         """Test mild ARDS (P/F 200-300)"""
-        payload = {
-            "params": {
-                "pao2": 100,
-                "fio2": 0.40
-            }
-        }
+        payload = {"params": {"pao2": 100, "fio2": 0.40}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 100/0.40 = 250
@@ -41,12 +31,7 @@ class TestPfRatioE2E:
 
     def test_moderate_ards(self, test_client: Any) -> None:
         """Test moderate ARDS (P/F 100-200)"""
-        payload = {
-            "params": {
-                "pao2": 80,
-                "fio2": 0.60
-            }
-        }
+        payload = {"params": {"pao2": 80, "fio2": 0.60}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 80/0.60 = ~133
@@ -54,12 +39,7 @@ class TestPfRatioE2E:
 
     def test_severe_ards(self, test_client: Any) -> None:
         """Test severe ARDS (P/F <100)"""
-        payload = {
-            "params": {
-                "pao2": 55,
-                "fio2": 1.0
-            }
-        }
+        payload = {"params": {"pao2": 55, "fio2": 1.0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 55/1.0 = 55
@@ -67,26 +47,14 @@ class TestPfRatioE2E:
 
     def test_with_peep(self, test_client: Any) -> None:
         """Test with PEEP level (Berlin criteria require PEEP ≥5)"""
-        payload = {
-            "params": {
-                "pao2": 75,
-                "fio2": 0.50,
-                "peep": 10
-            }
-        }
+        payload = {"params": {"pao2": 75, "fio2": 0.50, "peep": 10}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_on_mechanical_ventilation(self, test_client: Any) -> None:
         """Test mechanically ventilated patient"""
-        payload = {
-            "params": {
-                "pao2": 60,
-                "fio2": 0.80,
-                "on_mechanical_ventilation": True
-            }
-        }
+        payload = {"params": {"pao2": 60, "fio2": 0.80, "on_mechanical_ventilation": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 60/0.80 = 75
@@ -94,12 +62,7 @@ class TestPfRatioE2E:
 
     def test_high_fio2_good_pao2(self, test_client: Any) -> None:
         """Test high FiO2 with good PaO2"""
-        payload = {
-            "params": {
-                "pao2": 250,
-                "fio2": 0.60
-            }
-        }
+        payload = {"params": {"pao2": 250, "fio2": 0.60}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 250/0.60 = ~417
@@ -107,12 +70,7 @@ class TestPfRatioE2E:
 
     def test_room_air_hypoxemia(self, test_client: Any) -> None:
         """Test hypoxemia on room air"""
-        payload = {
-            "params": {
-                "pao2": 55,
-                "fio2": 0.21
-            }
-        }
+        payload = {"params": {"pao2": 55, "fio2": 0.21}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # P/F = 55/0.21 = ~262
@@ -120,10 +78,6 @@ class TestPfRatioE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "pao2": 95
-            }
-        }
+        payload = {"params": {"pao2": 95}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

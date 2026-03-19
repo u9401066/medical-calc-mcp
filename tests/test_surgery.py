@@ -10,6 +10,7 @@ class TestCapriniVteCalculator:
     @pytest.fixture
     def calc(self) -> Any:
         from src.domain.services.calculators import CapriniVteCalculator
+
         return CapriniVteCalculator()
 
     def test_tool_id(self, calc: Any) -> None:

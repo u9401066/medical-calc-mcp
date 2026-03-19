@@ -11,12 +11,14 @@ This ensures agents receive proper guidance and errors when providing invalid in
 # Test that Literal types and Field constraints are properly enforced
 # by Pydantic when the MCP tools parse input
 
+
 class TestAnesthesiologyParameterValidation:
     """Tests for anesthesiology handler parameter validation."""
 
     def test_asa_valid_classes(self) -> None:
         """Test ASA accepts valid class values 1-6."""
         from src.domain.services.calculators import AsaPhysicalStatusCalculator
+
         calc = AsaPhysicalStatusCalculator()
 
         for val in [1, 2, 3, 4, 5, 6]:
@@ -28,6 +30,7 @@ class TestAnesthesiologyParameterValidation:
     def test_mallampati_valid_classes(self) -> None:
         """Test Mallampati accepts valid class values 1-4."""
         from src.domain.services.calculators import MallampatiScoreCalculator
+
         calc = MallampatiScoreCalculator()
 
         for val in [1, 2, 3, 4]:
@@ -43,6 +46,7 @@ class TestCriticalCareParameterValidation:
     def test_rass_valid_scores(self) -> None:
         """Test RASS accepts all valid scores from -5 to +4."""
         from src.domain.services.calculators import RassCalculator
+
         calc = RassCalculator()
 
         for val in [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]:
@@ -54,6 +58,7 @@ class TestCriticalCareParameterValidation:
     def test_gcs_valid_components(self) -> None:
         """Test GCS accepts valid component scores."""
         from src.domain.services.calculators import GlasgowComaScaleCalculator
+
         calc = GlasgowComaScaleCalculator()
 
         # Test minimum GCS
@@ -69,19 +74,21 @@ class TestCriticalCareParameterValidation:
     def test_gcs_intubated(self) -> None:
         """Test GCS with intubation flag."""
         from src.domain.services.calculators import GlasgowComaScaleCalculator
+
         calc = GlasgowComaScaleCalculator()
 
         calc.calculate(
             eye_response=4,
             verbal_response=1,  # Not testable when intubated
             motor_response=6,
-            is_intubated=True
+            is_intubated=True,
         )
         # Score should include "T" suffix or handle appropriately
 
     def test_news2_consciousness_levels(self) -> None:
         """Test NEWS2 accepts valid AVPU/C consciousness levels."""
         from src.domain.services.calculators import NewsScoreCalculator
+
         calc = NewsScoreCalculator()
 
         for val in ["A", "V", "P", "U", "C"]:
@@ -99,6 +106,7 @@ class TestCriticalCareParameterValidation:
     def test_apache_admission_types(self) -> None:
         """Test APACHE-II accepts valid admission types."""
         from src.domain.services.calculators import ApacheIiCalculator
+
         calc = ApacheIiCalculator()
 
         for val in ["nonoperative", "elective_postop", "emergency_postop"]:
@@ -115,6 +123,7 @@ class TestCriticalCareParameterValidation:
     def test_sofa_range_boundaries(self) -> None:
         """Test SOFA calculation with boundary values."""
         from src.domain.services.calculators import SofaScoreCalculator
+
         calc = SofaScoreCalculator()
 
         # Test with extreme but valid values
@@ -132,6 +141,7 @@ class TestCriticalCareParameterValidation:
     def test_cam_icu_feature_scores(self) -> None:
         """Test CAM-ICU with various feature combinations."""
         from src.domain.services.calculators import CamIcuCalculator
+
         calc = CamIcuCalculator()
 
         # Positive delirium: F1 + F2 AND (F3 OR F4)
@@ -149,6 +159,7 @@ class TestCardiologyParameterValidation:
     def test_heart_score_components(self) -> None:
         """Test HEART score with valid component scores 0-2."""
         from src.domain.services.calculators import HeartScoreCalculator
+
         calc = HeartScoreCalculator()
 
         for score in [0, 1, 2]:
@@ -169,6 +180,7 @@ class TestNephrologyParameterValidation:
     def test_ckd_epi_sex_values(self) -> None:
         """Test CKD-EPI accepts 'male' and 'female' sex values."""
         from src.domain.services.calculators import CkdEpi2021Calculator
+
         calc = CkdEpi2021Calculator()
 
         for val in ["male", "female"]:
@@ -184,6 +196,7 @@ class TestNephrologyParameterValidation:
     def test_ckd_epi_age_boundaries(self) -> None:
         """Test CKD-EPI with age at boundaries."""
         from src.domain.services.calculators import CkdEpi2021Calculator
+
         calc = CkdEpi2021Calculator()
 
         # Young adult
@@ -199,6 +212,7 @@ class TestNephrologyParameterValidation:
     def test_kdigo_aki_creatinine_boundaries(self) -> None:
         """Test KDIGO AKI with various creatinine ratios."""
         from src.domain.services.calculators import KdigoAkiCalculator
+
         calc = KdigoAkiCalculator()
 
         # Just below Stage 1 threshold (1.4x)
@@ -228,12 +242,10 @@ class TestPediatricParameterValidation:
     def test_pediatric_drug_names(self) -> None:
         """Test pediatric dosing accepts all supported drug names."""
         from src.domain.services.calculators import PediatricDosingCalculator
+
         calc = PediatricDosingCalculator()
 
-        supported_drugs = [
-            "acetaminophen", "ibuprofen", "amoxicillin", "ceftriaxone",
-            "ondansetron", "morphine", "fentanyl", "ketamine"
-        ]
+        supported_drugs = ["acetaminophen", "ibuprofen", "amoxicillin", "ceftriaxone", "ondansetron", "morphine", "fentanyl", "ketamine"]
 
         for drug in supported_drugs:
             calc.calculate(drug_name=drug, weight_kg=20)
@@ -241,6 +253,7 @@ class TestPediatricParameterValidation:
     def test_pediatric_routes(self) -> None:
         """Test pediatric dosing accepts valid routes."""
         from src.domain.services.calculators import PediatricDosingCalculator
+
         calc = PediatricDosingCalculator()
 
         # IV route for fentanyl
@@ -249,6 +262,7 @@ class TestPediatricParameterValidation:
     def test_mabl_patient_types(self) -> None:
         """Test MABL accepts all patient types with correct EBV."""
         from src.domain.services.calculators import MablCalculator
+
         calc = MablCalculator()
 
         patient_types = [
@@ -271,6 +285,7 @@ class TestPediatricParameterValidation:
     def test_transfusion_product_types(self) -> None:
         """Test transfusion calculator accepts all product types."""
         from src.domain.services.calculators import TransfusionCalculator
+
         calc = TransfusionCalculator()
 
         # PRBC needs hematocrit values
@@ -289,6 +304,7 @@ class TestHepatologyParameterValidation:
     def test_child_pugh_ascites_values(self) -> None:
         """Test Child-Pugh accepts valid ascites values."""
         from src.domain.services.calculators import ChildPughCalculator
+
         calc = ChildPughCalculator()
 
         for ascites in ["none", "mild", "moderate_severe"]:
@@ -303,6 +319,7 @@ class TestHepatologyParameterValidation:
     def test_child_pugh_encephalopathy_grades(self) -> None:
         """Test Child-Pugh accepts encephalopathy grades 0-4."""
         from src.domain.services.calculators import ChildPughCalculator
+
         calc = ChildPughCalculator()
 
         for grade in [0, 1, 2, 3, 4]:
@@ -321,6 +338,7 @@ class TestEmergencyParameterValidation:
     def test_wells_dvt_max_score(self) -> None:
         """Test Wells DVT with all risk factors positive."""
         from src.domain.services.calculators import WellsDvtCalculator
+
         calc = WellsDvtCalculator()
 
         result = calc.calculate(
@@ -341,6 +359,7 @@ class TestEmergencyParameterValidation:
     def test_wells_dvt_alternative_diagnosis_deduction(self) -> None:
         """Test Wells DVT subtracts 2 for alternative diagnosis."""
         from src.domain.services.calculators import WellsDvtCalculator
+
         calc = WellsDvtCalculator()
 
         # With alternative diagnosis
@@ -362,6 +381,7 @@ class TestEmergencyParameterValidation:
     def test_wells_pe_max_score(self) -> None:
         """Test Wells PE with all risk factors positive."""
         from src.domain.services.calculators import WellsPeCalculator
+
         calc = WellsPeCalculator()
 
         result = calc.calculate(
@@ -383,6 +403,7 @@ class TestBoundaryConditions:
     def test_sofa_max_score(self) -> None:
         """Test SOFA can reach maximum score of 24."""
         from src.domain.services.calculators import SofaScoreCalculator
+
         calc = SofaScoreCalculator()
 
         result = calc.calculate(
@@ -399,6 +420,7 @@ class TestBoundaryConditions:
     def test_apache_age_scoring(self) -> None:
         """Test APACHE-II age scoring at boundaries."""
         from src.domain.services.calculators import ApacheIiCalculator
+
         calc = ApacheIiCalculator()
 
         base_params = {
@@ -431,6 +453,7 @@ class TestBoundaryConditions:
     def test_news2_scale_2_spo2_scoring(self) -> None:
         """Test NEWS2 Scale 2 for hypercapnic patients."""
         from src.domain.services.calculators import NewsScoreCalculator
+
         calc = NewsScoreCalculator()
 
         base_params = {
@@ -457,6 +480,7 @@ class TestInterpretationContent:
     def test_chads2_vasc_anticoagulation_recommendation(self) -> None:
         """Test CHA₂DS₂-VASc provides anticoagulation guidance."""
         from src.domain.services.calculators import Chads2VascCalculator
+
         calc = Chads2VascCalculator()
 
         # Score ≥2 should recommend anticoagulation
@@ -479,6 +503,7 @@ class TestInterpretationContent:
     def test_curb65_hospitalization_guidance(self) -> None:
         """Test CURB-65 provides hospitalization guidance."""
         from src.domain.services.calculators import Curb65Calculator
+
         calc = Curb65Calculator()
 
         # Low risk (0-1): outpatient

@@ -51,11 +51,14 @@ class TestSecurityConfig:
 
     def test_config_from_env_rate_limit_enabled(self) -> None:
         """Should enable rate limiting from env"""
-        with patch.dict(os.environ, {
-            "SECURITY_RATE_LIMIT_ENABLED": "true",
-            "SECURITY_RATE_LIMIT_RPM": "100",
-            "SECURITY_RATE_LIMIT_BURST": "20",
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "SECURITY_RATE_LIMIT_ENABLED": "true",
+                "SECURITY_RATE_LIMIT_RPM": "100",
+                "SECURITY_RATE_LIMIT_BURST": "20",
+            },
+        ):
             config = SecurityConfig.from_env()
 
             assert config.rate_limit_enabled is True
@@ -64,10 +67,13 @@ class TestSecurityConfig:
 
     def test_config_from_env_auth_enabled(self) -> None:
         """Should enable authentication from env"""
-        with patch.dict(os.environ, {
-            "SECURITY_AUTH_ENABLED": "true",
-            "SECURITY_API_KEYS": "key1,key2,key3",
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "SECURITY_AUTH_ENABLED": "true",
+                "SECURITY_API_KEYS": "key1,key2,key3",
+            },
+        ):
             config = SecurityConfig.from_env()
 
             assert config.auth_enabled is True
@@ -75,10 +81,7 @@ class TestSecurityConfig:
 
     def test_config_validation_auth_no_keys(self) -> None:
         """Should warn when auth enabled but no keys"""
-        config = SecurityConfig(
-            auth_enabled=True,
-            auth_api_keys=[]
-        )
+        config = SecurityConfig(auth_enabled=True, auth_api_keys=[])
 
         warnings = config.validate()
         assert len(warnings) == 1
@@ -250,14 +253,10 @@ class TestAPIAuthenticator:
         assert auth.extract_key_from_headers({"x-api-key": "my-key"}) == "my-key"
 
         # Bearer token
-        assert auth.extract_key_from_headers(
-            {"Authorization": "Bearer my-token"}
-        ) == "my-token"
+        assert auth.extract_key_from_headers({"Authorization": "Bearer my-token"}) == "my-token"
 
         # ApiKey scheme
-        assert auth.extract_key_from_headers(
-            {"Authorization": "ApiKey my-token"}
-        ) == "my-token"
+        assert auth.extract_key_from_headers({"Authorization": "ApiKey my-token"}) == "my-token"
 
         # No key
         assert auth.extract_key_from_headers({"Other": "value"}) is None
@@ -273,10 +272,7 @@ class TestAPIAuthenticator:
         """Headers should take priority over query params"""
         auth = APIAuthenticator(api_keys=["header-key", "query-key"])
 
-        key = auth.extract_key(
-            headers={"X-API-Key": "header-key"},
-            query_params={"api_key": "query-key"}
-        )
+        key = auth.extract_key(headers={"X-API-Key": "header-key"}, query_params={"api_key": "query-key"})
 
         assert key == "header-key"
 
@@ -321,11 +317,7 @@ class TestSecurityMiddleware:
 
     def test_rate_limiting_only(self) -> None:
         """Should enforce rate limiting when enabled"""
-        config = SecurityConfig(
-            rate_limit_enabled=True,
-            rate_limit_requests_per_minute=60,
-            rate_limit_burst=2
-        )
+        config = SecurityConfig(rate_limit_enabled=True, rate_limit_requests_per_minute=60, rate_limit_burst=2)
         middleware = SecurityMiddleware(config)
 
         # First 2 requests OK
@@ -338,25 +330,16 @@ class TestSecurityMiddleware:
 
     def test_auth_only(self) -> None:
         """Should enforce authentication when enabled"""
-        config = SecurityConfig(
-            auth_enabled=True,
-            auth_api_keys=["valid-key-12345"]
-        )
+        config = SecurityConfig(auth_enabled=True, auth_api_keys=["valid-key-12345"])
         middleware = SecurityMiddleware(config)
 
         # Valid key OK
-        ctx = middleware.check_request(
-            client_id="client1",
-            headers={"X-API-Key": "valid-key-12345"}
-        )
+        ctx = middleware.check_request(client_id="client1", headers={"X-API-Key": "valid-key-12345"})
         assert ctx.api_key_id is not None
 
         # Invalid key fails
         with pytest.raises(AuthenticationError):
-            middleware.check_request(
-                client_id="client1",
-                headers={"X-API-Key": "wrong-key"}
-            )
+            middleware.check_request(client_id="client1", headers={"X-API-Key": "wrong-key"})
 
         # Missing key fails
         with pytest.raises(AuthenticationError):
@@ -365,45 +348,25 @@ class TestSecurityMiddleware:
     def test_both_enabled(self) -> None:
         """Should enforce both rate limiting and auth"""
         config = SecurityConfig(
-            rate_limit_enabled=True,
-            rate_limit_requests_per_minute=60,
-            rate_limit_burst=2,
-            auth_enabled=True,
-            auth_api_keys=["valid-key-12345"]
+            rate_limit_enabled=True, rate_limit_requests_per_minute=60, rate_limit_burst=2, auth_enabled=True, auth_api_keys=["valid-key-12345"]
         )
         middleware = SecurityMiddleware(config)
 
         # Auth first, then rate limit
-        middleware.check_request(
-            client_id="client1",
-            headers={"X-API-Key": "valid-key-12345"}
-        )
-        middleware.check_request(
-            client_id="client1",
-            headers={"X-API-Key": "valid-key-12345"}
-        )
+        middleware.check_request(client_id="client1", headers={"X-API-Key": "valid-key-12345"})
+        middleware.check_request(client_id="client1", headers={"X-API-Key": "valid-key-12345"})
 
         # Rate limit exceeded (auth passes but rate limit fails)
         with pytest.raises(RateLimitExceeded):
-            middleware.check_request(
-                client_id="client1",
-                headers={"X-API-Key": "valid-key-12345"}
-            )
+            middleware.check_request(client_id="client1", headers={"X-API-Key": "valid-key-12345"})
 
         # Auth fails before rate limit is checked
         with pytest.raises(AuthenticationError):
-            middleware.check_request(
-                client_id="client2",
-                headers={"X-API-Key": "wrong-key"}
-            )
+            middleware.check_request(client_id="client2", headers={"X-API-Key": "wrong-key"})
 
     def test_rate_limit_headers(self) -> None:
         """Should return rate limit headers"""
-        config = SecurityConfig(
-            rate_limit_enabled=True,
-            rate_limit_requests_per_minute=60,
-            rate_limit_burst=10
-        )
+        config = SecurityConfig(rate_limit_enabled=True, rate_limit_requests_per_minute=60, rate_limit_burst=10)
         middleware = SecurityMiddleware(config)
 
         headers = middleware.get_rate_limit_headers("client1")
@@ -425,7 +388,7 @@ class TestSecurityMiddleware:
         config = SecurityConfig(
             rate_limit_enabled=True,
             auth_enabled=True,
-            auth_api_keys=["valid-api-key-12345"]  # Must be at least 8 chars
+            auth_api_keys=["valid-api-key-12345"],  # Must be at least 8 chars
         )
         middleware = SecurityMiddleware(config)
 
@@ -448,19 +411,12 @@ class TestSecurityIntegration:
 
         # Should process any request without issues
         for i in range(100):
-            ctx = middleware.check_request(
-                client_id=f"client-{i}",
-                headers={"X-API-Key": "any-key"}
-            )
+            ctx = middleware.check_request(client_id=f"client-{i}", headers={"X-API-Key": "any-key"})
             assert ctx is not None
 
     def test_end_to_end_rate_limit(self) -> None:
         """End-to-end test with rate limiting"""
-        config = SecurityConfig(
-            rate_limit_enabled=True,
-            rate_limit_requests_per_minute=60,
-            rate_limit_burst=5
-        )
+        config = SecurityConfig(rate_limit_enabled=True, rate_limit_requests_per_minute=60, rate_limit_burst=5)
         middleware = SecurityMiddleware(config)
 
         # 5 requests succeed
@@ -478,24 +434,15 @@ class TestSecurityIntegration:
         """End-to-end test with authentication"""
         api_key = APIAuthenticator.generate_api_key()
 
-        config = SecurityConfig(
-            auth_enabled=True,
-            auth_api_keys=[api_key]
-        )
+        config = SecurityConfig(auth_enabled=True, auth_api_keys=[api_key])
         middleware = SecurityMiddleware(config)
 
         # Valid key works
-        ctx = middleware.check_request(
-            client_id="client",
-            headers={"X-API-Key": api_key}
-        )
+        ctx = middleware.check_request(client_id="client", headers={"X-API-Key": api_key})
         assert ctx.api_key_id is not None
 
         # Query param also works
-        ctx = middleware.check_request(
-            client_id="client",
-            query_params={"api_key": api_key}
-        )
+        ctx = middleware.check_request(client_id="client", query_params={"api_key": api_key})
         assert ctx.api_key_id is not None
 
 

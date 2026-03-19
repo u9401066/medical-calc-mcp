@@ -25,6 +25,7 @@ class TestCalculatorResourceHandler:
             def decorator(func: Any) -> Any:
                 mcp._resources[uri] = func
                 return func
+
             return decorator
 
         mcp.resource = mock_resource
@@ -46,6 +47,7 @@ class TestCalculatorResourceHandler:
     def handler(self, mock_mcp: Any, populated_registry: Any) -> Any:
         """Create handler instance"""
         from src.infrastructure.mcp.resources.calculator_resources import CalculatorResourceHandler
+
         return CalculatorResourceHandler(mock_mcp, populated_registry)
 
     def test_handler_registers_resources(self, handler: Any, mock_mcp: Any) -> None:
@@ -228,6 +230,7 @@ class TestResourceIntegration:
     def server(self) -> Any:
         """Create real server instance"""
         from src.infrastructure.mcp.server import MedicalCalculatorServer
+
         return MedicalCalculatorServer()
 
     def test_server_has_resources_registered(self, server: Any) -> None:
@@ -255,6 +258,7 @@ class TestResourceContent:
             def decorator(func: Any) -> Any:
                 mcp._resources[uri] = func
                 return func
+
             return decorator
 
         mcp.resource = mock_resource

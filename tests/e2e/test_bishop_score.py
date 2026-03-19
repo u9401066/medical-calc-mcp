@@ -27,15 +27,7 @@ class TestBishopScoreE2E:
 
     def test_unfavorable_cervix_score_0_3(self, test_client: Any) -> None:
         """Test unfavorable cervix (score 0-3)"""
-        payload = {
-            "params": {
-                "dilation": 0,
-                "effacement": 0,
-                "station": 0,
-                "consistency": "firm",
-                "position": "posterior"
-            }
-        }
+        payload = {"params": {"dilation": 0, "effacement": 0, "station": 0, "consistency": "firm", "position": "posterior"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Unfavorable for induction
@@ -43,30 +35,14 @@ class TestBishopScoreE2E:
 
     def test_intermediate_cervix_score_5_6(self, test_client: Any) -> None:
         """Test intermediate cervix (score 5-6)"""
-        payload = {
-            "params": {
-                "dilation": 1,
-                "effacement": 1,
-                "station": 1,
-                "consistency": "medium",
-                "position": "mid"
-            }
-        }
+        payload = {"params": {"dilation": 1, "effacement": 1, "station": 1, "consistency": "medium", "position": "mid"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 5
 
     def test_favorable_cervix_score_8_plus(self, test_client: Any) -> None:
         """Test favorable cervix (score ≥8)"""
-        payload = {
-            "params": {
-                "dilation": 2,
-                "effacement": 2,
-                "station": 2,
-                "consistency": "soft",
-                "position": "anterior"
-            }
-        }
+        payload = {"params": {"dilation": 2, "effacement": 2, "station": 2, "consistency": "soft", "position": "anterior"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Favorable for induction
@@ -74,15 +50,7 @@ class TestBishopScoreE2E:
 
     def test_maximum_score_13(self, test_client: Any) -> None:
         """Test maximum possible score (13)"""
-        payload = {
-            "params": {
-                "dilation": 3,
-                "effacement": 3,
-                "station": 3,
-                "consistency": "soft",
-                "position": "anterior"
-            }
-        }
+        payload = {"params": {"dilation": 3, "effacement": 3, "station": 3, "consistency": "soft", "position": "anterior"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Maximum score
@@ -90,75 +58,35 @@ class TestBishopScoreE2E:
 
     def test_nulliparous_unfavorable(self, test_client: Any) -> None:
         """Test nulliparous patient with unfavorable cervix"""
-        payload = {
-            "params": {
-                "dilation": 0,
-                "effacement": 1,
-                "station": 0,
-                "consistency": "firm",
-                "position": "posterior"
-            }
-        }
+        payload = {"params": {"dilation": 0, "effacement": 1, "station": 0, "consistency": "firm", "position": "posterior"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] <= 3
 
     def test_multiparous_favorable(self, test_client: Any) -> None:
         """Test multiparous patient with favorable cervix"""
-        payload = {
-            "params": {
-                "dilation": 2,
-                "effacement": 3,
-                "station": 2,
-                "consistency": "soft",
-                "position": "anterior"
-            }
-        }
+        payload = {"params": {"dilation": 2, "effacement": 3, "station": 2, "consistency": "soft", "position": "anterior"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 9
 
     def test_partially_dilated_effaced(self, test_client: Any) -> None:
         """Test partially dilated and effaced cervix"""
-        payload = {
-            "params": {
-                "dilation": 2,
-                "effacement": 2,
-                "station": 1,
-                "consistency": "medium",
-                "position": "mid"
-            }
-        }
+        payload = {"params": {"dilation": 2, "effacement": 2, "station": 1, "consistency": "medium", "position": "mid"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
 
     def test_term_ripening(self, test_client: Any) -> None:
         """Test cervix ripening at term"""
-        payload = {
-            "params": {
-                "dilation": 1,
-                "effacement": 2,
-                "station": 1,
-                "consistency": "soft",
-                "position": "mid"
-            }
-        }
+        payload = {"params": {"dilation": 1, "effacement": 2, "station": 1, "consistency": "soft", "position": "mid"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 5
 
     def test_need_cervical_ripening(self, test_client: Any) -> None:
         """Test when cervical ripening is needed"""
-        payload = {
-            "params": {
-                "dilation": 0,
-                "effacement": 0,
-                "station": 0,
-                "consistency": "firm",
-                "position": "posterior"
-            }
-        }
+        payload = {"params": {"dilation": 0, "effacement": 0, "station": 0, "consistency": "firm", "position": "posterior"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Score 0 = needs ripening agent
@@ -166,11 +94,6 @@ class TestBishopScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "dilation": 2,
-                "effacement": 2
-            }
-        }
+        payload = {"params": {"dilation": 2, "effacement": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

@@ -35,6 +35,7 @@ def registry() -> Any:
 def calculator_classes() -> Any:
     """Provide list of all calculator classes."""
     from src.domain.services.calculators import CALCULATORS
+
     return CALCULATORS
 
 

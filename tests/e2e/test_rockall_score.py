@@ -21,7 +21,7 @@ class TestRockallScoreE2E:
                 "shock_status": "none",
                 "comorbidity": "none",
                 "diagnosis": "mallory_weiss_no_lesion",
-                "stigmata_of_recent_hemorrhage": "none_or_dark_spot"
+                "stigmata_of_recent_hemorrhage": "none_or_dark_spot",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -36,7 +36,7 @@ class TestRockallScoreE2E:
                 "shock_status": "tachycardia",
                 "comorbidity": "cardiac_major",
                 "diagnosis": "mallory_weiss_no_lesion",
-                "stigmata_of_recent_hemorrhage": "none_or_dark_spot"
+                "stigmata_of_recent_hemorrhage": "none_or_dark_spot",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -51,7 +51,7 @@ class TestRockallScoreE2E:
                 "shock_status": "hypotension",
                 "comorbidity": "renal_liver_malignancy",
                 "diagnosis": "gi_malignancy",
-                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel"
+                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -66,7 +66,7 @@ class TestRockallScoreE2E:
                 "shock_status": "none",
                 "comorbidity": "none",
                 "diagnosis": "other_diagnosis",
-                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel"
+                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -81,7 +81,7 @@ class TestRockallScoreE2E:
                 "shock_status": "none",
                 "comorbidity": "renal_liver_malignancy",
                 "diagnosis": "other_diagnosis",
-                "stigmata_of_recent_hemorrhage": "none_or_dark_spot"
+                "stigmata_of_recent_hemorrhage": "none_or_dark_spot",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -96,7 +96,7 @@ class TestRockallScoreE2E:
                 "shock_status": "hypotension",
                 "comorbidity": "none",
                 "diagnosis": "other_diagnosis",
-                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel"
+                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -111,7 +111,7 @@ class TestRockallScoreE2E:
                 "shock_status": "none",
                 "comorbidity": "none",
                 "diagnosis": "mallory_weiss_no_lesion",
-                "stigmata_of_recent_hemorrhage": "none_or_dark_spot"
+                "stigmata_of_recent_hemorrhage": "none_or_dark_spot",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -126,7 +126,7 @@ class TestRockallScoreE2E:
                 "shock_status": "tachycardia",
                 "comorbidity": "cardiac_major",
                 "diagnosis": "gi_malignancy",
-                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel"
+                "stigmata_of_recent_hemorrhage": "blood_clot_visible_vessel",
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -135,10 +135,6 @@ class TestRockallScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "age_years": 65
-            }
-        }
+        payload = {"params": {"age_years": 65}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

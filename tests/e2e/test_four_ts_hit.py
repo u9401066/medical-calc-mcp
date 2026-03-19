@@ -15,14 +15,7 @@ class TestFourTsHitE2E:
 
     def test_low_probability(self, test_client: Any) -> None:
         """Test low probability for HIT (score 0-3)"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 0,
-                "timing": 0,
-                "thrombosis": 0,
-                "other_causes": 2
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 0, "timing": 0, "thrombosis": 0, "other_causes": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Score 0-3 = Low probability
@@ -30,14 +23,7 @@ class TestFourTsHitE2E:
 
     def test_intermediate_probability(self, test_client: Any) -> None:
         """Test intermediate probability for HIT (score 4-5)"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 1,
-                "timing": 1,
-                "thrombosis": 1,
-                "other_causes": 1
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 1, "timing": 1, "thrombosis": 1, "other_causes": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Intermediate probability
@@ -45,14 +31,7 @@ class TestFourTsHitE2E:
 
     def test_high_probability(self, test_client: Any) -> None:
         """Test high probability for HIT (score 6-8)"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 2,
-                "timing": 2,
-                "thrombosis": 2,
-                "other_causes": 2
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 2, "timing": 2, "thrombosis": 2, "other_causes": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # High probability = max score 8
@@ -60,14 +39,7 @@ class TestFourTsHitE2E:
 
     def test_severe_thrombocytopenia_no_other_features(self, test_client: Any) -> None:
         """Test severe drop without other HIT features"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 2,
-                "timing": 0,
-                "thrombosis": 0,
-                "other_causes": 0
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 2, "timing": 0, "thrombosis": 0, "other_causes": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Only thrombocytopenia component
@@ -75,14 +47,7 @@ class TestFourTsHitE2E:
 
     def test_classic_timing_pattern(self, test_client: Any) -> None:
         """Test classic HIT timing (days 5-10 after heparin)"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 2,
-                "timing": 2,
-                "thrombosis": 1,
-                "other_causes": 2
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 2, "timing": 2, "thrombosis": 1, "other_causes": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Classic presentation
@@ -90,28 +55,14 @@ class TestFourTsHitE2E:
 
     def test_with_thrombosis(self, test_client: Any) -> None:
         """Test patient with confirmed new thrombosis"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 1,
-                "timing": 2,
-                "thrombosis": 2,
-                "other_causes": 1
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 1, "timing": 2, "thrombosis": 2, "other_causes": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] >= 4
 
     def test_other_causes_definite(self, test_client: Any) -> None:
         """Test when other cause is definite (score 0 for component)"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 2,
-                "timing": 2,
-                "thrombosis": 1,
-                "other_causes": 0
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 2, "timing": 2, "thrombosis": 1, "other_causes": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Definite other cause reduces suspicion
@@ -124,7 +75,7 @@ class TestFourTsHitE2E:
                 "thrombocytopenia": 2,
                 "timing": 2,  # Prior exposure within 30 days
                 "thrombosis": 1,
-                "other_causes": 2
+                "other_causes": 2,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -133,24 +84,13 @@ class TestFourTsHitE2E:
 
     def test_minimum_score(self, test_client: Any) -> None:
         """Test minimum possible score"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 0,
-                "timing": 0,
-                "thrombosis": 0,
-                "other_causes": 0
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 0, "timing": 0, "thrombosis": 0, "other_causes": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "thrombocytopenia": 2
-            }
-        }
+        payload = {"params": {"thrombocytopenia": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

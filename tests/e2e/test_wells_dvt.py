@@ -26,7 +26,7 @@ class TestWellsDvtE2E:
                 "pitting_edema": False,
                 "collateral_superficial_veins": False,
                 "previous_dvt": False,
-                "alternative_diagnosis_likely": True
+                "alternative_diagnosis_likely": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -46,7 +46,7 @@ class TestWellsDvtE2E:
                 "pitting_edema": False,
                 "collateral_superficial_veins": False,
                 "previous_dvt": False,
-                "alternative_diagnosis_likely": False
+                "alternative_diagnosis_likely": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -66,7 +66,7 @@ class TestWellsDvtE2E:
                 "pitting_edema": False,
                 "collateral_superficial_veins": False,
                 "previous_dvt": False,
-                "alternative_diagnosis_likely": False
+                "alternative_diagnosis_likely": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -86,7 +86,7 @@ class TestWellsDvtE2E:
                 "pitting_edema": False,
                 "collateral_superficial_veins": False,
                 "previous_dvt": False,
-                "alternative_diagnosis_likely": False
+                "alternative_diagnosis_likely": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -106,7 +106,7 @@ class TestWellsDvtE2E:
                 "pitting_edema": True,
                 "collateral_superficial_veins": False,
                 "previous_dvt": True,
-                "alternative_diagnosis_likely": False
+                "alternative_diagnosis_likely": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -115,10 +115,6 @@ class TestWellsDvtE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "active_cancer": True
-            }
-        }
+        payload = {"params": {"active_cancer": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert response.status_code in [200, 400, 422, 500]

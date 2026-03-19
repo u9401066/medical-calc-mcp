@@ -85,27 +85,21 @@ class TestDiscoveryFirstWorkflow:
         print("=" * 60)
 
         # Step 1: List all specialties
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES))
         assert response.success, f"Failed to list specialties: {response.error}"
         assert len(response.available_specialties) > 0
         print(f"\n✅ Step 1: Found {len(response.available_specialties)} specialties")
         print(f"   Specialties: {response.available_specialties[:5]}...")
 
         # Step 2: Browse critical_care specialty
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="critical_care")
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="critical_care"))
         assert response.success, f"Failed to list by specialty: {response.error}"
         assert len(response.tools) > 0
         print(f"\n✅ Step 2: Found {len(response.tools)} critical care tools")
         print(f"   Tools: {[t.tool_id for t in response.tools[:5]]}")
 
         # Step 3: Get info for NEWS2
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="news2_score")
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="news2_score"))
         assert response.success, f"Failed to get tool info: {response.error}"
         assert response.tool_detail is not None
         assert response.tool_detail.tool_id == "news2_score"
@@ -145,24 +139,18 @@ class TestDiscoveryFirstWorkflow:
         print("=" * 60)
 
         # Step 1: Search for sepsis-related tools
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="sofa")
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="sofa"))
         assert response.success
         tool_ids = [t.tool_id for t in response.tools]
         print(f"\n✅ Step 1: Sepsis search found {len(tool_ids)} tools")
         print(f"   Results: {tool_ids}")
 
         # Should find SOFA-related tools
-        assert any(
-            "sofa" in t.lower() for t in tool_ids
-        ), f"Should find SOFA tools, got: {tool_ids}"
+        assert any("sofa" in t.lower() for t in tool_ids), f"Should find SOFA tools, got: {tool_ids}"
 
         # Step 2: Get qSOFA info (if available)
         if "qsofa_score" in tool_ids:
-            response = discovery.execute(
-                DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="qsofa_score")
-            )
+            response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="qsofa_score"))
             assert response.success
             assert response.tool_detail is not None
             print("\n✅ Step 2: Got qSOFA info")
@@ -196,9 +184,7 @@ class TestDiscoveryFirstWorkflow:
         print("=" * 60)
 
         # Step 1: List all contexts
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.LIST_CONTEXTS)
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.LIST_CONTEXTS))
         assert response.success
         assert len(response.available_contexts) > 0
         print(f"\n✅ Step 1: Found {len(response.available_contexts)} contexts")
@@ -206,11 +192,7 @@ class TestDiscoveryFirstWorkflow:
 
         # Step 2: Browse severity_assessment context
         if "severity_assessment" in response.available_contexts:
-            response = discovery.execute(
-                DiscoveryRequest(
-                    mode=DiscoveryMode.BY_CONTEXT, context="severity_assessment"
-                )
-            )
+            response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context="severity_assessment"))
             assert response.success
             print(f"\n✅ Step 2: Found {len(response.tools)} severity tools")
             print(f"   Tools: {[t.tool_id for t in response.tools]}")
@@ -280,9 +262,7 @@ class TestClinicalWorkflows:
         print(f"2️⃣ SOFA Score: {sofa_result.result}")
 
         # Step 3: RASS assessment
-        rass_result = calculator.execute(
-            CalculateRequest(tool_id="rass", params={"rass_score": -1})
-        )
+        rass_result = calculator.execute(CalculateRequest(tool_id="rass", params={"rass_score": -1}))
         assert rass_result.success, f"RASS failed: {rass_result.error}"
         print(f"3️⃣ RASS Level: {rass_result.result}")
 
@@ -345,9 +325,7 @@ class TestClinicalWorkflows:
         print(f"2️⃣ RCRI Score: {rcri_result.result}")
 
         # Step 3: Mallampati airway assessment
-        mallampati_result = calculator.execute(
-            CalculateRequest(tool_id="mallampati_score", params={"mallampati_class": 2})
-        )
+        mallampati_result = calculator.execute(CalculateRequest(tool_id="mallampati_score", params={"mallampati_class": 2}))
         assert mallampati_result.success, f"Mallampati failed: {mallampati_result.error}"
         print(f"3️⃣ Mallampati Class: {mallampati_result.result}")
 
@@ -506,9 +484,7 @@ class TestErrorRecoveryWorkflow:
         assert any(x in error_lower for x in ["news2_score", "did you mean", "not found"])
 
         # Step 3: Use search to find correct tool
-        search_response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="news2")
-        )
+        search_response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="news2"))
         assert search_response.success
         tool_ids = [t.tool_id for t in search_response.tools]
         print(f"\n✅ Step 3: Search found: {tool_ids}")
@@ -563,9 +539,7 @@ class TestErrorRecoveryWorkflow:
             print(f"   📋 Template provided: {response.component_scores['param_template']}")
 
         # Step 3: Get full parameter info
-        info_response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="ckd_epi_2021")
-        )
+        info_response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="ckd_epi_2021"))
         assert info_response.success
         assert info_response.tool_detail is not None
         print(f"\n✅ Step 3: Required params: {info_response.tool_detail.input_params}")
@@ -652,17 +626,13 @@ class TestAgentSimulation:
 
         # Step 1: Agent searches for kidney-related tools
         print("\n🔍 Agent: Searching for kidney function tools...")
-        search_response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="kidney eGFR creatinine")
-        )
+        search_response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.SEARCH, query="kidney eGFR creatinine"))
         assert search_response.success
         print(f"   Found: {[t.tool_id for t in search_response.tools]}")
 
         # Step 2: Agent selects CKD-EPI
         print("\n📋 Agent: Getting CKD-EPI 2021 info...")
-        info_response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="ckd_epi_2021")
-        )
+        info_response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="ckd_epi_2021"))
         assert info_response.success
         assert info_response.tool_detail is not None
         print(f"   Description: {info_response.tool_detail.purpose[:80]}...")
@@ -702,9 +672,7 @@ class TestAgentSimulation:
 
         # Step 1: List specialties to understand scope
         print("\n📊 Agent: Reviewing available specialties...")
-        spec_response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
-        )
+        spec_response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES))
         assert spec_response.success
         print(f"   Available: {spec_response.available_specialties}")
 
@@ -779,18 +747,14 @@ class TestEdgeCases:
 
     def test_list_all_tools(self, discovery: DiscoveryUseCase) -> None:
         """Test: 列出所有可用工具"""
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=100)
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=100))
         assert response.success
         assert len(response.tools) > 50  # Should have many tools
         print(f"\n✅ Total tools available: {len(response.tools)}")
 
     def test_invalid_specialty(self, discovery: DiscoveryUseCase) -> None:
         """Test: 無效專科名稱處理"""
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="invalid_specialty_xyz")
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="invalid_specialty_xyz"))
         assert not response.success
         assert response.error is not None
         error_lower = response.error.lower()
@@ -802,18 +766,14 @@ class TestEdgeCases:
 
     def test_invalid_context(self, discovery: DiscoveryUseCase) -> None:
         """Test: 無效臨床情境處理"""
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context="invalid_context_xyz")
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context="invalid_context_xyz"))
         assert not response.success
         assert len(response.available_contexts) > 0
         print(f"\n✅ Error handled, available contexts: {response.available_contexts}")
 
     def test_tool_not_found(self, discovery: DiscoveryUseCase) -> None:
         """Test: 工具不存在處理"""
-        response = discovery.execute(
-            DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="nonexistent_tool_xyz")
-        )
+        response = discovery.execute(DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="nonexistent_tool_xyz"))
         assert not response.success
         assert response.error is not None
         assert "not found" in response.error.lower()

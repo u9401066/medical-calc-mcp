@@ -20,6 +20,7 @@ if str(project_root) not in sys.path:
 # Workflow 1: Sepsis Evaluation (Sepsis-3 Guidelines)
 # =============================================================================
 
+
 def workflow_sepsis_evaluation() -> None:
     """
     Complete sepsis workup following Sepsis-3 guidelines.
@@ -42,11 +43,7 @@ def workflow_sepsis_evaluation() -> None:
     print("Step 1: qSOFA (Quick SOFA) - Bedside Screening")
     print("-" * 50)
     qsofa = QsofaScoreCalculator()
-    qsofa_result: Any = qsofa.calculate(
-        respiratory_rate=24,
-        systolic_bp=95,
-        altered_mentation=True
-    )
+    qsofa_result: Any = qsofa.calculate(respiratory_rate=24, systolic_bp=95, altered_mentation=True)
     print(f"  Score: {int(qsofa_result.value)}/3")
     print(f"  Result: {qsofa_result.interpretation.summary}")
 
@@ -57,13 +54,7 @@ def workflow_sepsis_evaluation() -> None:
         print("Step 2: SOFA Score - Organ Dysfunction Assessment")
         print("-" * 50)
         sofa = SofaScoreCalculator()
-        sofa_result: Any = sofa.calculate(
-            pao2_fio2_ratio=250,
-            platelets=120,
-            bilirubin=1.5,
-            gcs_score=14,
-            creatinine=1.8
-        )
+        sofa_result: Any = sofa.calculate(pao2_fio2_ratio=250, platelets=120, bilirubin=1.5, gcs_score=14, creatinine=1.8)
         print(f"  Score: {int(sofa_result.value)}/24")
         print(f"  Result: {sofa_result.interpretation.summary}")
 
@@ -82,12 +73,7 @@ def workflow_sepsis_evaluation() -> None:
     print("\nStep 4: CAM-ICU - Delirium Screening")
     print("-" * 50)
     cam_icu = CamIcuCalculator()
-    cam_result: Any = cam_icu.calculate(
-        rass_score=0,
-        acute_onset_fluctuation=True,
-        inattention_score=4,
-        disorganized_thinking_errors=1
-    )
+    cam_result: Any = cam_icu.calculate(rass_score=0, acute_onset_fluctuation=True, inattention_score=4, disorganized_thinking_errors=1)
     print(f"  Result: {'POSITIVE (Delirium)' if cam_result.value == 1 else 'NEGATIVE'}")
     print(f"  Summary: {cam_result.interpretation.summary}")
 
@@ -97,6 +83,7 @@ def workflow_sepsis_evaluation() -> None:
 # =============================================================================
 # Workflow 2: Preoperative Risk Assessment
 # =============================================================================
+
 
 def workflow_preoperative_assessment() -> None:
     """
@@ -134,7 +121,7 @@ def workflow_preoperative_assessment() -> None:
         heart_failure=False,
         cerebrovascular_disease=False,
         insulin_diabetes=True,
-        creatinine_above_2=False
+        creatinine_above_2=False,
     )
     print(f"  Score: {int(rcri_result.value)}/6")
     print(f"  Summary: {rcri_result.interpretation.summary}")
@@ -151,12 +138,7 @@ def workflow_preoperative_assessment() -> None:
     print("\nStep 4: MABL - Maximum Allowable Blood Loss")
     print("-" * 50)
     mabl = MablCalculator()
-    mabl_result: Any = mabl.calculate(
-        weight_kg=65,
-        initial_hematocrit=38,
-        target_hematocrit=25,
-        patient_type="adult_female"
-    )
+    mabl_result: Any = mabl.calculate(weight_kg=65, initial_hematocrit=38, target_hematocrit=25, patient_type="adult_female")
     print(f"  MABL: {int(mabl_result.value)} mL")
     print(f"  Summary: {mabl_result.interpretation.summary}")
 
@@ -166,6 +148,7 @@ def workflow_preoperative_assessment() -> None:
 # =============================================================================
 # Workflow 3: Chest Pain Evaluation (ED)
 # =============================================================================
+
 
 def workflow_chest_pain_ed() -> None:
     """
@@ -188,11 +171,11 @@ def workflow_chest_pain_ed() -> None:
     print("-" * 50)
     heart = HeartScoreCalculator()
     heart_result: Any = heart.calculate(
-        history_score=2,        # Highly suspicious
-        ecg_score=1,            # Non-specific changes
-        age_score=1,            # 45-64 years
-        risk_factors_score=2,   # ≥3 risk factors
-        troponin_score=1        # 1-3x ULN
+        history_score=2,  # Highly suspicious
+        ecg_score=1,  # Non-specific changes
+        age_score=1,  # 45-64 years
+        risk_factors_score=2,  # ≥3 risk factors
+        troponin_score=1,  # 1-3x ULN
     )
     print(f"  Score: {int(heart_result.value)}/10")
     print(f"  Summary: {heart_result.interpretation.summary}")
@@ -211,7 +194,7 @@ def workflow_chest_pain_ed() -> None:
         immobilization_or_surgery=False,
         previous_dvt_pe=False,
         hemoptysis=False,
-        malignancy=False
+        malignancy=False,
     )
     print(f"  Score: {wells_result.value}")
     print(f"  Summary: {wells_result.interpretation.summary}")
@@ -222,6 +205,7 @@ def workflow_chest_pain_ed() -> None:
 # =============================================================================
 # Workflow 4: AF Anticoagulation Decision
 # =============================================================================
+
 
 def workflow_af_anticoagulation() -> None:
     """
@@ -243,12 +227,12 @@ def workflow_af_anticoagulation() -> None:
     result: Any = chads.calculate(
         chf_or_lvef_lte_40=False,
         hypertension=True,
-        age_gte_75=True,           # +2 points
+        age_gte_75=True,  # +2 points
         diabetes=False,
         stroke_tia_or_te_history=True,  # +2 points
         vascular_disease=False,
-        age_65_to_74=False,        # Not applicable (≥75)
-        female_sex=True            # +1 point
+        age_65_to_74=False,  # Not applicable (≥75)
+        female_sex=True,  # +1 point
     )
     print(f"  Score: {int(result.value)}/9")
     print(f"  Summary: {result.interpretation.summary}")

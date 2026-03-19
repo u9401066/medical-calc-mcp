@@ -15,90 +15,42 @@ class TestHeartScoreE2E:
 
     def test_low_risk_score_0(self, test_client: Any) -> None:
         """Test low risk - HEART score 0"""
-        payload = {
-            "params": {
-                "history_score": 0,
-                "ecg_score": 0,
-                "age_score": 0,
-                "risk_factors_score": 0,
-                "troponin_score": 0
-            }
-        }
+        payload = {"params": {"history_score": 0, "ecg_score": 0, "age_score": 0, "risk_factors_score": 0, "troponin_score": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 0
 
     def test_low_risk_score_3(self, test_client: Any) -> None:
         """Test low risk - HEART score 3"""
-        payload = {
-            "params": {
-                "history_score": 1,
-                "ecg_score": 0,
-                "age_score": 1,
-                "risk_factors_score": 1,
-                "troponin_score": 0
-            }
-        }
+        payload = {"params": {"history_score": 1, "ecg_score": 0, "age_score": 1, "risk_factors_score": 1, "troponin_score": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 3
 
     def test_moderate_risk_score_4(self, test_client: Any) -> None:
         """Test moderate risk - HEART score 4"""
-        payload = {
-            "params": {
-                "history_score": 1,
-                "ecg_score": 1,
-                "age_score": 1,
-                "risk_factors_score": 1,
-                "troponin_score": 0
-            }
-        }
+        payload = {"params": {"history_score": 1, "ecg_score": 1, "age_score": 1, "risk_factors_score": 1, "troponin_score": 0}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 4
 
     def test_moderate_risk_score_6(self, test_client: Any) -> None:
         """Test moderate risk - HEART score 6"""
-        payload = {
-            "params": {
-                "history_score": 2,
-                "ecg_score": 1,
-                "age_score": 1,
-                "risk_factors_score": 1,
-                "troponin_score": 1
-            }
-        }
+        payload = {"params": {"history_score": 2, "ecg_score": 1, "age_score": 1, "risk_factors_score": 1, "troponin_score": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 6
 
     def test_high_risk_score_7(self, test_client: Any) -> None:
         """Test high risk - HEART score ≥7"""
-        payload = {
-            "params": {
-                "history_score": 2,
-                "ecg_score": 2,
-                "age_score": 1,
-                "risk_factors_score": 1,
-                "troponin_score": 1
-            }
-        }
+        payload = {"params": {"history_score": 2, "ecg_score": 2, "age_score": 1, "risk_factors_score": 1, "troponin_score": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 7
 
     def test_maximum_score_10(self, test_client: Any) -> None:
         """Test maximum HEART score 10"""
-        payload = {
-            "params": {
-                "history_score": 2,
-                "ecg_score": 2,
-                "age_score": 2,
-                "risk_factors_score": 2,
-                "troponin_score": 2
-            }
-        }
+        payload = {"params": {"history_score": 2, "ecg_score": 2, "age_score": 2, "risk_factors_score": 2, "troponin_score": 2}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] == 10
@@ -108,10 +60,10 @@ class TestHeartScoreE2E:
         payload = {
             "params": {
                 "history_score": 2,  # Highly suspicious
-                "ecg_score": 2,      # Significant ST depression
-                "age_score": 2,      # ≥65 years
+                "ecg_score": 2,  # Significant ST depression
+                "age_score": 2,  # ≥65 years
                 "risk_factors_score": 2,  # ≥3 risk factors or known CAD
-                "troponin_score": 1  # 1-3x normal
+                "troponin_score": 1,  # 1-3x normal
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -123,10 +75,10 @@ class TestHeartScoreE2E:
         payload = {
             "params": {
                 "history_score": 0,  # Slightly suspicious
-                "ecg_score": 0,      # Normal
-                "age_score": 0,      # <45 years
+                "ecg_score": 0,  # Normal
+                "age_score": 0,  # <45 years
                 "risk_factors_score": 0,  # No risk factors
-                "troponin_score": 0  # Normal
+                "troponin_score": 0,  # Normal
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -141,7 +93,7 @@ class TestHeartScoreE2E:
                 "ecg_score": 0,
                 "age_score": 0,
                 "risk_factors_score": 0,
-                "troponin_score": 0
+                "troponin_score": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -149,10 +101,6 @@ class TestHeartScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "history_score": 1
-            }
-        }
+        payload = {"params": {"history_score": 1}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

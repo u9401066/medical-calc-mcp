@@ -23,7 +23,7 @@ class TestTimiStemiCalculator:
             killip_class=1,
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=False,
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.value is not None
@@ -46,7 +46,7 @@ class TestTimiStemiCalculator:
             killip_class=1,
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=False,
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.value is not None
@@ -67,7 +67,7 @@ class TestTimiStemiCalculator:
             killip_class=1,
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=True,  # +1
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.value is not None
@@ -88,7 +88,7 @@ class TestTimiStemiCalculator:
             killip_class=1,
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=True,  # +1
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.value is not None
@@ -109,7 +109,7 @@ class TestTimiStemiCalculator:
             killip_class=2,  # +2 for Killip II-IV
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=False,
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.value is not None
@@ -130,7 +130,7 @@ class TestTimiStemiCalculator:
             killip_class=1,
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=False,
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.value is not None
@@ -153,7 +153,7 @@ class TestTimiStemiCalculator:
                 killip_class=5,  # Invalid
                 weight_lt_67kg=False,
                 anterior_ste_or_lbbb=False,
-                time_to_treatment_gt_4h=False
+                time_to_treatment_gt_4h=False,
             )
 
     def test_cardiogenic_shock_scenario(self) -> None:
@@ -169,7 +169,7 @@ class TestTimiStemiCalculator:
             killip_class=4,  # +2 (cardiogenic shock)
             weight_lt_67kg=True,  # +1
             anterior_ste_or_lbbb=True,  # +1
-            time_to_treatment_gt_4h=True  # +1
+            time_to_treatment_gt_4h=True,  # +1
         )
 
         assert result.value is not None
@@ -197,7 +197,7 @@ class TestTimiStemiCalculator:
             killip_class=1,
             weight_lt_67kg=False,
             anterior_ste_or_lbbb=False,
-            time_to_treatment_gt_4h=False
+            time_to_treatment_gt_4h=False,
         )
 
         assert result.references is not None
@@ -219,7 +219,7 @@ class TestRockallScoreCalculator:
             shock_status="none",  # 0 pts
             comorbidity="none",  # 0 pts
             diagnosis="mallory_weiss_no_lesion",  # 0 pts
-            stigmata_of_recent_hemorrhage="none_or_dark_spot"  # 0 pts
+            stigmata_of_recent_hemorrhage="none_or_dark_spot",  # 0 pts
         )
 
         assert result.value is not None
@@ -237,7 +237,7 @@ class TestRockallScoreCalculator:
             shock_status="hypotension",  # 2 pts
             comorbidity="renal_liver_malignancy",  # 3 pts
             diagnosis="gi_malignancy",  # 2 pts
-            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel"  # 2 pts
+            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel",  # 2 pts
         )
 
         assert result.value is not None
@@ -255,7 +255,7 @@ class TestRockallScoreCalculator:
             shock_status="tachycardia",  # 1 pt
             comorbidity="cardiac_major",  # 2 pts (has CHF)
             diagnosis="other_diagnosis",  # 1 pt (peptic ulcer)
-            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel"  # 2 pts
+            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel",  # 2 pts
         )
 
         assert result.value is not None
@@ -273,7 +273,7 @@ class TestRockallScoreCalculator:
             shock_status="none",  # 0 pts
             comorbidity="none",  # 0 pts
             diagnosis="mallory_weiss_no_lesion",  # 0 pts
-            stigmata_of_recent_hemorrhage="none_or_dark_spot"  # 0 pts
+            stigmata_of_recent_hemorrhage="none_or_dark_spot",  # 0 pts
         )
 
         assert result.value is not None
@@ -291,7 +291,7 @@ class TestRockallScoreCalculator:
             shock_status="none",
             comorbidity="none",
             diagnosis="mallory_weiss_no_lesion",
-            stigmata_of_recent_hemorrhage="none_or_dark_spot"
+            stigmata_of_recent_hemorrhage="none_or_dark_spot",
         )
 
         assert result.value is not None
@@ -309,7 +309,7 @@ class TestRockallScoreCalculator:
             shock_status="none",
             comorbidity="none",
             diagnosis="mallory_weiss_no_lesion",
-            stigmata_of_recent_hemorrhage="none_or_dark_spot"
+            stigmata_of_recent_hemorrhage="none_or_dark_spot",
         )
 
         assert result.value is not None
@@ -327,7 +327,7 @@ class TestRockallScoreCalculator:
             shock_status="hypotension",  # 2 pts
             comorbidity="cardiac_major",  # 2 pts
             diagnosis="gi_malignancy",  # 2 pts
-            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel"  # 2 pts
+            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel",  # 2 pts
         )
 
         # Full score = 1+2+2+2+2 = 9
@@ -350,11 +350,7 @@ class TestRockallScoreCalculator:
 
         calc = RockallScoreCalculator()
         result = calc.calculate(
-            age_years=50,
-            shock_status="none",
-            comorbidity="none",
-            diagnosis="mallory_weiss_no_lesion",
-            stigmata_of_recent_hemorrhage="none_or_dark_spot"
+            age_years=50, shock_status="none", comorbidity="none", diagnosis="mallory_weiss_no_lesion", stigmata_of_recent_hemorrhage="none_or_dark_spot"
         )
 
         assert result.references is not None
@@ -372,7 +368,7 @@ class TestRockallScoreCalculator:
             shock_status="hypotension",
             comorbidity="renal_liver_malignancy",
             diagnosis="other_diagnosis",
-            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel"
+            stigmata_of_recent_hemorrhage="blood_clot_visible_vessel",
         )
 
         assert result.calculation_details is not None
@@ -393,7 +389,7 @@ class TestFib4IndexCalculator:
             age_years=40,
             ast=25,  # Normal
             alt=30,  # Normal
-            platelet_count=250  # Normal
+            platelet_count=250,  # Normal
         )
 
         # FIB-4 = (40 × 25) / (250 × √30) = 1000 / 1369.3 ≈ 0.73
@@ -413,7 +409,7 @@ class TestFib4IndexCalculator:
             age_years=55,
             ast=85,  # Elevated
             alt=60,  # Elevated
-            platelet_count=90  # Low (cirrhosis)
+            platelet_count=90,  # Low (cirrhosis)
         )
 
         # FIB-4 = (55 × 85) / (90 × √60) = 4675 / 697.1 ≈ 6.71
@@ -429,12 +425,7 @@ class TestFib4IndexCalculator:
         from src.domain.services.calculators import Fib4IndexCalculator
 
         calc = Fib4IndexCalculator()
-        result = calc.calculate(
-            age_years=50,
-            ast=45,
-            alt=50,
-            platelet_count=180
-        )
+        result = calc.calculate(age_years=50, ast=45, alt=50, platelet_count=180)
 
         # FIB-4 = (50 × 45) / (180 × √50) = 2250 / 1272.8 ≈ 1.77
         assert result.value is not None
@@ -447,12 +438,7 @@ class TestFib4IndexCalculator:
         from src.domain.services.calculators import Fib4IndexCalculator
 
         calc = Fib4IndexCalculator()
-        result = calc.calculate(
-            age_years=70,
-            ast=35,
-            alt=30,
-            platelet_count=150
-        )
+        result = calc.calculate(age_years=70, ast=35, alt=30, platelet_count=150)
 
         # Verify age-adjusted cutoffs are used
         assert result.calculation_details is not None
@@ -467,12 +453,7 @@ class TestFib4IndexCalculator:
         from src.domain.services.calculators import Fib4IndexCalculator
 
         calc = Fib4IndexCalculator()
-        result = calc.calculate(
-            age_years=45,
-            ast=30,
-            alt=35,
-            platelet_count=200
-        )
+        result = calc.calculate(age_years=45, ast=30, alt=35, platelet_count=200)
 
         assert result.calculation_details is not None
         assert result.calculation_details["using_age_adjusted_cutoffs"] is False
@@ -492,7 +473,7 @@ class TestFib4IndexCalculator:
             age_years=50,
             ast=40,
             alt=36,  # Perfect square for easy calculation
-            platelet_count=200
+            platelet_count=200,
         )
 
         # FIB-4 = (50 × 40) / (200 × √36) = 2000 / (200 × 6) = 2000 / 1200 = 1.67
@@ -509,7 +490,7 @@ class TestFib4IndexCalculator:
             age_years=52,
             ast=48,
             alt=62,  # ALT > AST typical for NAFLD
-            platelet_count=195
+            platelet_count=195,
         )
 
         # Result should be in determinate range
@@ -527,7 +508,7 @@ class TestFib4IndexCalculator:
             age_years=58,
             ast=95,  # AST > ALT typical for cirrhosis
             alt=65,
-            platelet_count=75  # Low platelets
+            platelet_count=75,  # Low platelets
         )
 
         assert result.value is not None
@@ -547,12 +528,7 @@ class TestFib4IndexCalculator:
         from src.domain.services.calculators import Fib4IndexCalculator
 
         calc = Fib4IndexCalculator()
-        result = calc.calculate(
-            age_years=45,
-            ast=30,
-            alt=35,
-            platelet_count=220
-        )
+        result = calc.calculate(age_years=45, ast=30, alt=35, platelet_count=220)
 
         assert result.references is not None
         assert len(result.references) >= 1
@@ -562,4 +538,3 @@ class TestFib4IndexCalculator:
 
 # Import needed for test
 from src.domain.value_objects.interpretation import RiskLevel
-

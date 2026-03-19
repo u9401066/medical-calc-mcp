@@ -36,13 +36,16 @@ class TestHuntHessCalculator:
         assert calculator.references[0].pmid == "5635959"
         assert calculator.references[0].year == 1968
 
-    @pytest.mark.parametrize("grade,expected_severity", [
-        (1, "MILD"),
-        (2, "MILD"),
-        (3, "MODERATE"),
-        (4, "SEVERE"),
-        (5, "CRITICAL"),
-    ])
+    @pytest.mark.parametrize(
+        "grade,expected_severity",
+        [
+            (1, "MILD"),
+            (2, "MILD"),
+            (3, "MODERATE"),
+            (4, "SEVERE"),
+            (5, "CRITICAL"),
+        ],
+    )
     def test_grade_severity_mapping(self, calculator: Any, grade: Any, expected_severity: Any) -> None:
         """Test grade to severity mapping"""
         result = calculator.calculate(grade=grade)
@@ -203,12 +206,7 @@ class TestFourScoreCalculator:
 
     def test_maximum_score_16(self, calculator: Any) -> None:
         """Test maximum FOUR Score = 16 (fully responsive)"""
-        result = calculator.calculate(
-            eye_response=4,
-            motor_response=4,
-            brainstem_reflexes=4,
-            respiration=4
-        )
+        result = calculator.calculate(eye_response=4, motor_response=4, brainstem_reflexes=4, respiration=4)
         assert result.value is not None
         assert result.value == 16
         assert result.calculation_details is not None
@@ -220,12 +218,7 @@ class TestFourScoreCalculator:
 
     def test_minimum_score_0_brain_death(self, calculator: Any) -> None:
         """Test FOUR Score = 0 (possible brain death)"""
-        result = calculator.calculate(
-            eye_response=0,
-            motor_response=0,
-            brainstem_reflexes=0,
-            respiration=0
-        )
+        result = calculator.calculate(eye_response=0, motor_response=0, brainstem_reflexes=0, respiration=0)
         assert result.value is not None
         assert result.value == 0
         assert result.calculation_details is not None
@@ -244,7 +237,7 @@ class TestFourScoreCalculator:
             eye_response=2,
             motor_response=2,
             brainstem_reflexes=1,  # Absent pupil AND corneal
-            respiration=1
+            respiration=1,
         )
         assert result.value is not None
         assert result.value == 6
@@ -254,12 +247,7 @@ class TestFourScoreCalculator:
 
     def test_moderate_impairment(self, calculator: Any) -> None:
         """Test moderate impairment"""
-        result = calculator.calculate(
-            eye_response=3,
-            motor_response=3,
-            brainstem_reflexes=4,
-            respiration=2
-        )
+        result = calculator.calculate(eye_response=3, motor_response=3, brainstem_reflexes=4, respiration=2)
         assert result.value is not None
         assert result.value == 12
         assert result.interpretation.severity is not None
@@ -268,12 +256,7 @@ class TestFourScoreCalculator:
 
     def test_component_descriptions(self, calculator: Any) -> None:
         """Test component descriptions are provided"""
-        result = calculator.calculate(
-            eye_response=2,
-            motor_response=3,
-            brainstem_reflexes=4,
-            respiration=1
-        )
+        result = calculator.calculate(eye_response=2, motor_response=3, brainstem_reflexes=4, respiration=1)
         assert result.calculation_details is not None
         details = result.calculation_details["components"]
         assert "description" in details["eye_response"]
@@ -281,20 +264,18 @@ class TestFourScoreCalculator:
         assert "description" in details["brainstem_reflexes"]
         assert "description" in details["respiration"]
 
-    @pytest.mark.parametrize("component,value", [
-        ("eye_response", 5),
-        ("motor_response", -1),
-        ("brainstem_reflexes", 6),
-        ("respiration", 10),
-    ])
+    @pytest.mark.parametrize(
+        "component,value",
+        [
+            ("eye_response", 5),
+            ("motor_response", -1),
+            ("brainstem_reflexes", 6),
+            ("respiration", 10),
+        ],
+    )
     def test_invalid_inputs(self, calculator: Any, component: Any, value: Any) -> None:
         """Test invalid input values raise errors"""
-        valid_params = {
-            "eye_response": 2,
-            "motor_response": 2,
-            "brainstem_reflexes": 2,
-            "respiration": 2
-        }
+        valid_params = {"eye_response": 2, "motor_response": 2, "brainstem_reflexes": 2, "respiration": 2}
         valid_params[component] = value
         with pytest.raises(ValueError):
             calculator.calculate(**valid_params)
@@ -317,13 +298,7 @@ class TestIchScoreCalculator:
 
     def test_score_0_excellent_prognosis(self, calculator: Any) -> None:
         """Test ICH Score 0 - excellent prognosis (0% mortality)"""
-        result = calculator.calculate(
-            gcs_score=15,
-            ich_volume_ml=10,
-            ivh_present=False,
-            infratentorial=False,
-            age=50
-        )
+        result = calculator.calculate(gcs_score=15, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=50)
         assert result.value is not None
         assert result.value == 0
         assert result.calculation_details is not None
@@ -336,11 +311,11 @@ class TestIchScoreCalculator:
     def test_score_6_maximum(self, calculator: Any) -> None:
         """Test ICH Score 6 - maximum score"""
         result = calculator.calculate(
-            gcs_score=3,      # 2 points
-            ich_volume_ml=50, # 1 point (≥30mL)
-            ivh_present=True, # 1 point
-            infratentorial=True, # 1 point
-            age=85            # 1 point (≥80)
+            gcs_score=3,  # 2 points
+            ich_volume_ml=50,  # 1 point (≥30mL)
+            ivh_present=True,  # 1 point
+            infratentorial=True,  # 1 point
+            age=85,  # 1 point (≥80)
         )
         assert result.value is not None
         assert result.value == 6
@@ -353,71 +328,47 @@ class TestIchScoreCalculator:
     def test_gcs_scoring(self, calculator: Any) -> None:
         """Test GCS component scoring"""
         # GCS 3-4 = 2 points
-        result = calculator.calculate(
-            gcs_score=4, ich_volume_ml=10, ivh_present=False,
-            infratentorial=False, age=50
-        )
+        result = calculator.calculate(gcs_score=4, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=50)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["gcs"]["points"] == 2
 
         # GCS 5-12 = 1 point
-        result = calculator.calculate(
-            gcs_score=10, ich_volume_ml=10, ivh_present=False,
-            infratentorial=False, age=50
-        )
+        result = calculator.calculate(gcs_score=10, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=50)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["gcs"]["points"] == 1
 
         # GCS 13-15 = 0 points
-        result = calculator.calculate(
-            gcs_score=14, ich_volume_ml=10, ivh_present=False,
-            infratentorial=False, age=50
-        )
+        result = calculator.calculate(gcs_score=14, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=50)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["gcs"]["points"] == 0
 
     def test_volume_threshold(self, calculator: Any) -> None:
         """Test ICH volume threshold at 30mL"""
         # Below threshold
-        result = calculator.calculate(
-            gcs_score=15, ich_volume_ml=29.9, ivh_present=False,
-            infratentorial=False, age=50
-        )
+        result = calculator.calculate(gcs_score=15, ich_volume_ml=29.9, ivh_present=False, infratentorial=False, age=50)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["ich_volume"]["points"] == 0
 
         # At threshold
-        result = calculator.calculate(
-            gcs_score=15, ich_volume_ml=30.0, ivh_present=False,
-            infratentorial=False, age=50
-        )
+        result = calculator.calculate(gcs_score=15, ich_volume_ml=30.0, ivh_present=False, infratentorial=False, age=50)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["ich_volume"]["points"] == 1
 
     def test_age_threshold(self, calculator: Any) -> None:
         """Test age threshold at 80 years"""
         # Below threshold
-        result = calculator.calculate(
-            gcs_score=15, ich_volume_ml=10, ivh_present=False,
-            infratentorial=False, age=79
-        )
+        result = calculator.calculate(gcs_score=15, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=79)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["age"]["points"] == 0
 
         # At/above threshold
-        result = calculator.calculate(
-            gcs_score=15, ich_volume_ml=10, ivh_present=False,
-            infratentorial=False, age=80
-        )
+        result = calculator.calculate(gcs_score=15, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=80)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["age"]["points"] == 1
 
     def test_ivh_and_infratentorial(self, calculator: Any) -> None:
         """Test IVH and infratentorial components"""
-        result = calculator.calculate(
-            gcs_score=15, ich_volume_ml=10, ivh_present=True,
-            infratentorial=True, age=50
-        )
+        result = calculator.calculate(gcs_score=15, ich_volume_ml=10, ivh_present=True, infratentorial=True, age=50)
         assert result.calculation_details is not None
         assert result.calculation_details["components"]["ivh"]["points"] == 1
         assert result.calculation_details is not None
@@ -425,23 +376,20 @@ class TestIchScoreCalculator:
         assert result.value is not None
         assert result.value == 2
 
-    @pytest.mark.parametrize("score,mortality", [
-        (0, "0%"),
-        (1, "13%"),
-        (2, "26%"),
-        (3, "72%"),
-        (4, "97%"),
-    ])
+    @pytest.mark.parametrize(
+        "score,mortality",
+        [
+            (0, "0%"),
+            (1, "13%"),
+            (2, "26%"),
+            (3, "72%"),
+            (4, "97%"),
+        ],
+    )
     def test_mortality_by_score(self, calculator: Any, score: Any, mortality: Any) -> None:
         """Test 30-day mortality by ICH score"""
         # Create inputs to achieve specific score
-        params = {
-            "gcs_score": 15,
-            "ich_volume_ml": 10,
-            "ivh_present": False,
-            "infratentorial": False,
-            "age": 50
-        }
+        params = {"gcs_score": 15, "ich_volume_ml": 10, "ivh_present": False, "infratentorial": False, "age": 50}
 
         # Adjust to get target score
         points_needed = score
@@ -465,15 +413,9 @@ class TestIchScoreCalculator:
     def test_invalid_gcs(self, calculator: Any) -> None:
         """Test invalid GCS values"""
         with pytest.raises(ValueError):
-            calculator.calculate(
-                gcs_score=2, ich_volume_ml=10, ivh_present=False,
-                infratentorial=False, age=50
-            )
+            calculator.calculate(gcs_score=2, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=50)
         with pytest.raises(ValueError):
-            calculator.calculate(
-                gcs_score=16, ich_volume_ml=10, ivh_present=False,
-                infratentorial=False, age=50
-            )
+            calculator.calculate(gcs_score=16, ich_volume_ml=10, ivh_present=False, infratentorial=False, age=50)
 
 
 class TestNeurologyIntegration:
@@ -506,12 +448,7 @@ class TestNeurologyIntegration:
         four_calc = FourScoreCalculator()
 
         # Moderate coma patient
-        result = four_calc.calculate(
-            eye_response=1,
-            motor_response=2,
-            brainstem_reflexes=4,
-            respiration=1
-        )
+        result = four_calc.calculate(eye_response=1, motor_response=2, brainstem_reflexes=4, respiration=1)
 
         assert result.value is not None
         assert result.value == 8
@@ -526,13 +463,7 @@ class TestNeurologyIntegration:
         ich_calc = IchScoreCalculator()
 
         # High score patient
-        result = ich_calc.calculate(
-            gcs_score=4,
-            ich_volume_ml=60,
-            ivh_present=True,
-            infratentorial=False,
-            age=85
-        )
+        result = ich_calc.calculate(gcs_score=4, ich_volume_ml=60, ivh_present=True, infratentorial=False, age=85)
 
         # Score should be 5 (2+1+1+1)
         assert result.value is not None

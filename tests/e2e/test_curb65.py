@@ -21,7 +21,7 @@ class TestCurb65E2E:
                 "bun_gt_19_or_urea_gt_7": False,
                 "respiratory_rate_gte_30": False,
                 "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": False
+                "age_gte_65": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -36,7 +36,7 @@ class TestCurb65E2E:
                 "bun_gt_19_or_urea_gt_7": False,
                 "respiratory_rate_gte_30": False,
                 "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": True
+                "age_gte_65": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -51,7 +51,7 @@ class TestCurb65E2E:
                 "bun_gt_19_or_urea_gt_7": False,
                 "respiratory_rate_gte_30": False,
                 "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": True
+                "age_gte_65": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -66,7 +66,7 @@ class TestCurb65E2E:
                 "bun_gt_19_or_urea_gt_7": True,
                 "respiratory_rate_gte_30": False,
                 "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": True
+                "age_gte_65": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -76,13 +76,7 @@ class TestCurb65E2E:
     def test_very_high_risk_score_4(self, test_client: Any) -> None:
         """Test very high risk - CURB-65 score 4"""
         payload = {
-            "params": {
-                "confusion": True,
-                "bun_gt_19_or_urea_gt_7": True,
-                "respiratory_rate_gte_30": True,
-                "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": True
-            }
+            "params": {"confusion": True, "bun_gt_19_or_urea_gt_7": True, "respiratory_rate_gte_30": True, "sbp_lt_90_or_dbp_lte_60": False, "age_gte_65": True}
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
@@ -91,13 +85,7 @@ class TestCurb65E2E:
     def test_maximum_risk_score_5(self, test_client: Any) -> None:
         """Test maximum risk - CURB-65 score 5"""
         payload = {
-            "params": {
-                "confusion": True,
-                "bun_gt_19_or_urea_gt_7": True,
-                "respiratory_rate_gte_30": True,
-                "sbp_lt_90_or_dbp_lte_60": True,
-                "age_gte_65": True
-            }
+            "params": {"confusion": True, "bun_gt_19_or_urea_gt_7": True, "respiratory_rate_gte_30": True, "sbp_lt_90_or_dbp_lte_60": True, "age_gte_65": True}
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
@@ -106,13 +94,7 @@ class TestCurb65E2E:
     def test_young_severe_pneumonia(self, test_client: Any) -> None:
         """Test young patient with severe pneumonia"""
         payload = {
-            "params": {
-                "confusion": True,
-                "bun_gt_19_or_urea_gt_7": True,
-                "respiratory_rate_gte_30": True,
-                "sbp_lt_90_or_dbp_lte_60": True,
-                "age_gte_65": False
-            }
+            "params": {"confusion": True, "bun_gt_19_or_urea_gt_7": True, "respiratory_rate_gte_30": True, "sbp_lt_90_or_dbp_lte_60": True, "age_gte_65": False}
         }
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
@@ -126,7 +108,7 @@ class TestCurb65E2E:
                 "bun_gt_19_or_urea_gt_7": False,
                 "respiratory_rate_gte_30": False,
                 "sbp_lt_90_or_dbp_lte_60": False,
-                "age_gte_65": True
+                "age_gte_65": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -135,10 +117,6 @@ class TestCurb65E2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "confusion": True
-            }
-        }
+        payload = {"params": {"confusion": True}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

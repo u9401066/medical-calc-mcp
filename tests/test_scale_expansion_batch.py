@@ -1,3 +1,5 @@
+# ruff: noqa: I001
+
 from typing import Any
 
 import pytest

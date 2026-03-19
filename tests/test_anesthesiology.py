@@ -5,7 +5,6 @@ Tests ASA Physical Status, Mallampati, and RCRI calculators.
 """
 
 
-
 class TestAsaPhysicalStatus:
     """Tests for ASA Physical Status Classification."""
 
@@ -245,7 +244,7 @@ class TestApfelPonvCalculator:
             female_gender=False,
             history_motion_sickness_or_ponv=False,
             non_smoker=False,  # Smoker
-            postoperative_opioids=False
+            postoperative_opioids=False,
         )
 
         assert result.value is not None
@@ -260,12 +259,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=True,
-            history_motion_sickness_or_ponv=False,
-            non_smoker=False,
-            postoperative_opioids=False
-        )
+        result = calc.calculate(female_gender=True, history_motion_sickness_or_ponv=False, non_smoker=False, postoperative_opioids=False)
 
         assert result.value is not None
         assert result.value == 1
@@ -277,12 +271,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=True,
-            history_motion_sickness_or_ponv=True,
-            non_smoker=False,
-            postoperative_opioids=False
-        )
+        result = calc.calculate(female_gender=True, history_motion_sickness_or_ponv=True, non_smoker=False, postoperative_opioids=False)
 
         assert result.value is not None
         assert result.value == 2
@@ -296,12 +285,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=True,
-            history_motion_sickness_or_ponv=True,
-            non_smoker=True,
-            postoperative_opioids=False
-        )
+        result = calc.calculate(female_gender=True, history_motion_sickness_or_ponv=True, non_smoker=True, postoperative_opioids=False)
 
         assert result.value is not None
         assert result.value == 3
@@ -315,12 +299,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=True,
-            history_motion_sickness_or_ponv=True,
-            non_smoker=True,
-            postoperative_opioids=True
-        )
+        result = calc.calculate(female_gender=True, history_motion_sickness_or_ponv=True, non_smoker=True, postoperative_opioids=True)
 
         assert result.value is not None
         assert result.value == 4
@@ -334,12 +313,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=True,
-            history_motion_sickness_or_ponv=False,
-            non_smoker=True,
-            postoperative_opioids=True
-        )
+        result = calc.calculate(female_gender=True, history_motion_sickness_or_ponv=False, non_smoker=True, postoperative_opioids=True)
 
         assert result.value is not None
         assert result.value == 3
@@ -352,12 +326,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=True,
-            history_motion_sickness_or_ponv=True,
-            non_smoker=False,
-            postoperative_opioids=False
-        )
+        result = calc.calculate(female_gender=True, history_motion_sickness_or_ponv=True, non_smoker=False, postoperative_opioids=False)
 
         assert result.calculation_details is not None
         factors = result.calculation_details["risk_factors_present"]
@@ -370,12 +339,7 @@ class TestApfelPonvCalculator:
         from src.domain.services.calculators import ApfelPonvCalculator
 
         calc = ApfelPonvCalculator()
-        result = calc.calculate(
-            female_gender=False,
-            history_motion_sickness_or_ponv=False,
-            non_smoker=False,
-            postoperative_opioids=False
-        )
+        result = calc.calculate(female_gender=False, history_motion_sickness_or_ponv=False, non_smoker=False, postoperative_opioids=False)
 
         assert result.references is not None
         assert len(result.references) >= 1
@@ -415,7 +379,7 @@ class TestStopBangCalculator:
             bmi_over_35=False,
             age_over_50=False,
             neck_over_40cm=False,
-            male_gender=True
+            male_gender=True,
         )
 
         assert result.value is not None
@@ -436,7 +400,7 @@ class TestStopBangCalculator:
             bmi_over_35=False,
             age_over_50=False,
             neck_over_40cm=False,
-            male_gender=False
+            male_gender=False,
         )
 
         assert result.value is not None
@@ -450,14 +414,7 @@ class TestStopBangCalculator:
 
         calc = StopBangCalculator()
         result = calc.calculate(
-            snoring=True,
-            tired=True,
-            observed_apnea=True,
-            high_blood_pressure=True,
-            bmi_over_35=True,
-            age_over_50=True,
-            neck_over_40cm=False,
-            male_gender=True
+            snoring=True, tired=True, observed_apnea=True, high_blood_pressure=True, bmi_over_35=True, age_over_50=True, neck_over_40cm=False, male_gender=True
         )
 
         assert result.value is not None
@@ -471,14 +428,7 @@ class TestStopBangCalculator:
 
         calc = StopBangCalculator()
         result = calc.calculate(
-            snoring=True,
-            tired=True,
-            observed_apnea=True,
-            high_blood_pressure=True,
-            bmi_over_35=True,
-            age_over_50=True,
-            neck_over_40cm=True,
-            male_gender=True
+            snoring=True, tired=True, observed_apnea=True, high_blood_pressure=True, bmi_over_35=True, age_over_50=True, neck_over_40cm=True, male_gender=True
         )
 
         assert result.value is not None
@@ -499,7 +449,7 @@ class TestStopBangCalculator:
             bmi_over_35=False,
             age_over_50=False,
             neck_over_40cm=False,
-            male_gender=False
+            male_gender=False,
         )
 
         assert result.value is not None
@@ -518,7 +468,7 @@ class TestStopBangCalculator:
             bmi_over_35=False,
             age_over_50=False,
             neck_over_40cm=False,
-            male_gender=False
+            male_gender=False,
         )
 
         assert result.references is not None
@@ -542,13 +492,7 @@ class TestAldreteScoreCalculator:
         from src.domain.services.calculators import AldreteScoreCalculator
 
         calc = AldreteScoreCalculator()
-        result = calc.calculate(
-            activity=2,
-            respiration=2,
-            circulation=2,
-            consciousness=2,
-            oxygen_saturation=2
-        )
+        result = calc.calculate(activity=2, respiration=2, circulation=2, consciousness=2, oxygen_saturation=2)
 
         assert result.value is not None
         assert result.value == 10
@@ -560,13 +504,7 @@ class TestAldreteScoreCalculator:
         from src.domain.services.calculators import AldreteScoreCalculator
 
         calc = AldreteScoreCalculator()
-        result = calc.calculate(
-            activity=1,
-            respiration=1,
-            circulation=2,
-            consciousness=1,
-            oxygen_saturation=1
-        )
+        result = calc.calculate(activity=1, respiration=1, circulation=2, consciousness=1, oxygen_saturation=1)
 
         assert result.value is not None
         assert result.value == 6
@@ -578,13 +516,7 @@ class TestAldreteScoreCalculator:
         from src.domain.services.calculators import AldreteScoreCalculator
 
         calc = AldreteScoreCalculator()
-        result = calc.calculate(
-            activity=0,
-            respiration=0,
-            circulation=1,
-            consciousness=0,
-            oxygen_saturation=0
-        )
+        result = calc.calculate(activity=0, respiration=0, circulation=1, consciousness=0, oxygen_saturation=0)
 
         assert result.value is not None
         assert result.value == 1
@@ -594,13 +526,7 @@ class TestAldreteScoreCalculator:
         from src.domain.services.calculators import AldreteScoreCalculator
 
         calc = AldreteScoreCalculator()
-        result = calc.calculate(
-            activity=2,
-            respiration=2,
-            circulation=2,
-            consciousness=2,
-            oxygen_saturation=1
-        )
+        result = calc.calculate(activity=2, respiration=2, circulation=2, consciousness=2, oxygen_saturation=1)
 
         assert result.value is not None
         assert result.value == 9
@@ -610,13 +536,7 @@ class TestAldreteScoreCalculator:
         from src.domain.services.calculators import AldreteScoreCalculator
 
         calc = AldreteScoreCalculator()
-        result = calc.calculate(
-            activity=2,
-            respiration=2,
-            circulation=2,
-            consciousness=2,
-            oxygen_saturation=2
-        )
+        result = calc.calculate(activity=2, respiration=2, circulation=2, consciousness=2, oxygen_saturation=2)
 
         assert result.value is not None
         assert result.value == 10
@@ -626,13 +546,7 @@ class TestAldreteScoreCalculator:
         from src.domain.services.calculators import AldreteScoreCalculator
 
         calc = AldreteScoreCalculator()
-        result = calc.calculate(
-            activity=2,
-            respiration=2,
-            circulation=2,
-            consciousness=2,
-            oxygen_saturation=2
-        )
+        result = calc.calculate(activity=2, respiration=2, circulation=2, consciousness=2, oxygen_saturation=2)
 
         assert result.references is not None
         assert len(result.references) >= 1

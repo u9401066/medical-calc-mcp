@@ -15,12 +15,7 @@ class TestDeltaRatioE2E:
 
     def test_pure_high_ag_acidosis(self, test_client: Any) -> None:
         """Test pure high AG metabolic acidosis (delta ratio 1-2)"""
-        payload = {
-            "params": {
-                "anion_gap": 24,
-                "bicarbonate": 12
-            }
-        }
+        payload = {"params": {"anion_gap": 24, "bicarbonate": 12}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Delta AG = 24 - 12 = 12
@@ -30,14 +25,7 @@ class TestDeltaRatioE2E:
 
     def test_combined_high_and_normal_ag(self, test_client: Any) -> None:
         """Test combined high AG and normal AG acidosis (delta ratio <1)"""
-        payload = {
-            "params": {
-                "anion_gap": 20,
-                "bicarbonate": 8,
-                "normal_ag": 12,
-                "normal_hco3": 24
-            }
-        }
+        payload = {"params": {"anion_gap": 20, "bicarbonate": 8, "normal_ag": 12, "normal_hco3": 24}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Delta AG = 20 - 12 = 8
@@ -47,14 +35,7 @@ class TestDeltaRatioE2E:
 
     def test_metabolic_alkalosis_component(self, test_client: Any) -> None:
         """Test high AG acidosis with metabolic alkalosis (delta ratio >2)"""
-        payload = {
-            "params": {
-                "anion_gap": 28,
-                "bicarbonate": 20,
-                "normal_ag": 12,
-                "normal_hco3": 24
-            }
-        }
+        payload = {"params": {"anion_gap": 28, "bicarbonate": 20, "normal_ag": 12, "normal_hco3": 24}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Delta AG = 28 - 12 = 16
@@ -64,26 +45,14 @@ class TestDeltaRatioE2E:
 
     def test_default_normal_values(self, test_client: Any) -> None:
         """Test with default normal AG and HCO3"""
-        payload = {
-            "params": {
-                "anion_gap": 22,
-                "bicarbonate": 14
-            }
-        }
+        payload = {"params": {"anion_gap": 22, "bicarbonate": 14}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_custom_normal_values(self, test_client: Any) -> None:
         """Test with custom normal values"""
-        payload = {
-            "params": {
-                "anion_gap": 20,
-                "bicarbonate": 16,
-                "normal_ag": 10,
-                "normal_hco3": 26
-            }
-        }
+        payload = {"params": {"anion_gap": 20, "bicarbonate": 16, "normal_ag": 10, "normal_hco3": 26}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Delta AG = 20 - 10 = 10
@@ -93,12 +62,7 @@ class TestDeltaRatioE2E:
 
     def test_severe_dka(self, test_client: Any) -> None:
         """Test severe DKA presentation"""
-        payload = {
-            "params": {
-                "anion_gap": 35,
-                "bicarbonate": 5
-            }
-        }
+        payload = {"params": {"anion_gap": 35, "bicarbonate": 5}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Delta AG = 35 - 12 = 23
@@ -108,10 +72,6 @@ class TestDeltaRatioE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "anion_gap": 20
-            }
-        }
+        payload = {"params": {"anion_gap": 20}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

@@ -15,90 +15,42 @@ class TestTransfusionCalcE2E:
 
     def test_prbc_adult_hematocrit(self, test_client: Any) -> None:
         """Test PRBC transfusion calculation for adult using hematocrit"""
-        payload = {
-            "params": {
-                "weight_kg": 70,
-                "current_hematocrit": 22,
-                "target_hematocrit": 30,
-                "product_type": "prbc",
-                "patient_type": "adult"
-            }
-        }
+        payload = {"params": {"weight_kg": 70, "current_hematocrit": 22, "target_hematocrit": 30, "product_type": "prbc", "patient_type": "adult"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_prbc_adult_hemoglobin(self, test_client: Any) -> None:
         """Test PRBC transfusion calculation using hemoglobin"""
-        payload = {
-            "params": {
-                "weight_kg": 70,
-                "current_hemoglobin": 7.0,
-                "target_hemoglobin": 10.0,
-                "product_type": "prbc",
-                "patient_type": "adult"
-            }
-        }
+        payload = {"params": {"weight_kg": 70, "current_hemoglobin": 7.0, "target_hemoglobin": 10.0, "product_type": "prbc", "patient_type": "adult"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_pediatric_transfusion(self, test_client: Any) -> None:
         """Test transfusion calculation for pediatric patient"""
-        payload = {
-            "params": {
-                "weight_kg": 20,
-                "current_hemoglobin": 6.5,
-                "target_hemoglobin": 10.0,
-                "product_type": "prbc",
-                "patient_type": "pediatric"
-            }
-        }
+        payload = {"params": {"weight_kg": 20, "current_hemoglobin": 6.5, "target_hemoglobin": 10.0, "product_type": "prbc", "patient_type": "pediatric"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_neonate_transfusion(self, test_client: Any) -> None:
         """Test transfusion calculation for neonate"""
-        payload = {
-            "params": {
-                "weight_kg": 3,
-                "current_hematocrit": 30,
-                "target_hematocrit": 45,
-                "product_type": "prbc",
-                "patient_type": "neonate"
-            }
-        }
+        payload = {"params": {"weight_kg": 3, "current_hematocrit": 30, "target_hematocrit": 45, "product_type": "prbc", "patient_type": "neonate"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_platelet_transfusion(self, test_client: Any) -> None:
         """Test platelet transfusion calculation"""
-        payload = {
-            "params": {
-                "weight_kg": 70,
-                "current_platelet": 15000,
-                "target_platelet": 50000,
-                "product_type": "platelets",
-                "patient_type": "adult"
-            }
-        }
+        payload = {"params": {"weight_kg": 70, "current_platelet": 15000, "target_platelet": 50000, "product_type": "platelets", "patient_type": "adult"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         assert data["result"]["value"] > 0
 
     def test_severe_anemia(self, test_client: Any) -> None:
         """Test severe anemia requiring significant transfusion"""
-        payload = {
-            "params": {
-                "weight_kg": 70,
-                "current_hemoglobin": 4.0,
-                "target_hemoglobin": 10.0,
-                "product_type": "prbc",
-                "patient_type": "adult"
-            }
-        }
+        payload = {"params": {"weight_kg": 70, "current_hemoglobin": 4.0, "target_hemoglobin": 10.0, "product_type": "prbc", "patient_type": "adult"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Severe anemia needs more units
@@ -106,15 +58,7 @@ class TestTransfusionCalcE2E:
 
     def test_mild_anemia(self, test_client: Any) -> None:
         """Test mild anemia requiring minimal transfusion"""
-        payload = {
-            "params": {
-                "weight_kg": 70,
-                "current_hemoglobin": 8.5,
-                "target_hemoglobin": 10.0,
-                "product_type": "prbc",
-                "patient_type": "adult"
-            }
-        }
+        payload = {"params": {"weight_kg": 70, "current_hemoglobin": 8.5, "target_hemoglobin": 10.0, "product_type": "prbc", "patient_type": "adult"}}
         response = test_client.post(self.ENDPOINT, json=payload)
         data = assert_successful_calculation(response)
         # Mild anemia needs less volume than severe anemia (result is in mL)
@@ -123,10 +67,6 @@ class TestTransfusionCalcE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "weight_kg": 70
-            }
-        }
+        payload = {"params": {"weight_kg": 70}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

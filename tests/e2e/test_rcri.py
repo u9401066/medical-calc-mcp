@@ -22,7 +22,7 @@ class TestRcriE2E:
                 "heart_failure": False,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
-                "creatinine_above_2": False
+                "creatinine_above_2": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -38,7 +38,7 @@ class TestRcriE2E:
                 "heart_failure": False,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
-                "creatinine_above_2": False
+                "creatinine_above_2": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -54,7 +54,7 @@ class TestRcriE2E:
                 "heart_failure": False,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
-                "creatinine_above_2": False
+                "creatinine_above_2": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -70,7 +70,7 @@ class TestRcriE2E:
                 "heart_failure": True,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
-                "creatinine_above_2": False
+                "creatinine_above_2": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -86,7 +86,7 @@ class TestRcriE2E:
                 "heart_failure": True,
                 "cerebrovascular_disease": True,
                 "insulin_diabetes": True,
-                "creatinine_above_2": True
+                "creatinine_above_2": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -102,7 +102,7 @@ class TestRcriE2E:
                 "heart_failure": False,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": True,
-                "creatinine_above_2": True
+                "creatinine_above_2": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -118,7 +118,7 @@ class TestRcriE2E:
                 "heart_failure": True,
                 "cerebrovascular_disease": False,
                 "insulin_diabetes": False,
-                "creatinine_above_2": False
+                "creatinine_above_2": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)

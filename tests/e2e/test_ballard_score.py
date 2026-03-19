@@ -28,7 +28,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": -1,
                 "breast": -1,
                 "eye_ear": -1,
-                "genitals": -1
+                "genitals": -1,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -51,7 +51,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 3,
                 "breast": 3,
                 "eye_ear": 3,
-                "genitals": 3
+                "genitals": 3,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -74,7 +74,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 4,
                 "breast": 4,
                 "eye_ear": 4,
-                "genitals": 4
+                "genitals": 4,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -97,7 +97,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 0,
                 "breast": 0,
                 "eye_ear": 0,
-                "genitals": 0
+                "genitals": 0,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -119,7 +119,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 2,
                 "breast": 2,
                 "eye_ear": 2,
-                "genitals": 2
+                "genitals": 2,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -141,7 +141,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 2,
                 "breast": 2,
                 "eye_ear": 2,
-                "genitals": 2
+                "genitals": 2,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -163,7 +163,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 4,
                 "breast": 4,
                 "eye_ear": 4,
-                "genitals": 4
+                "genitals": 4,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -185,7 +185,7 @@ class TestBallardScoreE2E:
                 "plantar_surface": 3,
                 "breast": 1,
                 "eye_ear": 3,
-                "genitals": 1
+                "genitals": 1,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -194,12 +194,6 @@ class TestBallardScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "posture": 3,
-                "square_window": 3,
-                "arm_recoil": 3
-            }
-        }
+        payload = {"params": {"posture": 3, "square_window": 3, "arm_recoil": 3}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)

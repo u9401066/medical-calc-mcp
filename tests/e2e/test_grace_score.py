@@ -24,7 +24,7 @@ class TestGraceScoreE2E:
                 "killip_class": 1,
                 "cardiac_arrest": False,
                 "st_deviation": False,
-                "elevated_markers": False
+                "elevated_markers": False,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -43,7 +43,7 @@ class TestGraceScoreE2E:
                 "killip_class": 2,
                 "cardiac_arrest": False,
                 "st_deviation": True,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -61,7 +61,7 @@ class TestGraceScoreE2E:
                 "killip_class": 3,
                 "cardiac_arrest": True,
                 "st_deviation": True,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -80,7 +80,7 @@ class TestGraceScoreE2E:
                 "killip_class": 1,
                 "cardiac_arrest": False,
                 "st_deviation": True,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -98,7 +98,7 @@ class TestGraceScoreE2E:
                 "killip_class": 4,
                 "cardiac_arrest": False,
                 "st_deviation": True,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -117,7 +117,7 @@ class TestGraceScoreE2E:
                 "killip_class": 2,
                 "cardiac_arrest": True,
                 "st_deviation": True,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -136,7 +136,7 @@ class TestGraceScoreE2E:
                 "killip_class": 1,
                 "cardiac_arrest": False,
                 "st_deviation": False,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -154,7 +154,7 @@ class TestGraceScoreE2E:
                 "killip_class": 2,
                 "cardiac_arrest": False,
                 "st_deviation": True,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -172,7 +172,7 @@ class TestGraceScoreE2E:
                 "killip_class": 1,
                 "cardiac_arrest": False,
                 "st_deviation": False,
-                "elevated_markers": True
+                "elevated_markers": True,
             }
         }
         response = test_client.post(self.ENDPOINT, json=payload)
@@ -182,10 +182,6 @@ class TestGraceScoreE2E:
 
     def _skip_test_missing_required_params(self, test_client: Any) -> None:
         """Test missing required parameters"""
-        payload = {
-            "params": {
-                "age": 65
-            }
-        }
+        payload = {"params": {"age": 65}}
         response = test_client.post(self.ENDPOINT, json=payload)
         assert_calculation_error(response)
