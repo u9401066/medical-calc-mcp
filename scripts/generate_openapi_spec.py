@@ -46,17 +46,11 @@ def main() -> int:
         if check_output(OUTPUT_PATH):
             print("Generated OpenAPI spec is up to date.")
             return 0
-        print(
-            "Generated OpenAPI spec is stale. "
-            "Run `uv run python scripts/generate_openapi_spec.py` to refresh it."
-        )
+        print("Generated OpenAPI spec is stale. Run `uv run python scripts/generate_openapi_spec.py` to refresh it.")
         return 1
 
     write_output(OUTPUT_PATH)
-    print(
-        f"Wrote {OUTPUT_PATH.relative_to(PROJECT_ROOT)} "
-        f"for Medical Calculator API v{get_project_version()}"
-    )
+    print(f"Wrote {OUTPUT_PATH.relative_to(PROJECT_ROOT)} for Medical Calculator API v{get_project_version()}")
     return 0
 
 

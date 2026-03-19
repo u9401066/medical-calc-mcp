@@ -165,11 +165,7 @@ def collect_entries() -> list[CatalogEntry]:
     entries: list[CatalogEntry] = []
 
     for metadata in registry.list_all():
-        specialty_key = (
-            metadata.high_level.specialties[0].value
-            if metadata.high_level.specialties
-            else "other"
-        )
+        specialty_key = metadata.high_level.specialties[0].value if metadata.high_level.specialties else "other"
         specialty_en, specialty_zh = _specialty_labels(specialty_key)
         entries.append(
             CatalogEntry(
@@ -300,10 +296,7 @@ def render_catalog(locale: str, audience: str) -> str:
                 ]
             )
             for entry in specialty_entries:
-                lines.append(
-                    "| "
-                    f"`{entry.tool_id}` | {_escape_cell(entry.name)} | {_escape_cell(entry.purpose)} |"
-                )
+                lines.append(f"| `{entry.tool_id}` | {_escape_cell(entry.name)} | {_escape_cell(entry.purpose)} |")
             lines.append("")
         return "\n".join(lines).rstrip() + "\n"
 
@@ -355,10 +348,7 @@ def render_catalog(locale: str, audience: str) -> str:
             ]
         )
         for entry in specialty_entries:
-            lines.append(
-                "| "
-                f"`{entry.tool_id}` | {_escape_cell(entry.name)} | {_escape_cell(entry.purpose)} |"
-            )
+            lines.append(f"| `{entry.tool_id}` | {_escape_cell(entry.name)} | {_escape_cell(entry.purpose)} |")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -402,8 +392,12 @@ def render_guideline_summary(locale: str, audience: str) -> str:
                 "## Source Documents",
                 "",
                 "- [Generated calculator catalog](CALCULATOR_CATALOG.md)" if audience == "docs" else "- [Website calculator catalog](../calculators/index.md)",
-                "- [2023-2025 detailed guideline review](GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)" if audience == "docs" else "- [2023-2025 detailed guideline review](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)",
-                "- [2020-2025 historical guideline review](GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)" if audience == "docs" else "- [2020-2025 historical guideline review](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)",
+                "- [2023-2025 detailed guideline review](GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)"
+                if audience == "docs"
+                else "- [2023-2025 detailed guideline review](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)",
+                "- [2020-2025 historical guideline review](GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)"
+                if audience == "docs"
+                else "- [2020-2025 historical guideline review](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)",
                 "",
             ]
         )
@@ -435,8 +429,12 @@ def render_guideline_summary(locale: str, audience: str) -> str:
             "## 來源文件",
             "",
             "- [生成工具目錄](CALCULATOR_CATALOG.zh-TW.md)" if audience == "docs" else "- [網站版計算器總覽](calculators.md)",
-            "- [2023-2025 詳細指引整理](GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)" if audience == "docs" else "- [2023-2025 詳細指引整理](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)",
-            "- [2020-2025 歷史整理](GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)" if audience == "docs" else "- [2020-2025 歷史整理](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)",
+            "- [2023-2025 詳細指引整理](GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)"
+            if audience == "docs"
+            else "- [2023-2025 詳細指引整理](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)",
+            "- [2020-2025 歷史整理](GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)"
+            if audience == "docs"
+            else "- [2020-2025 歷史整理](../../docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)",
             "",
         ]
     )
@@ -468,7 +466,12 @@ def render_readme_catalog_overview(locale: str) -> str:
         for specialty_key, specialty_entries in top_specialties:
             specialty_label, _ = _specialty_labels(specialty_key)
             lines.append(f"| {_escape_cell(specialty_label)} | {len(specialty_entries)} |")
-        lines.extend(["", "You can still inspect the live registry via `python scripts/count_tools.py`, `calculator://list`, or `list_calculators()` from your MCP client."])
+        lines.extend(
+            [
+                "",
+                "You can still inspect the live registry via `python scripts/count_tools.py`, `calculator://list`, or `list_calculators()` from your MCP client.",
+            ]
+        )
         return "\n".join(lines)
 
     lines = [
@@ -488,7 +491,9 @@ def render_readme_catalog_overview(locale: str) -> str:
     for specialty_key, specialty_entries in top_specialties:
         _, specialty_label = _specialty_labels(specialty_key)
         lines.append(f"| {_escape_cell(specialty_label)} | {len(specialty_entries)} |")
-    lines.extend(["", "如需直接檢視 live registry，也可執行 `python scripts/count_tools.py`、讀取 `calculator://list`，或在 MCP client 呼叫 `list_calculators()`。"])
+    lines.extend(
+        ["", "如需直接檢視 live registry，也可執行 `python scripts/count_tools.py`、讀取 `calculator://list`，或在 MCP client 呼叫 `list_calculators()`。"]
+    )
     return "\n".join(lines)
 
 

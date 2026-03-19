@@ -204,9 +204,7 @@ class PERCRuleCalculator(BaseCalculator):
         is_perc_negative = criteria_count == 0
 
         # Generate interpretation
-        interpretation = self._interpret_result(
-            is_perc_negative, criteria_count, positive_criteria
-        )
+        interpretation = self._interpret_result(is_perc_negative, criteria_count, positive_criteria)
 
         # Build calculation details
         calculation_details: dict[str, object] = {
@@ -298,15 +296,11 @@ class PERCRuleCalculator(BaseCalculator):
             ]
 
             if "Prior PE or DVT" in positive_criteria:
-                recommendations.append(
-                    "High risk due to prior VTE - lower threshold for imaging"
-                )
+                recommendations.append("High risk due to prior VTE - lower threshold for imaging")
             if "O2 saturation <95%" in positive_criteria:
                 recommendations.append("Ensure adequate oxygenation while evaluating")
             if "Unilateral leg swelling" in positive_criteria:
-                recommendations.append(
-                    "Consider lower extremity ultrasound for DVT"
-                )
+                recommendations.append("Consider lower extremity ultrasound for DVT")
 
             next_steps: list[str] = [
                 "Check D-dimer level",

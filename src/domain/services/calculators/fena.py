@@ -122,8 +122,7 @@ class FENaCalculator(BaseCalculator):
             ),
             references=(
                 Reference(
-                    citation="Espinel CH. The FENa test. Use in the differential diagnosis of "
-                    "acute renal failure. JAMA. 1976;236(6):579-581.",
+                    citation="Espinel CH. The FENa test. Use in the differential diagnosis of acute renal failure. JAMA. 1976;236(6):579-581.",
                     doi="10.1001/jama.1976.03270060025021",
                     pmid="947239",
                     year=1976,
@@ -179,13 +178,9 @@ class FENaCalculator(BaseCalculator):
         if plasma_sodium < 100 or plasma_sodium > 180:
             raise ValueError("Plasma sodium must be between 100 and 180 mEq/L")
         if urine_creatinine <= 0 or urine_creatinine > 500:
-            raise ValueError(
-                "Urine creatinine must be between 0 and 500 mg/dL"
-            )
+            raise ValueError("Urine creatinine must be between 0 and 500 mg/dL")
         if plasma_creatinine <= 0 or plasma_creatinine > 30:
-            raise ValueError(
-                "Plasma creatinine must be between 0 and 30 mg/dL"
-            )
+            raise ValueError("Plasma creatinine must be between 0 and 30 mg/dL")
 
         # Calculate FENa
         # FENa (%) = (Urine Na × Plasma Cr) / (Plasma Na × Urine Cr) × 100
@@ -277,8 +272,7 @@ class FENaCalculator(BaseCalculator):
                     "Monitor response to fluid challenge",
                 ),
                 warnings=(
-                    "Low FENa can also occur in: contrast nephropathy, rhabdomyolysis, "
-                    "early obstruction, acute glomerulonephritis, hepatorenal syndrome",
+                    "Low FENa can also occur in: contrast nephropathy, rhabdomyolysis, early obstruction, acute glomerulonephritis, hepatorenal syndrome",
                     "Clinical correlation is essential",
                 ),
                 next_steps=(

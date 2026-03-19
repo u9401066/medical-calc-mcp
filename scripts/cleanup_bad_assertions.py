@@ -6,7 +6,6 @@ def cleanup_bad_assertions():
     test_dir = "tests"
     files = [f for f in os.listdir(test_dir) if f.endswith(".py")]
 
-
     for filename in files:
         filepath = os.path.join(test_dir, filename)
         with open(filepath) as f:
@@ -30,6 +29,7 @@ def cleanup_bad_assertions():
             with open(filepath, "w") as f:
                 f.write(new_content)
             print(f"Cleaned up {filename}")
+
 
 if __name__ == "__main__":
     cleanup_bad_assertions()

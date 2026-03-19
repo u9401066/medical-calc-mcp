@@ -61,7 +61,7 @@ def main() -> None:
     print(f"   Total reference entries:    {total_refs}")
     print(f"   Unique PMIDs:               {len(unique_pmids)}")
     print(f"   Unique DOIs:                {len(unique_dois)}")
-    print(f"   Average refs per calc:      {total_refs/len(tools):.2f}")
+    print(f"   Average refs per calc:      {total_refs / len(tools):.2f}")
     print(f"   Calculators without refs:   {len(tools_without_refs)}")
     print()
 

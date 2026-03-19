@@ -112,65 +112,73 @@ def render_report(coverage_rows: list[SpecialtyCoverage]) -> str:
         sample = ", ".join(row.tool_ids[:5])
         lines.append(f"| {_specialty_label(row.specialty)} | {row.count} | {sample} |")
 
-    lines.extend([
-        "",
-        "## Developing Coverage",
-        "",
-        "| Specialty | Tool Count | Tool IDs |",
-        "|-----------|-----------:|----------|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Developing Coverage",
+            "",
+            "| Specialty | Tool Count | Tool IDs |",
+            "|-----------|-----------:|----------|",
+        ]
+    )
 
     for row in sorted(developing_rows, key=lambda item: (-item.count, item.specialty.value)):
         lines.append(f"| {_specialty_label(row.specialty)} | {row.count} | {', '.join(row.tool_ids)} |")
 
-    lines.extend([
-        "",
-        "## Thin Coverage",
-        "",
-        "| Specialty | Tool Count | Tool IDs |",
-        "|-----------|-----------:|----------|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Thin Coverage",
+            "",
+            "| Specialty | Tool Count | Tool IDs |",
+            "|-----------|-----------:|----------|",
+        ]
+    )
 
     for row in sorted(thin_rows, key=lambda item: (item.count, item.specialty.value)):
         lines.append(f"| {_specialty_label(row.specialty)} | {row.count} | {', '.join(row.tool_ids)} |")
 
-    lines.extend([
-        "",
-        "## Uncovered Specialties",
-        "",
-        "These specialty enums currently have zero calculators mapped to them and are the primary candidates for future PubMed/guideline expansion.",
-        "",
-        "| Specialty | Coverage Bucket |",
-        "|-----------|-----------------|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Uncovered Specialties",
+            "",
+            "These specialty enums currently have zero calculators mapped to them and are the primary candidates for future PubMed/guideline expansion.",
+            "",
+            "| Specialty | Coverage Bucket |",
+            "|-----------|-----------------|",
+        ]
+    )
 
     for row in sorted(uncovered_rows, key=lambda item: item.specialty.value):
         lines.append(f"| {_specialty_label(row.specialty)} | {_bucket_name(row.count)} |")
 
-    lines.extend([
-        "",
-        "## Recommended Next Pass",
-        "",
-        "1. Prioritize uncovered primary specialties before subspecialties that mostly re-label existing internal medicine or surgery tools.",
-        "2. For each target specialty, confirm a stable, literature-backed score with clear clinical adoption before implementation.",
-        "3. Add PubMed/guideline evidence, tests, MCP handler wiring, and provenance metadata together as one unit.",
-        "4. Regenerate this report after each batch so the backlog stays live instead of drifting.",
-        "",
-        "## Priority Research Queue",
-        "",
-        "The following uncovered specialties are likely higher-yield than niche subspecialties and should be researched first:",
-        "",
-        "- Palliative Care",
-        "- Dentistry",
-        "- Public Health",
-        "- Preventive Medicine",
-        "- Sleep Medicine",
-        "- Pathology",
-        "- Nuclear Medicine",
-        "- Cardiac Surgery",
-        "- Thoracic Surgery",
-        "- Vascular Surgery",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Recommended Next Pass",
+            "",
+            "1. Prioritize uncovered primary specialties before subspecialties that mostly re-label existing internal medicine or surgery tools.",
+            "2. For each target specialty, confirm a stable, literature-backed score with clear clinical adoption before implementation.",
+            "3. Add PubMed/guideline evidence, tests, MCP handler wiring, and provenance metadata together as one unit.",
+            "4. Regenerate this report after each batch so the backlog stays live instead of drifting.",
+            "",
+            "## Priority Research Queue",
+            "",
+            "The following uncovered specialties are likely higher-yield than niche subspecialties and should be researched first:",
+            "",
+            "- Palliative Care",
+            "- Dentistry",
+            "- Public Health",
+            "- Preventive Medicine",
+            "- Sleep Medicine",
+            "- Pathology",
+            "- Nuclear Medicine",
+            "- Cardiac Surgery",
+            "- Thoracic Surgery",
+            "- Vascular Surgery",
+        ]
+    )
 
     return "\n".join(lines) + "\n"
 

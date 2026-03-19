@@ -25,6 +25,7 @@ def fix_coverage():
     with open(filepath, "w") as f:
         f.writelines(new_lines)
 
+
 def fix_validation():
     filepath = "tests/test_parameter_validation.py"
     if not os.path.exists(filepath):
@@ -42,6 +43,7 @@ def fix_validation():
 
     with open(filepath, "w") as f:
         f.write(content)
+
 
 if __name__ == "__main__":
     fix_coverage()

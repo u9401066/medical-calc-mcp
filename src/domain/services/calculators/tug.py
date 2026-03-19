@@ -132,12 +132,14 @@ class TUGCalculator(BaseCalculator):
                     severity=Severity.CRITICAL,
                     stage="Unable",
                     stage_description="Severe mobility impairment",
-                    recommendations=tuple([
-                        "High fall risk - intensive fall prevention measures",
-                        "Physical therapy evaluation",
-                        "Home safety assessment",
-                        "Consider assistive devices or mobility aids",
-                    ]),
+                    recommendations=tuple(
+                        [
+                            "High fall risk - intensive fall prevention measures",
+                            "Physical therapy evaluation",
+                            "Home safety assessment",
+                            "Consider assistive devices or mobility aids",
+                        ]
+                    ),
                     warnings=tuple(["Unable to complete TUG - very high fall risk"]),
                     next_steps=tuple(["Comprehensive mobility assessment", "PT/OT evaluation"]),
                 ),

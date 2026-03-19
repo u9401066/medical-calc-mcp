@@ -279,9 +279,7 @@ class SIRSCriteriaCalculator(BaseCalculator):
             formula_used="SIRS positive if ≥2 of 4 criteria met",
         )
 
-    def _interpret_score(
-        self, score: int, criteria_met: list[str]
-    ) -> Interpretation:
+    def _interpret_score(self, score: int, criteria_met: list[str]) -> Interpretation:
         """Generate clinical interpretation based on SIRS criteria count."""
 
         criteria_str = ", ".join(criteria_met) if criteria_met else "None"

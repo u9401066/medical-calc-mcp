@@ -383,9 +383,7 @@ class CharlsonComorbidityIndexCalculator(BaseCalculator):
                 components[f"Age adjustment ({age_years} years)"] = age_points
 
         # Generate interpretation
-        interpretation = self._interpret_score(
-            base_cci, score, age_points, len(conditions_present), conditions_present
-        )
+        interpretation = self._interpret_score(base_cci, score, age_points, len(conditions_present), conditions_present)
 
         return ScoreResult(
             tool_name=self.low_level_key.name,
@@ -509,9 +507,7 @@ class CharlsonComorbidityIndexCalculator(BaseCalculator):
                 "Consider this score when making treatment decisions",
             )
         if survival_pct <= 21:
-            warnings = warnings + (
-                f"Estimated 10-year survival is {survival_str} - ensure goals of care are addressed",
-            )
+            warnings = warnings + (f"Estimated 10-year survival is {survival_str} - ensure goals of care are addressed",)
 
         return Interpretation(
             summary=summary,

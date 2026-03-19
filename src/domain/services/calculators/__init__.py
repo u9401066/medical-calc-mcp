@@ -8,6 +8,8 @@ Each calculator inherits from BaseCalculator and provides:
 - Calculate method returning ScoreResult
 """
 
+# ruff: noqa: I001
+
 from ..base import BaseCalculator
 from .aa_gradient import AaGradientCalculator
 from .abcd2 import Abcd2Calculator

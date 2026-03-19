@@ -33,8 +33,9 @@ test_files = [
     "tests/test_registry.py",
     "tests/test_security.py",
     "tests/test_surgery.py",
-    "tests/test_use_cases.py"
+    "tests/test_use_cases.py",
 ]
+
 
 def fix_file(filepath):
     if not os.path.exists(filepath):
@@ -43,55 +44,56 @@ def fix_file(filepath):
     with open(filepath) as f:
         content = f.read()
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     new_lines = []
 
     for i, line in enumerate(lines):
-        indent_match = re.match(r'^(\s*)', line)
+        indent_match = re.match(r"^(\s*)", line)
         indent = indent_match.group(1) if indent_match else ""
 
         # Case: result.value comparison
-        match = re.search(r'assert\s+([a-zA-Z0-9_]+\.value)\s*[=<>!]+', line)
+        match = re.search(r"assert\s+([a-zA-Z0-9_]+\.value)\s*[=<>!]+", line)
         if match:
             var = match.group(1)
-            if i > 0 and f"assert {var} is not None" not in lines[i-1]:
+            if i > 0 and f"assert {var} is not None" not in lines[i - 1]:
                 new_lines.append(f"{indent}assert {var} is not None")
 
         # Case: result.interpretation.summary/details/etc 'in' check
-        match = re.search(r'assert\s+.*?\s+in\s+([a-zA-Z0-9_]+\.interpretation\.[a-zA-Z0-9_]+)', line)
+        match = re.search(r"assert\s+.*?\s+in\s+([a-zA-Z0-9_]+\.interpretation\.[a-zA-Z0-9_]+)", line)
         if match:
             var = match.group(1)
-            if i > 0 and f"assert {var} is not None" not in lines[i-1]:
+            if i > 0 and f"assert {var} is not None" not in lines[i - 1]:
                 new_lines.append(f"{indent}assert {var} is not None")
 
         # Case: result.calculation_details indexing
-        match = re.search(r'([a-zA-Z0-9_]+\.calculation_details)\[', line)
+        match = re.search(r"([a-zA-Z0-9_]+\.calculation_details)\[", line)
         if match:
             var = match.group(1)
-            if i > 0 and f"assert {var} is not None" not in lines[i-1]:
+            if i > 0 and f"assert {var} is not None" not in lines[i - 1]:
                 new_lines.append(f"{indent}assert {var} is not None")
 
         # Case: result.interpretation.severity/risk_level access
-        match = re.search(r'([a-zA-Z0-9_]+\.interpretation\.(severity|risk_level))', line)
+        match = re.search(r"([a-zA-Z0-9_]+\.interpretation\.(severity|risk_level))", line)
         if match:
             var = match.group(1)
-            if i > 0 and f"assert {var} is not None" not in lines[i-1]:
+            if i > 0 and f"assert {var} is not None" not in lines[i - 1]:
                 new_lines.append(f"{indent}assert {var} is not None")
 
         # Case: result.unit access
-        match = re.search(r'([a-zA-Z0-9_]+\.unit)', line)
+        match = re.search(r"([a-zA-Z0-9_]+\.unit)", line)
         if match and "is not None" not in line and "assert" in line:
             var = match.group(1)
-            if i > 0 and f"assert {var} is not None" not in lines[i-1]:
+            if i > 0 and f"assert {var} is not None" not in lines[i - 1]:
                 new_lines.append(f"{indent}assert {var} is not None")
 
         new_lines.append(line)
 
-    new_content = '\n'.join(new_lines)
+    new_content = "\n".join(new_lines)
     if new_content != content:
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             f.write(new_content)
         print(f"Fixed {filepath}")
+
 
 if __name__ == "__main__":
     for f in test_files:

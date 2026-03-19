@@ -1,5 +1,7 @@
 """Run production-readiness checks for API and MCP services."""
 
+# ruff: noqa: I001
+
 from __future__ import annotations
 
 import argparse

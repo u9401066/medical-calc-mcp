@@ -8,9 +8,7 @@ import sys
 from pathlib import Path
 
 ALLOWED_PREFIXES = "build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test"
-COMMIT_PATTERN = re.compile(
-    rf"^(?:{ALLOWED_PREFIXES})(?:\([a-z0-9_./-]+\))?!?: [^\s].{{0,71}}$"
-)
+COMMIT_PATTERN = re.compile(rf"^(?:{ALLOWED_PREFIXES})(?:\([a-z0-9_./-]+\))?!?: [^\s].{{0,71}}$")
 
 
 def main() -> int:

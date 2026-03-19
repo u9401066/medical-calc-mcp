@@ -160,9 +160,7 @@ class EpworthSleepinessScaleCalculator(BaseCalculator):
                     "No significant daytime sleepiness signal on ESS",
                     "Interpret together with sleep history and clinical context",
                 ),
-                next_steps=(
-                    "Reassess if symptoms change",
-                ),
+                next_steps=("Reassess if symptoms change",),
             )
         if score <= 10:
             return Interpretation(
@@ -175,9 +173,7 @@ class EpworthSleepinessScaleCalculator(BaseCalculator):
                     "Review sleep duration, sleep quality, and sedating medications",
                     "Consider repeat assessment if symptoms persist",
                 ),
-                next_steps=(
-                    "Correlate with snoring, witnessed apneas, or hypersomnia symptoms",
-                ),
+                next_steps=("Correlate with snoring, witnessed apneas, or hypersomnia symptoms",),
             )
         if score <= 12:
             return Interpretation(
@@ -190,9 +186,7 @@ class EpworthSleepinessScaleCalculator(BaseCalculator):
                     "Evaluate for obstructive sleep apnea, insufficient sleep, and medication effects",
                     "Consider formal sleep assessment if symptoms are persistent",
                 ),
-                warnings=(
-                    "ESS >10 is commonly used as an abnormal threshold",
-                ),
+                warnings=("ESS >10 is commonly used as an abnormal threshold",),
                 next_steps=(
                     "Obtain focused sleep history",
                     "Consider sleep medicine referral based on overall risk",
@@ -209,12 +203,8 @@ class EpworthSleepinessScaleCalculator(BaseCalculator):
                     "Arrange diagnostic evaluation for sleep disorder causes",
                     "Counsel regarding driving and safety-sensitive activities",
                 ),
-                warnings=(
-                    "Moderate daytime sleepiness may impair concentration and driving safety",
-                ),
-                next_steps=(
-                    "Consider polysomnography or specialty referral",
-                ),
+                warnings=("Moderate daytime sleepiness may impair concentration and driving safety",),
+                next_steps=("Consider polysomnography or specialty referral",),
             )
         return Interpretation(
             summary=f"ESS {score}/24: Severe Excessive Daytime Sleepiness",
@@ -227,9 +217,7 @@ class EpworthSleepinessScaleCalculator(BaseCalculator):
                 "Assess for high-risk causes such as severe sleep apnea or central hypersomnolence disorders",
                 "Address safety risks immediately",
             ),
-            warnings=(
-                "Severe daytime sleepiness may create substantial accident risk",
-            ),
+            warnings=("Severe daytime sleepiness may create substantial accident risk",),
             next_steps=(
                 "Expedite sleep medicine assessment",
                 "Review driving and occupational safety restrictions",

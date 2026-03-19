@@ -368,9 +368,7 @@ class FraminghamRiskScoreCalculator(BaseCalculator):
             risk_numeric = 25.0  # Assign high risk value
 
         # Generate interpretation
-        interpretation = self._interpret_risk(
-            risk_numeric, diabetic, smoker, bp_treated, total_cholesterol, hdl_cholesterol
-        )
+        interpretation = self._interpret_risk(risk_numeric, diabetic, smoker, bp_treated, total_cholesterol, hdl_cholesterol)
 
         # Build calculation details
         calculation_details: dict[str, object] = {
@@ -519,9 +517,7 @@ class FraminghamRiskScoreCalculator(BaseCalculator):
             "total": total,
         }
 
-    def _get_risk(
-        self, total_points: int, sex: Literal["male", "female"]
-    ) -> tuple[str, float]:
+    def _get_risk(self, total_points: int, sex: Literal["male", "female"]) -> tuple[str, float]:
         """
         Convert point total to 10-year risk percentage.
 

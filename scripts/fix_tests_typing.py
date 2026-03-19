@@ -34,8 +34,9 @@ test_files = [
     "tests/test_security.py",
     "tests/test_surgery.py",
     "tests/test_use_cases.py",
-    "tests/conftest.py"
+    "tests/conftest.py",
 ]
+
 
 def fix_file(filepath):
     if not os.path.exists(filepath):
@@ -57,7 +58,7 @@ def fix_file(filepath):
     while i < len(lines):
         line = lines[i]
 
-        match = re.match(r'(\s*)def ([a-zA-Z0-9_]+)\(([^)]*)\)([^:]*):', line)
+        match = re.match(r"(\s*)def ([a-zA-Z0-9_]+)\(([^)]*)\)([^:]*):", line)
         if match:
             indent = match.group(1)
             name = match.group(2)
@@ -86,13 +87,13 @@ def fix_file(filepath):
                 else:
                     new_suffix = suffix
 
-            for arg in args_str.split(','):
+            for arg in args_str.split(","):
                 arg = arg.strip()
                 if not arg:
                     continue
-                if arg == 'self':
-                    args.append('self')
-                elif ':' not in arg:
+                if arg == "self":
+                    args.append("self")
+                elif ":" not in arg:
                     args.append(f"{arg}: Any")
                     needs_fix = True
                 else:
@@ -109,9 +110,10 @@ def fix_file(filepath):
         i += 1
 
     if changed:
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             f.writelines(new_lines)
         print(f"Fixed {filepath}")
+
 
 if __name__ == "__main__":
     for f in test_files:

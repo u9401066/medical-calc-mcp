@@ -143,9 +143,7 @@ class PalliativePerformanceScaleCalculator(BaseCalculator):
                     "Continue disease-directed and supportive care according to goals",
                     "Reassess function serially as decline may change prognosis and care planning",
                 ),
-                next_steps=(
-                    "Document baseline PPS for longitudinal follow-up",
-                ),
+                next_steps=("Document baseline PPS for longitudinal follow-up",),
             )
         if score >= 50:
             return Interpretation(
@@ -159,9 +157,7 @@ class PalliativePerformanceScaleCalculator(BaseCalculator):
                     "Use PPS trend alongside diagnosis and trajectory for prognostic discussions",
                     "Consider early hospice or specialist palliative review if not already involved",
                 ),
-                warnings=(
-                    "Declining PPS is associated with shorter survival in advanced illness",
-                ),
+                warnings=("Declining PPS is associated with shorter survival in advanced illness",),
                 next_steps=(
                     "Update goals-of-care discussion",
                     "Assess equipment and home support needs",
@@ -179,9 +175,7 @@ class PalliativePerformanceScaleCalculator(BaseCalculator):
                     "Ensure goals-of-care, code status, and hospice planning are reviewed",
                     "Support family and caregiver decision-making",
                 ),
-                warnings=(
-                    "Low PPS scores are associated with limited survival and high care needs",
-                ),
+                warnings=("Low PPS scores are associated with limited survival and high care needs",),
                 next_steps=(
                     "Escalate palliative or hospice support as appropriate",
                     "Review swallowing, intake, and pressure injury prevention needs",
@@ -193,10 +187,6 @@ class PalliativePerformanceScaleCalculator(BaseCalculator):
             severity=Severity.CRITICAL,
             stage="PPS 0",
             stage_description="Death",
-            recommendations=(
-                "Use only for retrospective documentation",
-            ),
-            next_steps=(
-                "Complete required documentation and family support processes",
-            ),
+            recommendations=("Use only for retrospective documentation",),
+            next_steps=("Complete required documentation and family support processes",),
         )

@@ -53,9 +53,7 @@ def validate_formula_provenance_manifest(tool_ids: set[str]) -> list[str]:
         for tool_id in values:
             previous = seen.get(tool_id)
             if previous is not None:
-                issues.append(
-                    f"Tool '{tool_id}' appears multiple times in formula provenance manifest: {previous}, {source_type}"
-                )
+                issues.append(f"Tool '{tool_id}' appears multiple times in formula provenance manifest: {previous}, {source_type}")
                 continue
             seen[tool_id] = source_type
 

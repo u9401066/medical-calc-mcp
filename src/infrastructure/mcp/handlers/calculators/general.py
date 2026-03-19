@@ -234,13 +234,19 @@ def register_general_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         peptic_ulcer_disease: Annotated[bool, Field(description="消化性潰瘍 Peptic ulcer disease | Requiring treatment")] = False,
         # Hierarchical - liver (3 > 1)
         mild_liver_disease: Annotated[bool, Field(description="輕度肝病 Mild liver disease | Chronic hepatitis, cirrhosis without portal HTN (1 pt)")] = False,
-        moderate_severe_liver_disease: Annotated[bool, Field(description="中重度肝病 Moderate/severe liver disease | Cirrhosis with portal HTN ± variceal bleeding (3 pts)")] = False,
+        moderate_severe_liver_disease: Annotated[
+            bool, Field(description="中重度肝病 Moderate/severe liver disease | Cirrhosis with portal HTN ± variceal bleeding (3 pts)")
+        ] = False,
         # Hierarchical - diabetes (2 > 1)
         diabetes_uncomplicated: Annotated[bool, Field(description="糖尿病(無併發症) Diabetes without complications | Insulin or oral agent (1 pt)")] = False,
-        diabetes_with_end_organ_damage: Annotated[bool, Field(description="糖尿病(有併發症) Diabetes with end-organ damage | Retinopathy, neuropathy, nephropathy (2 pts)")] = False,
+        diabetes_with_end_organ_damage: Annotated[
+            bool, Field(description="糖尿病(有併發症) Diabetes with end-organ damage | Retinopathy, neuropathy, nephropathy (2 pts)")
+        ] = False,
         # 2-point conditions
         hemiplegia: Annotated[bool, Field(description="偏癱/截癱 Hemiplegia or paraplegia | (2 pts)")] = False,
-        moderate_severe_renal_disease: Annotated[bool, Field(description="中重度腎病 Moderate/severe renal disease | Cr >3, dialysis, transplant, uremia (2 pts)")] = False,
+        moderate_severe_renal_disease: Annotated[
+            bool, Field(description="中重度腎病 Moderate/severe renal disease | Cr >3, dialysis, transplant, uremia (2 pts)")
+        ] = False,
         any_malignancy: Annotated[bool, Field(description="任何惡性腫瘤 Any malignancy | Non-metastatic, including leukemia/lymphoma (2 pts)")] = False,
         # 6-point conditions (highest hierarchy for cancer)
         metastatic_solid_tumor: Annotated[bool, Field(description="轉移性實體腫瘤 Metastatic solid tumor | (6 pts, supersedes any_malignancy)")] = False,

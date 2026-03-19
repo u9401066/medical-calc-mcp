@@ -146,25 +146,10 @@ def collect_registry_stats() -> tuple[RegistryStats, set[str]]:
     """Collect implementation-level stats from the calculator registry."""
     server = MedicalCalculatorServer()
     tools = server.registry.list_all()
-    specialties = {
-        (meta.high_level.specialties[0].value if meta.high_level.specialties else "Other")
-        for meta in tools
-    }
-    unique_pmids = {
-        ref.pmid
-        for meta in tools
-        for ref in meta.references
-        if ref.pmid
-    }
-    unique_dois = {
-        ref.doi
-        for meta in tools
-        for ref in meta.references
-        if ref.doi
-    }
-    tools_without_references = tuple(
-        sorted(meta.low_level.tool_id for meta in tools if not meta.references)
-    )
+    specialties = {(meta.high_level.specialties[0].value if meta.high_level.specialties else "Other") for meta in tools}
+    unique_pmids = {ref.pmid for meta in tools for ref in meta.references if ref.pmid}
+    unique_dois = {ref.doi for meta in tools for ref in meta.references if ref.doi}
+    tools_without_references = tuple(sorted(meta.low_level.tool_id for meta in tools if not meta.references))
     stats = RegistryStats(
         calculator_count=len(tools),
         specialty_count=len(specialties),
@@ -255,16 +240,12 @@ def validate_docs(stats: RegistryStats, version: str, check_tests: bool) -> list
     if stats.unique_dois != 244:
         issues.append(f"Expected 244 unique DOIs, found {stats.unique_dois}.")
     if stats.tools_without_references:
-        issues.append(
-            "Calculators without references: " + ", ".join(stats.tools_without_references)
-        )
+        issues.append("Calculators without references: " + ", ".join(stats.tools_without_references))
 
     expected_version_snippet = f"Current Status (v{version})"
     roadmap_text = (PROJECT_ROOT / "docs_site/development/roadmap.md").read_text(encoding="utf-8")
     if expected_version_snippet not in roadmap_text:
-        issues.append(
-            f"docs_site/development/roadmap.md is missing '{expected_version_snippet}'."
-        )
+        issues.append(f"docs_site/development/roadmap.md is missing '{expected_version_snippet}'.")
 
     for relative_path, expected_snippets in DOC_EXPECTATIONS.items():
         text = (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
@@ -326,10 +307,7 @@ def validate_generated_catalog_docs() -> list[str]:
     )
     if result.returncode != 0:
         output = (result.stdout + result.stderr).strip()
-        issues.append(
-            "Generated catalog docs are out of date. Run `uv run python scripts/generate_tool_catalog_docs.py`."
-            + (f"\n{output}" if output else "")
-        )
+        issues.append("Generated catalog docs are out of date. Run `uv run python scripts/generate_tool_catalog_docs.py`." + (f"\n{output}" if output else ""))
 
     return issues
 
@@ -351,10 +329,7 @@ def validate_generated_openapi_docs() -> list[str]:
     )
     if result.returncode != 0:
         output = (result.stdout + result.stderr).strip()
-        issues.append(
-            "Generated OpenAPI docs are out of date. Run `uv run python scripts/generate_openapi_spec.py`."
-            + (f"\n{output}" if output else "")
-        )
+        issues.append("Generated OpenAPI docs are out of date. Run `uv run python scripts/generate_openapi_spec.py`." + (f"\n{output}" if output else ""))
 
     return issues
 
@@ -376,10 +351,7 @@ def validate_generated_rest_api_docs() -> list[str]:
     )
     if result.returncode != 0:
         output = (result.stdout + result.stderr).strip()
-        issues.append(
-            "Generated REST API docs are out of date. Run `uv run python scripts/generate_rest_api_docs.py`."
-            + (f"\n{output}" if output else "")
-        )
+        issues.append("Generated REST API docs are out of date. Run `uv run python scripts/generate_rest_api_docs.py`." + (f"\n{output}" if output else ""))
 
     return issues
 

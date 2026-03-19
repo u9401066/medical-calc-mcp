@@ -202,9 +202,7 @@ class SerumOsmolalityCalculator(BaseCalculator):
             raise ValueError("BUN must be between 0 and 200 mg/dL")
         if ethanol is not None and (ethanol < 0 or ethanol > 1000):
             raise ValueError("Ethanol must be between 0 and 1000 mg/dL")
-        if measured_osmolality is not None and (
-            measured_osmolality < 200 or measured_osmolality > 500
-        ):
+        if measured_osmolality is not None and (measured_osmolality < 200 or measured_osmolality > 500):
             raise ValueError("Measured osmolality must be between 200 and 500 mOsm/kg")
 
         # Calculate components
@@ -243,9 +241,7 @@ class SerumOsmolalityCalculator(BaseCalculator):
             calculation_details["osmolar_gap"] = osmolar_gap
 
         # Generate interpretation
-        interpretation = self._interpret_osmolality(
-            calc_osm, osmolar_gap, sodium, glucose, ethanol
-        )
+        interpretation = self._interpret_osmolality(calc_osm, osmolar_gap, sodium, glucose, ethanol)
 
         return ScoreResult(
             tool_name=self.low_level_key.name,
@@ -303,32 +299,22 @@ class SerumOsmolalityCalculator(BaseCalculator):
             summary += f", Osmolar gap: {osmolar_gap} mOsm/kg"
 
         # Build detail
-        detail_parts = [
-            f"Calculated serum osmolality is {calc_osm} mOsm/kg (normal: 275-295)."
-        ]
+        detail_parts = [f"Calculated serum osmolality is {calc_osm} mOsm/kg (normal: 275-295)."]
 
         if calc_osm < 275:
             detail_parts.append("This indicates hypoosmolality.")
             if sodium < 136:
-                detail_parts.append(
-                    "With hyponatremia, this suggests true hypo-osmolar hyponatremia "
-                    "(e.g., SIADH, heart failure, cirrhosis, renal failure)."
-                )
+                detail_parts.append("With hyponatremia, this suggests true hypo-osmolar hyponatremia (e.g., SIADH, heart failure, cirrhosis, renal failure).")
         elif calc_osm > 295:
             detail_parts.append("This indicates hyperosmolality.")
             if glucose > 250:
-                detail_parts.append(
-                    "Elevated glucose is contributing to hyperosmolality. "
-                    "Consider DKA or HHS."
-                )
+                detail_parts.append("Elevated glucose is contributing to hyperosmolality. Consider DKA or HHS.")
 
         # Osmolar gap interpretation
         warnings: list[str] = []
         if osmolar_gap is not None:
             if osmolar_gap < 10:
-                detail_parts.append(
-                    f"Osmolar gap of {osmolar_gap} mOsm/kg is normal (<10)."
-                )
+                detail_parts.append(f"Osmolar gap of {osmolar_gap} mOsm/kg is normal (<10).")
             elif osmolar_gap < 20:
                 detail_parts.append(
                     f"Osmolar gap of {osmolar_gap} mOsm/kg is mildly elevated (10-20). "
@@ -336,12 +322,9 @@ class SerumOsmolalityCalculator(BaseCalculator):
                 )
                 severity = max(severity, Severity.MILD, key=lambda x: x.value)
             else:
-                detail_parts.append(
-                    f"Osmolar gap of {osmolar_gap} mOsm/kg is significantly elevated (>20)."
-                )
+                detail_parts.append(f"Osmolar gap of {osmolar_gap} mOsm/kg is significantly elevated (>20).")
                 warnings.append(
-                    "Elevated osmolar gap - consider toxic alcohol ingestion "
-                    "(methanol, ethylene glycol), propylene glycol, or other unmeasured osmoles"
+                    "Elevated osmolar gap - consider toxic alcohol ingestion (methanol, ethylene glycol), propylene glycol, or other unmeasured osmoles"
                 )
                 severity = Severity.SEVERE
                 risk_level = RiskLevel.HIGH

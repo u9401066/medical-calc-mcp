@@ -387,9 +387,7 @@ def format_summary(summary: BenchmarkSummary) -> str:
     ]
     for tool_id in sorted(summary.per_tool):
         stats = summary.per_tool[tool_id]
-        lines.append(
-            f"- {tool_id}: {stats['passed']} passed, {stats['failed']} failed, {stats['errored']} errors"
-        )
+        lines.append(f"- {tool_id}: {stats['passed']} passed, {stats['failed']} failed, {stats['errored']} errors")
     failing = [result for result in summary.results if result.status in {"failed", "error", "skipped"}]
     if failing:
         lines.append("")
