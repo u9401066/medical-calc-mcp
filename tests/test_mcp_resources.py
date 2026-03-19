@@ -50,12 +50,22 @@ class TestCalculatorResourceHandler:
 
     def test_handler_registers_resources(self, handler: Any, mock_mcp: Any) -> None:
         """Test that handler registers all expected resources"""
-        # Should register 4 resources
-        assert len(mock_mcp._resources) == 4
+        # Should register 5 resources
+        assert len(mock_mcp._resources) == 5
+        assert "guide://tool-usage-playbook" in mock_mcp._resources
         assert "calculator://list" in mock_mcp._resources
         assert "calculator://{tool_id}/info" in mock_mcp._resources
         assert "calculator://{tool_id}/references" in mock_mcp._resources
         assert "specialty://{specialty}/tools" in mock_mcp._resources
+
+    def test_tool_usage_playbook_resource(self, handler: Any, mock_mcp: Any) -> None:
+        """Test dedicated start-here guidance resource."""
+        get_playbook = mock_mcp._resources["guide://tool-usage-playbook"]
+        result = get_playbook()
+
+        assert "# Tool Usage Playbook" in result
+        assert "Preferred resource: `guide://tool-usage-playbook`" in result
+        assert "discover(...)" in result
 
     def test_get_calculator_list(self, handler: Any, mock_mcp: Any) -> None:
         """Test calculator list resource"""
@@ -63,6 +73,8 @@ class TestCalculatorResourceHandler:
         result = get_list()
 
         assert "# Available Medical Calculators" in result
+        assert "## Start Here" in result
+        assert "guide://tool-usage-playbook" in result
         assert "Total:" in result
         # Should have at least 68 calculators
         assert "68" in result or int(result.split("Total: ")[1].split()[0]) >= 68
@@ -84,6 +96,7 @@ class TestCalculatorResourceHandler:
         assert "SOFA" in result
         assert "Tool ID:" in result
         assert "Purpose:" in result
+        assert "Formula Source Type:" in result
         assert "Input Parameters" in result
 
     def test_get_calculator_info_invalid_tool(self, handler: Any, mock_mcp: Any) -> None:
@@ -92,6 +105,16 @@ class TestCalculatorResourceHandler:
         result = get_info("nonexistent_tool")
 
         assert "not found" in result.lower()
+
+    def test_get_calculator_info_alias_resolution(self, handler: Any, mock_mcp: Any) -> None:
+        """Test info resource resolves fuzzy tool ids."""
+        get_info = mock_mcp._resources["calculator://{tool_id}/info"]
+        result = get_info("sofa")
+
+        assert "Resolved Tool ID:" in result
+        assert "sofa_score" in result
+        assert "Start Here Resource:" in result
+        assert "Recommended Sequence:" in result
 
     def test_get_calculator_info_includes_specialties(self, handler: Any, mock_mcp: Any) -> None:
         """Test that info includes specialty information"""
@@ -134,6 +157,14 @@ class TestCalculatorResourceHandler:
 
         assert "not found" in result.lower()
 
+    def test_get_calculator_references_alias_resolution(self, handler: Any, mock_mcp: Any) -> None:
+        """Test references resource resolves fuzzy tool ids."""
+        get_refs = mock_mcp._resources["calculator://{tool_id}/references"]
+        result = get_refs("news2")
+
+        assert "References for" in result
+        assert "Resolved Tool ID:" in result
+
     def test_get_specialty_tools_valid(self, handler: Any, mock_mcp: Any) -> None:
         """Test getting tools for a valid specialty"""
         get_specialty = mock_mcp._resources["specialty://{specialty}/tools"]
@@ -173,6 +204,14 @@ class TestCalculatorResourceHandler:
         # Try with space instead of underscore
         result = get_specialty("critical care")
         assert "Critical Care" in result or "Unknown specialty" not in result
+
+    def test_get_specialty_tools_includes_resolved_specialty(self, handler: Any, mock_mcp: Any) -> None:
+        """Test specialty resource shows resolved canonical specialty."""
+        get_specialty = mock_mcp._resources["specialty://{specialty}/tools"]
+        result = get_specialty("critical care")
+
+        assert "Resolved Specialty:" in result
+        assert "critical_care" in result
 
     def test_specialty_tools_includes_parameters(self, handler: Any, mock_mcp: Any) -> None:
         """Test that specialty tools list includes parameters"""

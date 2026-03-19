@@ -11,7 +11,7 @@ Features:
 - Efficient search across all dimensions
 
 Design Rationale (based on actual data analysis):
-- 75 tools, parameter sharing is sparse (6.6% density)
+- 128 tools, parameter sharing is still sparse enough for simple indexes
 - Specialty/context sharing is dense (Critical Care: 56 tools)
 - Graph libraries (networkx) add no value for this scale
 - Simple similarity scoring works better than graph traversal
@@ -19,7 +19,7 @@ Design Rationale (based on actual data analysis):
 NO external dependencies required:
 - No networkx (graph too sparse, not needed)
 - No torch/transformers (tools are fixed, no semantic search needed)
-- No numpy (pure Python math is fast enough for 75 tools)
+- No numpy (pure Python math is fast enough for 128 tools)
 """
 
 from __future__ import annotations

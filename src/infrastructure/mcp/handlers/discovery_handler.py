@@ -30,6 +30,23 @@ from mcp.server.fastmcp import FastMCP
 from ....application.dto import DiscoveryMode, DiscoveryRequest
 from ....application.use_cases import DiscoveryUseCase
 from ....domain.registry.tool_registry import ToolRegistry
+from ....shared.smart_input import normalize_identifier, resolve_identifier
+
+DISCOVER_MODE_ALIASES = {
+    "all": "all",
+    "overview": "all",
+    "specialty": "specialty",
+    "specialties": "specialty",
+    "speciality": "specialty",
+    "context": "context",
+    "contexts": "context",
+    "keyword": "keyword",
+    "keywords": "keyword",
+    "search": "keyword",
+    "condition": "keyword",
+    "tools": "tools",
+    "list": "tools",
+}
 
 
 class DiscoveryHandler:
@@ -82,6 +99,10 @@ class DiscoveryHandler:
             **Examples:**
 
             ```python
+            # 弱模型安全流程: 先 discover，再 get_tool_schema
+            discover(by="keyword", value="sepsis")
+            # → 取得候選 tool_id 之後再呼叫 get_tool_schema("qsofa_score")
+
             # 查看所有分類 (起點)
             discover()
             # → {"specialties": [...], "contexts": [...]}
@@ -103,10 +124,16 @@ class DiscoveryHandler:
             # → {"tools": [...], "count": 75}
             ```
 
+            規則:
+            - 不要根據記憶猜 tool_id，先用 discover() 拿 canonical id
+            - 不要直接 calculate，先用 get_tool_schema(tool_id)
+
             ⏭️ 下一步: 找到工具後，使用 get_tool_schema(tool_id) 查看參數
             """
+            normalized_by = DISCOVER_MODE_ALIASES.get(normalize_identifier(by), by)
+
             # Route to appropriate discovery mode
-            if by == "all":
+            if normalized_by == "all":
                 # List all specialties and contexts
                 spec_request = DiscoveryRequest(mode=DiscoveryMode.LIST_SPECIALTIES)
                 spec_response = self._use_case.execute(spec_request)
@@ -133,7 +160,7 @@ class DiscoveryHandler:
                     ],
                 }
 
-            elif by == "specialty":
+            elif normalized_by == "specialty":
                 if not value:
                     return {"success": False, "error": "specialty 模式需要提供 value 參數", "hint": "先呼叫 discover() 查看可用的專科名稱"}
                 request = DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty=value, limit=limit)
@@ -150,7 +177,7 @@ class DiscoveryHandler:
 
                 return result
 
-            elif by == "context":
+            elif normalized_by == "context":
                 if not value:
                     return {"success": False, "error": "context 模式需要提供 value 參數", "hint": "先呼叫 discover() 查看可用的情境名稱"}
                 request = DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context=value, limit=limit)
@@ -167,7 +194,7 @@ class DiscoveryHandler:
 
                 return result
 
-            elif by == "keyword":
+            elif normalized_by == "keyword":
                 if not value:
                     return {"success": False, "error": "keyword 模式需要提供 value 參數", "hint": "提供搜尋關鍵字，例如 'sepsis', 'cardiac', 'renal'"}
                 request = DiscoveryRequest(mode=DiscoveryMode.SEARCH, query=value, limit=limit)
@@ -182,7 +209,7 @@ class DiscoveryHandler:
                 result["filter"] = {"by": "keyword", "value": value}
                 return result
 
-            elif by == "tools":
+            elif normalized_by == "tools":
                 request = DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=limit)
                 response = self._use_case.execute(request)
                 result = response.to_dict()
@@ -194,6 +221,7 @@ class DiscoveryHandler:
                     "success": False,
                     "error": f"未知的 by 參數: {by}",
                     "valid_values": ["all", "specialty", "context", "keyword", "tools"],
+                    "aliases": sorted(set(DISCOVER_MODE_ALIASES) - {"all", "specialty", "context", "keyword", "tools"}),
                     "examples": [
                         "discover()  # 列出所有分類",
                         "discover(by='specialty', value='critical_care')",
@@ -234,10 +262,25 @@ class DiscoveryHandler:
 
             💡 相關性基於: 共享參數、相同專科、相同臨床情境
             """
-            related = self._registry.get_related_tools(tool_id, limit)
+            resolution = resolve_identifier(tool_id, self._registry.list_all_ids())
+            resolved_tool_id = resolution.resolved_value or tool_id
+            related = self._registry.get_related_tools(resolved_tool_id, limit)
 
             if not related:
-                return {"success": False, "error": f"找不到工具: {tool_id}", "hint": "請先使用 discover(by='keyword', value='關鍵字') 找到工具"}
+                return {
+                    "success": False,
+                    "error": f"找不到工具: {tool_id}",
+                    "hint": "請先使用 discover(by='keyword', value='關鍵字') 找到工具",
+                    "suggestions": list(resolution.suggestions),
+                    "guidance": {
+                        "normalized_input": resolution.normalized_value,
+                        "next_actions": [
+                            "discover(by='keyword', value='關鍵字')",
+                            "discover(by='tools')",
+                            "get_tool_schema('tool_id')",
+                        ],
+                    },
+                }
 
             # Enrich with metadata
             tools = []
@@ -255,11 +298,12 @@ class DiscoveryHandler:
 
             return {
                 "success": True,
-                "source_tool": tool_id,
+                "source_tool": resolved_tool_id,
                 "related_tools": tools,
                 "count": len(tools),
                 "note": "相關性基於: 共享參數、相同專科、相同臨床情境",
                 "next_step": "get_tool_schema(tool_id) 查看詳情，然後 calculate(tool_id, params)",
+                **({"resolved_tool_id": resolved_tool_id} if resolved_tool_id != tool_id else {}),
             }
 
         # ================================================================

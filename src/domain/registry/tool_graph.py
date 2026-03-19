@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 HAS_NETWORKX = False
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from .tool_registry import ToolRegistry
 
 
-class RelationType(str, Enum):
+class RelationType(StrEnum):
     """Types of relationships between tools."""
 
     SHARED_PARAM = "shared_param"  # Share input parameters

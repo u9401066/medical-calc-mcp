@@ -8,8 +8,9 @@ Used for tool registration and discovery.
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..value_objects.reference import Reference
-from ..value_objects.tool_keys import HighLevelKey, LowLevelKey
+from src.domain.value_objects.reference import Reference
+from src.domain.value_objects.tool_keys import HighLevelKey, LowLevelKey
+from src.shared.formula_provenance import get_formula_source_type
 
 
 @dataclass(frozen=True)
@@ -50,11 +51,16 @@ class ToolMetadata:
     def purpose(self) -> str:
         return self.low_level.purpose
 
+    @property
+    def formula_source_type(self) -> str:
+        return get_formula_source_type(self.tool_id) or ""
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "low_level": self.low_level.to_dict(),
             "high_level": self.high_level.to_dict(),
             "references": [ref.to_dict() for ref in self.references],
+            "formula_source_type": self.formula_source_type,
             "version": self.version,
             "last_updated": self.last_updated,
             "validation_status": self.validation_status,
@@ -74,4 +80,5 @@ class ToolMetadata:
             "specialties": [s.value for s in self.high_level.specialties],
             "conditions": list(self.high_level.conditions),
             "clinical_contexts": [c.value for c in self.high_level.clinical_contexts],
+            "formula_source_type": self.formula_source_type,
         }

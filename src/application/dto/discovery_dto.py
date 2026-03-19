@@ -75,6 +75,7 @@ class ToolDetailDTO:
     keywords: list[str]
     icd10_codes: list[str]
     references: list[dict[str, Any]]
+    formula_source_type: str
     version: str
     validation_status: str
 
@@ -94,8 +95,11 @@ class DiscoveryResponse:
     tool_detail: Optional[ToolDetailDTO] = None
     available_specialties: list[str] = field(default_factory=list)
     available_contexts: list[str] = field(default_factory=list)
+    suggestions: list[str] = field(default_factory=list)
+    resolved_value: Optional[str] = None
     query: Optional[str] = None
     error: Optional[str] = None
+    guidance: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for MCP response"""
@@ -108,7 +112,15 @@ class DiscoveryResponse:
         if self.query:
             result["query"] = self.query
 
+        if self.resolved_value:
+            result["resolved_value"] = self.resolved_value
+
+        if self.suggestions:
+            result["suggestions"] = self.suggestions
+
         if self.error:
+            if self.guidance:
+                result["guidance"] = self.guidance
             result["error"] = self.error
             return result
 
@@ -138,6 +150,7 @@ class DiscoveryResponse:
                 "clinical_questions": self.tool_detail.clinical_questions,
                 "keywords": self.tool_detail.keywords,
                 "references": self.tool_detail.references,
+                "formula_source_type": self.tool_detail.formula_source_type,
                 "version": self.tool_detail.version,
             }
 
@@ -146,5 +159,8 @@ class DiscoveryResponse:
 
         if self.available_contexts:
             result["available_contexts"] = self.available_contexts
+
+        if self.guidance:
+            result["guidance"] = self.guidance
 
         return result

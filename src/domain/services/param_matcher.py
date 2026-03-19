@@ -19,9 +19,9 @@ from __future__ import annotations
 import inspect
 import re
 from dataclasses import dataclass, field
-from difflib import SequenceMatcher
 from typing import Any, Optional
 
+from ...shared.fuzzy_matching import similarity_ratio
 from ..services.base import BaseCalculator
 
 # =============================================================================
@@ -337,7 +337,7 @@ class ParamMatcher:
             best_match = None
             best_score = 0.0
             for expected in available:
-                score = SequenceMatcher(None, normalized, self._normalize(expected)).ratio()
+                score = similarity_ratio(normalized, self._normalize(expected))
                 if score > best_score and score >= self.fuzzy_threshold:
                     best_score = score
                     best_match = expected
@@ -357,7 +357,7 @@ class ParamMatcher:
         scored = []
 
         for expected in expected_params:
-            score = SequenceMatcher(None, normalized, self._normalize(expected)).ratio()
+            score = similarity_ratio(normalized, self._normalize(expected))
             if score > 0.4:  # Minimum threshold for suggestions
                 scored.append((expected, score))
 

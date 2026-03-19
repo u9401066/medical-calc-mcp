@@ -13,6 +13,8 @@ Reference: https://modelcontextprotocol.io/docs/concepts/prompts
 
 from mcp.server.fastmcp import FastMCP
 
+from src.infrastructure.mcp.guidance import get_tool_usage_playbook_markdown
+
 from ....domain.registry.tool_registry import ToolRegistry
 
 
@@ -32,6 +34,15 @@ class PromptHandler:
 
     def _register_prompts(self) -> None:
         """Register all clinical workflow prompts"""
+
+        @self._mcp.prompt()
+        def tool_usage_playbook() -> str:
+            """
+            Tool Usage Playbook - 小模型工具使用作戰手冊
+
+            A strict operating playbook for smaller or less capable models.
+            """
+            return get_tool_usage_playbook_markdown()
 
         @self._mcp.prompt()
         def sepsis_evaluation() -> str:

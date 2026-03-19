@@ -1,17 +1,12 @@
-"""
-Integration Tests for Calculate Endpoint
+"""Integration tests for CalculateUseCase."""
 
-Tests the full calculation flow with intelligent parameter matching:
-- 75 tool smoke tests
-- Parameter alias handling
-- Error message quality
-"""
-
+from typing import Any
 
 import pytest
 
 from src.application.dto import CalculateRequest
 from src.application.use_cases.calculate_use_case import CalculateUseCase
+from src.domain.registry.tool_registry import ToolRegistry
 
 # Note: 'registry' fixture is provided by conftest.py
 # It creates a ToolRegistry with all calculators registered
@@ -21,22 +16,22 @@ class TestCalculateUseCase:
     """Integration tests for CalculateUseCase."""
 
     @pytest.fixture
-    def use_case(self, registry):
+    def use_case(self, registry: ToolRegistry) -> CalculateUseCase:
         """Create CalculateUseCase with real registry from conftest."""
         return CalculateUseCase(registry)
 
     # ==================== Smoke Tests ====================
 
-    def test_all_calculators_discoverable(self, registry):
+    def test_all_calculators_discoverable(self, registry: ToolRegistry) -> None:
         """Test that all calculators can be discovered."""
         all_ids = registry.list_all_ids()
         assert len(all_ids) > 0, "No calculators registered"
         print(f"\n✅ Found {len(all_ids)} calculators")
 
-    def test_all_calculators_have_metadata(self, registry):
+    def test_all_calculators_have_metadata(self, registry: ToolRegistry) -> None:
         """Test that all calculators have required metadata."""
         all_ids = registry.list_all_ids()
-        issues = []
+        issues: list[str] = []
 
         for tool_id in all_ids:
             calc = registry.get_calculator(tool_id)
@@ -114,7 +109,7 @@ class TestCalculateUseCase:
             "troponin_score": 0,
         }),
     ])
-    def test_core_calculators(self, use_case, tool_id, params):
+    def test_core_calculators(self, use_case: CalculateUseCase, tool_id: str, params: dict[str, Any]) -> None:
         """Test core calculators with valid parameters."""
         request = CalculateRequest(tool_id=tool_id, params=params)
         response = use_case.execute(request)
@@ -125,7 +120,7 @@ class TestCalculateUseCase:
 
     # ==================== Parameter Alias Tests ====================
 
-    def test_creatinine_alias(self, use_case):
+    def test_creatinine_alias(self, use_case: CalculateUseCase) -> None:
         """Test that 'cr' alias works for serum_creatinine."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -143,7 +138,7 @@ class TestCalculateUseCase:
             assert "param_template" in (response.component_scores or {})
             print(f"\n⚠️ Alias not matched, but got template: {response.component_scores}")
 
-    def test_heart_rate_alias(self, use_case):
+    def test_heart_rate_alias(self, use_case: CalculateUseCase) -> None:
         """Test that 'hr' alias works for heart_rate."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -164,7 +159,7 @@ class TestCalculateUseCase:
             assert response.error, "Should have error message"
             print(f"\n⚠️ Alias issue: {response.error}")
 
-    def test_blood_pressure_alias(self, use_case):
+    def test_blood_pressure_alias(self, use_case: CalculateUseCase) -> None:
         """Test blood pressure parameter variations."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -185,7 +180,7 @@ class TestCalculateUseCase:
 
     # ==================== Error Message Quality Tests ====================
 
-    def test_missing_required_param_message(self, use_case):
+    def test_missing_required_param_message(self, use_case: CalculateUseCase) -> None:
         """Test error message quality for missing parameters."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -204,7 +199,7 @@ class TestCalculateUseCase:
         assert response.component_scores is not None
         print(f"\n📝 Error message: {response.error}")
 
-    def test_unknown_param_suggestion(self, use_case):
+    def test_unknown_param_suggestion(self, use_case: CalculateUseCase) -> None:
         """Test that unknown params get suggestions."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -218,9 +213,10 @@ class TestCalculateUseCase:
 
         # Should either succeed via fuzzy match or provide suggestion
         if not response.success:
+            assert response.error is not None
             assert "did you mean" in response.error.lower() or "creatinine" in response.error.lower()
 
-    def test_tool_not_found_suggestion(self, use_case):
+    def test_tool_not_found_suggestion(self, use_case: CalculateUseCase) -> None:
         """Test tool not found error has suggestions."""
         request = CalculateRequest(
             tool_id="ckdepi2021",  # typo
@@ -230,11 +226,12 @@ class TestCalculateUseCase:
 
         assert not response.success
         # Should suggest similar tool IDs
+        assert response.error is not None
         assert "did you mean" in response.error.lower() or "ckd_epi" in response.error.lower()
 
     # ==================== Template Generation Tests ====================
 
-    def test_error_includes_param_template(self, use_case):
+    def test_error_includes_param_template(self, use_case: CalculateUseCase) -> None:
         """Test that errors include fillable param template."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -254,7 +251,7 @@ class TestCalculateUseCase:
 
     # ==================== Edge Cases ====================
 
-    def test_boolean_param_handling(self, use_case):
+    def test_boolean_param_handling(self, use_case: CalculateUseCase) -> None:
         """Test boolean parameter handling."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -272,7 +269,7 @@ class TestCalculateUseCase:
 
         assert response.success, f"Boolean handling failed: {response.error}"
 
-    def test_string_enum_param_handling(self, use_case):
+    def test_string_enum_param_handling(self, use_case: CalculateUseCase) -> None:
         """Test string enum parameter handling."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -286,7 +283,7 @@ class TestCalculateUseCase:
 
         assert response.success, f"String enum handling failed: {response.error}"
 
-    def test_negative_value_handling(self, use_case):
+    def test_negative_value_handling(self, use_case: CalculateUseCase) -> None:
         """Test handling of negative values (should be rejected)."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -300,9 +297,10 @@ class TestCalculateUseCase:
 
         # Should fail validation
         assert not response.success
+        assert response.error is not None
         assert "validation" in response.error.lower() or "invalid" in response.error.lower()
 
-    def test_extreme_values(self, use_case):
+    def test_extreme_values(self, use_case: CalculateUseCase) -> None:
         """Test handling of extreme but valid values."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -324,10 +322,10 @@ class TestCalculatorCoverage:
     # Uses 'registry' fixture from conftest.py
 
     @pytest.fixture
-    def use_case(self, registry):
+    def use_case(self, registry: ToolRegistry) -> CalculateUseCase:
         return CalculateUseCase(registry)
 
-    def test_critical_care_calculators(self, registry):
+    def test_critical_care_calculators(self, registry: ToolRegistry) -> None:
         """Verify critical care calculators are available."""
         critical_care = [
             "news2_score", "apache_ii", "sofa_score", "qsofa_score", "glasgow_coma_scale", "four_score",
@@ -338,7 +336,7 @@ class TestCalculatorCoverage:
         for calc in critical_care:
             assert calc in available, f"Missing critical care calculator: {calc}"
 
-    def test_nephrology_calculators(self, registry):
+    def test_nephrology_calculators(self, registry: ToolRegistry) -> None:
         """Verify nephrology calculators are available."""
         nephrology = ["ckd_epi_2021", "cockcroft_gault", "kdigo_aki"]
         available = registry.list_all_ids()
@@ -346,7 +344,7 @@ class TestCalculatorCoverage:
         for calc in nephrology:
             assert calc in available, f"Missing nephrology calculator: {calc}"
 
-    def test_anesthesiology_calculators(self, registry):
+    def test_anesthesiology_calculators(self, registry: ToolRegistry) -> None:
         """Verify anesthesiology calculators are available."""
         anesthesia = ["asa_physical_status", "mallampati_score", "apfel_ponv", "stop_bang"]
         available = registry.list_all_ids()
@@ -354,7 +352,7 @@ class TestCalculatorCoverage:
         for calc in anesthesia:
             assert calc in available, f"Missing anesthesiology calculator: {calc}"
 
-    def test_cardiology_calculators(self, registry):
+    def test_cardiology_calculators(self, registry: ToolRegistry) -> None:
         """Verify cardiology calculators are available."""
         cardiology = ["heart_score", "chads2_vasc", "wells_pe"]
         available = registry.list_all_ids()
@@ -368,10 +366,10 @@ class TestResponseFormat:
     """Test response format consistency."""
 
     @pytest.fixture
-    def use_case(self, registry):
+    def use_case(self, registry: ToolRegistry) -> CalculateUseCase:
         return CalculateUseCase(registry)
 
-    def test_success_response_format(self, use_case):
+    def test_success_response_format(self, use_case: CalculateUseCase) -> None:
         """Test successful response has all required fields."""
         request = CalculateRequest(
             tool_id="glasgow_coma_scale",
@@ -389,7 +387,7 @@ class TestResponseFormat:
         assert response.result is not None
         assert response.error is None
 
-    def test_error_response_format(self, use_case):
+    def test_error_response_format(self, use_case: CalculateUseCase) -> None:
         """Test error response has all required fields."""
         request = CalculateRequest(
             tool_id="nonexistent",
@@ -402,7 +400,7 @@ class TestResponseFormat:
         assert response.error is not None
         assert len(response.error) > 0
 
-    def test_interpretation_format(self, use_case):
+    def test_interpretation_format(self, use_case: CalculateUseCase) -> None:
         """Test interpretation is properly formatted."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -427,10 +425,10 @@ class TestBoundaryValidation:
     """Test automatic boundary validation integrated into calculate flow."""
 
     @pytest.fixture
-    def use_case(self, registry):
+    def use_case(self, registry: ToolRegistry) -> CalculateUseCase:
         return CalculateUseCase(registry)
 
-    def test_normal_values_no_warnings(self, use_case):
+    def test_normal_values_no_warnings(self, use_case: CalculateUseCase) -> None:
         """Test that normal values don't trigger boundary warnings."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -452,7 +450,7 @@ class TestBoundaryValidation:
             warnings = response.component_scores.get("_boundary_warnings", [])
             assert len(warnings) == 0, f"Expected no warnings for normal values, got: {warnings}"
 
-    def test_abnormal_values_trigger_warnings(self, use_case):
+    def test_abnormal_values_trigger_warnings(self, use_case: CalculateUseCase) -> None:
         """Test that clinically abnormal values trigger boundary warnings."""
         request = CalculateRequest(
             tool_id="news2_score",
@@ -489,7 +487,7 @@ class TestBoundaryValidation:
 
         print(f"\n🚨 Boundary warnings triggered: {warnings}")
 
-    def test_warning_includes_reference(self, use_case):
+    def test_warning_includes_reference(self, use_case: CalculateUseCase) -> None:
         """Test that warnings include literature references when available."""
         request = CalculateRequest(
             tool_id="ckd_epi_2021",
@@ -518,7 +516,7 @@ class TestBoundaryValidation:
             assert "citation" in ref
             print(f"\n📚 Reference included: {ref}")
 
-    def test_calculation_still_succeeds_with_warnings(self, use_case):
+    def test_calculation_still_succeeds_with_warnings(self, use_case: CalculateUseCase) -> None:
         """Test that calculation succeeds even with boundary warnings."""
         request = CalculateRequest(
             tool_id="qsofa_score",
@@ -541,7 +539,7 @@ class TestBoundaryValidation:
 
         print(f"\n✅ Score calculated: {response.result} with {len(warnings)} warning(s)")
 
-    def test_boundary_warnings_separate_from_clinical_warnings(self, use_case):
+    def test_boundary_warnings_separate_from_clinical_warnings(self, use_case: CalculateUseCase) -> None:
         """Test that boundary warnings are separate from clinical interpretation warnings."""
         request = CalculateRequest(
             tool_id="news2_score",

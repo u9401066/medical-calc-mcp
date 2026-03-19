@@ -23,6 +23,8 @@
 - [為什麼需要這個專案？](#-為什麼需要這個專案)
 - [架構](#-架構)
 - [快速開始](#-快速開始)
+- [OpenClaw 相容性](#openclaw-相容性)
+- [OpenClaw Registry 指南](docs/OPENCLAW.md)
 - [部署模式](#-部署模式) 🚀 NEW
 - [Agent 整合](#-agent-整合) 🤖 NEW
 - [Docker 部署](#-docker-部署) 🐳
@@ -88,11 +90,11 @@
 
 本專案採用「人機協作」的高標準流程，確保臨床準確性：
 
-1.  **領域定義**：由人工指定目標醫學專科或臨床領域。
-2.  **AI 檢索指引**：利用 AI 檢索相關最新的臨床指引（Clinical Guidelines）。
-3.  **指引特徵提取**：從指引中找出建議的分數計算系統與公式。
-4.  **原始文獻回溯**：回溯找出原始同儕審查論文（Original Papers），驗證公式係數。
-5.  **工具製作**：實作具備精確參數驗證與醫學解釋的計分工具。
+1. **領域定義**：由人工指定目標醫學專科或臨床領域。
+2. **AI 檢索指引**：利用 AI 檢索相關最新的臨床指引（Clinical Guidelines）。
+3. **指引特徵提取**：從指引中找出建議的分數計算系統與公式。
+4. **原始文獻回溯**：回溯找出原始同儕審查論文（Original Papers），驗證公式係數。
+5. **工具製作**：實作具備精確參數驗證與醫學解釋的計分工具。
 
 ---
 
@@ -200,6 +202,76 @@ uv run python -m src.main
 # 或使用 MCP 開發檢查器 (Inspector)
 uv run mcp dev src/main.py
 ```
+
+## OpenClaw 相容性
+
+這個儲存庫已特別整理成適合 OpenClaw 類型的 crawler、MCP registry 與 autonomous agent 快速理解、安裝與安全使用的形式。
+
+### 方便被爬取的關鍵字
+
+- MCP server
+- medical calculator MCP
+- FastMCP
+- stdio MCP server
+- SSE MCP server
+- evidence-based medical scoring
+- AI agent clinical tools
+- schema-first calculation
+- safe retry guidance
+
+### 為什麼這個 Repo 對 OpenClaw 友善
+
+- README 明確提供標準流程：`discover(...) -> get_tool_schema(tool_id) -> calculate(tool_id, params)`
+- 起手 SOP 已暴露在多個 MCP surface：
+  - Prompt: `tool_usage_playbook()`
+  - Resource: `guide://tool-usage-playbook`
+  - Index: `calculator://list`
+- smart resolver 可處理模糊 tool id 與 specialty 輸入
+- 失敗回應會提供 `guidance`、`suggestions`、`resolved_value`、`param_template`，方便安全重試
+- 同時支援本地 `stdio` 與遠端 `sse` / `http` 傳輸
+
+### 最短安裝方式
+
+```bash
+git clone https://github.com/u9401066/medical-calc-mcp.git
+cd medical-calc-mcp
+uv sync
+uv run python -m src.main
+```
+
+### 建議 OpenClaw 的第一批操作
+
+```text
+1. Read resource: guide://tool-usage-playbook
+2. Read resource: calculator://list
+3. Call tool: discover(by="keyword", value="clinical problem")
+4. Call tool: get_tool_schema("tool_id")
+5. Call tool: calculate("tool_id", {...})
+```
+
+### MCP Client 設定範例
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main"],
+      "cwd": "/path/to/medical-calc-mcp"
+    }
+  }
+}
+```
+
+### 遠端 Hosted 模式
+
+```bash
+uv run python -m src.main --mode sse
+# 或
+uv run python -m src.main --mode http
+```
+
+如果 OpenClaw 會依據 README 內容來判斷是否值得安裝，這個專案現在已提供清楚的安裝方式、transport 模式與 schema-first 的安全 SOP。
 
 ### 與 VS Code Copilot 整合 ⭐ NEW
 
@@ -411,7 +483,7 @@ uv run python -m src.main --mode http
 }
 ```
 
-### API 端點
+### REST API 端點
 
 > ⚠️ FastMCP SSE 模式僅提供以下端點：
 
@@ -719,144 +791,75 @@ LowLevelKey(
 
 ## 🔧 可用工具
 
-> **MCP 基本元素**: 82 個工具 + 5 個提示詞 + 4 個資源
+> **Registry Snapshot**: 128 個計算器，涵蓋 26 個專科
 >
-> **目前統計**: 82 個工具 | 1566 個測試 | 92% 覆蓋率 | 第 19 階段已完成 ✅
+> **品質快照**: 2067 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用
 
 ### 📑 快速導覽
+<!-- BEGIN GENERATED:CATALOG_OVERVIEW_ZH -->
+此 README 不再內嵌手動維護的完整工具清單；repository docs 與網站版都改由同一生成來源輸出。
 
-| 專科 | 數量 | 連結 |
-|-----------|-------|---------|
-| 麻醉科 / 術前評估 | 9 | [→ 跳轉](#-麻醉科--術前評估) |
-| 重症加護 / ICU | 8 | [→ 跳轉](#-重症加護) |
-| 小兒科 | 9 | [→ 跳轉](#-小兒科) |
-| 腎臟科 | 2 | [→ 跳轉](#-腎臟科) |
-| 胸腔科 | 6 | [→ 跳轉](#-胸腔科) |
-| 心臟科 | 9 | [→ 跳轉](#-心臟科) |
-| 急診醫學 / 創傷 | 5 | [→ 跳轉](#-急診醫學) |
-| 肝膽消化科 | 6 | [→ 跳轉](#-肝膽科) |
-| 酸鹼代謝 | 4 | [→ 跳轉](#-酸鹼代謝) |
-| 血液科 | 1 | [→ 跳轉](#-血液科) |
-| 神經科 | 7 | [→ 跳轉](#-神經科) |
-| 通用工具 | 4 | [→ 跳轉](#-通用工具) |
-| 探索工具 | 7 | [→ 跳轉](#-探索工具) |
-| 提示詞工作流程 | 5 | [→ 跳轉](#-提示詞工作流程) |
+**Registry Snapshot**: 151 個計算器，涵蓋 31 個專科
+
+- [完整工具目錄](docs/CALCULATOR_CATALOG.zh-TW.md)
+- [English catalog](docs/CALCULATOR_CATALOG.md)
+- [網站版計算器總覽](docs_site/zh-tw/calculators.md)
+- [Website calculator catalog](docs_site/calculators/index.md)
+- 本機重新產生：`uv run python scripts/generate_tool_catalog_docs.py`
+
+| 專科 | 工具數 |
+|------|------:|
+| 重症醫學科 | 18 |
+| 老年醫學科 | 13 |
+| 心臟科 | 11 |
+| 急診醫學科 | 9 |
+| 精神科 | 9 |
+| 麻醉科 | 8 |
+
+如需直接檢視 live registry，也可執行 `python scripts/count_tools.py`、讀取 `calculator://list`，或在 MCP client 呼叫 `list_calculators()`。
+<!-- END GENERATED:CATALOG_OVERVIEW_ZH -->
 
 ---
 
-### 計算器 (91 個工具)
+### 自動生成工具目錄
 
-#### 🏥 麻醉科 / 術前評估
+完整工具清單與專科摘要現在直接由 registry 產生，避免 README 與實作脫節。
 
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_asa_physical_status` | ASA-PS | 身體狀況分級 | Mayhew 2019 |
-| `calculate_mallampati` | Mallampati | 呼吸道評估 | Mallampati 1985 |
-| `calculate_rcri` | RCRI (Lee Index) | 非心臟手術的心臟風險評估 | Lee 1999 |
-| `calculate_mabl` | MABL | 最大允許失血量 | Gross 1983 |
-| `calculate_transfusion_volume` | Transfusion Calc | 輸血量計算 | Roseff 2002 |
-| `calculate_caprini_vte` | Caprini VTE | 手術 VTE 風險評估 | Caprini 2005 |
-| `calculate_apfel_ponv` | Apfel Score 🆕 | 術後嘔吐風險預測 | Apfel 1999 |
-| `calculate_stop_bang` | STOP-BANG 🆕 | OSA 篩檢問卷 | Chung 2008 |
-| `calculate_aldrete_score` | Aldrete Score 🆕 | PACU 恢復評估 | Aldrete 1970 |
+- [完整工具目錄](docs/CALCULATOR_CATALOG.zh-TW.md)
+- [English catalog](docs/CALCULATOR_CATALOG.md)
+- 本機重新產生：`uv run python scripts/generate_tool_catalog_docs.py`
 
-[↑ 返回導覽](#-快速導覽)
+<!-- BEGIN GENERATED:GUIDELINE_OVERVIEW_ZH -->
+### 📋 指引對齊概覽
 
-#### 🩺 重症加護
+這份摘要由與 docs / docs_site 相同的生成來源輸出，不再手動維護。
 
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_apache_ii` | APACHE II | ICU 死亡率預測 | Knaus 1985 |
-| `calculate_sofa` | SOFA Score | 器官衰竭評估 (Sepsis-3) | Vincent 1996, Singer 2016 |
-| `calculate_sofa2` | **SOFA-2 (2025)** 🆕 | 更新版器官衰竭評估 | Ranzani JAMA 2025 |
-| `calculate_qsofa` | qSOFA | 床邊敗血症快速篩檢 | Singer 2016 (Sepsis-3) |
-| `calculate_news2` | NEWS2 | 臨床惡化預警分數 | RCP 2017 |
-| `calculate_gcs` | Glasgow Coma Scale | 意識狀態評估 (昏迷指數) | Teasdale 1974 |
-| `calculate_rass` | RASS | 鎮靜/躁動評估量表 | Sessler 2002 |
-| `calculate_cam_icu` | CAM-ICU | ICU 瞻妄篩檢 | Ely 2001 |
+目前追蹤 **65/65** 個指引建議工具，涵蓋 **16** 個臨床領域。
 
-[↑ 返回導覽](#-快速導覽)
+- [指引覆蓋摘要](docs/GUIDELINE_COVERAGE_SUMMARY.zh-TW.md)
+- [網站版指引摘要](docs_site/zh-tw/guideline-coverage.md)
+- [2023-2025 詳細指引整理](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)
+- [2020-2025 歷史整理](docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)
 
-#### 👶 小兒科
-
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_apgar_score` | APGAR Score 🆕 | 新生兒評估 (1, 5, 10 分鐘) | Apgar 1953, AAP 2015 |
-| `calculate_pews` | PEWS 🆕 | 小兒早期預警分數 | Parshuram 2009 |
-| `calculate_pediatric_sofa` | pSOFA 🆕 | 小兒器官衰竭評估 (敗血症) | Matics 2017 |
-| `calculate_pim3` | PIM3 🆕 | PICU 死亡率預測 | Straney 2013 |
-| `calculate_pediatric_gcs` | Pediatric GCS 🆕 | 兒童版意識評估量表 | Reilly 1988 |
-| `calculate_pediatric_drug_dose` | Pediatric Dosing | 體重依賴型藥物劑量計算 | Lexicomp, Anderson 2017 |
-| `calculate_mabl` | MABL | 最大允許失血量 | Miller's Anesthesia |
-| `calculate_transfusion_volume` | Transfusion Volume | 輸血量計算 | AABB |
-| `calculate_body_surface_area` | BSA | 體表面積計算 (Mosteller) | Mosteller 1987 |
-
-[↑ 返回導覽](#-快速導覽)
-
-#### 🫘 腎臟科
-
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_ckd_epi_2021` | CKD-EPI 2021 | 估計腎絲球過濾率 (eGFR) | Inker 2021 |
-| `calculate_kdigo_aki` | KDIGO AKI | 急性腎損傷分期 | KDIGO 2012 |
-
-[↑ 返回導覽](#-快速導覽)
-
-#### 🫁 胸腔科
-
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_curb65` | CURB-65 | 肺炎嚴重度評估 | Lim 2003 |
-| `calculate_psi_port` | PSI/PORT | 社區型肺炎死亡率預測 | Fine 1997 |
-| `calculate_ideal_body_weight` | IBW (Devine) | 理想體重預估 (呼吸器設定) | Devine 1974, ARDSNet 2000 |
-| `calculate_pf_ratio` | P/F Ratio | ARDS 柏林定義分類 | ARDS Task Force 2012 |
-| `calculate_rox_index` | ROX Index | 高流量氧氣失敗預測 | Roca 2016 |
-| `calculate_spesi` | sPESI 🆕 | 簡化版肺栓塞嚴重度指數 | Jiménez 2010 |
-
-[↑ 返回導覽](#-快速導覽)
-
-#### ❤️ 心臟科
-
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_chads2_vasc` | CHA₂DS₂-VASc | 心房顫動中風風險評估 | Lip 2010 |
-| `calculate_chads2_va` | CHA₂DS₂-VA (2024 ESC) | 性別中性版 AF 中風風險 | Van Gelder 2024 |
-| `calculate_has_bled` | HAS-BLED | AF 出血風險評估 | Pisters 2010, ESC 2024 |
-| `calculate_heart_score` | HEART Score | 胸痛風險分層 | Six 2008 |
-| `calculate_corrected_qt` | Corrected QT (QTc) | 藥物安全性之 QT 間隔校正 | Bazett 1920, ESC 2015 |
-| `calculate_grace_score` | GRACE Score | ACS 死亡風險分層 | Fox 2006 |
-| `calculate_acef_ii` | ACEF II Score | 心臟手術死亡風險 | Ranucci 2018 |
-| `calculate_timi_stemi` | TIMI STEMI 🆕 | STEMI 30天死亡率預測 | Morrow 2000 |
-
-[↑ 返回導覽](#-快速導覽)
-
-#### 🧠 神經科
-
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_nihss` | NIHSS | 美國國衛院腦中風量表 (腦中風嚴重度) | Brott 1989 |
-| `calculate_abcd2` | ABCD2 Score | TIA 短期中風風險預測 | Johnston 2007 |
-| `calculate_modified_rankin_scale` | Modified Rankin Scale | 中風後失能狀態評估 | van Swieten 1988 |
-| `calculate_hunt_hess` | Hunt & Hess Scale 🆕 | 蜘蛛膜下腔出血臨床分級 | Hunt & Hess 1968 |
-| `calculate_fisher_grade` | Fisher Grade 🆕 | SAH CT 分級 (血管痙攣預測) | Fisher 1980, Frontera 2006 |
-| `calculate_four_score` | FOUR Score 🆕 | 昏迷評估 (E/M/B/R, 0-16) | Wijdicks 2005 |
-| `calculate_ich_score` | ICH Score 🆕 | 腦內出血 30天死亡率 | Hemphill 2001 |
-
-[↑ 返回導覽](#-快速導覽)
-
-#### 🧪 酸鹼代謝
-
-| 工具 ID | 名稱 | 用途 | 參考文獻 |
-|---------|------|---------|-----------|
-| `calculate_anion_gap` | Anion Gap | 代謝性酸中毒鑑別診斷 | Kraut 2007, Figge 1998 |
-| `calculate_delta_ratio` | Delta Ratio | 混合性酸鹼失衡偵測 | Wrenn 1990, Rastegar 2007 |
-| `calculate_corrected_sodium` | Corrected Sodium | 高血糖下血鈉校正 | Katz 1973, Hillier 1999 |
-| `calculate_winters_formula` | Winter's Formula | 代謝性酸中毒之預期 PaCO₂ | Albert 1967, Narins 1980 |
-| `calculate_osmolar_gap` | Osmolar Gap | 毒性酒精篩檢 | Hoffman 1993, Lynd 2008 |
-| `calculate_free_water_deficit` | Free Water Deficit | 高血鈉治療補水計畫 | Adrogue 2000, Sterns 2015 |
-| `calculate_aa_gradient` | A-a Gradient | 肺泡-動脈氧分壓差 | Kanber 1968, West 2016 |
-
-[↑ 返回導覽](#-快速導覽)
+| 領域 | 已實作 | 總數 | 覆蓋率 |
+|------|-------:|-----:|-------:|
+| 敗血症/重症 | 9 | 9 | 100% |
+| 心血管 | 9 | 9 | 100% |
+| 消化道出血 | 3 | 3 | 100% |
+| 肝臟疾病 | 6 | 6 | 100% |
+| 腎臟疾病 | 2 | 2 | 100% |
+| 肺炎/呼吸 | 5 | 5 | 100% |
+| 血栓栓塞 | 4 | 4 | 100% |
+| 神經科 | 7 | 7 | 100% |
+| 麻醉科 | 6 | 6 | 100% |
+| 創傷 | 4 | 4 | 100% |
+| 燒傷 | 2 | 2 | 100% |
+| 小兒科 | 2 | 2 | 100% |
+| 腫瘤科 | 2 | 2 | 100% |
+| 營養科 | 2 | 2 | 100% |
+| 風濕科 | 1 | 1 | 100% |
+| 骨質疏鬆 | 1 | 1 | 100% |
+<!-- END GENERATED:GUIDELINE_OVERVIEW_ZH -->
 
 ---
 
@@ -880,15 +883,16 @@ LowLevelKey(
 
 ```bash
 # 基本使用範例
-python examples/basic_usage.py
+uv run python examples/basic_usage.py
 
 # 臨床工作流程範例
-python examples/clinical_workflows.py
+uv run python examples/clinical_workflows.py
 ```
 
 ### 範例：CKD-EPI 2021 (eGFR)
 
 **輸入:**
+
 ```json
 {
   "serum_creatinine": 1.2,
@@ -898,6 +902,7 @@ python examples/clinical_workflows.py
 ```
 
 **輸出:**
+
 ```json
 {
   "score_name": "CKD-EPI 2021",
@@ -937,7 +942,7 @@ uv run mcp dev src/main.py
 
 ### 測試策略
 
-我們維持高品質的程式碼庫，擁有超過 **1721+ 個測試**與 **92% 的程式碼覆蓋率**。
+我們維持高品質的程式碼庫，擁有 **2019 個已收集測試**，並由 CI 自動產出覆蓋率報告。
 
 ```bash
 # 執行所有測試

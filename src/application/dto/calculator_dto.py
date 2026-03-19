@@ -57,17 +57,23 @@ class CalculateResponse:
     component_scores: dict[str, Any] = field(default_factory=dict)
     references: list[ReferenceDTO] = field(default_factory=list)
     error: Optional[str] = None
+    guidance: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for MCP response"""
         if not self.success:
-            return {
+            error_result: dict[str, Any] = {
                 "success": False,
                 "error": self.error,
                 "tool_id": self.tool_id,
             }
+            if self.component_scores:
+                error_result["component_scores"] = self.component_scores
+            if self.guidance:
+                error_result["guidance"] = self.guidance
+            return error_result
 
-        result: dict[str, Any] = {
+        success_result: dict[str, Any] = {
             "success": True,
             "tool_id": self.tool_id,
             "score_name": self.score_name,
@@ -76,21 +82,22 @@ class CalculateResponse:
         }
 
         if self.interpretation:
-            result["interpretation"] = {
+            interpretation: dict[str, Any] = {
                 "summary": self.interpretation.summary,
             }
             if self.interpretation.severity:
-                result["interpretation"]["severity"] = self.interpretation.severity
+                interpretation["severity"] = self.interpretation.severity
             if self.interpretation.recommendation:
-                result["interpretation"]["recommendation"] = self.interpretation.recommendation
+                interpretation["recommendation"] = self.interpretation.recommendation
             if self.interpretation.details:
-                result["interpretation"]["details"] = self.interpretation.details
+                interpretation["details"] = self.interpretation.details
+            success_result["interpretation"] = interpretation
 
         if self.component_scores:
-            result["component_scores"] = self.component_scores
+            success_result["component_scores"] = self.component_scores
 
         if self.references:
-            result["references"] = [
+            success_result["references"] = [
                 {
                     "citation": r.citation,
                     "doi": r.doi,
@@ -100,4 +107,7 @@ class CalculateResponse:
                 for r in self.references
             ]
 
-        return result
+        if self.guidance:
+            success_result["guidance"] = self.guidance
+
+        return success_result

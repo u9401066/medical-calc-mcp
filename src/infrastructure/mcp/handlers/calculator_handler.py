@@ -22,12 +22,15 @@ LOW-LEVEL TOOLS (計算執行層) - 3 個:
 
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 
 from ....application.dto import CalculateRequest, DiscoveryMode, DiscoveryRequest
 from ....application.use_cases import CalculateUseCase, DiscoveryUseCase
 from ....domain.registry.tool_registry import ToolRegistry
 from ....infrastructure.logging import get_logger
+from ....shared.smart_input import resolve_identifier
+
+McpContext = Context[Any, Any, Any]
 
 # ============================================================================
 # OLD DESIGN: 75 個獨立工具 (已註解以節省 token)
@@ -82,20 +85,25 @@ class CalculatorHandler:
         """Register the unified calculate tool with MCP"""
 
         @self._mcp.tool()
-        def calculate(tool_id: str, params: dict[str, Any]) -> dict[str, Any]:
+        async def calculate(tool_id: str, params: dict[str, Any], ctx: McpContext) -> dict[str, Any]:
             """
             🧮 通用醫學計算工具
 
             使用指定的計算器執行計算。支援所有 75+ 種醫學計算器。
 
             **使用流程:**
-            1. 先用 search_calculators("關鍵字") 或 list_by_specialty("專科") 找工具
-            2. 用 get_calculator_info(tool_id) 查看需要的參數
+            1. 先用 discover(by="keyword" | "specialty" | "context") 找工具
+            2. 用 get_tool_schema(tool_id) 查看需要的參數
             3. 呼叫 calculate(tool_id, params) 執行計算
+
+            **嚴格規則:**
+            - 不要猜參數名稱，必須以 get_tool_schema() 回傳為準
+            - 不要把 calculate 當搜尋工具；tool_id 不確定時先用 discover()
+            - 如果回傳 guidance 或 param_template，先依該內容修正後再重試
 
             Args:
                 tool_id: 計算器 ID (例如: "sofa", "apache_ii", "ckd_epi_2021")
-                params: 計算參數字典 (從 get_calculator_info 取得參數名稱)
+                params: 計算參數字典 (從 get_tool_schema 取得參數名稱)
 
             Returns:
                 計算結果，包含:
@@ -150,10 +158,13 @@ class CalculatorHandler:
             - Anesthesiology: asa_physical_status, mallampati_score, stop_bang
             - Hepatology: meld_score, child_pugh
 
-            ⏮️ 上一步: get_calculator_info(tool_id) 查看完整參數說明
+            ⏮️ 上一步: get_tool_schema(tool_id) 查看完整參數說明
             """
+            await ctx.report_progress(10, 100, f"Resolving calculator: {tool_id}")
+
             # Create request and execute
             request = CalculateRequest(tool_id=tool_id, params=params)
+            await ctx.report_progress(60, 100, f"Executing calculator: {tool_id}")
             response = self._use_case.execute(request)
 
             # Convert to dict for MCP response
@@ -167,7 +178,7 @@ class CalculatorHandler:
 
             if response.error:
                 result["error"] = response.error
-                result["hint"] = f"使用 get_calculator_info('{tool_id}') 查看正確的參數格式"
+                result["hint"] = f"使用 get_tool_schema('{response.tool_id or tool_id}') 查看正確的參數格式"
 
             if response.interpretation:
                 result["interpretation"] = {
@@ -181,6 +192,9 @@ class CalculatorHandler:
             if response.component_scores:
                 result["component_scores"] = response.component_scores
 
+            if response.guidance:
+                result["guidance"] = response.guidance
+
             if response.references:
                 result["references"] = [
                     {
@@ -191,6 +205,7 @@ class CalculatorHandler:
                     for ref in response.references
                 ]
 
+            await ctx.report_progress(100, 100, f"Completed calculator: {tool_id}")
             return result
 
         # ====================================================================
@@ -198,7 +213,7 @@ class CalculatorHandler:
         # ====================================================================
 
         @self._mcp.tool()
-        def calculate_batch(calculations: list[dict[str, Any]]) -> dict[str, Any]:
+        async def calculate_batch(calculations: list[dict[str, Any]], ctx: McpContext) -> dict[str, Any]:
             """
             🧮 批次計算多個工具 - 減少 round-trip，提高效率
 
@@ -244,10 +259,18 @@ class CalculatorHandler:
             tool_ids: list[str] = []
             scores: dict[str, Any] = {}
 
-            for calc in calculations:
+            await ctx.report_progress(5, 100, f"Preparing {len(calculations)} batch calculations")
+
+            for index, calc in enumerate(calculations, start=1):
                 tool_id = calc.get("tool_id", "")
                 params = calc.get("params", {})
                 tool_ids.append(tool_id)
+
+                await ctx.report_progress(
+                    5 + (index - 1) * 80 / max(len(calculations), 1),
+                    100,
+                    f"Executing batch item {index}/{len(calculations)}: {tool_id}",
+                )
 
                 # Execute calculation
                 request = CalculateRequest(tool_id=tool_id, params=params)
@@ -274,8 +297,10 @@ class CalculatorHandler:
                     scores[tool_id] = response.result
 
             # Generate cross-analysis (fact-based, not clinical reasoning)
+            await ctx.report_progress(90, 100, "Generating cross-analysis")
             cross_analysis = _generate_cross_analysis(scores)
 
+            await ctx.report_progress(100, 100, "Batch calculation complete")
             return {
                 "all_success": all(r["success"] for r in results),
                 "count": len(results),
@@ -294,7 +319,7 @@ class CalculatorHandler:
         # ====================================================================
 
         @self._mcp.tool()
-        def get_tool_schema(tool_id: str, include_references: bool = True, include_param_sources: bool = True) -> dict[str, Any]:
+        async def get_tool_schema(tool_id: str, ctx: McpContext, include_references: bool = True, include_param_sources: bool = True) -> dict[str, Any]:
             """
             📋 取得工具完整資訊 + 參數 Schema + 來源提示 (Low-Level)
 
@@ -334,9 +359,24 @@ class CalculatorHandler:
 
             ⏭️ 下一步: calculate(tool_id, params) 執行計算
             """
-            calculator = self._registry.get_calculator(tool_id)
+            await ctx.report_progress(10, 100, f"Loading schema for {tool_id}")
+
+            resolution = resolve_identifier(tool_id, self._registry.list_all_ids())
+            resolved_tool_id = resolution.resolved_value or tool_id
+            calculator = self._registry.get_calculator(resolved_tool_id)
             if not calculator:
-                return {"success": False, "error": f"找不到工具: {tool_id}", "hint": "使用 discover(by='keyword', value='關鍵字') 搜尋工具"}
+                return {
+                    "success": False,
+                    "error": f"找不到工具: {tool_id}",
+                    "hint": "使用 discover(by='keyword', value='關鍵字') 搜尋工具",
+                    "suggestions": list(resolution.suggestions),
+                    "guidance": {
+                        "next_actions": [
+                            "discover(by='keyword', value='關鍵字')",
+                            "discover(by='tools')",
+                        ],
+                    },
+                }
 
             metadata = calculator.metadata
             low_level = metadata.low_level
@@ -344,6 +384,7 @@ class CalculatorHandler:
 
             # Build parameter schemas with source mapping
             if include_param_sources:
+                await ctx.report_progress(55, 100, f"Building parameter schema for {tool_id}")
                 param_schemas = _build_param_schemas(calculator)
             else:
                 # Minimal schema (just type info)
@@ -351,9 +392,10 @@ class CalculatorHandler:
 
             result: dict[str, Any] = {
                 "success": True,
-                "tool_id": tool_id,
+                "tool_id": resolved_tool_id,
                 "name": low_level.name,
                 "purpose": low_level.purpose,
+                "formula_source_type": metadata.formula_source_type,
                 # High-Level 分類資訊
                 "clinical_context": {
                     "specialties": [s.value for s in high_level.specialties],
@@ -367,16 +409,21 @@ class CalculatorHandler:
                     "type": low_level.output_type,
                 },
                 # 導航
-                "next_step": f"calculate('{tool_id}', {{...params}})",
+                "next_step": f"calculate('{resolved_tool_id}', {{...params}})",
             }
+
+            if resolved_tool_id != tool_id:
+                result["resolved_tool_id"] = resolved_tool_id
 
             # 參考文獻 (可選)
             if include_references:
-                request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id=tool_id)
+                await ctx.report_progress(80, 100, f"Resolving references for {tool_id}")
+                request = DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id=resolved_tool_id)
                 discovery_response = self._discovery_use_case.execute(request)
                 if discovery_response.tool_detail and discovery_response.tool_detail.references:
                     result["references"] = discovery_response.tool_detail.references
 
+            await ctx.report_progress(100, 100, f"Schema ready for {tool_id}")
             return result
 
         # ====================================================================

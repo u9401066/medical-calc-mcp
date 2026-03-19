@@ -22,9 +22,9 @@ from httpx import ASGITransport, AsyncClient
 
 from src.domain.registry.tool_registry import get_registry
 from src.domain.services.calculators import CALCULATORS
-
-# Import the FastAPI app and ensure calculators are registered
+from src.infrastructure.api import server as api_server
 from src.infrastructure.api.server import app
+from src.shared.project_metadata import get_project_version
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -67,8 +67,48 @@ class TestHealthCheck:
         data = response.json()
         assert data["status"] == "healthy"
         assert data["service"] == "medical-calc-api"
+        assert data["version"] == get_project_version()
         assert "calculators" in data
         assert data["calculators"] > 0
+
+    @pytest.mark.anyio
+    async def test_readiness_check_development_profile(self, client: AsyncClient, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Development readiness should pass with warnings instead of failing hard."""
+        monkeypatch.delenv("SECURITY_AUTH_ENABLED", raising=False)
+        monkeypatch.delenv("SECURITY_API_KEYS", raising=False)
+        monkeypatch.delenv("SECURITY_RATE_LIMIT_ENABLED", raising=False)
+        monkeypatch.setattr(api_server, "_get_environment_name", lambda: "development")
+        monkeypatch.setattr(api_server, "_is_ssl_enabled", lambda: False)
+        monkeypatch.setattr(api_server, "_cors_origins", "*")
+
+        response = await client.get("/ready")
+        assert response.status_code == 200
+
+        data = response.json()
+        assert data["service"] == "medical-calc-api"
+        assert data["ready"] is True
+        assert data["overall_status"] == "ready"
+        assert data["warning_count"] >= 1
+
+    @pytest.mark.anyio
+    async def test_readiness_check_production_profile_requires_controls(
+        self, client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Production readiness should reject traffic when perimeter controls are missing."""
+        monkeypatch.delenv("SECURITY_AUTH_ENABLED", raising=False)
+        monkeypatch.delenv("SECURITY_API_KEYS", raising=False)
+        monkeypatch.delenv("SECURITY_RATE_LIMIT_ENABLED", raising=False)
+        monkeypatch.setattr(api_server, "_get_environment_name", lambda: "production")
+        monkeypatch.setattr(api_server, "_is_ssl_enabled", lambda: False)
+        monkeypatch.setattr(api_server, "_cors_origins", "*")
+
+        response = await client.get("/ready")
+        assert response.status_code == 503
+
+        data = response.json()
+        assert data["ready"] is False
+        assert data["overall_status"] == "not_ready"
+        assert data["fail_count"] >= 1
 
 
 # =============================================================================

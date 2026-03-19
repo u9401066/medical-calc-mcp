@@ -67,6 +67,8 @@ Medical-Calc-MCP 是一個 [Model Context Protocol (MCP)](https://modelcontextpr
 ## 📖 更多資源
 
 - [英文文檔](../index.md)
+- [網站版計算器總覽](calculators.md)
+- [網站版指引覆蓋摘要](guideline-coverage.md)
 - [GitHub 專案](https://github.com/u9401066/medical-calc-mcp)
 - [問題回報](https://github.com/u9401066/medical-calc-mcp/issues)
 

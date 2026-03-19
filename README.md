@@ -24,6 +24,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - [Research Framework](#research-framework)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
+- [OpenClaw Compatibility](#openclaw-compatibility)
+- [OpenClaw Registry Guide](docs/OPENCLAW.md)
 - [Deployment Modes](#deployment-modes)
 - [Agent Integration](#agent-integration)
 - [Docker Deployment](#docker-deployment)
@@ -266,6 +268,76 @@ uv run python -m src.main
 # Or with MCP development inspector
 uv run mcp dev src/main.py
 ```
+
+## OpenClaw Compatibility
+
+This repository is intentionally structured so OpenClaw-style crawlers, MCP registries, and autonomous coding agents can discover it, install it, and operate it safely with minimal guessing.
+
+### Discovery Keywords
+
+- MCP server
+- medical calculator MCP
+- FastMCP
+- stdio MCP server
+- SSE MCP server
+- evidence-based medical scoring
+- AI agent clinical tools
+- schema-first calculation
+- safe retry guidance
+
+### Why This Repo Is OpenClaw-Friendly
+
+- Clear canonical workflow: `discover(...) -> get_tool_schema(tool_id) -> calculate(tool_id, params)`
+- Start-here guidance is exposed in multiple MCP surfaces:
+  - Prompt: `tool_usage_playbook()`
+  - Resource: `guide://tool-usage-playbook`
+  - Index: `calculator://list`
+- Smart resolver handles fuzzy tool ids and specialty names across tools and resources
+- Failed calls return retry-friendly fields such as `guidance`, `suggestions`, `resolved_value`, and `param_template`
+- Supports local `stdio` and hosted `sse` / `http` transports
+
+### Minimal Install
+
+```bash
+git clone https://github.com/u9401066/medical-calc-mcp.git
+cd medical-calc-mcp
+uv sync
+uv run python -m src.main
+```
+
+### Recommended First Actions for OpenClaw
+
+```text
+1. Read resource: guide://tool-usage-playbook
+2. Read resource: calculator://list
+3. Call tool: discover(by="keyword", value="clinical problem")
+4. Call tool: get_tool_schema("tool_id")
+5. Call tool: calculate("tool_id", {...})
+```
+
+### Example MCP Client Config
+
+```json
+{
+  "mcpServers": {
+    "medical-calc": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main"],
+      "cwd": "/path/to/medical-calc-mcp"
+    }
+  }
+}
+```
+
+### Hosted Mode for Remote Crawlers / Agents
+
+```bash
+uv run python -m src.main --mode sse
+# or
+uv run python -m src.main --mode http
+```
+
+If your OpenClaw deployment ranks repositories by install clarity and MCP readiness, this repo now exposes a direct install path, explicit transport modes, and a schema-first SOP designed to reduce agent misuse.
 
 ### Configure with VS Code Copilot ⭐ NEW
 
@@ -785,6 +857,7 @@ docker-compose -f docker-compose.https.yml up -d --build
 ```
 
 **SSE connection timeout:**
+
 ```bash
 # Nginx is configured for 24h timeout, but if issues persist:
 # Check nginx/nginx.conf has these settings:
@@ -812,11 +885,11 @@ uv run uvicorn src.infrastructure.api.server:app --host 0.0.0.0 --port 8080
 ### API Documentation
 
 Once running, visit:
-- **Swagger UI**: http://localhost:8080/docs
-- **ReDoc**: http://localhost:8080/redoc
-- **OpenAPI JSON**: http://localhost:8080/openapi.json
+- **Swagger UI**: <http://localhost:8080/docs>
+- **ReDoc**: <http://localhost:8080/redoc>
+- **OpenAPI JSON**: <http://localhost:8080/openapi.json>
 
-### API Endpoints
+### REST API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -838,6 +911,7 @@ curl -X POST "http://localhost:8080/api/v1/calculate/ckd_epi_2021" \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1188,214 +1262,45 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools
 
-> **MCP Primitives**: 128 Tools + 5 Prompts + 4 Resources
+> **Registry Snapshot**: 128 calculators across 26 specialties
 >
-> **Current Stats**: 128 Tools | 1721+ Tests | 92% Coverage | Phase 19 Complete ✅
+> **Quality Snapshot**: 2067 collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
 ### 📑 Quick Navigation
+<!-- BEGIN GENERATED:CATALOG_OVERVIEW -->
+This README no longer carries a hand-maintained calculator inventory. The same generated source now feeds repository docs and MkDocs pages.
 
-| Specialty | Count | Jump To |
-|-----------|-------|---------|
-| Anesthesiology / Preoperative | 9 | [→ Jump](#-anesthesiology--preoperative) |
-| Critical Care / ICU | 8 | [→ Jump](#-critical-care--icu) |
-| Pediatrics | 9 | [→ Jump](#-pediatrics) |
-| Obstetrics | 2 | [→ Jump](#-obstetrics) |
-| Nephrology | 2 | [→ Jump](#-nephrology) |
-| Pulmonology | 6 | [→ Jump](#-pulmonology) |
-| Cardiology | 8 | [→ Jump](#-cardiology) |
-| Infectious Disease | 4 | [→ Jump](#-infectious-disease) |
-| Emergency Medicine / Trauma | 5 | [→ Jump](#-emergency-medicine) |
-| Hepatology / GI | 6 | [→ Jump](#-hepatology--gi) |
-| Acid-Base / Metabolic | 7 | [→ Jump](#-acid-base--metabolic) |
-| Hematology | 1 | [→ Jump](#-hematology) |
-| Neurology | 7 | [→ Jump](#-neurology) |
-| General Tools | 4 | [→ Jump](#-general-tools) |
-| Discovery Tools | 7 | [→ Jump](#-discovery-tools) |
-| Prompts | 5 | [→ Jump](#-prompts) |
+**Registry Snapshot**: 151 calculators across 31 specialties
+
+- [Full calculator catalog](docs/CALCULATOR_CATALOG.md)
+- [Traditional Chinese catalog](docs/CALCULATOR_CATALOG.zh-TW.md)
+- [Website calculator catalog](docs_site/calculators/index.md)
+- [網站版繁中總覽](docs_site/zh-tw/calculators.md)
+- Regenerate locally with `uv run python scripts/generate_tool_catalog_docs.py`
+
+| Specialty | Tools |
+|-----------|------:|
+| Critical Care | 18 |
+| Geriatrics | 13 |
+| Cardiology | 11 |
+| Emergency Medicine | 9 |
+| Psychiatry | 9 |
+| Anesthesiology | 8 |
+
+You can still inspect the live registry via `python scripts/count_tools.py`, `calculator://list`, or `list_calculators()` from your MCP client.
+<!-- END GENERATED:CATALOG_OVERVIEW -->
 
 ---
 
-### Calculators (75 tools)
+### Generated calculator catalog
 
-#### 🏥 Anesthesiology / Preoperative
+The full tool inventory and specialty summary are generated directly from the registry to remove README drift risk.
 
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_asa_physical_status` | ASA-PS | Physical status classification | Mayhew 2019 |
-| `calculate_mallampati` | Mallampati | Airway assessment | Mallampati 1985 |
-| `calculate_rcri` | RCRI (Lee Index) | Cardiac risk non-cardiac surgery | Lee 1999 |
-| `calculate_mabl` | MABL | Maximum allowable blood loss | Gross 1983 |
-| `calculate_transfusion_volume` | Transfusion Calc | Blood product volume calculation | Roseff 2002 |
-| `calculate_caprini_vte` | Caprini VTE | Surgical VTE risk assessment | Caprini 2005 |
-| `calculate_apfel_ponv` | Apfel Score 🆕 | PONV risk prediction | Apfel 1999 |
-| `calculate_stop_bang` | STOP-BANG 🆕 | OSA screening questionnaire | Chung 2008 |
-| `calculate_aldrete_score` | Aldrete Score 🆕 | PACU recovery assessment | Aldrete 1970 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🩺 Critical Care / ICU
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_apache_ii` | APACHE II | ICU mortality prediction | Knaus 1985 |
-| `calculate_sofa` | SOFA Score | Organ dysfunction (Sepsis-3) | Vincent 1996, Singer 2016 |
-| `calculate_sofa2` | **SOFA-2 (2025)** 🆕 | Updated organ dysfunction (3.3M pts) | Ranzani JAMA 2025 |
-| `calculate_qsofa` | qSOFA | Bedside sepsis screening | Singer 2016 (Sepsis-3) |
-| `calculate_news2` | NEWS2 | Clinical deterioration | RCP 2017 |
-| `calculate_gcs` | Glasgow Coma Scale | Consciousness assessment | Teasdale 1974 |
-| `calculate_rass` | RASS | Sedation/agitation | Sessler 2002 |
-| `calculate_cam_icu` | CAM-ICU | ICU delirium screening | Ely 2001 |
-
-**SOFA-2 (2025 Update)**: New P/F thresholds (300/225/150/75), updated platelet thresholds (150/100/80/50), combined NE+Epi dosing, ECMO and RRT criteria. AUROC 0.79.
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 👶 Pediatrics
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_apgar_score` | APGAR Score 🆕 | Newborn assessment (1, 5, 10 min) | Apgar 1953, AAP 2015 |
-| `calculate_pews` | PEWS 🆕 | Pediatric Early Warning Score | Parshuram 2009 |
-| `calculate_pediatric_sofa` | pSOFA 🆕 | Pediatric organ dysfunction (sepsis) | Matics 2017 |
-| `calculate_pim3` | PIM3 🆕 | PICU mortality prediction | Straney 2013 |
-| `calculate_pediatric_gcs` | Pediatric GCS 🆕 | Age-adapted consciousness scale | Reilly 1988 |
-| `calculate_pediatric_drug_dose` | Pediatric Dosing | Weight-based drug dosing | Lexicomp, Anderson 2017 |
-| `calculate_mabl` | MABL | Maximum allowable blood loss | Miller's Anesthesia |
-| `calculate_transfusion_volume` | Transfusion Volume | Blood product volume calculation | AABB |
-| `calculate_body_surface_area` | BSA | Body Surface Area (Mosteller) | Mosteller 1987 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### � Obstetrics
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|------------|
-| `calculate_bishop_score` | Bishop Score 🆕 | Cervical ripening for labor induction | Bishop 1964 |
-| `calculate_ballard_score` | Ballard Score 🆕 | Newborn gestational age assessment | Ballard 1991 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### �🫘 Nephrology
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_ckd_epi_2021` | CKD-EPI 2021 | eGFR (race-free) | Inker 2021 |
-| `calculate_kdigo_aki` | KDIGO AKI | Acute kidney injury staging | KDIGO 2012 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🫁 Pulmonology
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_curb65` | CURB-65 | Pneumonia severity & disposition | Lim 2003 |
-| `calculate_psi_port` | PSI/PORT | CAP mortality prediction | Fine 1997 |
-| `calculate_ideal_body_weight` | IBW (Devine) | Ventilator tidal volume (ARDSNet) | Devine 1974, ARDSNet 2000 |
-| `calculate_pf_ratio` | P/F Ratio | ARDS Berlin classification | ARDS Task Force 2012 |
-| `calculate_rox_index` | ROX Index | HFNC failure prediction | Roca 2016 |
-| `calculate_spesi` | sPESI 🆕 | Simplified PESI for PE 30-day mortality (ESC Class I) | Jiménez 2010 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### ❤️ Cardiology
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_chads2_vasc` | CHA₂DS₂-VASc | AF stroke risk for anticoagulation | Lip 2010 |
-| `calculate_chads2_va` | CHA₂DS₂-VA (2024 ESC) | AF stroke risk (sex-neutral) | Van Gelder 2024 |
-| `calculate_has_bled` | HAS-BLED | AF bleeding risk (modifiable factors) | Pisters 2010, ESC 2024 |
-| `calculate_heart_score` | HEART Score | Chest pain risk stratification | Six 2008 |
-| `calculate_corrected_qt` | Corrected QT (QTc) | QT interval correction for drug safety | Bazett 1920, ESC 2015 |
-| `calculate_grace_score` | GRACE Score | ACS mortality risk stratification | Fox 2006 |
-| `calculate_acef_ii` | ACEF II Score | Cardiac surgery mortality risk | Ranucci 2018 |
-| `calculate_timi_stemi` | TIMI STEMI 🆕 | STEMI 30-day mortality prediction | Morrow 2000 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### � Infectious Disease
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|------------|
-| `calculate_mascc_score` | MASCC Score 🆕 | Febrile neutropenia risk assessment | Klastersky 2000 |
-| `calculate_pitt_bacteremia_score` | Pitt Bacteremia 🆕 | Bacteremia prognosis & mortality | Paterson 2004 |
-| `calculate_centor_score` | Centor/McIsaac Score 🆕 | Streptococcal pharyngitis risk | Centor 1981, McIsaac 1998 |
-| `calculate_cpis` | CPIS 🆕 | Clinical Pulmonary Infection Score (VAP) | Pugin 1991 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### �🩸 Hematology
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_4ts_hit` | 4Ts HIT Score | Heparin-induced thrombocytopenia | Lo 2006, Cuker 2012 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🧠 Neurology
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_nihss` | NIHSS | NIH Stroke Scale - stroke severity | Brott 1989 |
-| `calculate_abcd2` | ABCD2 Score | TIA 7-day stroke risk prediction | Johnston 2007 |
-| `calculate_modified_rankin_scale` | Modified Rankin Scale | Post-stroke disability assessment | van Swieten 1988 |
-| `calculate_hunt_hess` | Hunt & Hess Scale 🆕 | SAH clinical grading for prognosis & surgical timing | Hunt & Hess 1968 |
-| `calculate_fisher_grade` | Fisher Grade 🆕 | SAH CT grading for vasospasm prediction | Fisher 1980, Frontera 2006 |
-| `calculate_four_score` | FOUR Score 🆕 | Coma evaluation (E/M/B/R, 0-16) | Wijdicks 2005 |
-| `calculate_ich_score` | ICH Score 🆕 | Intracerebral hemorrhage 30-day mortality | Hemphill 2001 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🔬 General Tools
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_body_surface_area` | Body Surface Area 🆕 | BSA for chemo/burn/cardiac dosing | Du Bois 1916, Mosteller 1987 |
-| `calculate_cockcroft_gault` | Cockcroft-Gault CrCl 🆕 | Creatinine clearance for drug dosing | Cockcroft-Gault 1976 |
-| `calculate_corrected_calcium` | Corrected Calcium 🆕 | Albumin-corrected calcium | Payne 1973 |
-| `calculate_parkland_formula` | Parkland Formula 🆕 | Burn fluid resuscitation | Baxter 1968 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🚑 Emergency Medicine / Trauma
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_wells_dvt` | Wells DVT | DVT probability assessment | Wells 2003 |
-| `calculate_wells_pe` | Wells PE | PE probability assessment | Wells 2000 |
-| `calculate_shock_index` | Shock Index (SI) | Rapid hemodynamic assessment | Allgöwer 1967 |
-| `calculate_iss` | ISS 🆕 | Injury Severity Score - trauma mortality prediction | Baker 1974 |
-| `calculate_tbsa` | TBSA 🆕 | Burns surface area (Rule of Nines / Lund-Browder) | Wallace 1951, Lund 1944 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🟤 Hepatology / GI
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_meld_score` | MELD Score | End-stage liver disease mortality | Kamath 2001 |
-| `calculate_child_pugh` | Child-Pugh | Cirrhosis severity staging | Pugh 1973 |
-| `calculate_rockall_score` | Rockall Score 🆕 | Upper GI bleeding risk (mortality/rebleeding) | Rockall 1996 |
-| `calculate_fib4_index` | FIB-4 Index 🆕 | Liver fibrosis non-invasive assessment | Sterling 2006 |
-| `calculate_glasgow_blatchford` | Glasgow-Blatchford 🆕 | UGIB pre-endoscopy risk (ESGE Class I) | Blatchford 2000 |
-| `calculate_aims65` | AIMS65 🆕 | UGIB in-hospital mortality prediction | Saltzman 2011 |
-
-[↑ Back to Navigation](#-quick-navigation)
-
-#### 🧪 Acid-Base / Metabolic
-
-| Tool ID | Name | Purpose | Reference |
-|---------|------|---------|-----------|
-| `calculate_anion_gap` | Anion Gap | Metabolic acidosis differential | Kraut 2007, Figge 1998 |
-| `calculate_delta_ratio` | Delta Ratio (Delta Gap) | Mixed acid-base disorder detection | Wrenn 1990, Rastegar 2007 |
-| `calculate_corrected_sodium` | Corrected Sodium | True sodium in hyperglycemia | Katz 1973, Hillier 1999 |
-| `calculate_winters_formula` | Winter's Formula | Expected PaCO₂ in metabolic acidosis | Albert 1967, Narins 1980 |
-| `calculate_osmolar_gap` | Osmolar Gap | Toxic alcohol screening | Hoffman 1993, Lynd 2008 |
-| `calculate_free_water_deficit` | Free Water Deficit | Hypernatremia treatment planning | Adrogue 2000, Sterns 2015 |
-| `calculate_aa_gradient` | A-a Gradient | Alveolar-arterial O₂ gradient | Kanber 1968, West 2016 |
-
-[↑ Back to Navigation](#-quick-navigation)
+- [Full calculator catalog](docs/CALCULATOR_CATALOG.md)
+- [Traditional Chinese catalog](docs/CALCULATOR_CATALOG.zh-TW.md)
+- Regenerate locally with `uv run python scripts/generate_tool_catalog_docs.py`
 
 ---
 
@@ -1457,6 +1362,7 @@ Prompts provide guided multi-tool workflows for common clinical scenarios:
 | `acute_kidney_injury_assessment` | CKD-EPI + AKI staging workflow |
 
 **Usage:**
+
 ```
 # In MCP client, request a prompt:
 prompt: sepsis_evaluation
@@ -1491,6 +1397,7 @@ uv run python examples/clinical_workflows.py
 ### Example 1: CKD-EPI 2021 (eGFR)
 
 **Input:**
+
 ```json
 {
   "serum_creatinine": 1.2,
@@ -1500,6 +1407,7 @@ uv run python examples/clinical_workflows.py
 ```
 
 **Output:**
+
 ```json
 {
   "score_name": "CKD-EPI 2021",
@@ -1522,6 +1430,7 @@ uv run python examples/clinical_workflows.py
 **Query:** `search_calculators("airway")`
 
 **Output:**
+
 ```json
 {
   "keyword": "airway",
@@ -1539,6 +1448,7 @@ uv run python examples/clinical_workflows.py
 ### Example 3: RCRI Cardiac Risk
 
 **Input:**
+
 ```json
 {
   "high_risk_surgery": true,
@@ -1551,6 +1461,7 @@ uv run python examples/clinical_workflows.py
 ```
 
 **Output:**
+
 ```json
 {
   "score_name": "Revised Cardiac Risk Index",
@@ -1573,19 +1484,35 @@ All calculators cite original peer-reviewed research. See [references/README.md]
 
 We systematically map our calculators to clinical guidelines:
 
-> **[2020-2025 Clinical Guideline Review](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)**
->
-> - 75 calculators validated against SCCM, ESC, AHA/ACC, ESGE guidelines
-> - Evidence traceable to original publications (PMID citations)
-> - Updated 2026-01-08 with PubMed MCP verification
+<!-- BEGIN GENERATED:GUIDELINE_OVERVIEW -->
+We systematically map our calculators to major clinical guideline reviews, and this overview is generated from the same source used by the docs and website.
 
-| Guideline | Year | Key Tools | Status |
-|-----------|------|-----------|--------|
-| ESGE NVUGIH | 2021 | Glasgow-Blatchford, AIMS65 | ✅ |
-| Phoenix Pediatric Sepsis | 2024 | pSOFA (Phoenix) | ✅ |
-| ESC AF Guidelines | 2024 | CHA₂DS₂-VA, HAS-BLED | ✅ |
-| AHA/ACC Perioperative | 2024 | RCRI | ✅ |
-| ISBI Burns | 2016 | Parkland, TBSA | ✅ |
+Tracked coverage: **65/65** recommended tools across **16** domains.
+
+- [Generated guideline coverage summary](docs/GUIDELINE_COVERAGE_SUMMARY.md)
+- [Website guideline coverage page](docs_site/development/guideline-coverage.md)
+- [2023-2025 detailed guideline review](docs/GUIDELINE_RECOMMENDED_TOOLS_2023_2025.md)
+- [2020-2025 historical guideline review](docs/GUIDELINE_RECOMMENDED_TOOLS_2020_2025.md)
+
+| Domain | Implemented | Total | Coverage |
+|--------|------------:|------:|---------:|
+| Sepsis / Critical Care | 9 | 9 | 100% |
+| Cardiovascular | 9 | 9 | 100% |
+| GI Bleeding | 3 | 3 | 100% |
+| Liver Disease | 6 | 6 | 100% |
+| Kidney Disease | 2 | 2 | 100% |
+| Respiratory / Pneumonia | 5 | 5 | 100% |
+| Thromboembolism | 4 | 4 | 100% |
+| Neurology | 7 | 7 | 100% |
+| Anesthesiology | 6 | 6 | 100% |
+| Trauma | 4 | 4 | 100% |
+| Burns | 2 | 2 | 100% |
+| Pediatrics | 2 | 2 | 100% |
+| Oncology | 2 | 2 | 100% |
+| Nutrition | 2 | 2 | 100% |
+| Rheumatology | 1 | 1 | 100% |
+| Osteoporosis | 1 | 1 | 100% |
+<!-- END GENERATED:GUIDELINE_OVERVIEW -->
 
 ### Citation Format
 
@@ -1619,6 +1546,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # 2. Setup environment and install dependencies
 uv sync
 
+# CI-parity install using the lock file
+uv sync --frozen --extra dev --group dev
+
 # 3. Run tests
 uv run pytest
 
@@ -1632,7 +1562,7 @@ uv run mcp dev src/main.py
 
 ### Testing Strategy
 
-We maintain a high-quality codebase with over **1721+ tests** and **92% code coverage**.
+We maintain a high-quality codebase with **2,019 collected tests** and automated coverage reporting in CI.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1671,7 +1601,7 @@ The project enforces **strict type checking** across the entire codebase.
 
 ```bash
 # Run strict type check
-uv run mypy --strict src tests
+uv run mypy --no-incremental --strict src tests
 
 # Run linter
 uv run ruff check src tests
@@ -1679,6 +1609,23 @@ uv run ruff check src tests
 # Auto-fix linting issues
 uv run ruff check --fix src tests
 ```
+
+### API Contract
+
+The REST API OpenAPI contract is tracked as a generated artifact so schema drift is caught in CI before downstream clients break.
+
+```bash
+# Refresh the generated OpenAPI snapshot
+uv run python scripts/generate_openapi_spec.py
+
+# Refresh the generated REST API reference
+uv run python scripts/generate_rest_api_docs.py
+
+# Verify generated docs and API contract are current
+uv run python scripts/check_project_consistency.py --check-tests
+```
+
+Dependency upgrade policy is documented in [docs/DEPENDENCY_UPGRADE_PLAYBOOK.md](docs/DEPENDENCY_UPGRADE_PLAYBOOK.md).
 
 ### CI/CD Pipeline
 

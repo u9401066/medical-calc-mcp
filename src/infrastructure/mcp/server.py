@@ -31,24 +31,32 @@ Usage:
     python -m src.infrastructure.mcp.server --transport http
 
 Tool Discovery Flow:
-    1. Agent calls search_calculators(), list_by_specialty(), or list_by_context()
-    2. Agent calls get_calculator_info(tool_id) for parameters
-    3. Agent calls calculate_*(params) for calculation
+    1. Agent calls discover(...) to find the correct tool
+    2. Agent calls get_tool_schema(tool_id) for exact parameters
+    3. Agent calls calculate(tool_id, params) for execution
 """
 
 import logging
-from typing import Any, Optional
+import os
+from collections.abc import Awaitable, Callable
+from typing import Any, Optional, cast
 
 from mcp.server.fastmcp import FastMCP
 
 from ...domain.registry.tool_registry import ToolRegistry, get_registry
 from ...domain.services.calculators import CALCULATORS
+from ...shared.formula_provenance import validate_formula_provenance_manifest
+from ...shared.production_readiness import ReadinessReport, build_readiness_report
 from ..security import SecurityConfig, SecurityMiddleware
 from .config import McpServerConfig, default_config
 from .handlers import CalculatorHandler, DiscoveryHandler, PromptHandler
 from .resources import CalculatorResourceHandler
 
 logger = logging.getLogger(__name__)
+
+
+def _get_environment_name() -> str:
+    return os.environ.get("APP_ENV", os.environ.get("ENVIRONMENT", "development"))
 
 
 class MedicalCalculatorServer:
@@ -125,7 +133,7 @@ class MedicalCalculatorServer:
 
     def _init_handlers(self) -> None:
         """Initialize all MCP handlers"""
-        # Discovery tools (search_calculators, list_by_specialty, etc.)
+        # Discovery tools (discover, get_related_tools, find_tools_by_params)
         self._discovery_handler = DiscoveryHandler(self._mcp, self._registry)
 
         # Calculator tools (calculate_sofa, calculate_gcs, etc.)
@@ -141,11 +149,16 @@ class MedicalCalculatorServer:
         self._init_health_endpoint()
 
     def _init_health_endpoint(self) -> None:
-        """Initialize health check endpoint for container orchestration."""
+        """Initialize health and readiness endpoints for container orchestration."""
         from starlette.requests import Request
         from starlette.responses import JSONResponse
 
-        @self._mcp.custom_route("/health", methods=["GET", "HEAD"])  # type: ignore[misc]
+        route_decorator = cast(
+            Callable[[Callable[[Request], Awaitable[JSONResponse]]], Callable[[Request], Awaitable[JSONResponse]]],
+            self._mcp.custom_route("/health", methods=["GET", "HEAD"]),
+        )
+
+        @route_decorator
         async def health_check(request: Request) -> JSONResponse:
             """
             Health check endpoint for Docker/Kubernetes liveness probes.
@@ -157,11 +170,46 @@ class MedicalCalculatorServer:
                 content={
                     "status": "healthy",
                     "service": self._config.name,
-                    "version": "1.2.0",
+                    "version": self._config.version,
                     "calculators_loaded": len(self._registry.list_all()),
                 },
                 status_code=200,
             )
+
+        readiness_route_decorator = cast(
+            Callable[[Callable[[Request], Awaitable[JSONResponse]]], Callable[[Request], Awaitable[JSONResponse]]],
+            self._mcp.custom_route("/ready", methods=["GET", "HEAD"]),
+        )
+
+        @readiness_route_decorator
+        async def readiness_check(request: Request) -> JSONResponse:
+            """Readiness endpoint for deployment gates and traffic admission."""
+            report = self.build_readiness_report()
+            payload = report.to_dict()
+            payload["version"] = self._config.version
+            payload["calculators_loaded"] = len(self._registry.list_all())
+            status_code = 200 if report.ready else 503
+            return JSONResponse(content=payload, status_code=status_code)
+
+    def build_readiness_report(self) -> ReadinessReport:
+        """Build an MCP runtime readiness report."""
+        discovery_stats = self._registry.get_discovery_statistics()
+        tool_ids = {metadata.low_level.tool_id for metadata in self._registry.list_all()}
+        provenance_issues = validate_formula_provenance_manifest(tool_ids)
+
+        return build_readiness_report(
+            service=self._config.name,
+            environment=_get_environment_name(),
+            calculator_count=len(tool_ids),
+            expected_calculator_count=len(CALCULATORS),
+            discovery_built=bool(discovery_stats.get("discovery_built")),
+            formula_provenance_issues=provenance_issues,
+            auth_enabled=self._security_config.auth_enabled,
+            api_keys_configured=bool(self._security_config.auth_api_keys),
+            rate_limit_enabled=self._security_config.rate_limit_enabled,
+            cors_origins=os.environ.get("CORS_ORIGINS", "*"),
+            ssl_enabled=self._config.ssl.enabled or os.environ.get("TRUST_REVERSE_PROXY_SSL", "false").lower() in {"true", "1", "yes", "on"},
+        )
 
     @property
     def mcp(self) -> FastMCP:

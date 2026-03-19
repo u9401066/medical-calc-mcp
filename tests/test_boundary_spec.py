@@ -11,6 +11,7 @@ from src.domain.validation.boundaries import (
     HARRISON_REFERENCE,
     KDIGO_REFERENCE,
     BoundaryReference,
+    BoundarySpec,
     EvidenceLevel,
     ValidationSeverity,
     get_boundary,
@@ -26,7 +27,7 @@ from src.domain.validation.boundaries import (
 class TestBoundaryReference:
     """Test BoundaryReference dataclass"""
 
-    def test_reference_creation(self):
+    def test_reference_creation(self) -> None:
         """Test creating a reference"""
         ref = BoundaryReference(
             source="Test Source",
@@ -40,7 +41,7 @@ class TestBoundaryReference:
         assert ref.level_of_evidence == EvidenceLevel.A
         assert ref.pmid == "12345678"
 
-    def test_reference_to_dict(self):
+    def test_reference_to_dict(self) -> None:
         """Test reference serialization"""
         ref = HARRISON_REFERENCE
         d = ref.to_dict()
@@ -49,7 +50,7 @@ class TestBoundaryReference:
         assert "year" in d
         assert "level_of_evidence" in d
 
-    def test_kdigo_reference_has_pmid(self):
+    def test_kdigo_reference_has_pmid(self) -> None:
         """Test KDIGO reference has PMID"""
         assert KDIGO_REFERENCE.pmid == "38490803"
         assert KDIGO_REFERENCE.level_of_evidence == EvidenceLevel.A
@@ -64,11 +65,11 @@ class TestBoundarySpec:
     """Test BoundarySpec dataclass and validation"""
 
     @pytest.fixture
-    def creatinine_spec(self):
+    def creatinine_spec(self) -> BoundarySpec:
         """Sample creatinine boundary spec"""
         return CLINICAL_BOUNDARIES["serum_creatinine"]
 
-    def test_spec_structure(self, creatinine_spec):
+    def test_spec_structure(self, creatinine_spec: BoundarySpec) -> None:
         """Test boundary spec has required fields"""
         assert creatinine_spec.param_name == "serum_creatinine"
         assert creatinine_spec.unit == "mg/dL"
@@ -76,49 +77,49 @@ class TestBoundarySpec:
         assert creatinine_spec.physiological_max == 30.0
         assert creatinine_spec.reference is not None
 
-    def test_validate_normal_value(self, creatinine_spec):
+    def test_validate_normal_value(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation of normal value"""
         result = creatinine_spec.validate(1.0)
         assert result.severity == ValidationSeverity.PASS
         assert result.is_valid
 
-    def test_validate_warning_low(self, creatinine_spec):
+    def test_validate_warning_low(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation triggers warning for unusually low value"""
         result = creatinine_spec.validate(0.25)  # Below warning_min
         assert result.severity == ValidationSeverity.WARNING
         assert result.is_valid  # Still valid, just warning
         assert "unusually low" in result.message.lower()
 
-    def test_validate_warning_high(self, creatinine_spec):
+    def test_validate_warning_high(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation triggers warning for unusually high value"""
         result = creatinine_spec.validate(18.0)  # Above warning_max
         assert result.severity == ValidationSeverity.WARNING
         assert "unusually high" in result.message.lower()
 
-    def test_validate_critical_error(self, creatinine_spec):
+    def test_validate_critical_error(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation fails for impossible value"""
         result = creatinine_spec.validate(50.0)  # Above physiological_max
         assert result.severity == ValidationSeverity.CRITICAL
         assert result.is_error
         assert not result.is_valid
 
-    def test_validate_below_physiological_min(self, creatinine_spec):
+    def test_validate_below_physiological_min(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation fails for value below minimum"""
         result = creatinine_spec.validate(0.05)  # Below physiological_min
         assert result.severity == ValidationSeverity.CRITICAL
         assert result.is_error
 
-    def test_validate_none_value(self, creatinine_spec):
+    def test_validate_none_value(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation of None (optional parameter)"""
         result = creatinine_spec.validate(None)
         assert result.severity == ValidationSeverity.PASS
 
-    def test_validate_wrong_type(self, creatinine_spec):
+    def test_validate_wrong_type(self, creatinine_spec: BoundarySpec) -> None:
         """Test validation fails for wrong type"""
         result = creatinine_spec.validate("high")
         assert result.severity == ValidationSeverity.ERROR
 
-    def test_to_pydantic_field_kwargs(self, creatinine_spec):
+    def test_to_pydantic_field_kwargs(self, creatinine_spec: BoundarySpec) -> None:
         """Test generating Pydantic Field kwargs"""
         kwargs = creatinine_spec.to_pydantic_field_kwargs()
         assert "ge" in kwargs  # >= physiological_min
@@ -126,7 +127,7 @@ class TestBoundarySpec:
         assert "description" in kwargs
         assert "mg/dL" in kwargs["description"]
 
-    def test_to_markdown(self, creatinine_spec):
+    def test_to_markdown(self, creatinine_spec: BoundarySpec) -> None:
         """Test generating Markdown documentation"""
         md = creatinine_spec.to_markdown()
         assert "serum_creatinine" in md
@@ -142,38 +143,38 @@ class TestBoundarySpec:
 class TestBoundaryRegistry:
     """Test BoundaryRegistry singleton and methods"""
 
-    def test_singleton_instance(self):
+    def test_singleton_instance(self) -> None:
         """Test registry is singleton"""
         reg1 = get_boundary_registry()
         reg2 = get_boundary_registry()
         assert reg1 is reg2
 
-    def test_get_boundary_by_name(self):
+    def test_get_boundary_by_name(self) -> None:
         """Test getting boundary by parameter name"""
         registry = get_boundary_registry()
         spec = registry.get_boundary("serum_creatinine")
         assert spec is not None
         assert spec.param_name == "serum_creatinine"
 
-    def test_get_boundary_by_alias(self):
+    def test_get_boundary_by_alias(self) -> None:
         """Test getting boundary by alias"""
         registry = get_boundary_registry()
         spec = registry.get_boundary("cr")  # Alias for serum_creatinine
         assert spec is not None
         assert spec.param_name == "serum_creatinine"
 
-    def test_get_boundary_unknown(self):
+    def test_get_boundary_unknown(self) -> None:
         """Test getting unknown boundary returns None"""
         registry = get_boundary_registry()
         spec = registry.get_boundary("unknown_param_xyz")
         assert spec is None
 
-    def test_validate_single_param(self):
+    def test_validate_single_param(self) -> None:
         """Test validating single parameter"""
         result = validate_param("heart_rate", 80)
         assert result.severity == ValidationSeverity.PASS
 
-    def test_validate_all_params(self):
+    def test_validate_all_params(self) -> None:
         """Test validating multiple parameters"""
         registry = get_boundary_registry()
         params = {
@@ -185,7 +186,7 @@ class TestBoundaryRegistry:
         assert len(results) == 3
         assert all(r.is_valid for r in results)
 
-    def test_validate_all_with_error(self):
+    def test_validate_all_with_error(self) -> None:
         """Test validate_all catches errors"""
         registry = get_boundary_registry()
         params = {
@@ -198,7 +199,7 @@ class TestBoundaryRegistry:
         age_result = next(r for r in results if r.param_name == "age")
         assert age_result.is_error
 
-    def test_generate_markdown_docs(self):
+    def test_generate_markdown_docs(self) -> None:
         """Test generating complete documentation"""
         registry = get_boundary_registry()
         docs = registry.generate_markdown_docs()
@@ -234,7 +235,7 @@ class TestClinicalBoundariesCoverage:
         "gcs_score",
         "rass_score",
     ])
-    def test_boundary_defined(self, param_name):
+    def test_boundary_defined(self, param_name: str) -> None:
         """Test that boundary is defined for key parameter"""
         spec = get_boundary(param_name)
         assert spec is not None, f"Boundary not defined for {param_name}"
@@ -250,7 +251,7 @@ class TestClinicalBoundariesCoverage:
         ("age", 50),
         ("gcs_score", 15),
     ])
-    def test_normal_values_pass(self, param_name, normal_value):
+    def test_normal_values_pass(self, param_name: str, normal_value: float | int) -> None:
         """Test that normal values pass validation"""
         result = validate_param(param_name, normal_value)
         assert result.severity == ValidationSeverity.PASS
@@ -264,7 +265,7 @@ class TestClinicalBoundariesCoverage:
 class TestBoundaryIntegration:
     """Integration tests for boundary validation"""
 
-    def test_complete_patient_assessment(self):
+    def test_complete_patient_assessment(self) -> None:
         """Test validating a complete set of patient parameters"""
         registry = get_boundary_registry()
 
@@ -293,7 +294,7 @@ class TestBoundaryIntegration:
         for result in results:
             assert result.is_valid, f"{result.param_name} failed: {result.message}"
 
-    def test_critical_patient_triggers_warnings(self):
+    def test_critical_patient_triggers_warnings(self) -> None:
         """Test that critically ill patient values trigger appropriate warnings"""
         registry = get_boundary_registry()
 
@@ -315,7 +316,7 @@ class TestBoundaryIntegration:
         warning_count = sum(1 for r in results if r.severity == ValidationSeverity.WARNING)
         assert warning_count >= 3, f"Expected multiple warnings for critical patient, got {warning_count}"
 
-    def test_impossible_values_blocked(self):
+    def test_impossible_values_blocked(self) -> None:
         """Test that physiologically impossible values are rejected"""
         impossible_params = [
             ("temperature", 50.0),    # Impossible

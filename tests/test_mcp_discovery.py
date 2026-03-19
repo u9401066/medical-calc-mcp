@@ -103,6 +103,14 @@ class TestDiscoveryHandler:
         # Should return error or empty with hint
         assert not result.get("success") or len(result.get("tools", [])) == 0
 
+    def test_discover_by_speciality_alias(self, handler: Any, mock_mcp: Any) -> None:
+        """Test discover() accepts common mode aliases and normalized specialty values."""
+        discover = mock_mcp._tools["discover"]
+        result = discover(by="speciality", value="critical care")
+
+        assert result.get("success")
+        assert result.get("resolved_value") == "critical_care"
+
     def test_discover_by_specialty_missing_value(self, handler: Any, mock_mcp: Any) -> None:
         """Test discover(by='specialty') without value returns error"""
         discover = mock_mcp._tools["discover"]
@@ -126,6 +134,14 @@ class TestDiscoveryHandler:
         result = discover(by="context", value="fake_context")
 
         assert not result.get("success") or len(result.get("tools", [])) == 0
+
+    def test_discover_by_context_fuzzy_value(self, handler: Any, mock_mcp: Any) -> None:
+        """Test discover() resolves context values with spaces."""
+        discover = mock_mcp._tools["discover"]
+        result = discover(by="context", value="preoperative assessment")
+
+        assert result.get("success")
+        assert result.get("resolved_value") == "preoperative_assessment"
 
     def test_discover_by_keyword(self, handler: Any, mock_mcp: Any) -> None:
         """Test discover(by='keyword') searches for tools"""
@@ -195,6 +211,15 @@ class TestDiscoveryHandler:
 
         assert not result.get("success")
         assert "error" in result
+
+    def test_get_related_tools_alias_resolution(self, handler: Any, mock_mcp: Any) -> None:
+        """Test get_related_tools resolves user-friendly aliases."""
+        get_related_tools = mock_mcp._tools["get_related_tools"]
+        result = get_related_tools("sofa")
+
+        assert result.get("success")
+        assert result.get("source_tool") == "sofa_score"
+        assert result.get("resolved_tool_id") == "sofa_score"
 
     def test_find_tools_by_params(self, handler: Any, mock_mcp: Any) -> None:
         """Test find_tools_by_params with valid params"""

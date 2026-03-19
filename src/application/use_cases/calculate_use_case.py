@@ -1,16 +1,4 @@
-"""
-Calculate Use Case
-
-Application layer use case for executing calculations.
-Provides clear error messages with valid input ranges.
-Uses Domain validation for consistent parameter validation.
-
-Features:
-- Intelligent parameter matching (alias, fuzzy, suffix matching)
-- Boundary validation with clinical warnings (literature-backed)
-- Clear error messages with suggestions
-- Parameter templates for easy filling
-"""
+"""Application layer use case for executing calculations with smart recovery hints."""
 
 from typing import Any
 
@@ -29,6 +17,7 @@ from ...domain.validation.boundaries import (
     ValidationSeverity,
     get_boundary_registry,
 )
+from ...shared.smart_input import ResolutionResult, resolve_identifier
 from ..dto import (
     CalculateRequest,
     CalculateResponse,
@@ -70,11 +59,22 @@ class CalculateUseCase:
         Returns:
             CalculateResponse with result or detailed error
         """
+        resolved_tool_id = request.tool_id
         try:
+            tool_resolution = resolve_identifier(request.tool_id, self._registry.list_all_ids())
+            resolved_tool_id = tool_resolution.resolved_value or request.tool_id
+
             # Get calculator
-            calculator = self._registry.get_calculator(request.tool_id)
+            calculator = self._registry.get_calculator(resolved_tool_id)
             if calculator is None:
-                return self._tool_not_found_response(request.tool_id)
+                return self._tool_not_found_response(request.tool_id, tool_resolution)
+
+            if not request.params:
+                return self._empty_params_response(
+                    resolved_tool_id,
+                    calculator,
+                    supplied_tool_id=request.tool_id,
+                )
 
             # Step 1: Intelligent parameter matching
             match_result = self._param_matcher.match(
@@ -84,9 +84,10 @@ class CalculateUseCase:
 
             if not match_result.success:
                 return self._param_mismatch_response(
-                    request.tool_id,
+                    resolved_tool_id,
                     match_result,
                     calculator,
+                    supplied_tool_id=request.tool_id,
                 )
 
             # Use matched params
@@ -100,24 +101,41 @@ class CalculateUseCase:
             if not validation_result.is_valid:
                 return CalculateResponse(
                     success=False,
-                    tool_id=request.tool_id,
+                    tool_id=resolved_tool_id,
                     score_name="",
                     result=None,
                     unit="",
-                    error=(f"Validation error: {validation_result.get_error_message()}. Use get_calculator_info('{request.tool_id}') for parameters."),
+                    error=(f"Validation error: {validation_result.get_error_message()}. Use get_tool_schema('{resolved_tool_id}') for parameters."),
+                    component_scores={
+                        "param_template": generate_param_template(calculator),
+                        "expected_params": self._get_expected_params(calculator),
+                    },
+                    guidance=self._build_guidance(
+                        resolved_tool_id,
+                        calculator,
+                        supplied_tool_id=request.tool_id,
+                    ),
                 )
 
             # Step 4: Execute calculation with matched params
             result = calculator.calculate(**matched_params)
 
             # Step 5: Convert to response (include match details if aliases were used)
-            response = self._to_response(request.tool_id, result, boundary_warnings)
+            response = self._to_response(resolved_tool_id, result, boundary_warnings)
 
             # Add match details if any aliasing occurred
             if match_result.match_details:
                 aliased = {k: v for k, v in match_result.match_details.items() if k != v}
                 if aliased and response.component_scores is not None:
                     response.component_scores["_param_mapping"] = aliased
+
+            if resolved_tool_id != request.tool_id and response.component_scores is not None:
+                response.component_scores["_tool_resolved_from"] = request.tool_id
+                response.guidance = self._build_guidance(
+                    resolved_tool_id,
+                    calculator,
+                    supplied_tool_id=request.tool_id,
+                )
 
             return response
 
@@ -128,25 +146,21 @@ class CalculateUseCase:
         except Exception as e:
             return CalculateResponse(
                 success=False,
-                tool_id=request.tool_id,
+                tool_id=resolved_tool_id,
                 score_name="",
                 result=None,
                 unit="",
                 error=f"Calculation error: {str(e)}. Please check input values and try again.",
             )
 
-    def _tool_not_found_response(self, tool_id: str) -> CalculateResponse:
+    def _tool_not_found_response(self, tool_id: str, resolution: ResolutionResult) -> CalculateResponse:
         """Generate response for tool not found."""
-        available = self._registry.list_all_ids()
-        # Find similar tool IDs
-        from difflib import get_close_matches
-
-        suggestions = get_close_matches(tool_id, available, n=3, cutoff=0.6)
-
         error = f"Calculator '{tool_id}' not found."
-        if suggestions:
-            error += f" Did you mean: {', '.join(suggestions)}?"
-        error += " Use list_calculators() or search_calculators() to find available tools."
+        if resolution.ambiguous_matches:
+            error += f" Ambiguous input. Possible matches: {', '.join(resolution.ambiguous_matches)}."
+        elif resolution.suggestions:
+            error += f" Did you mean: {', '.join(resolution.suggestions)}?"
+        error += " Use discover(by='keyword', value='...') or discover(by='tools') to find available tools. Legacy aliases: search_calculators('...') or list_calculators()."
 
         return CalculateResponse(
             success=False,
@@ -155,6 +169,44 @@ class CalculateUseCase:
             result=None,
             unit="",
             error=error,
+            guidance={
+                "normalized_input": resolution.normalized_value,
+                "suggestions": list(resolution.suggestions),
+                "next_actions": [
+                    "discover(by='keyword', value='關鍵字')",
+                    "discover(by='tools')",
+                    "search_calculators('關鍵字')",
+                    "list_calculators()",
+                ],
+            },
+        )
+
+    def _empty_params_response(
+        self,
+        tool_id: str,
+        calculator: Any,
+        *,
+        supplied_tool_id: str,
+    ) -> CalculateResponse:
+        """Generate a dedicated empty-input response with fillable guidance."""
+        template = generate_param_template(calculator)
+        error = f"No parameters provided for '{tool_id}'. Fill the required fields before calculating."
+        if supplied_tool_id != tool_id:
+            error += f" Resolved requested tool '{supplied_tool_id}' to '{tool_id}'."
+
+        return CalculateResponse(
+            success=False,
+            tool_id=tool_id,
+            score_name="",
+            result=None,
+            unit="",
+            error=error,
+            component_scores={
+                "param_template": template,
+                "expected_params": self._get_expected_params(calculator),
+                "required_params": self._get_required_params(calculator),
+            },
+            guidance=self._build_guidance(tool_id, calculator, supplied_tool_id=supplied_tool_id),
         )
 
     def _param_mismatch_response(
@@ -162,6 +214,8 @@ class CalculateUseCase:
         tool_id: str,
         match_result: Any,
         calculator: Any,
+        *,
+        supplied_tool_id: str | None = None,
     ) -> CalculateResponse:
         """Generate detailed response for parameter mismatch."""
         # Generate param template
@@ -182,6 +236,8 @@ class CalculateUseCase:
                     error_parts.append(f"  '{param}' → did you mean: {', '.join(suggestions)}?")
 
         error_msg = ". ".join(error_parts)
+        if supplied_tool_id and supplied_tool_id != tool_id:
+            error_msg = f"Resolved tool '{supplied_tool_id}' to '{tool_id}'. {error_msg}"
 
         return CalculateResponse(
             success=False,
@@ -194,8 +250,15 @@ class CalculateUseCase:
                 "param_template": template,
                 "expected_params": list(template.keys()),
                 "provided_params": list(match_result.match_details.keys()) + match_result.unmatched_provided,
-                "hint": f"Use get_calculator_info('{tool_id}') to see full parameter documentation.",
+                "hint": f"Use get_tool_schema('{tool_id}') to see full parameter documentation.",
             },
+            guidance=self._build_guidance(
+                tool_id,
+                calculator,
+                supplied_tool_id=supplied_tool_id,
+                unmatched_params=match_result.unmatched_provided,
+                missing_required=match_result.missing_required,
+            ),
         )
 
     def _type_error_response(
@@ -211,6 +274,7 @@ class CalculateUseCase:
         template = {}
         if calculator:
             template = generate_param_template(calculator)
+        guidance = self._build_guidance(request.tool_id, calculator) if calculator else {}
 
         return CalculateResponse(
             success=False,
@@ -221,8 +285,9 @@ class CalculateUseCase:
             error=f"Invalid parameters: {error_msg}. {hint}",
             component_scores={
                 "param_template": template,
-                "hint": f"Use get_calculator_info('{request.tool_id}') to see required parameters.",
+                "hint": f"Use get_tool_schema('{request.tool_id}') to see required parameters.",
             },
+            guidance=guidance,
         )
 
     def _value_error_response(
@@ -232,6 +297,7 @@ class CalculateUseCase:
     ) -> CalculateResponse:
         """Generate response for value errors."""
         hint = self._get_parameter_hint_from_error(error_msg, request.params)
+        calculator = self._registry.get_calculator(request.tool_id)
         return CalculateResponse(
             success=False,
             tool_id=request.tool_id,
@@ -239,7 +305,44 @@ class CalculateUseCase:
             result=None,
             unit="",
             error=f"Validation error: {error_msg}. {hint}",
+            component_scores={
+                "param_template": generate_param_template(calculator) if calculator else {},
+            },
+            guidance=self._build_guidance(request.tool_id, calculator) if calculator else {},
         )
+
+    def _get_expected_params(self, calculator: Any) -> list[str]:
+        return self._param_matcher._get_expected_params(calculator)
+
+    def _get_required_params(self, calculator: Any) -> list[str]:
+        return self._param_matcher._get_required_params(calculator)
+
+    def _build_guidance(
+        self,
+        tool_id: str,
+        calculator: Any | None,
+        *,
+        supplied_tool_id: str | None = None,
+        unmatched_params: list[str] | None = None,
+        missing_required: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Build structured next-step guidance for MCP clients and agents."""
+        guidance: dict[str, Any] = {
+            "next_actions": [
+                f"get_tool_schema('{tool_id}')",
+                f"calculate('{tool_id}', {{...}})",
+            ]
+        }
+        if supplied_tool_id and supplied_tool_id != tool_id:
+            guidance["resolved_tool_id"] = tool_id
+            guidance["supplied_tool_id"] = supplied_tool_id
+        if calculator is not None:
+            guidance["required_params"] = self._get_required_params(calculator)
+        if unmatched_params:
+            guidance["unmatched_params"] = unmatched_params
+        if missing_required:
+            guidance["missing_required"] = missing_required
+        return guidance
 
     def _validate_boundaries(
         self,

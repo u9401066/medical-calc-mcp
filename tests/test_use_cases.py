@@ -176,6 +176,38 @@ class TestCalculateUseCase:
         # Should suggest similar tool names (Did you mean: ...)
         assert "did you mean" in response.error.lower() or "list_calculators" in response.error.lower()
 
+    def test_calculator_tool_id_alias_is_resolved(self, use_case: Any) -> None:
+        """Test that user-friendly tool aliases resolve to canonical IDs."""
+        request = CalculateRequest(
+            tool_id="calculate-news2-score",
+            params={
+                "respiratory_rate": 18,
+                "spo2": 96,
+                "on_supplemental_o2": False,
+                "temperature": 37.0,
+                "systolic_bp": 120,
+                "heart_rate": 80,
+                "consciousness": "A",
+            },
+        )
+
+        response = use_case.execute(request)
+
+        assert response.success is True
+        assert response.tool_id == "news2_score"
+        assert response.component_scores.get("_tool_resolved_from") == "calculate-news2-score"
+
+    def test_empty_params_returns_guidance(self, use_case: Any) -> None:
+        """Test that empty param requests return fillable guidance."""
+        request = CalculateRequest(tool_id="ckd_epi_2021", params={})
+
+        response = use_case.execute(request)
+
+        assert response.success is False
+        assert "param_template" in response.component_scores
+        assert "next_actions" in response.guidance
+        assert any("get_tool_schema" in action for action in response.guidance["next_actions"])
+
     # ========================================================================
     # Error Cases - Invalid Parameters
     # ========================================================================
@@ -404,6 +436,18 @@ class TestDiscoveryUseCase:
         # Should suggest available specialties
         assert response.available_specialties is not None
 
+    def test_filter_by_specialty_fuzzy_resolution(self, use_case: Any) -> None:
+        """Test that fuzzy specialty inputs are resolved to canonical values."""
+        request = DiscoveryRequest(
+            mode=DiscoveryMode.BY_SPECIALTY,
+            specialty="critical care",
+        )
+
+        response = use_case.execute(request)
+
+        assert response.success is True
+        assert response.resolved_value == "critical_care"
+
     def test_filter_by_specialty_missing(self, use_case: Any) -> None:
         """Test filtering without specialty specified"""
         request = DiscoveryRequest(
@@ -514,6 +558,20 @@ class TestDiscoveryUseCase:
 
         assert response.success is False
         assert "not found" in response.error.lower()
+
+    def test_get_tool_info_alias_resolution(self, use_case: Any) -> None:
+        """Test that tool info accepts relaxed tool identifiers."""
+        request = DiscoveryRequest(
+            mode=DiscoveryMode.GET_INFO,
+            tool_id="sofa",
+        )
+
+        response = use_case.execute(request)
+
+        assert response.success is True
+        assert response.tool_detail is not None
+        assert response.tool_detail.tool_id == "sofa_score"
+        assert response.resolved_value == "sofa_score"
 
     def test_get_tool_info_missing_id(self, use_case: Any) -> None:
         """Test getting info without tool_id"""

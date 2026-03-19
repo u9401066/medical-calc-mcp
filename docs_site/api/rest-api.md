@@ -1,6 +1,9 @@
 # REST API Reference
 
-Medical-Calc-MCP also provides a REST API for non-MCP integrations.
+> Generated from the FastAPI OpenAPI schema. Do not edit manually.
+> Source: [openapi.json](openapi.json) | OpenAPI 3.1.0 | v1.5.0
+
+This API currently publishes **12 operations** across **12 paths**, backed by **6 shared schemas**.
 
 ## Base URL
 
@@ -8,199 +11,306 @@ Medical-Calc-MCP also provides a REST API for non-MCP integrations.
 http://localhost:8000/api/v1
 ```
 
-## Authentication
+Health and docs remain available at the server root: `/health`, `/docs`, `/redoc`, and `/openapi.json`.
 
-When `SECURITY_API_KEY` is configured:
+## API Metadata
 
-```bash
-curl -H "X-API-Key: your-api-key" http://localhost:8000/api/v1/...
-```
+- Title: Medical Calculator API
+- Version: 1.5.0
 
----
+### Description
+
+## 醫學計算器 REST API
+
+提供 151 個經過驗證的臨床評分工具，涵蓋 31 個主要專科；所有計算器均引用同儕審查研究論文。
+
+### 功能特色
+- 智慧工具探索 (依專科、臨床情境搜尋)
+- 循證醫學 (所有公式引用原始論文)
+- 參數驗證 (範圍檢查、必填檢查)
+
+### 使用流程
+1. `GET /api/v1/calculators` - 列出所有計算器
+2. `GET /api/v1/calculators/{tool_id}` - 取得計算器詳情
+3. `POST /api/v1/calculate/{tool_id}` - 執行計算
+
+### 代表性專科覆蓋
+- Critical Care: 18 tools (APACHE II Score, Anion Gap, CAM-ICU (Confusion Assessment Method for ICU), Clinical Pulmonary Infection Score (CPIS))
+- Geriatrics: 13 tools (4AT (Rapid Assessment Test for Delirium), Barthel Index (ADL Assessment), CFS (Clinical Frailty Scale), FRAIL Scale)
+- Cardiology: 11 tools (ACEF II Score, CHA₂DS₂-VA Score (2024 ESC), CHA₂DS₂-VASc Score, Corrected QT Interval (QTc))
+- Emergency Medicine: 9 tools (Centor Score (Modified/McIsaac), Glasgow Coma Scale (GCS), HEART Score, NEWS2 (National Early Warning Score 2))
 
 ## Endpoints
 
-### Health Check
+### GET /
 
-```http
-GET /health
-```
+**Summary:** Root
 
-**Response**:
+API root with service information
+
+**Tags:** Info
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+
+### POST /api/v1/calculate/{tool_id}
+
+**Summary:** Calculate
+
+執行計算
+
+Execute a medical calculation with the given parameters.
+
+Example for CKD-EPI 2021:
 ```json
 {
-  "status": "healthy",
-  "version": "1.5.0",
-  "calculators": 121
-}
-```
-
----
-
-### List All Calculators
-
-```http
-GET /api/v1/calculators
-```
-
-**Response**:
-```json
-{
-  "calculators": [
-    {
-      "tool_id": "sofa_score",
-      "name": "SOFA Score",
-      "specialty": "critical_care"
-    },
-    ...
-  ],
-  "total": 121
-}
-```
-
----
-
-### Get Calculator Details
-
-```http
-GET /api/v1/calculators/{tool_id}
-```
-
-**Example**:
-```bash
-curl http://localhost:8000/api/v1/calculators/ckd_epi_2021
-```
-
-**Response**:
-```json
-{
-  "tool_id": "ckd_epi_2021",
-  "name": "CKD-EPI 2021 eGFR",
-  "purpose": "Estimate glomerular filtration rate",
-  "parameters": [
-    {
-      "name": "serum_creatinine",
-      "type": "number",
-      "required": true,
-      "description": "Serum creatinine in mg/dL"
-    },
-    ...
-  ],
-  "references": [...]
-}
-```
-
----
-
-### Calculate
-
-```http
-POST /api/v1/calculate/{tool_id}
-```
-
-**Request**:
-```bash
-curl -X POST http://localhost:8000/api/v1/calculate/ckd_epi_2021 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "serum_creatinine": 1.2,
-    "age": 65,
-    "sex": "male"
-  }'
-```
-
-**Response**:
-```json
-{
-  "success": true,
-  "score_name": "CKD-EPI 2021 eGFR",
-  "result": 62.5,
-  "unit": "mL/min/1.73m²",
-  "interpretation": {
-    "summary": "CKD Stage 2 (Mildly decreased)",
-    "severity": "mild",
-    "stage": "G2",
-    "recommendations": [
-      "Monitor kidney function annually",
-      "Optimize cardiovascular risk factors"
-    ]
-  },
-  "references": [
-    {
-      "citation": "Inker LA, et al. N Engl J Med. 2021;385(19):1737-1749",
-      "pmid": "34554658"
+    "params": {
+        "serum_creatinine": 1.2,
+        "age": 65,
+        "sex": "female"
     }
-  ]
 }
 ```
 
----
+**Tags:** Calculate
 
-### Batch Calculate
+**Parameters**
 
-```http
-POST /api/v1/calculate/batch
-```
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| tool_id | path | yes | string | - |
 
-**Request**:
-```json
-{
-  "calculations": [
-    {
-      "tool_id": "qsofa_score",
-      "params": {
-        "respiratory_rate": 24,
-        "systolic_bp": 95,
-        "altered_mentation": true
-      }
-    },
-    {
-      "tool_id": "sofa_score",
-      "params": {...}
-    }
-  ]
-}
-```
+**Request Body**
 
----
+| Content-Type | Schema | Required |
+|--------------|--------|----------|
+| application/json | CalculatorInput | yes |
 
-## Error Responses
+**Responses**
 
-### 400 Bad Request
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | CalculatorResponse | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
 
-```json
-{
-  "error": "validation_error",
-  "message": "Missing required parameter: serum_creatinine",
-  "details": {
-    "missing_params": ["serum_creatinine"]
-  }
-}
-```
+### GET /api/v1/calculators
 
-### 404 Not Found
+**Summary:** List Calculators
 
-```json
-{
-  "error": "not_found",
-  "message": "Calculator 'invalid_tool' not found"
-}
-```
+列出所有可用的計算器
 
-### 429 Too Many Requests
+List all available calculators with their metadata.
 
-```json
-{
-  "error": "rate_limited",
-  "message": "Rate limit exceeded. Try again in 60 seconds."
-}
-```
+**Tags:** Discovery
 
----
+**Parameters**
 
-## OpenAPI Documentation
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| limit | query | no | integer | Maximum results |
 
-When running the server, access interactive API docs:
+**Responses**
 
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | DiscoveryResponse | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
+
+### GET /api/v1/calculators/{tool_id}
+
+**Summary:** Get Calculator Info
+
+取得特定計算器的詳細資訊
+
+Get detailed information about a specific calculator including
+parameters, references, and usage examples.
+
+**Tags:** Discovery
+
+**Parameters**
+
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| tool_id | path | yes | string | - |
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
+
+### POST /api/v1/ckd-epi
+
+**Summary:** Calculate Ckd Epi
+
+快速計算 CKD-EPI 2021 eGFR
+
+Calculate eGFR using CKD-EPI 2021 equation (race-free).
+
+**Tags:** Quick Calculate
+
+**Parameters**
+
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| serum_creatinine | query | yes | number | Serum creatinine (mg/dL) |
+| age | query | yes | integer | Age in years |
+| sex | query | yes | string | Sex (male/female) |
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
+
+### GET /api/v1/contexts
+
+**Summary:** List Contexts
+
+列出所有臨床情境
+
+List all available clinical contexts.
+
+**Tags:** Discovery
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+
+### GET /api/v1/search
+
+**Summary:** Search Calculators
+
+依關鍵字搜尋計算器
+
+Search calculators by keyword (name, specialty, condition, etc.)
+
+**Tags:** Discovery
+
+**Parameters**
+
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| q | query | yes | string | Search keyword |
+| limit | query | no | integer | Maximum results |
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | DiscoveryResponse | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
+
+### POST /api/v1/sofa
+
+**Summary:** Calculate Sofa
+
+快速計算 SOFA Score
+
+Calculate Sequential Organ Failure Assessment score.
+
+**Tags:** Quick Calculate
+
+**Parameters**
+
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| pao2_fio2_ratio | query | yes | number | PaO2/FiO2 ratio |
+| platelets | query | yes | number | Platelets (×10³/µL) |
+| bilirubin | query | yes | number | Bilirubin (mg/dL) |
+| cardiovascular | query | yes | string | MAP or vasopressor status |
+| gcs_score | query | yes | integer | GCS score |
+| creatinine | query | yes | number | Creatinine (mg/dL) |
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
+
+### GET /api/v1/specialties
+
+**Summary:** List Specialties
+
+列出所有可用的專科分類
+
+List all available medical specialties.
+
+**Tags:** Discovery
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+
+### GET /api/v1/specialties/{specialty}
+
+**Summary:** List By Specialty
+
+列出特定專科的所有計算器
+
+List all calculators for a specific medical specialty.
+
+**Tags:** Discovery
+
+**Parameters**
+
+| Name | In | Required | Type | Description |
+|------|----|----------|------|-------------|
+| specialty | path | yes | string | - |
+| limit | query | no | integer | Maximum results |
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | DiscoveryResponse | Successful Response |
+| 422 | HTTPValidationError | Validation Error |
+
+### GET /health
+
+**Summary:** Health Check
+
+Health check endpoint for Docker/K8s
+
+**Tags:** Health
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | HealthResponse | Successful Response |
+
+### GET /ready
+
+**Summary:** Readiness Check
+
+Readiness endpoint for production traffic and deployment gates.
+
+**Tags:** Health
+
+**Responses**
+
+| Status | Schema | Description |
+|--------|--------|-------------|
+| 200 | object | Successful Response |
+
+## Shared Schemas
+
+| Schema | Description |
+|--------|-------------|
+| CalculatorInput | Generic calculator input model |
+| CalculatorResponse | Calculator response model |
+| DiscoveryResponse | Discovery response model |
+| HTTPValidationError | - |
+| HealthResponse | Health check response |
+| ValidationError | - |

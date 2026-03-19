@@ -22,6 +22,7 @@ from src.application.dto import (
 )
 from src.application.use_cases.calculate_use_case import CalculateUseCase
 from src.application.use_cases.discovery_use_case import DiscoveryUseCase
+from src.domain.registry.tool_registry import ToolRegistry
 
 # =============================================================================
 # Fixtures
@@ -29,7 +30,7 @@ from src.application.use_cases.discovery_use_case import DiscoveryUseCase
 
 
 @pytest.fixture
-def registry():
+def registry() -> ToolRegistry:
     """Get initialized tool registry with all calculators registered"""
     from src.domain.registry import ToolRegistry
     from src.domain.services.calculators import CALCULATORS
@@ -42,13 +43,13 @@ def registry():
 
 
 @pytest.fixture
-def discovery(registry):
+def discovery(registry: ToolRegistry) -> DiscoveryUseCase:
     """Discovery use case instance"""
     return DiscoveryUseCase(registry)
 
 
 @pytest.fixture
-def calculator(registry):
+def calculator(registry: ToolRegistry) -> CalculateUseCase:
     """Calculate use case instance"""
     return CalculateUseCase(registry)
 
@@ -69,7 +70,7 @@ class TestDiscoveryFirstWorkflow:
     4. calculate(tool_id, params) → 執行計算
     """
 
-    def test_specialty_navigation_workflow(self, discovery, calculator):
+    def test_specialty_navigation_workflow(self, discovery: DiscoveryUseCase, calculator: CalculateUseCase) -> None:
         """
         Test: 通過專科導航找到並使用計算器
 
@@ -130,7 +131,7 @@ class TestDiscoveryFirstWorkflow:
         print(f"\n✅ Step 4: NEWS2 = {calc_response.result}")
         print("=" * 60)
 
-    def test_search_workflow(self, discovery, calculator):
+    def test_search_workflow(self, discovery: DiscoveryUseCase, calculator: CalculateUseCase) -> None:
         """
         Test: 通過關鍵字搜索找到工具
 
@@ -163,6 +164,7 @@ class TestDiscoveryFirstWorkflow:
                 DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="qsofa_score")
             )
             assert response.success
+            assert response.tool_detail is not None
             print("\n✅ Step 2: Got qSOFA info")
             print(f"   Params: {response.tool_detail.input_params}")
 
@@ -181,7 +183,7 @@ class TestDiscoveryFirstWorkflow:
             print(f"\n✅ Step 3: qSOFA = {calc_response.result}")
         print("=" * 60)
 
-    def test_context_navigation_workflow(self, discovery):
+    def test_context_navigation_workflow(self, discovery: DiscoveryUseCase) -> None:
         """
         Test: 通過臨床情境導航
 
@@ -227,7 +229,7 @@ class TestClinicalWorkflows:
     這些測試模擬真實臨床場景中的多步驟評估流程。
     """
 
-    def test_sepsis_evaluation_workflow(self, calculator):
+    def test_sepsis_evaluation_workflow(self, calculator: CalculateUseCase) -> None:
         """
         Sepsis Evaluation Workflow (敗血症評估)
 
@@ -301,7 +303,7 @@ class TestClinicalWorkflows:
         print(f"4️⃣ CAM-ICU: {cam_result.result}")
         print("=" * 60)
 
-    def test_preoperative_assessment_workflow(self, calculator):
+    def test_preoperative_assessment_workflow(self, calculator: CalculateUseCase) -> None:
         """
         Preoperative Assessment Workflow (術前評估)
 
@@ -369,7 +371,7 @@ class TestClinicalWorkflows:
         print(f"4️⃣ STOP-BANG Score: {stopbang_result.result}")
         print("=" * 60)
 
-    def test_aki_evaluation_workflow(self, calculator):
+    def test_aki_evaluation_workflow(self, calculator: CalculateUseCase) -> None:
         """
         AKI Evaluation Workflow (急性腎損傷評估)
 
@@ -414,7 +416,7 @@ class TestClinicalWorkflows:
             print(f"   📋 {kdigo_result.interpretation.summary}")
         print("=" * 60)
 
-    def test_gi_bleeding_evaluation_workflow(self, calculator):
+    def test_gi_bleeding_evaluation_workflow(self, calculator: CalculateUseCase) -> None:
         """
         GI Bleeding Evaluation Workflow (上消化道出血評估)
 
@@ -476,7 +478,7 @@ class TestErrorRecoveryWorkflow:
     模擬 Agent 遇到錯誤時的恢復流程。
     """
 
-    def test_wrong_tool_id_recovery(self, calculator, discovery):
+    def test_wrong_tool_id_recovery(self, calculator: CalculateUseCase, discovery: DiscoveryUseCase) -> None:
         """
         Test: 工具 ID 錯誤時的恢復
 
@@ -495,6 +497,7 @@ class TestErrorRecoveryWorkflow:
             CalculateRequest(tool_id="news", params={})  # Wrong!
         )
         assert not response.success
+        assert response.error is not None
         print(f"\n❌ Step 1: Error (expected): {response.error[:100]}...")
 
         # Step 2: Error should help recovery
@@ -530,7 +533,7 @@ class TestErrorRecoveryWorkflow:
         print(f"✅ Step 4: NEWS2 = {correct_response.result}")
         print("=" * 60)
 
-    def test_missing_params_recovery(self, calculator, discovery):
+    def test_missing_params_recovery(self, calculator: CalculateUseCase, discovery: DiscoveryUseCase) -> None:
         """
         Test: 缺少參數時的恢復
 
@@ -552,6 +555,7 @@ class TestErrorRecoveryWorkflow:
             )
         )
         assert not response.success
+        assert response.error is not None
         print(f"\n❌ Step 1: Error (expected): {response.error[:150]}...")
 
         # Step 2: Check if param_template is provided
@@ -563,6 +567,7 @@ class TestErrorRecoveryWorkflow:
             DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="ckd_epi_2021")
         )
         assert info_response.success
+        assert info_response.tool_detail is not None
         print(f"\n✅ Step 3: Required params: {info_response.tool_detail.input_params}")
 
         # Step 4: Retry with all params
@@ -576,7 +581,7 @@ class TestErrorRecoveryWorkflow:
         print(f"✅ Step 4: eGFR = {retry_response.result} {retry_response.unit}")
         print("=" * 60)
 
-    def test_invalid_param_value_recovery(self, calculator):
+    def test_invalid_param_value_recovery(self, calculator: CalculateUseCase) -> None:
         """
         Test: 參數值無效時的恢復
 
@@ -602,6 +607,7 @@ class TestErrorRecoveryWorkflow:
         )
         # Should fail validation
         assert not response.success
+        assert response.error is not None
         print(f"\n❌ Step 1: Error (expected): {response.error[:150]}...")
 
         # Step 2: Fix and retry
@@ -626,7 +632,7 @@ class TestAgentSimulation:
     模擬 AI Agent 使用系統的完整交互流程。
     """
 
-    def test_agent_first_interaction(self, discovery, calculator):
+    def test_agent_first_interaction(self, discovery: DiscoveryUseCase, calculator: CalculateUseCase) -> None:
         """
         Simulate: Agent 首次與系統交互
 
@@ -658,6 +664,7 @@ class TestAgentSimulation:
             DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="ckd_epi_2021")
         )
         assert info_response.success
+        assert info_response.tool_detail is not None
         print(f"   Description: {info_response.tool_detail.purpose[:80]}...")
         print(f"   Required: {info_response.tool_detail.input_params}")
 
@@ -677,7 +684,7 @@ class TestAgentSimulation:
             print(f"\n💡 Agent: {calc_response.interpretation.summary}")
         print("=" * 60)
 
-    def test_agent_multi_tool_assessment(self, discovery, calculator):
+    def test_agent_multi_tool_assessment(self, discovery: DiscoveryUseCase, calculator: CalculateUseCase) -> None:
         """
         Simulate: Agent 執行多工具綜合評估
 
@@ -770,7 +777,7 @@ class TestEdgeCases:
     測試邊界情況和特殊場景。
     """
 
-    def test_list_all_tools(self, discovery):
+    def test_list_all_tools(self, discovery: DiscoveryUseCase) -> None:
         """Test: 列出所有可用工具"""
         response = discovery.execute(
             DiscoveryRequest(mode=DiscoveryMode.LIST_ALL, limit=100)
@@ -779,12 +786,13 @@ class TestEdgeCases:
         assert len(response.tools) > 50  # Should have many tools
         print(f"\n✅ Total tools available: {len(response.tools)}")
 
-    def test_invalid_specialty(self, discovery):
+    def test_invalid_specialty(self, discovery: DiscoveryUseCase) -> None:
         """Test: 無效專科名稱處理"""
         response = discovery.execute(
             DiscoveryRequest(mode=DiscoveryMode.BY_SPECIALTY, specialty="invalid_specialty_xyz")
         )
         assert not response.success
+        assert response.error is not None
         error_lower = response.error.lower()
         assert "unknown" in error_lower or "invalid" in error_lower
         # Should provide available specialties
@@ -792,7 +800,7 @@ class TestEdgeCases:
         print(f"\n✅ Error handled: {response.error[:50]}...")
         print(f"   Available: {response.available_specialties}")
 
-    def test_invalid_context(self, discovery):
+    def test_invalid_context(self, discovery: DiscoveryUseCase) -> None:
         """Test: 無效臨床情境處理"""
         response = discovery.execute(
             DiscoveryRequest(mode=DiscoveryMode.BY_CONTEXT, context="invalid_context_xyz")
@@ -801,16 +809,17 @@ class TestEdgeCases:
         assert len(response.available_contexts) > 0
         print(f"\n✅ Error handled, available contexts: {response.available_contexts}")
 
-    def test_tool_not_found(self, discovery):
+    def test_tool_not_found(self, discovery: DiscoveryUseCase) -> None:
         """Test: 工具不存在處理"""
         response = discovery.execute(
             DiscoveryRequest(mode=DiscoveryMode.GET_INFO, tool_id="nonexistent_tool_xyz")
         )
         assert not response.success
+        assert response.error is not None
         assert "not found" in response.error.lower()
         print(f"\n✅ Error handled: {response.error[:80]}...")
 
-    def test_param_alias_matching(self, calculator):
+    def test_param_alias_matching(self, calculator: CalculateUseCase) -> None:
         """Test: 參數別名匹配 (ParamMatcher 功能)"""
         # Use alias "cr" instead of "serum_creatinine"
         response = calculator.execute(
@@ -827,6 +836,7 @@ class TestEdgeCases:
         if response.success:
             print(f"\n✅ Alias 'cr' matched! eGFR = {response.result}")
         else:
+            assert response.error is not None
             print(f"\n📋 Alias not matched, error: {response.error[:100]}...")
             # Error should still be helpful
             error_lower = response.error.lower()

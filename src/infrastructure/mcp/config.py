@@ -15,6 +15,8 @@ import os
 from dataclasses import dataclass, field
 from typing import Optional
 
+from ...shared.project_metadata import get_project_version
+
 
 @dataclass
 class SslConfig:
@@ -83,7 +85,7 @@ class McpServerConfig:
     """Configuration for MCP server"""
 
     name: str = "Medical Calculator MCP"
-    version: str = "1.2.0"
+    version: str = field(default_factory=get_project_version)
     json_response: bool = True
 
     # Server network settings (for SSE/HTTP transport)
@@ -99,29 +101,30 @@ Medical Calculator MCP Server - 醫學計算工具 MCP 伺服器
 
 A validated medical calculator toolkit for clinical decision support.
 
-## 🔍 RECOMMENDED USAGE PATTERN
+## SYSTEM RULES FOR AGENTS
 
-### Path A: By Specialty (Hierarchical Navigation)
-```
-1. list_specialties()              → Get available specialties
-2. list_by_specialty("critical_care") → Get tools in that specialty
-3. get_calculator_info("sofa_score")  → Get input parameters
-4. calculate_sofa(...)                 → Perform calculation
+Follow this exact sequence unless the user already gave a verified canonical tool_id and complete params.
+
+1. Start with `discover(...)` to find the right tool category or tool_id.
+2. Always call `get_tool_schema(tool_id)` before `calculate(tool_id, params)`.
+3. Never invent parameter names, enums, units, or boolean meanings.
+4. If a tool call returns `guidance`, `suggestions`, `resolved_value`, or `component_scores.param_template`, use them for the next retry.
+5. If unsure between multiple tools, prefer `discover(by="keyword", value="...")` or `get_related_tools(tool_id)` before calculating.
+
+## DEFAULT WORKFLOW FOR SMALL / WEAKER MODELS
+
+```python
+# SAFE PATH: use this unless you are certain
+1. discover(by="keyword", value="clinical problem")
+2. get_tool_schema("tool_id_from_discover")
+3. calculate("tool_id_from_schema", {"exact_param_name": value})
 ```
 
-### Path B: By Clinical Context
-```
-1. list_contexts()                    → Get available contexts
-2. list_by_context("severity_assessment") → Get relevant tools
-3. get_calculator_info("apache_ii")   → Get input parameters
-4. calculate_apache_ii(...)           → Perform calculation
-```
+## WHEN INPUTS ARE IMPERFECT
 
-### Path C: Direct Access (If You Know the Tool)
-```
-1. get_calculator_info("news2_score") → Get input parameters
-2. calculate_news2(...)               → Perform calculation
-```
+- Tool ids may be fuzzy-resolved, but still prefer canonical ids returned by `discover()` or `get_tool_schema()`.
+- Empty or invalid params should trigger a retry using the returned `guidance` and `param_template`.
+- Do not skip schema inspection just because a tool name looks obvious.
 
 ## 📋 PROMPTS (Clinical Workflows)
 
@@ -129,6 +132,7 @@ Use prompts for guided multi-tool workflows:
 
 | Prompt | Description |
 |--------|-------------|
+| `tool_usage_playbook` | Strong operating rules for smaller models before any calculation |
 | `sepsis_evaluation` | qSOFA → SOFA → RASS → CAM-ICU workflow |
 | `preoperative_risk_assessment` | ASA → RCRI → Mallampati workflow |
 | `icu_daily_assessment` | RASS → CAM-ICU → GCS → SOFA daily rounds |
@@ -165,9 +169,9 @@ Use prompts for guided multi-tool workflows:
 
 ## ⚠️ IMPORTANT NOTES
 
-1. Each response includes `next_step` to guide you to the next action
+1. Each response may include `next_step`, `guidance`, `suggestions`, and `resolved_value` to guide your next action
 2. All calculators cite peer-reviewed references
-3. Use `get_calculator_info(tool_id)` to see exact input parameters
+3. Use `get_tool_schema(tool_id)` to see exact input parameters
 4. Input validation errors return clear messages about valid ranges
 
 所有計算器均引用同儕審查論文。每個回應都包含下一步指引。

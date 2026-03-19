@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1",
+  "name": "medical-calc-mcp",
+  "title": "Medical Calculator MCP Server",
+  "description": "Evidence-based medical calculator MCP server built with FastMCP, featuring smart tool discovery, schema-first calculation, and safe retry guidance for AI agents.",
+  "repository": {
+    "url": "https://github.com/u9401066/medical-calc-mcp",
+    "documentation": "https://github.com/u9401066/medical-calc-mcp/blob/main/README.md",
+    "openclaw_guide": "https://github.com/u9401066/medical-calc-mcp/blob/main/docs/OPENCLAW.md"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "fastmcp",
+    "medical-calculator",
+    "clinical-decision-support",
+    "ai-agent-tools",
+    "openclaw"
+  ],
+  "runtime": {
+    "python": ">=3.11",
+    "package_manager": "uv"
+  },
+  "install": {
+    "steps": [
+      "git clone https://github.com/u9401066/medical-calc-mcp.git",
+      "cd medical-calc-mcp",
+      "uv sync"
+    ]
+  },
+  "entrypoints": {
+    "stdio": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main"]
+    },
+    "sse": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main", "--mode", "sse"]
+    },
+    "http": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "src.main", "--mode", "http"]
+    }
+  },
+  "onboarding": {
+    "preferred_prompt": "tool_usage_playbook()",
+    "preferred_resource": "guide://tool-usage-playbook",
+    "index_resource": "calculator://list",
+    "recommended_sequence": [
+      "read guide://tool-usage-playbook",
+      "read calculator://list",
+      "discover(by=\"keyword\", value=\"clinical problem\")",
+      "get_tool_schema(\"tool_id\")",
+      "calculate(\"tool_id\", {...})"
+    ]
+  },
+  "capabilities": {
+    "smart_identifier_resolution": true,
+    "schema_first_calculation": true,
+    "retry_guidance": true,
+    "resources": true,
+    "prompts": true
+  },
+  "github_metadata": {
+    "suggested_description": "Evidence-based medical calculator MCP server built with FastMCP, featuring smart tool discovery, schema-first calculation, and safe retry guidance for AI agents.",
+    "suggested_topics": [
+      "mcp",
+      "fastmcp",
+      "medical-calculator",
+      "ai-agent-tools",
+      "openclaw",
+      "model-context-protocol",
+      "mcp-server",
+      "clinical-decision-support",
+      "healthcare-ai"
+    ]
+  }
+}

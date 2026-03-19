@@ -4,8 +4,8 @@ See the full [ROADMAP.md](https://github.com/u9401066/medical-calc-mcp/blob/main
 
 ## Current Status (v1.5.0)
 
-- ✅ 121 Medical Calculators
-- ✅ 1,721 Tests (92% coverage)
+- ✅ 151 Medical Calculators
+- ✅ 2,067 Collected Tests
 - ✅ MCP + REST API
 - ✅ Docker support
 - ✅ Security features (rate limiting, API key)
@@ -29,17 +29,20 @@ See the full [ROADMAP.md](https://github.com/u9401066/medical-calc-mcp/blob/main
 ## Planned Features
 
 ### 2026 Q1
+
 - [ ] Clinical Knowledge Graph (tool relationships)
 - [ ] PyPI package release
 - [ ] Kubernetes deployment templates
 
 ### 2026 Q2
+
 - [ ] Documentation site (you're looking at the preview!)
 - [ ] i18n expansion (zh-CN, ja)
 - [ ] More calculators (Ophthalmology, Rheumatology extended)
 
 ### 2026 Q3
-- [ ] MedCalc-Bench evaluation
+
+- [x] MedCalc-Bench evaluation pipeline (script + sample dataset)
 - [ ] CLI tool generator
 - [ ] VS Code extension
 
