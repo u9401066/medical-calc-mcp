@@ -8,8 +8,8 @@
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-2071%20collected-brightgreen.svg)](#-開發指南)
-[![References](https://img.shields.io/badge/references-229%20PMIDs%20|%20190%20DOIs-blue.svg)](#-參考文獻)
+[![Tests](https://img.shields.io/badge/tests-2073%20collected-brightgreen.svg)](#-開發指南)
+[![References](https://img.shields.io/badge/references-244%20PMIDs%20|%20205%20DOIs-blue.svg)](#-參考文獻)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#-架構)
@@ -366,11 +366,11 @@ import requests
 class MedicalCalculatorClient:
     def __init__(self, base_url: str = "http://localhost:8080"):
         self.api_url = f"{base_url}/api/v1"
-    
+
     def search(self, query: str) -> list:
         r = requests.get(f"{self.api_url}/search", params={"q": query})
         return r.json()
-    
+
     def calculate(self, tool_id: str, params: dict) -> dict:
         r = requests.post(f"{self.api_url}/calculate/{tool_id}", json={"params": params})
         return r.json()
@@ -791,9 +791,7 @@ LowLevelKey(
 
 ## 🔧 可用工具
 
-> **Registry Snapshot**: 128 個計算器，涵蓋 26 個專科
->
-> **品質快照**: 2071 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用
+> **品質快照**: 2073 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用
 
 ### 📑 快速導覽
 <!-- BEGIN GENERATED:CATALOG_OVERVIEW_ZH -->

@@ -797,7 +797,7 @@ def _build_param_schemas(calculator: Any) -> dict[str, dict[str, Any]]:
             "description": "Glasgow Coma Scale total",
             "clinical_hint": "Sum of E + V + M components",
             "normal_range": [3, 15],
-            "common_sources": ["Neurological assessment", "calculate_gcs"],
+            "common_sources": ["Neurological assessment", "glasgow_coma_scale"],
         },
     }
 

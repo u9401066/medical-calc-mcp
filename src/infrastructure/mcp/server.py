@@ -136,7 +136,7 @@ class MedicalCalculatorServer:
         # Discovery tools (discover, get_related_tools, find_tools_by_params)
         self._discovery_handler = DiscoveryHandler(self._mcp, self._registry)
 
-        # Calculator tools (calculate_sofa, calculate_gcs, etc.)
+        # Calculator tools (get_tool_schema, calculate, calculate_batch)
         self._calculator_handler = CalculatorHandler(self._mcp, self._registry)
 
         # Resources (calculator://list, etc.)

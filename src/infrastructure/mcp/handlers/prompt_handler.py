@@ -17,6 +17,35 @@ from src.infrastructure.mcp.guidance import get_tool_usage_playbook_markdown
 
 from ....domain.registry.tool_registry import ToolRegistry
 
+LEGACY_WORKFLOW_TOOL_IDS: dict[str, str] = {
+    "calculate_qsofa": "qsofa_score",
+    "calculate_sofa": "sofa_score",
+    "calculate_apache_ii": "apache_ii",
+    "calculate_rass": "rass",
+    "calculate_cam_icu": "cam_icu",
+    "calculate_gcs": "glasgow_coma_scale",
+    "calculate_news2": "news2_score",
+    "calculate_asa_physical_status": "asa_physical_status",
+    "calculate_rcri": "rcri",
+    "calculate_mallampati": "mallampati_score",
+    "calculate_mabl": "mabl",
+    "calculate_ckd_epi_2021": "ckd_epi_2021",
+    "calculate_pediatric_dosing": "pediatric_dosing",
+    "calculate_transfusion": "transfusion_calc",
+}
+
+
+def _format_workflow_prompt(prompt: str) -> str:
+    formatted = prompt.replace("Tool: ", "Tool ID: ")
+    for legacy_name, tool_id in LEGACY_WORKFLOW_TOOL_IDS.items():
+        formatted = formatted.replace(legacy_name, tool_id)
+
+    lines = formatted.strip().splitlines()
+    note = "> Use canonical tool ids below with the unified MCP flow: `get_tool_schema(tool_id)` -> `calculate(tool_id, params)`"
+    if len(lines) >= 2 and lines[0].startswith("# "):
+        return "\n".join([lines[0], lines[1], "", note, "", *lines[2:]])
+    return f"{note}\n\n{formatted.strip()}"
+
 
 class PromptHandler:
     """
@@ -52,7 +81,7 @@ class PromptHandler:
             A structured approach to evaluate patients with suspected sepsis
             using Sepsis-3 criteria.
             """
-            return """# Sepsis Evaluation Workflow (Sepsis-3)
+            return _format_workflow_prompt("""# Sepsis Evaluation Workflow (Sepsis-3)
 敗血症評估工作流程
 
 ## Overview
@@ -134,7 +163,7 @@ For admitted patients:
 ## References
 - Singer M, et al. JAMA 2016 (Sepsis-3)
 - Evans L, et al. Crit Care Med 2021 (SSC Guidelines)
-"""
+""")
 
         @self._mcp.prompt()
         def preoperative_risk_assessment() -> str:
@@ -143,7 +172,7 @@ For admitted patients:
 
             A structured approach to evaluate surgical risk before non-cardiac surgery.
             """
-            return """# Preoperative Risk Assessment Workflow
+            return _format_workflow_prompt("""# Preoperative Risk Assessment Workflow
 術前風險評估工作流程
 
 ## Overview
@@ -263,7 +292,7 @@ Parameters:
 - Fleisher LA, et al. Circulation 2014 (ACC/AHA Guidelines)
 - Lee TH, et al. Circulation 1999 (Original RCRI)
 - ASA Physical Status Classification System
-"""
+""")
 
         @self._mcp.prompt()
         def icu_daily_assessment() -> str:
@@ -272,7 +301,7 @@ Parameters:
 
             A structured approach for daily ICU patient rounds.
             """
-            return """# ICU Daily Assessment Workflow
+            return _format_workflow_prompt("""# ICU Daily Assessment Workflow
 加護病房每日評估工作流程
 
 ## Overview
@@ -397,7 +426,7 @@ If mechanically ventilated:
 - Devlin JW, et al. Crit Care Med 2018 (PADIS Guidelines)
 - Ely EW, et al. JAMA 2001 (CAM-ICU)
 - Vincent JL, et al. Intensive Care Med 1996 (SOFA)
-"""
+""")
 
         @self._mcp.prompt()
         def pediatric_drug_dosing() -> str:
@@ -406,7 +435,7 @@ If mechanically ventilated:
 
             A structured approach for safe pediatric medication dosing.
             """
-            return """# Pediatric Drug Dosing Workflow
+            return _format_workflow_prompt("""# Pediatric Drug Dosing Workflow
 兒科藥物劑量計算工作流程
 
 ## Overview
@@ -521,7 +550,7 @@ Parameters:
 - Harriet Lane Handbook (Pediatric Drug Dosing)
 - AAP Clinical Practice Guidelines
 - PALS Guidelines
-"""
+""")
 
         @self._mcp.prompt()
         def acute_kidney_injury_assessment() -> str:
@@ -530,7 +559,7 @@ Parameters:
 
             A structured approach to evaluate and stage acute kidney injury.
             """
-            return """# Acute Kidney Injury Assessment Workflow
+            return _format_workflow_prompt("""# Acute Kidney Injury Assessment Workflow
 急性腎損傷評估工作流程
 
 ## Overview
@@ -642,4 +671,4 @@ Tool: calculate_sofa
 ## References
 - KDIGO Clinical Practice Guideline for AKI 2012
 - CKD-EPI 2021 Equation (race-neutral)
-"""
+""")

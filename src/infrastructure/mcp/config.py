@@ -89,7 +89,7 @@ class McpServerConfig:
     json_response: bool = True
 
     # Server network settings (for SSE/HTTP transport)
-    host: str = "0.0.0.0"  # Bind to all interfaces for remote access
+    host: str = "0.0.0.0"  # nosec B104 - MCP SSE/HTTP mode supports remote/container access by design
     port: int = 8000
 
     # SSL/TLS configuration
@@ -142,20 +142,20 @@ Use prompts for guided multi-tool workflows:
 ## 🏥 CLINICAL WORKFLOW EXAMPLES
 
 ### Sepsis Evaluation:
-1. `calculate_qsofa` → Quick bedside screen
-2. `calculate_sofa` → Full organ dysfunction (if qSOFA≥2)
-3. `calculate_rass` → Sedation level (ICU)
-4. `calculate_cam_icu` → Delirium screen (requires RASS first)
+1. `qsofa_score` via `get_tool_schema('qsofa_score')` → `calculate('qsofa_score', params)`
+2. `sofa_score` via `get_tool_schema('sofa_score')` → `calculate('sofa_score', params)`
+3. `rass` via `get_tool_schema('rass')` → `calculate('rass', params)`
+4. `cam_icu` via `get_tool_schema('cam_icu')` → `calculate('cam_icu', params)`
 
 ### Preoperative Assessment:
-1. `calculate_asa_physical_status` → Overall health status
-2. `calculate_rcri` → Cardiac risk for non-cardiac surgery
-3. `calculate_mallampati` → Difficult airway prediction
+1. `asa_physical_status` via `get_tool_schema('asa_physical_status')` → `calculate('asa_physical_status', params)`
+2. `rcri` via `get_tool_schema('rcri')` → `calculate('rcri', params)`
+3. `mallampati_score` via `get_tool_schema('mallampati_score')` → `calculate('mallampati_score', params)`
 
 ### Pediatric/Transfusion:
-1. `calculate_pediatric_dosing` → Weight-based drug doses
-2. `calculate_mabl` → Maximum allowable blood loss
-3. `calculate_transfusion` → Blood product volumes
+1. `pediatric_dosing` via `get_tool_schema('pediatric_dosing')` → `calculate('pediatric_dosing', params)`
+2. `mabl` via `get_tool_schema('mabl')` → `calculate('mabl', params)`
+3. `transfusion_calc` via `get_tool_schema('transfusion_calc')` → `calculate('transfusion_calc', params)`
 
 ## 📊 AVAILABLE SPECIALTIES
 

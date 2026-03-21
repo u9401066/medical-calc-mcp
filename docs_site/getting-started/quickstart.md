@@ -59,4 +59,4 @@ curl -X POST http://localhost:8000/api/v1/calculate/ckd_epi_2021 \
 
 - [Installation Details](installation.md) - Advanced setup options
 - [Configuration](configuration.md) - Environment variables
-- [Calculator Reference](../calculators/index.md) - Browse all 121 calculators
+- [Calculator Reference](../calculators/index.md) - Browse all 151 calculators

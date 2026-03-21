@@ -7,9 +7,9 @@
 
 | 指標 | 數值 |
 |------|------|
-| **計算器數量** | 128 (涵蓋 26 個專科) |
-| **MCP Tools** | 135 (128 計算器 + 7 發現工具) |
-| **測試數量** | 2016+ |
+| **計算器數量** | 151 (涵蓋 31 個專科) |
+| **Unified MCP Tools** | 6 (3 發現工具 + 3 計算工具) |
+| **測試數量** | 2073+ |
 | **測試覆蓋率** | 92% |
 | **文獻引用** | 244 PMIDs, 205 DOIs (100% 覆蓋) |
 | **架構** | DDD Onion + FastMCP |
@@ -54,7 +54,7 @@ src/
 ├── domain/           # 核心業務邏輯 (無依賴)
 │   ├── entities/     # ScoreResult, ToolMetadata
 │   ├── services/     # BaseCalculator, ToolRegistry
-│   │   └── calculators/  # 128 個計算器實作
+│   │   └── calculators/  # 151 個計算器實作
 │   ├── validation/   # ParameterValidator, BoundarySpec
 │   └── value_objects/    # Unit, Reference, Interpretation
 ├── application/      # 用例層
@@ -83,15 +83,15 @@ class MyCalculator(BaseCalculator):
     @property
     def tool_id(self) -> str:
         return "my_calculator"
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(...)
-    
+
     @property
     def references(self) -> list[Reference]:
         return [Reference(citation="...", doi="...", pmid="...", year=2020)]
-    
+
     def calculate(self, param1: float, param2: str) -> ScoreResult:
         # 實作計算邏輯
         pass

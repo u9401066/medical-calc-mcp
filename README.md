@@ -8,8 +8,8 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/u9401066/medical-calc-mcp/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-2071%20collected-brightgreen.svg)](#-development)
-[![References](https://img.shields.io/badge/references-229%20PMIDs%20|%20190%20DOIs-blue.svg)](#references)
+[![Tests](https://img.shields.io/badge/tests-2073%20collected-brightgreen.svg)](#-development)
+[![References](https://img.shields.io/badge/references-244%20PMIDs%20|%20205%20DOIs-blue.svg)](#references)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20Onion-purple.svg)](#architecture)
@@ -63,7 +63,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - **🛡️ Smart Parameter Matching**: Alias support, fuzzy matching, and typo tolerance
 - **⚠️ Boundary Validation**: Literature-backed clinical range checking with automatic warnings
 - **🏗️ Clean DDD Architecture**: Onion architecture with clear separation of concerns
-- **📚 Evidence-Based**: All 121 calculators cite peer-reviewed research (100% coverage, Vancouver style)
+- **📚 Evidence-Based**: All 151 calculators cite peer-reviewed research (100% coverage, Vancouver style)
 - **🔒 Type Safe**: Full Python type hints with dataclass entities
 - **🌐 Bilingual**: Chinese/English documentation and tool descriptions
 
@@ -432,11 +432,11 @@ import requests
 class MedicalCalculatorClient:
     def __init__(self, base_url: str = "http://localhost:8080"):
         self.api_url = f"{base_url}/api/v1"
-    
+
     def search(self, query: str) -> list:
         r = requests.get(f"{self.api_url}/search", params={"q": query})
         return r.json()
-    
+
     def calculate(self, tool_id: str, params: dict) -> dict:
         r = requests.post(f"{self.api_url}/calculate/{tool_id}", json={"params": params})
         return r.json()
@@ -580,7 +580,7 @@ services:
       - "8000:8000"
     environment:
       - MCP_MODE=sse
-    
+
   # REST API Server (FastAPI)
   medical-calc-api:
     build: .
@@ -1026,7 +1026,7 @@ CORS_ORIGINS="https://your-app.com,https://api.your-app.com"
 API_HOST=0.0.0.0   # Use 127.0.0.1 for local only
 API_PORT=8080
 
-# MCP Server  
+# MCP Server
 MCP_HOST=0.0.0.0   # Use 127.0.0.1 for local only
 MCP_PORT=8000
 ```
@@ -1262,9 +1262,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools
 
-> **Registry Snapshot**: 128 calculators across 26 specialties
->
-> **Quality Snapshot**: 2071 collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage
+> **Quality Snapshot**: 2073 collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -1519,8 +1517,8 @@ Tracked coverage: **65/65** recommended tools across **16** domains.
 We use **Vancouver style** citations:
 
 ```
-Inker LA, Eneanya ND, Coresh J, et al. New Creatinine- and Cystatin C-Based 
-Equations to Estimate GFR without Race. N Engl J Med. 2021;385(19):1737-1749. 
+Inker LA, Eneanya ND, Coresh J, et al. New Creatinine- and Cystatin C-Based
+Equations to Estimate GFR without Race. N Engl J Med. 2021;385(19):1737-1749.
 doi:10.1056/NEJMoa2102953
 ```
 

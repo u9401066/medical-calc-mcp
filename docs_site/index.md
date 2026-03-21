@@ -7,7 +7,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/u9401066/medical-calc-mcp/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-2071%20collected-brightgreen.svg)](https://github.com/u9401066/medical-calc-mcp)
+[![Tests](https://img.shields.io/badge/tests-2073%20collected-brightgreen.svg)](https://github.com/u9401066/medical-calc-mcp)
 
 </div>
 

@@ -7,6 +7,23 @@ from src.infrastructure.mcp.config import McpServerConfig
 from src.infrastructure.mcp.guidance import get_tool_usage_playbook_markdown
 from src.infrastructure.mcp.handlers.prompt_handler import PromptHandler
 
+LEGACY_WORKFLOW_REFS = {
+    "calculate_qsofa",
+    "calculate_sofa",
+    "calculate_apache_ii",
+    "calculate_rass",
+    "calculate_cam_icu",
+    "calculate_gcs",
+    "calculate_news2",
+    "calculate_asa_physical_status",
+    "calculate_rcri",
+    "calculate_mallampati",
+    "calculate_mabl",
+    "calculate_ckd_epi_2021",
+    "calculate_pediatric_dosing",
+    "calculate_transfusion",
+}
+
 
 class _FakeMCP:
     def __init__(self) -> None:
@@ -51,3 +68,38 @@ def test_shared_playbook_mentions_resource_and_prompt_entrypoints() -> None:
     assert "tool_usage_playbook()" in playbook
     assert "guide://tool-usage-playbook" in playbook
     assert "calculator://list" in playbook
+
+
+def test_server_instructions_use_unified_tool_flow_examples() -> None:
+    instructions = McpServerConfig().instructions
+
+    for legacy_ref in LEGACY_WORKFLOW_REFS:
+        assert legacy_ref not in instructions
+
+    assert "qsofa_score" in instructions
+    assert "transfusion_calc" in instructions
+    assert "calculate('qsofa_score', params)" in instructions
+
+
+def test_workflow_prompts_reference_canonical_tool_ids() -> None:
+    fake_mcp = _FakeMCP()
+    PromptHandler(cast(FastMCP, fake_mcp), ToolRegistry())
+
+    workflow_prompt_names = {
+        "sepsis_evaluation",
+        "preoperative_risk_assessment",
+        "icu_daily_assessment",
+        "pediatric_drug_dosing",
+        "acute_kidney_injury_assessment",
+    }
+
+    for prompt_name in workflow_prompt_names:
+        prompt_text = fake_mcp.prompts[prompt_name]()
+        assert "canonical tool ids" in prompt_text
+        assert "Tool ID:" in prompt_text
+        for legacy_ref in LEGACY_WORKFLOW_REFS:
+            assert legacy_ref not in prompt_text
+
+    assert "qsofa_score" in fake_mcp.prompts["sepsis_evaluation"]()
+    assert "mallampati_score" in fake_mcp.prompts["preoperative_risk_assessment"]()
+    assert "transfusion_calc" in fake_mcp.prompts["pediatric_drug_dosing"]()
