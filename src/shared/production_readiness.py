@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-READINESS_PASS = "pass"
+READINESS_PASS = "pass"  # nosec B105 - Readiness state label, not a credential
 READINESS_WARN = "warn"
 READINESS_FAIL = "fail"
 

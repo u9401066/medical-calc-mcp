@@ -60,7 +60,7 @@ class EvidenceLevel(Enum):
 class ValidationSeverity(Enum):
     """驗證結果嚴重程度"""
 
-    PASS = "pass"  # 通過驗證
+    PASS = "pass"  # nosec B105 - Enum status label, not a credential
     WARNING = "warning"  # 警告 (超出臨床常見範圍但在生理可能範圍內)
     ERROR = "error"  # 錯誤 (超出生理可能範圍)
     CRITICAL = "critical"  # 嚴重錯誤 (完全不可能的值)

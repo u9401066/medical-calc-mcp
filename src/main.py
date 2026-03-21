@@ -62,7 +62,7 @@ from src.infrastructure.mcp.server import MedicalCalculatorServer
 
 
 def create_server(
-    host: str = "0.0.0.0",
+    host: str = "0.0.0.0",  # nosec B104 - default host supports remote/container MCP access
     port: int = 8000,
     ssl_keyfile: str | None = None,
     ssl_certfile: str | None = None,
@@ -149,7 +149,7 @@ Claude Desktop Configuration (for HTTPS SSE mode):
     )
 
     parser.add_argument("--mode", "-m", choices=["stdio", "sse", "http"], default=os.environ.get("MCP_MODE", "stdio"), help="Transport mode (default: stdio)")
-    parser.add_argument("--host", "-H", default=os.environ.get("MCP_HOST", "0.0.0.0"), help="Host to bind for SSE/HTTP mode (default: 0.0.0.0)")
+    parser.add_argument("--host", "-H", default=os.environ.get("MCP_HOST", "0.0.0.0"), help="Host to bind for SSE/HTTP mode (default: 0.0.0.0)")  # nosec B104 - CLI default supports container exposure
     parser.add_argument("--port", "-p", type=int, default=int(os.environ.get("MCP_PORT", "8000")), help="Port to bind for SSE/HTTP mode (default: 8000)")
 
     # SSL/TLS arguments

@@ -491,7 +491,7 @@ def main() -> None:
     """Run the API server"""
     import uvicorn
 
-    host = os.environ.get("API_HOST", "0.0.0.0")
+    host = os.environ.get("API_HOST", "0.0.0.0")  # nosec B104 - API server may intentionally bind all interfaces in container deployments
     port = int(os.environ.get("API_PORT", "8080"))
 
     print(f"🏥 Medical Calculator API starting on http://{host}:{port}")

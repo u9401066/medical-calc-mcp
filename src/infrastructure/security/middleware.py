@@ -226,7 +226,7 @@ class SecurityMiddleware:
                     try:
                         client_id = get_client_id(*args, **kwargs)
                     except Exception:
-                        pass
+                        client_id = "unknown"
 
                 # Check security (may raise exceptions)
                 self.check_request(client_id=client_id)

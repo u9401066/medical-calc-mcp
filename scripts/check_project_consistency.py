@@ -5,12 +5,16 @@ from __future__ import annotations
 
 import argparse
 import re
-import subprocess
+import subprocess  # nosec B404 - used only for fixed local maintenance commands
 import sys
 from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
+
+SCRIPT_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(SCRIPT_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_PROJECT_ROOT))
 
 from src.infrastructure.mcp.server import MedicalCalculatorServer
 from src.shared.formula_provenance import validate_formula_provenance_manifest, validate_reference_metadata
@@ -213,7 +217,7 @@ def iter_guideline_rows(path: Path) -> Iterable[tuple[int, str]]:
 
 def collect_test_count() -> int:
     """Count collected tests without executing them."""
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 - fixed argv invoking local pytest collection only
         [sys.executable, "-m", "pytest", "tests", "--collect-only", "-q"],
         cwd=PROJECT_ROOT,
         capture_output=True,
@@ -298,7 +302,7 @@ def validate_generated_catalog_docs() -> list[str]:
         if not (PROJECT_ROOT / relative_path).exists():
             issues.append(f"Missing generated catalog doc: {relative_path}")
 
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 - fixed argv invoking a local repo generation check
         [sys.executable, "scripts/generate_tool_catalog_docs.py", "--check"],
         cwd=PROJECT_ROOT,
         capture_output=True,
@@ -320,7 +324,7 @@ def validate_generated_openapi_docs() -> list[str]:
         if not (PROJECT_ROOT / relative_path).exists():
             issues.append(f"Missing generated OpenAPI doc: {relative_path}")
 
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 - fixed argv invoking a local repo generation check
         [sys.executable, "scripts/generate_openapi_spec.py", "--check"],
         cwd=PROJECT_ROOT,
         capture_output=True,
@@ -342,7 +346,7 @@ def validate_generated_rest_api_docs() -> list[str]:
         if not (PROJECT_ROOT / relative_path).exists():
             issues.append(f"Missing generated REST API doc: {relative_path}")
 
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 - fixed argv invoking a local repo generation check
         [sys.executable, "scripts/generate_rest_api_docs.py", "--check"],
         cwd=PROJECT_ROOT,
         capture_output=True,
@@ -364,7 +368,7 @@ def validate_generated_specialty_coverage_docs() -> list[str]:
         if not (PROJECT_ROOT / relative_path).exists():
             issues.append(f"Missing generated specialty coverage doc: {relative_path}")
 
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 - fixed argv invoking a local repo generation check
         [sys.executable, "scripts/generate_specialty_coverage_gap_analysis.py", "--check"],
         cwd=PROJECT_ROOT,
         capture_output=True,
