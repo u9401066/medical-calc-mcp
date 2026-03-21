@@ -63,7 +63,7 @@ echo "============================================"
 # 檢查 SSL 憑證
 if [ ! -f "$SSL_KEYFILE" ] || [ ! -f "$SSL_CERTFILE" ]; then
     echo -e "${YELLOW}⚠️  SSL 憑證不存在${NC}"
-    
+
     # 如果使用預設路徑，嘗試自動生成
     if [ "$SSL_KEYFILE" = "$DEFAULT_SSL_DIR/server.key" ]; then
         echo -e "${YELLOW}   正在使用預設路徑，嘗試自動生成...${NC}"
@@ -102,7 +102,7 @@ API_PID=""
 
 start_mcp_sse() {
     echo -e "${BLUE}🚀 啟動 MCP SSE Server (HTTPS, port $MCP_PORT)...${NC}"
-    
+
     # 使用 main.py 並透過命令列參數傳遞 SSL 設定
     uv run python -m src.main \
         --mode sse \
@@ -111,13 +111,13 @@ start_mcp_sse() {
         --ssl-keyfile "$SSL_KEYFILE" \
         --ssl-certfile "$SSL_CERTFILE" &
     MCP_PID=$!
-    
+
     echo -e "${GREEN}✅ MCP SSE: https://localhost:$MCP_PORT/${NC}"
 }
 
 start_rest_api() {
     echo -e "${BLUE}🚀 啟動 REST API Server (HTTPS, port $API_PORT)...${NC}"
-    
+
     # REST API 使用 uvicorn 直接啟動
     uv run uvicorn src.infrastructure.api.server:create_api_app \
         --factory \
@@ -127,7 +127,7 @@ start_rest_api() {
         --ssl-certfile "$SSL_CERTFILE" \
         --log-level info &
     API_PID=$!
-    
+
     echo -e "${GREEN}✅ REST API: https://localhost:$API_PORT/${NC}"
 }
 

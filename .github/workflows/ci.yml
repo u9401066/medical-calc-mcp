@@ -203,12 +203,12 @@ jobs:
           # Get current version from pyproject.toml
           CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
           echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          
+
           # Get previous version
           git show HEAD~1:pyproject.toml > /tmp/old_pyproject.toml 2>/dev/null || echo 'version = "0.0.0"' > /tmp/old_pyproject.toml
           PREV_VERSION=$(grep '^version = ' /tmp/old_pyproject.toml | sed 's/version = "\(.*\)"/\1/' || echo "0.0.0")
           echo "previous=$PREV_VERSION" >> $GITHUB_OUTPUT
-          
+
           if [ "$CURRENT_VERSION" != "$PREV_VERSION" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "📦 Version changed: $PREV_VERSION → $CURRENT_VERSION"

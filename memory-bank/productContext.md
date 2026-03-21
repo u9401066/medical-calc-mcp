@@ -105,4 +105,3 @@ DDD Onion Architecture with 4 layers:\n\n1. **Domain Layer** (Core): Calculators
 - pytest
 - pytest-asyncio
 - httpx
-

@@ -1,7 +1,7 @@
 # 🕸️ Disease-Score Knowledge Graph 設計文檔
 
-> **創建日期**: 2026-01-08  
-> **狀態**: 概念設計階段  
+> **創建日期**: 2026-01-08
+> **狀態**: 概念設計階段
 > **目標**: 解決「同一疾病不同學會/地區用不同評分算法」的臨床痛點
 
 ---
@@ -37,22 +37,22 @@ class Condition:
     name: str                  # "心房顫動中風風險"
     icd10_codes: tuple[str]    # ("I48",)
     clinical_questions: tuple[str]  # 臨床問題
-    
+
 @dataclass
 class ScoreToolRelation:
     """疾病-評分工具關係"""
     condition_id: str
     tool_id: str
-    
+
     # 指引來源
     guideline_sources: tuple[GuidelineSource]
-    
+
     # 地區偏好
     regional_preferences: dict[str, str]  # {"US": "preferred", "EU": "alternative"}
-    
+
     # 臨床用途
     clinical_purposes: tuple[ClinicalPurpose]  # diagnosis, prognosis, treatment
-    
+
     # 驗證狀態
     validation_evidence: ValidationEvidence
 
@@ -144,13 +144,13 @@ class GuidelineSource:
 @dataclass
 class HighLevelKey:
     # 現有欄位...
-    
+
     # 新增: 指引來源
     guideline_sources: tuple[GuidelineSource] = ()
-    
+
     # 新增: 地區偏好
     regional_preferences: dict[str, str] = field(default_factory=dict)
-    
+
     # 新增: 相關疾病
     related_conditions: tuple[str] = ()
 ```
@@ -160,22 +160,22 @@ class HighLevelKey:
 ```python
 class ConditionScoreGraph:
     """疾病-評分工具知識圖譜服務"""
-    
+
     def find_tools_for_condition(
-        self, 
+        self,
         condition: str,
         region: str = None,
         purpose: str = None
     ) -> list[ToolWithContext]:
         """根據疾病、地區、目的找適合的工具"""
-        
+
     def compare_tools(
         self,
         tool_ids: list[str],
         condition: str
     ) -> ComparisonResult:
         """比較多個工具在同一疾病的適用性"""
-        
+
     def get_regional_recommendation(
         self,
         condition: str,
@@ -199,7 +199,7 @@ class ConditionScoreGraph:
 
 1. **PMID: 35894866** - van der Endt et al. Europace 2022
    - 6.2M AF 患者，比較 17 種中風風險評分
-   
+
 2. **PMID: 35365110** - ROX Index Meta-analysis, BMC Pulm Med 2022
    - ROX 在不同地區 HFNC 患者的表現
 

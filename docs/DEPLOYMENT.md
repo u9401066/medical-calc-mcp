@@ -586,11 +586,11 @@ from typing import Any, Dict, Optional
 
 class MedicalCalculatorClient:
     """Client for Medical Calculator MCP Server REST API"""
-    
+
     def __init__(self, base_url: str = "http://localhost:8080"):
         self.base_url = base_url.rstrip("/")
         self.api_url = f"{self.base_url}/api/v1"
-    
+
     def health_check(self) -> bool:
         """Check if server is healthy"""
         try:
@@ -598,25 +598,25 @@ class MedicalCalculatorClient:
             return r.status_code == 200
         except:
             return False
-    
+
     def list_calculators(self) -> list:
         """List all available calculators"""
         r = requests.get(f"{self.api_url}/calculators")
         r.raise_for_status()
         return r.json()
-    
+
     def search(self, query: str) -> list:
         """Search calculators by keyword"""
         r = requests.get(f"{self.api_url}/search", params={"q": query})
         r.raise_for_status()
         return r.json()
-    
+
     def get_calculator_info(self, tool_id: str) -> dict:
         """Get detailed info about a calculator"""
         r = requests.get(f"{self.api_url}/calculators/{tool_id}")
         r.raise_for_status()
         return r.json()
-    
+
     def calculate(self, tool_id: str, params: Dict[str, Any]) -> dict:
         """Execute a calculation"""
         r = requests.post(
@@ -630,15 +630,15 @@ class MedicalCalculatorClient:
 # Usage Example
 if __name__ == "__main__":
     client = MedicalCalculatorClient()
-    
+
     # Check health
     if not client.health_check():
         raise RuntimeError("Server not available")
-    
+
     # Search for sepsis-related calculators
     results = client.search("sepsis")
     print(f"Found {len(results)} calculators")
-    
+
     # Calculate SOFA score
     result = client.calculate("sofa", {
         "pao2_fio2_ratio": 200,
@@ -669,14 +669,14 @@ def calculate_sofa(
     """
     Calculate SOFA (Sequential Organ Failure Assessment) score.
     Used to assess organ dysfunction in critically ill patients.
-    
+
     Args:
         pao2_fio2_ratio: PaO2/FiO2 ratio (mmHg)
         platelets: Platelet count (×10³/µL)
         bilirubin: Total bilirubin (mg/dL)
         gcs_score: Glasgow Coma Scale (3-15)
         creatinine: Serum creatinine (mg/dL)
-    
+
     Returns:
         SOFA score with interpretation
     """
@@ -700,10 +700,10 @@ def calculate_sofa(
 def search_medical_calculators(query: str) -> str:
     """
     Search for medical calculators by keyword.
-    
+
     Args:
         query: Search keyword (e.g., "sepsis", "kidney", "cardiac")
-    
+
     Returns:
         List of matching calculators
     """
@@ -797,7 +797,7 @@ location /api/ {
     if ($http_x_api_key != "your-secret-key") {
         return 401;
     }
-    
+
     proxy_pass http://api_backend/;
     # ... other settings
 }
@@ -815,7 +815,7 @@ sudo htpasswd -c /etc/nginx/.htpasswd admin
 location / {
     auth_basic "Medical Calculator API";
     auth_basic_user_file /etc/nginx/.htpasswd;
-    
+
     proxy_pass http://localhost:8080;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

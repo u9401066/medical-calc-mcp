@@ -105,11 +105,11 @@ from ...value_objects.tool_keys import (
 
 class MyCalculator(BaseCalculator):
     """Calculator docstring with scoring criteria"""
-    
+
     @property
     def tool_id(self) -> str:
         return "my_calculator"
-    
+
     @property
     def metadata(self) -> ToolMetadata:
         return ToolMetadata(
@@ -118,7 +118,7 @@ class MyCalculator(BaseCalculator):
             specialties={Specialty.SPECIALTY_NAME},
             clinical_contexts={ClinicalContext.CONTEXT},
         )
-    
+
     @property
     def references(self) -> list[Reference]:
         return [
@@ -129,7 +129,7 @@ class MyCalculator(BaseCalculator):
                 year=2020,
             )
         ]
-    
+
     def calculate(
         self,
         param1: float,
@@ -170,44 +170,44 @@ def calculate_my_tool(
         Literal["male", "female"],
         Field(description="性別 Sex | Options: 'male' or 'female'")
     ],
-    
+
     # 整數範圍：使用 Field 約束
     age: Annotated[
         int,
         Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")
     ],
-    
+
     # 浮點數範圍：使用 Field 約束
     creatinine: Annotated[
         float,
         Field(gt=0, le=20.0, description="血清肌酐 Serum Cr | Unit: mg/dL | Range: >0-20.0")
     ],
-    
+
     # 選項型字串：使用 Literal
     admission_type: Annotated[
         Literal["nonoperative", "elective_postop", "emergency_postop"],
         Field(description="入院類型 | Options: 'nonoperative', 'elective_postop', 'emergency_postop'")
     ] = "nonoperative",
-    
+
     # 布林值：有預設值
     is_emergency: Annotated[bool, Field(description="是否緊急 Emergency")] = False,
-    
+
 ) -> dict[str, Any]:
     """
     🏥 工具名稱: 中文描述
-    
+
     [臨床說明]
-    
+
     **評分項目:**
     - 項目1: 說明
     - 項目2: 說明
-    
+
     **風險分層:**
     - 低風險: 建議
     - 高風險: 建議
-    
+
     **參考文獻:** Author, et al. Journal. Year. PMID: xxxxx
-    
+
     Returns:
         分數、解釋、建議
     """
@@ -278,17 +278,17 @@ class TestMyCalculator:
         calc = MyCalculator()
         result = calc.calculate(param1=value1, param2=value2)
         assert result.value == expected
-    
+
     def test_boundary_values(self):
         # 測試邊界條件
         pass
-    
+
     def test_all_valid_options(self):
         # 測試所有有效選項
         for option in ["opt1", "opt2", "opt3"]:
             result = calc.calculate(..., param=option)
             assert result.value is not None
-    
+
     def test_tool_id(self):
         assert MyCalculator().tool_id == "my_calculator"
 ```

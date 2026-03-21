@@ -20,4 +20,3 @@ A DDD-architected medical calculator MCP server with intelligent tool discovery,
 - Migrate package management to uv.
 - Ensure code quality with ruff, mypy, and manual review.
 - Maintain a DDD-architected medical calculator MCP server.
-

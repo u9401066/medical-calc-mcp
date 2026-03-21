@@ -237,7 +237,7 @@ PDFs are git-ignored for copyright reasons - store locally only.
 
 **Why sex was removed (2024 ESC rationale):**
 - Female sex alone does not increase stroke risk without other factors
-- Avoids gender-based treatment disparities  
+- Avoids gender-based treatment disparities
 - Simplifies clinical decision-making
 - Evidence from meta-analyses showing sex is a risk modifier, not independent risk factor
 
