@@ -10,7 +10,8 @@ The benchmark stack now has three layers:
 
 1. Source ingestion
 2. Workflow-native scenario evaluation
-3. Versioned profile execution and reporting
+3. HF-style calculator dataset generation
+4. Versioned profile execution and reporting
 
 This guide explains what lives where and how to run the pipeline end to end.
 
@@ -23,6 +24,42 @@ Public and project-authored sources are tracked in:
 - `data/benchmarks/source_registry.json`
 
 This registry records source provenance, trust tier, ingestion format, and whether the source is direct or indirect for the benchmark.
+
+The registry now also includes:
+
+- `medical_calc_mcp_hf_v1` for the project-authored HF-style dataset generated from validated test cases.
+
+### HF-Style Calculator Dataset
+
+The generator writes both public release files and internal/private compatibility files.
+
+Public-safe files for a single public remote:
+
+- `data/benchmarks/medical_calc_mcp_hf_v1/release/public-dev/train.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/release/public-dev/validation.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/release/public-dev/public-dev.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/metadata.json`
+- `data/benchmarks/medical_calc_mcp_hf_v1/coverage_audit.json`
+- `data/benchmarks/medical_calc_mcp_hf_v1/README.md`
+
+Internal/private files typically kept local or pushed only to a private remote:
+
+- `data/benchmarks/medical_calc_mcp_hf_v1/all.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/train.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/validation.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/test.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/release/hidden-test/hidden-test.jsonl`
+- `data/benchmarks/medical_calc_mcp_hf_v1/release_manifest.json`
+- `data/benchmarks/medical_calc_mcp_hf_v1/RELEASE_CHECKLIST.md`
+
+This dataset is built from successful calculator test invocations and currently provides:
+
+- 500+ validated numeric cases
+- split metadata
+- guideline domain coverage metadata
+- source-test provenance per case
+- a public-dev release bundle for publishing
+- a stricter hidden-test bundle for private evaluation
 
 ### Workflow Scenario Dataset
 
@@ -89,6 +126,31 @@ uv run python scripts/benchmark_ingest.py \
 ```
 
 Use this when converting an external benchmark source into the project scenario schema.
+
+### 1.5. Build the Project HF-Style Dataset
+
+```bash
+uv run python scripts/build_hf_benchmark_dataset.py
+```
+
+Use this when regenerating the project-authored 500+ case dataset from validated test inputs.
+
+The same command now also writes a release-ready bundle with:
+
+- `release/public-dev/` for public distribution
+- `release/hidden-test/` for private evaluation
+- `release_manifest.json` for path segmentation and file hashes
+
+If the repository has only one public remote, push only `release/public-dev/` plus the dataset card and summary metadata.
+
+### 1.6. Count Dataset Cases
+
+```bash
+uv run python scripts/count_benchmark_cases.py \
+  data/benchmarks/medical_calc_mcp_hf_v1/all.jsonl --json
+```
+
+Use this for a quick total-case and split-count check.
 
 ### 2. Adapt Raw MCP Trace Into Agent Run JSONL
 
@@ -177,14 +239,31 @@ This aggregates profile bundles into:
 - JSON time series
 - combined report index JSON
 
+### 6. Build Coverage Audit
+
+```bash
+uv run python scripts/build_benchmark_coverage_audit.py
+```
+
+This writes:
+
+- `docs/BENCHMARK_COVERAGE_AUDIT.md`
+- `data/benchmarks/medical_calc_mcp_hf_v1/coverage_audit.json`
+
+The audit compares the original workflow benchmark with the expanded HF-style dataset.
+
 ## Recommended End-to-End Flow
 
 For ongoing benchmarking, use this sequence:
 
-1. Add or update benchmark profiles in `data/agent_decision_bench/profiles/manifest.json`
-2. Run each profile with `scripts/benchmark_run_profile.py`
-3. Aggregate outputs with `scripts/benchmark_build_reports.py`
-4. Compare the leaderboard and time-series artifacts over time
+1. Build or refresh the HF-style dataset with `scripts/build_hf_benchmark_dataset.py`
+2. Verify `release/public-dev/` and `release/hidden-test/` were regenerated with the expected counts
+3. Run `scripts/build_benchmark_coverage_audit.py` to confirm 500+ cases and 16-domain coverage
+4. Convert the dataset to scenario JSONL with `scripts/benchmark_ingest.py` when needed
+5. Add or update benchmark profiles in `data/agent_decision_bench/profiles/manifest.json`
+6. Run each profile with `scripts/benchmark_run_profile.py`
+7. Aggregate outputs with `scripts/benchmark_build_reports.py`
+8. Use `data/benchmarks/medical_calc_mcp_hf_v1/RELEASE_CHECKLIST.md` when doing segmented git add/commit/push
 
 ## CI and Nightly Automation
 
@@ -248,6 +327,14 @@ Use `benchmark_build_reports.py` when:
 
 - you want ranking and historical tracking artifacts
 
+Use `build_hf_benchmark_dataset.py` when:
+
+- you want to regenerate the 500+ case calculator dataset from validated test cases
+
+Use `build_benchmark_coverage_audit.py` when:
+
+- you want to verify total case count, domain coverage, and benchmark release readiness
+
 ## Current Sample Profiles
 
 The manifest currently includes:
@@ -257,3 +344,9 @@ The manifest currently includes:
 3. `sample_transcript_trace`
 
 These are reference profiles for validating the pipeline structure. They are not intended to represent a final production leaderboard.
+
+## Related Docs
+
+- `docs/BENCHMARK_DATASET_SCHEMA.md`
+- `docs/BENCHMARK_COVERAGE_AUDIT.md`
+- `data/benchmarks/medical_calc_mcp_hf_v1/README.md`

@@ -185,6 +185,38 @@
         "Derived from docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md",
         "Aligned with existing end-to-end workflow tests"
       ]
+    },
+    {
+      "source_id": "medical_calc_mcp_hf_v1",
+      "title": "Medical-Calc-MCP HF Benchmark Dataset v1",
+      "category": "calculator_benchmark",
+      "trust_tier": "high",
+      "origin_tier": "project_authored",
+      "host": "local",
+      "primary_url": "data/benchmarks/medical_calc_mcp_hf_v1",
+      "mirror_url": null,
+      "license": "Apache-2.0",
+      "task_fit": "direct",
+      "status": "active",
+      "ingestion": {
+        "input_format": "normalized-jsonl",
+        "task_family": "calculator_execution",
+        "setting": "general",
+        "expected_output_traits": [
+          "bounded_claims",
+          "numeric_grounding",
+          "schema_first_execution"
+        ],
+        "safety_checks": [
+          "do_not_invent_missing_inputs",
+          "ground_result_in_explicit_calculation"
+        ]
+      },
+      "notes": "HF-style normalized benchmark dataset generated from validated Medical-Calc-MCP calculator tests and enriched with split/domain metadata.",
+      "evidence": [
+        "Generated via scripts/build_hf_benchmark_dataset.py",
+        "Coverage audited via scripts/build_benchmark_coverage_audit.py"
+      ]
     }
   ]
 }

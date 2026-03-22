@@ -1,0 +1,47 @@
+{
+  "dataset_id": "medical-calc-mcp-hf-v1",
+  "generated_from": "unit_test_extraction",
+  "extracted_calculate_calls": 840,
+  "total_cases": 738,
+  "unique_tools": 93,
+  "unique_primary_specialties": 26,
+  "unique_guideline_domains": 16,
+  "splits": {
+    "test": 122,
+    "train": 506,
+    "validation": 110
+  },
+  "guideline_domains": {
+    "Anesthesiology": 26,
+    "Burns": 9,
+    "Cardiovascular": 26,
+    "GI Bleeding": 15,
+    "Kidney Disease": 19,
+    "Liver Disease": 19,
+    "Neurology": 29,
+    "Nutrition": 6,
+    "Oncology": 6,
+    "Osteoporosis": 3,
+    "Pediatrics": 4,
+    "Respiratory / Pneumonia": 34,
+    "Rheumatology": 3,
+    "Sepsis / Critical Care": 36,
+    "Thromboembolism": 52,
+    "Trauma": 7
+  },
+  "release_packaging": {
+    "public_dev_total": 616,
+    "hidden_test_total": 122,
+    "public_splits": {
+      "train": 506,
+      "validation": 110,
+      "public_dev": 616
+    },
+    "private_splits": {
+      "hidden_test": 122
+    },
+    "manifest_path": "release_manifest.json",
+    "public_dir": "release/public-dev",
+    "hidden_dir": "release/hidden-test"
+  }
+}

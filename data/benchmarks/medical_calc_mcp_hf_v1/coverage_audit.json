@@ -1,0 +1,57 @@
+{
+  "registry": {
+    "total_tools": 151,
+    "total_primary_specialties": 31
+  },
+  "baseline_workflow_benchmark": {
+    "scenario_count": 5,
+    "unique_tools": 11,
+    "guideline_domains_covered": 4,
+    "guideline_domain_total": 16,
+    "missing_guideline_domains": [
+      "Burns",
+      "Cardiovascular",
+      "Liver Disease",
+      "Neurology",
+      "Nutrition",
+      "Oncology",
+      "Osteoporosis",
+      "Pediatrics",
+      "Respiratory / Pneumonia",
+      "Rheumatology",
+      "Thromboembolism",
+      "Trauma"
+    ]
+  },
+  "expanded_hf_dataset": {
+    "total_cases": 738,
+    "unique_tools": 93,
+    "unique_primary_specialties": 26,
+    "guideline_domains_covered": 16,
+    "guideline_domain_total": 16,
+    "missing_guideline_domains": [],
+    "split_counts": {
+      "test": 122,
+      "train": 506,
+      "validation": 110
+    },
+    "guideline_domain_counts": {
+      "Anesthesiology": 26,
+      "Burns": 9,
+      "Cardiovascular": 26,
+      "GI Bleeding": 15,
+      "Kidney Disease": 19,
+      "Liver Disease": 19,
+      "Neurology": 29,
+      "Nutrition": 6,
+      "Oncology": 6,
+      "Osteoporosis": 3,
+      "Pediatrics": 4,
+      "Respiratory / Pneumonia": 34,
+      "Rheumatology": 3,
+      "Sepsis / Critical Care": 36,
+      "Thromboembolism": 52,
+      "Trauma": 7
+    }
+  }
+}
