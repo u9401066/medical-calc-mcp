@@ -139,12 +139,61 @@ jobs:
       - name: Check production readiness
         run: uv run python scripts/check_production_readiness.py --service all --environment production
 
+  benchmark-smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --frozen --extra dev --group dev
+
+      - name: Smoke test benchmark evaluator
+        run: |
+          uv run python scripts/benchmark_run_profile.py \
+            --manifest data/agent_decision_bench/profiles/manifest.json \
+            --profile-id sample_full_policy \
+            --output-dir /tmp/benchmark-profile-full
+
+      - name: Smoke test ToolUsageEvent trace profile
+        run: |
+          uv run python scripts/benchmark_run_profile.py \
+            --manifest data/agent_decision_bench/profiles/manifest.json \
+            --profile-id sample_tool_usage_trace \
+            --output-dir /tmp/benchmark-profile-tool-usage
+
+      - name: Smoke test MCP transcript profile
+        run: |
+          uv run python scripts/benchmark_run_profile.py \
+            --manifest data/agent_decision_bench/profiles/manifest.json \
+            --profile-id sample_transcript_trace \
+            --output-dir /tmp/benchmark-profile-transcript
+
+      - name: Smoke test benchmark reporting
+        run: |
+          uv run python scripts/benchmark_build_reports.py \
+            --inputs /tmp/benchmark-profile-full /tmp/benchmark-profile-tool-usage /tmp/benchmark-profile-transcript \
+            --leaderboard-md /tmp/benchmark-leaderboard.md \
+            --time-series-json /tmp/benchmark-time-series.json \
+            --report-index-json /tmp/benchmark-report-index.json
+
   # =============================================================================
   # Docker: Build and test Docker image (main branch only)
   # =============================================================================
   docker:
     runs-on: ubuntu-latest
-    needs: [test, production-readiness]
+    needs: [test, production-readiness, benchmark-smoke]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -187,7 +236,7 @@ jobs:
   # =============================================================================
   release:
     runs-on: ubuntu-latest
-    needs: [test, production-readiness, docker]
+    needs: [test, production-readiness, benchmark-smoke, docker]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write

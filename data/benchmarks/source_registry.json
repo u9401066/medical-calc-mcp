@@ -1,0 +1,190 @@
+{
+  "version": "0.1.0",
+  "last_updated": "2026-03-21",
+  "entries": [
+    {
+      "source_id": "medcalc_bench_official",
+      "title": "MedCalc-Bench Official Repository",
+      "category": "calculator_benchmark",
+      "trust_tier": "high",
+      "origin_tier": "official",
+      "host": "github",
+      "primary_url": "https://github.com/ncbi-nlp/MedCalc-Bench",
+      "mirror_url": "https://huggingface.co/datasets/nsk7153/MedCalc-Bench-Verified",
+      "license": "CC-BY-SA 4.0",
+      "task_fit": "direct",
+      "status": "active",
+      "ingestion": {
+        "input_format": "medcalc-bench-csv",
+        "task_family": "calculator_execution",
+        "setting": "general",
+        "expected_output_traits": [
+          "bounded_claims",
+          "numeric_grounding",
+          "schema_first_execution"
+        ],
+        "safety_checks": [
+          "do_not_invent_missing_inputs",
+          "ground_result_in_explicit_calculation"
+        ]
+      },
+      "notes": "Primary public benchmark for validated medical calculator execution.",
+      "evidence": [
+        "NeurIPS 2024 Datasets and Benchmark Track Oral",
+        "Repository already documents partial coverage in docs/MEDCALC_BENCH_COMPARISON.md"
+      ]
+    },
+    {
+      "source_id": "medcalc_bench_verified_hf",
+      "title": "MedCalc-Bench Verified Mirror",
+      "category": "calculator_benchmark",
+      "trust_tier": "high",
+      "origin_tier": "community_verified",
+      "host": "huggingface",
+      "primary_url": "https://huggingface.co/datasets/nsk7153/MedCalc-Bench-Verified",
+      "mirror_url": "https://github.com/ncbi-nlp/MedCalc-Bench",
+      "license": "CC-BY-SA 4.0",
+      "task_fit": "direct",
+      "status": "candidate",
+      "ingestion": {
+        "input_format": "medcalc-bench-csv",
+        "task_family": "calculator_execution",
+        "setting": "general",
+        "expected_output_traits": [
+          "bounded_claims",
+          "numeric_grounding",
+          "schema_first_execution"
+        ],
+        "safety_checks": [
+          "do_not_invent_missing_inputs",
+          "ground_result_in_explicit_calculation"
+        ]
+      },
+      "notes": "High-trust mirror for easier dataset access and normalization workflows.",
+      "evidence": [
+        "Mirror of the benchmark named in project docs",
+        "Use only after row counts and labels are cross-checked against the official repo"
+      ]
+    },
+    {
+      "source_id": "pubmedqa_hf",
+      "title": "PubMedQA on Hugging Face",
+      "category": "medical_qa",
+      "trust_tier": "medium_high",
+      "origin_tier": "author_or_community_release",
+      "host": "huggingface",
+      "primary_url": "https://huggingface.co/datasets/qiaojin/PubMedQA",
+      "mirror_url": null,
+      "license": null,
+      "task_fit": "indirect",
+      "status": "scouting",
+      "ingestion": {
+        "input_format": "normalized-jsonl",
+        "task_family": "evidence_grounding",
+        "setting": "general",
+        "expected_output_traits": [
+          "bounded_claims",
+          "evidence_grounding"
+        ],
+        "safety_checks": [
+          "do_not_overclaim_from_qa_only"
+        ]
+      },
+      "notes": "Useful for vignette phrasing and evidence-grounding stress tests, not direct tool-use labels.",
+      "evidence": [
+        "Potential indirect source for clinical prompt and answer-style evaluation"
+      ]
+    },
+    {
+      "source_id": "medqa_usmle_hf",
+      "title": "MedQA USMLE 4 Options",
+      "category": "medical_qa",
+      "trust_tier": "medium_high",
+      "origin_tier": "community_packaged",
+      "host": "huggingface",
+      "primary_url": "https://huggingface.co/datasets/GBaker/MedQA-USMLE-4-options",
+      "mirror_url": null,
+      "license": null,
+      "task_fit": "indirect",
+      "status": "scouting",
+      "ingestion": {
+        "input_format": "normalized-jsonl",
+        "task_family": "medical_reasoning",
+        "setting": "general",
+        "expected_output_traits": [
+          "bounded_claims",
+          "diagnostic_restraint"
+        ],
+        "safety_checks": [
+          "do_not_treat_exam_answer_as_tool_output"
+        ]
+      },
+      "notes": "Useful as an indirect baseline for medical reasoning, but not a direct tool-use benchmark.",
+      "evidence": [
+        "Candidate indirect source for scenario wording and distractor hardness"
+      ]
+    },
+    {
+      "source_id": "bfcl_gorilla_official",
+      "title": "Berkeley Function Calling Leaderboard via Gorilla",
+      "category": "tool_calling_benchmark",
+      "trust_tier": "high",
+      "origin_tier": "official",
+      "host": "github",
+      "primary_url": "https://github.com/ShishirPatil/gorilla",
+      "mirror_url": null,
+      "license": null,
+      "task_fit": "indirect",
+      "status": "candidate",
+      "ingestion": {
+        "input_format": "normalized-jsonl",
+        "task_family": "tool_selection",
+        "setting": "general",
+        "expected_output_traits": [
+          "schema_first_execution",
+          "argument_fidelity"
+        ],
+        "safety_checks": [
+          "do_not_conflate_general_tool_calling_with_clinical_safety"
+        ]
+      },
+      "notes": "Useful for argument-structure and tool-selection baselines outside the medical domain.",
+      "evidence": [
+        "Supports the non-medical portion of tool-use evaluation"
+      ]
+    },
+    {
+      "source_id": "medical_calc_mcp_workflows_v1",
+      "title": "Medical-Calc-MCP Workflow Scenarios v1",
+      "category": "workflow_benchmark",
+      "trust_tier": "high",
+      "origin_tier": "project_authored",
+      "host": "local",
+      "primary_url": "data/agent_decision_bench/scenarios",
+      "mirror_url": null,
+      "license": "Apache-2.0",
+      "task_fit": "direct",
+      "status": "active",
+      "ingestion": {
+        "input_format": "agent-scenario-jsonl",
+        "task_family": "workflow_sequencing",
+        "setting": "mixed",
+        "expected_output_traits": [
+          "bounded_claims",
+          "explicit_escalation",
+          "uncertainty_acknowledged",
+          "reviewable_summary"
+        ],
+        "safety_checks": [
+          "follow_gold_workflow_before_recommendation",
+          "avoid_diagnosis_overclaim"
+        ]
+      },
+      "notes": "Project-authored workflow-native benchmark scenarios for agent tool use.",
+      "evidence": [
+        "Derived from docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md",
+        "Aligned with existing end-to-end workflow tests"
+      ]
+    }
+  ]
+}

@@ -69,6 +69,8 @@ Medical-Calc-MCP 是一個 [Model Context Protocol (MCP)](https://modelcontextpr
 - [英文文檔](../index.md)
 - [網站版計算器總覽](calculators.md)
 - [網站版指引覆蓋摘要](guideline-coverage.md)
+- [Agent CDS 缺口與突破計畫](https://github.com/u9401066/medical-calc-mcp/blob/main/docs/AGENT_CLINICAL_DECISION_SUPPORT_GAP_AND_BREAKTHROUGH_PLAN.md)
+- [Agent 端到端決策 Benchmark](https://github.com/u9401066/medical-calc-mcp/blob/main/docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md)
 - [GitHub 專案](https://github.com/u9401066/medical-calc-mcp)
 - [問題回報](https://github.com/u9401066/medical-calc-mcp/issues)
 

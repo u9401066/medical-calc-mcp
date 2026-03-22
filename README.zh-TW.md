@@ -47,6 +47,7 @@
   - [探索工具](#-探索工具)
   - [提示詞工作流程](#-提示詞工作流程)
 - [使用範例](#-使用範例)
+- [Benchmark 使用指南](docs/BENCHMARK_USAGE.md)
 - [參考文獻](#-參考文獻)
 - [開發指南](#-開發指南)
 - [部署指南](docs/DEPLOYMENT.md) 📘
@@ -95,6 +96,12 @@
 3. **指引特徵提取**：從指引中找出建議的分數計算系統與公式。
 4. **原始文獻回溯**：回溯找出原始同儕審查論文（Original Papers），驗證公式係數。
 5. **工具製作**：實作具備精確參數驗證與醫學解釋的計分工具。
+
+### 🎯 下一階段策略文件
+
+- [Agent Clinical Decision Support Gap & Breakthrough Plan](docs/AGENT_CLINICAL_DECISION_SUPPORT_GAP_AND_BREAKTHROUGH_PLAN.md)
+- [Agent Decision Support End-to-End Benchmark](docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md)
+- [Benchmark Usage Guide](docs/BENCHMARK_USAGE.md)
 
 ---
 

@@ -48,6 +48,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
   - [Discovery Tools](#discovery-tools)
   - [Prompts](#prompts)
 - [Usage Examples](#usage-examples)
+- [Benchmark Guide](docs/BENCHMARK_USAGE.md)
 - [References](#references)
 - [Development](#development)
 - [Deployment Guide](docs/DEPLOYMENT.md)
@@ -114,6 +115,12 @@ We employ a human-in-the-loop, AI-augmented workflow to ensure clinical accuracy
 | **Parameter Extraction** | Vocabulary mismatch | ParamMatcher (60+ aliases) |
 | **Safety Guardrails** | No clinical constraints | BoundaryValidator (PMID-backed) |
 | **Tool Discovery** | Keyword/RAG only | Two-Level Key + Hypergraph |
+
+### Strategic Next Step
+
+- [Agent Clinical Decision Support Gap & Breakthrough Plan](docs/AGENT_CLINICAL_DECISION_SUPPORT_GAP_AND_BREAKTHROUGH_PLAN.md)
+- [Agent Decision Support End-to-End Benchmark](docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md)
+- [Benchmark Usage Guide](docs/BENCHMARK_USAGE.md)
 
 ### Three-Module Architecture
 

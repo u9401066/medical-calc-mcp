@@ -108,6 +108,8 @@
 - [Guideline Coverage](development/guideline-coverage.md) - Generated implementation-to-guideline overview
 - [API Reference](api/mcp-tools.md) - MCP tools and REST API
 - [Architecture](development/architecture.md) - DDD design principles
+- [Agent CDS Gap Plan](https://github.com/u9401066/medical-calc-mcp/blob/main/docs/AGENT_CLINICAL_DECISION_SUPPORT_GAP_AND_BREAKTHROUGH_PLAN.md) - Strategic roadmap beyond calculator count
+- [Agent E2E Benchmark](https://github.com/u9401066/medical-calc-mcp/blob/main/docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md) - Task-level benchmark for agent clinical support
 
 ## 🤝 Contributing
 

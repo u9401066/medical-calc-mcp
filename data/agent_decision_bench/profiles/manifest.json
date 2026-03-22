@@ -1,0 +1,53 @@
+{
+  "version": "0.1.0",
+  "generated_at": "2026-03-21T00:00:00Z",
+  "scenarios": [
+    "data/agent_decision_bench/scenarios/sepsis_icu.jsonl",
+    "data/agent_decision_bench/scenarios/preop_risk.jsonl",
+    "data/agent_decision_bench/scenarios/aki_eval.jsonl",
+    "data/agent_decision_bench/scenarios/gi_bleed.jsonl",
+    "data/agent_decision_bench/scenarios/icu_sedation_delirium.jsonl"
+  ],
+  "rubric": "data/agent_decision_bench/rubrics/default_scoring.json",
+  "profiles": [
+    {
+      "profile_id": "sample_full_policy",
+      "model_name": "sample-agent",
+      "prompt_policy": "full_workflow_policy_v1",
+      "benchmark_date": "2026-03-21",
+      "description": "Hand-authored full-observability benchmark runs.",
+      "tags": ["sample", "direct_runs"],
+      "run_source": {
+        "source_type": "direct_runs",
+        "path": "data/agent_decision_bench/sample_runs/mixed_agent_runs.jsonl"
+      }
+    },
+    {
+      "profile_id": "sample_tool_usage_trace",
+      "model_name": "sample-agent",
+      "prompt_policy": "tool_usage_trace_policy_v1",
+      "benchmark_date": "2026-03-21",
+      "description": "Trace-only benchmark built from ToolUsageEvent JSONL.",
+      "tags": ["sample", "trace", "tool_usage_event"],
+      "run_source": {
+        "source_type": "trace",
+        "path": "data/agent_decision_bench/sample_runs/mcp_session_events.jsonl",
+        "trace_format": "tool_usage_event",
+        "session_mapping": "data/agent_decision_bench/sample_runs/session_mapping.json"
+      }
+    },
+    {
+      "profile_id": "sample_transcript_trace",
+      "model_name": "sample-agent",
+      "prompt_policy": "mcp_transcript_policy_v1",
+      "benchmark_date": "2026-03-21",
+      "description": "Transcript-aware benchmark built from MCP-style tool/action transcript JSONL.",
+      "tags": ["sample", "trace", "mcp_transcript"],
+      "run_source": {
+        "source_type": "trace",
+        "path": "data/agent_decision_bench/sample_runs/mcp_session_transcript.jsonl",
+        "trace_format": "mcp_transcript"
+      }
+    }
+  ]
+}

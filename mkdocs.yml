@@ -80,6 +80,9 @@ nav:
     - Architecture: development/architecture.md
     - Contributing: development/contributing.md
     - Roadmap: development/roadmap.md
+    - Agent CDS Gap Plan: https://github.com/u9401066/medical-calc-mcp/blob/main/docs/AGENT_CLINICAL_DECISION_SUPPORT_GAP_AND_BREAKTHROUGH_PLAN.md
+    - Agent E2E Benchmark: https://github.com/u9401066/medical-calc-mcp/blob/main/docs/AGENT_DECISION_SUPPORT_E2E_BENCHMARK.md
+    - Benchmark Usage Guide: https://github.com/u9401066/medical-calc-mcp/blob/main/docs/BENCHMARK_USAGE.md
   - 繁體中文: zh-tw/index.md
 
 extra:
