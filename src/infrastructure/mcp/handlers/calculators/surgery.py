@@ -140,3 +140,50 @@ def register_surgery_tools(mcp: FastMCP, use_case: CalculateUseCase) -> None:
         )
         response = use_case.execute(request)
         return response.to_dict()
+
+    @mcp.tool()
+    def calculate_stras_score(
+        age_years: Annotated[int, Field(ge=18, le=120, description="年齡 Age | Unit: years | Range: 18-120")],
+        prior_stroke_or_tia: Annotated[bool, Field(description="中風或短暫性腦缺血病史 Prior stroke or TIA (+2)", default=False)],
+        acute_renal_failure: Annotated[bool, Field(description="急性腎衰竭/透析/嚴重腎功能不全 Acute renal failure or severe renal dysfunction (+2)", default=False)],
+        asa_class_4_or_5: Annotated[bool, Field(description="ASA 第4或5級 ASA physical status class 4 or 5 (+1)", default=False)],
+        urgent_or_emergency_surgery: Annotated[bool, Field(description="急診或緊急手術 Urgent or emergency surgery (+1)", default=False)],
+        hypertension: Annotated[bool, Field(description="高血壓病史 History of hypertension (+1)", default=False)],
+    ) -> dict[str, Any]:
+        """
+        🧠 STRAS: Stroke after Surgery 術後中風風險評估
+
+        用於成人非心臟手術病人，依術前臨床風險因子估計術後中風風險。
+
+        **計分方式:**
+        - 年齡 ≥70 歲: +1
+        - 中風或 TIA 病史: +2
+        - 急性腎衰竭/透析/嚴重腎功能不全: +2
+        - ASA 第 4 或 5 級: +1
+        - 急診或緊急手術: +1
+        - 高血壓病史: +1
+
+        **風險分層:**
+        - 0-1 分: 低風險
+        - 2-3 分: 中等風險
+        - 4-5 分: 高風險
+        - 6-8 分: 極高風險
+
+        **參考文獻:** Mashour GA, et al. Anesthesiology. 2017;127(4):673-683. PMID: 28051777
+
+        Returns:
+            STRAS 分數、術後中風風險分層與臨床建議
+        """
+        request = CalculateRequest(
+            tool_id="stras_score",
+            params={
+                "age_years": age_years,
+                "prior_stroke_or_tia": prior_stroke_or_tia,
+                "acute_renal_failure": acute_renal_failure,
+                "asa_class_4_or_5": asa_class_4_or_5,
+                "urgent_or_emergency_surgery": urgent_or_emergency_surgery,
+                "hypertension": hypertension,
+            },
+        )
+        response = use_case.execute(request)
+        return response.to_dict()
