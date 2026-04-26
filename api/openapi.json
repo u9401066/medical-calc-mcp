@@ -1,0 +1,745 @@
+{
+  "components": {
+    "schemas": {
+      "CalculatorInput": {
+        "description": "Generic calculator input model",
+        "example": {
+          "params": {
+            "age": 65,
+            "serum_creatinine": 1.2,
+            "sex": "female"
+          }
+        },
+        "properties": {
+          "params": {
+            "additionalProperties": true,
+            "description": "Calculator parameters",
+            "title": "Params",
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "title": "CalculatorInput",
+        "type": "object"
+      },
+      "CalculatorResponse": {
+        "description": "Calculator response model",
+        "properties": {
+          "calculator": {
+            "title": "Calculator",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "success": {
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success",
+          "calculator"
+        ],
+        "title": "CalculatorResponse",
+        "type": "object"
+      },
+      "DiscoveryResponse": {
+        "description": "Discovery response model",
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "tools": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Tools",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "tools"
+        ],
+        "title": "DiscoveryResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "description": "Health check response",
+        "properties": {
+          "calculators": {
+            "title": "Calculators",
+            "type": "integer"
+          },
+          "mode": {
+            "default": "api",
+            "title": "Mode",
+            "type": "string"
+          },
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "calculators"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "## 醫學計算器 REST API\n\n提供 152 個經過驗證的臨床評分工具，涵蓋 31 個主要專科；所有計算器均引用同儕審查研究論文。\n\n### 功能特色\n\n- 智慧工具探索 (依專科、臨床情境搜尋)\n- 循證醫學 (所有公式引用原始論文)\n- 參數驗證 (範圍檢查、必填檢查)\n\n### 使用流程\n\n1. `GET /api/v1/calculators` - 列出所有計算器\n2. `GET /api/v1/calculators/{tool_id}` - 取得計算器詳情\n3. `POST /api/v1/calculate/{tool_id}` - 執行計算\n\n### 代表性專科覆蓋\n\n- Critical Care: 18 tools (APACHE II Score, Anion Gap, CAM-ICU (Confusion Assessment Method for ICU), Clinical Pulmonary Infection Score (CPIS))\n- Geriatrics: 13 tools (4AT (Rapid Assessment Test for Delirium), Barthel Index (ADL Assessment), CFS (Clinical Frailty Scale), FRAIL Scale)\n- Cardiology: 11 tools (ACEF II Score, CHA₂DS₂-VA Score (2024 ESC), CHA₂DS₂-VASc Score, Corrected QT Interval (QTc))\n- Anesthesiology: 9 tools (ASA Physical Status Classification, Aldrete Score, Apfel Score for PONV, Mallampati Score (Modified))\n",
+    "title": "Medical Calculator API",
+    "version": "1.6.2"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "API root with service information",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Root  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Root",
+        "tags": [
+          "Info"
+        ]
+      }
+    },
+    "/api/v1/calculate/{tool_id}": {
+      "post": {
+        "description": "執行計算\n\nExecute a medical calculation with the given parameters.\n\nExample for CKD-EPI 2021:\n```json\n{\n    \"params\": {\n        \"serum_creatinine\": 1.2,\n        \"age\": 65,\n        \"sex\": \"female\"\n    }\n}\n```",
+        "operationId": "calculate_api_v1_calculate__tool_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tool_id",
+            "required": true,
+            "schema": {
+              "title": "Tool Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatorInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculatorResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate",
+        "tags": [
+          "Calculate"
+        ]
+      }
+    },
+    "/api/v1/calculators": {
+      "get": {
+        "description": "列出所有可用的計算器\n\nList all available calculators with their metadata.",
+        "operationId": "list_calculators_api_v1_calculators_get",
+        "parameters": [
+          {
+            "description": "Maximum results",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "description": "Maximum results",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Calculators",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/api/v1/calculators/{tool_id}": {
+      "get": {
+        "description": "取得特定計算器的詳細資訊\n\nGet detailed information about a specific calculator including\nparameters, references, and usage examples.",
+        "operationId": "get_calculator_info_api_v1_calculators__tool_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tool_id",
+            "required": true,
+            "schema": {
+              "title": "Tool Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Calculator Info Api V1 Calculators  Tool Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Calculator Info",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/api/v1/ckd-epi": {
+      "post": {
+        "description": "快速計算 CKD-EPI 2021 eGFR\n\nCalculate eGFR using CKD-EPI 2021 equation (race-free).",
+        "operationId": "calculate_ckd_epi_api_v1_ckd_epi_post",
+        "parameters": [
+          {
+            "description": "Serum creatinine (mg/dL)",
+            "in": "query",
+            "name": "serum_creatinine",
+            "required": true,
+            "schema": {
+              "description": "Serum creatinine (mg/dL)",
+              "exclusiveMinimum": 0,
+              "title": "Serum Creatinine",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Age in years",
+            "in": "query",
+            "name": "age",
+            "required": true,
+            "schema": {
+              "description": "Age in years",
+              "maximum": 120,
+              "minimum": 18,
+              "title": "Age",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Sex (male/female)",
+            "in": "query",
+            "name": "sex",
+            "required": true,
+            "schema": {
+              "description": "Sex (male/female)",
+              "pattern": "^(male|female)$",
+              "title": "Sex",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Calculate Ckd Epi Api V1 Ckd Epi Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate Ckd Epi",
+        "tags": [
+          "Quick Calculate"
+        ]
+      }
+    },
+    "/api/v1/contexts": {
+      "get": {
+        "description": "列出所有臨床情境\n\nList all available clinical contexts.",
+        "operationId": "list_contexts_api_v1_contexts_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Contexts Api V1 Contexts Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Contexts",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "description": "依關鍵字搜尋計算器\n\nSearch calculators by keyword (name, specialty, condition, etc.)",
+        "operationId": "search_calculators_api_v1_search_get",
+        "parameters": [
+          {
+            "description": "Search keyword",
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "description": "Search keyword",
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "description": "Maximum results",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Calculators",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/api/v1/sofa": {
+      "post": {
+        "description": "快速計算 SOFA Score\n\nCalculate Sequential Organ Failure Assessment score.",
+        "operationId": "calculate_sofa_api_v1_sofa_post",
+        "parameters": [
+          {
+            "description": "PaO2/FiO2 ratio",
+            "in": "query",
+            "name": "pao2_fio2_ratio",
+            "required": true,
+            "schema": {
+              "description": "PaO2/FiO2 ratio",
+              "title": "Pao2 Fio2 Ratio",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Platelets (×10³/µL)",
+            "in": "query",
+            "name": "platelets",
+            "required": true,
+            "schema": {
+              "description": "Platelets (×10³/µL)",
+              "title": "Platelets",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Bilirubin (mg/dL)",
+            "in": "query",
+            "name": "bilirubin",
+            "required": true,
+            "schema": {
+              "description": "Bilirubin (mg/dL)",
+              "title": "Bilirubin",
+              "type": "number"
+            }
+          },
+          {
+            "description": "MAP or vasopressor status",
+            "in": "query",
+            "name": "cardiovascular",
+            "required": true,
+            "schema": {
+              "description": "MAP or vasopressor status",
+              "title": "Cardiovascular",
+              "type": "string"
+            }
+          },
+          {
+            "description": "GCS score",
+            "in": "query",
+            "name": "gcs_score",
+            "required": true,
+            "schema": {
+              "description": "GCS score",
+              "maximum": 15,
+              "minimum": 3,
+              "title": "Gcs Score",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Creatinine (mg/dL)",
+            "in": "query",
+            "name": "creatinine",
+            "required": true,
+            "schema": {
+              "description": "Creatinine (mg/dL)",
+              "title": "Creatinine",
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Calculate Sofa Api V1 Sofa Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate Sofa",
+        "tags": [
+          "Quick Calculate"
+        ]
+      }
+    },
+    "/api/v1/specialties": {
+      "get": {
+        "description": "列出所有可用的專科分類\n\nList all available medical specialties.",
+        "operationId": "list_specialties_api_v1_specialties_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Specialties Api V1 Specialties Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Specialties",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/api/v1/specialties/{specialty}": {
+      "get": {
+        "description": "列出特定專科的所有計算器\n\nList all calculators for a specific medical specialty.",
+        "operationId": "list_by_specialty_api_v1_specialties__specialty__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "specialty",
+            "required": true,
+            "schema": {
+              "title": "Specialty",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Maximum results",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Maximum results",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoveryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List By Specialty",
+        "tags": [
+          "Discovery"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Health check endpoint for Docker/K8s",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Check",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "description": "Readiness endpoint for production traffic and deployment gates.",
+        "operationId": "readiness_check_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Readiness Check Ready Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Readiness Check",
+        "tags": [
+          "Health"
+        ]
+      }
+    }
+  }
+}
