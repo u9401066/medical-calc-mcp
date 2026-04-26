@@ -58,7 +58,7 @@ class StrasScoreCalculator(BaseCalculator):
                     ClinicalContext.PREOPERATIVE_ASSESSMENT,
                     ClinicalContext.RISK_STRATIFICATION,
                     ClinicalContext.PROGNOSIS,
-                    ClinicalContext.NEUROLOGIC_ASSESSMENT,
+                    ClinicalContext.NEUROLOGICAL_ASSESSMENT,
                 ),
                 clinical_questions=(
                     "What is this patient's stroke risk after surgery?",
