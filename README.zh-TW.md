@@ -798,13 +798,13 @@ LowLevelKey(
 
 ## 🔧 可用工具
 
-> **品質快照**: 2073 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用
+> **品質快照**: 2095 個已收集測試 | 287 個 PMID | 245 個 DOI | 100% 計算器具文獻引用
 
 ### 📑 快速導覽
 <!-- BEGIN GENERATED:CATALOG_OVERVIEW_ZH -->
 此 README 不再內嵌手動維護的完整工具清單；repository docs 與網站版都改由同一生成來源輸出。
 
-**Registry Snapshot**: 151 個計算器，涵蓋 31 個專科
+**Registry Snapshot**: 152 個計算器，涵蓋 31 個專科
 
 - [完整工具目錄](docs/CALCULATOR_CATALOG.zh-TW.md)
 - [English catalog](docs/CALCULATOR_CATALOG.md)
@@ -817,9 +817,9 @@ LowLevelKey(
 | 重症醫學科 | 18 |
 | 老年醫學科 | 13 |
 | 心臟科 | 11 |
+| 麻醉科 | 9 |
 | 急診醫學科 | 9 |
 | 精神科 | 9 |
-| 麻醉科 | 8 |
 
 如需直接檢視 live registry，也可執行 `python scripts/count_tools.py`、讀取 `calculator://list`，或在 MCP client 呼叫 `list_calculators()`。
 <!-- END GENERATED:CATALOG_OVERVIEW_ZH -->

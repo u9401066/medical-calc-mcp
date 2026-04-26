@@ -26,7 +26,7 @@ Health and docs remain available at the server root: `/health`, `/ready`, `/docs
 
 ## 醫學計算器 REST API
 
-提供 151 個經過驗證的臨床評分工具，涵蓋 31 個主要專科；所有計算器均引用同儕審查研究論文。
+提供 152 個經過驗證的臨床評分工具，涵蓋 31 個主要專科；所有計算器均引用同儕審查研究論文。
 
 ### 功能特色
 
@@ -45,7 +45,7 @@ Health and docs remain available at the server root: `/health`, `/ready`, `/docs
 - Critical Care: 18 tools (APACHE II Score, Anion Gap, CAM-ICU (Confusion Assessment Method for ICU), Clinical Pulmonary Infection Score (CPIS))
 - Geriatrics: 13 tools (4AT (Rapid Assessment Test for Delirium), Barthel Index (ADL Assessment), CFS (Clinical Frailty Scale), FRAIL Scale)
 - Cardiology: 11 tools (ACEF II Score, CHA₂DS₂-VA Score (2024 ESC), CHA₂DS₂-VASc Score, Corrected QT Interval (QTc))
-- Emergency Medicine: 9 tools (Centor Score (Modified/McIsaac), Glasgow Coma Scale (GCS), HEART Score, NEWS2 (National Early Warning Score 2))
+- Anesthesiology: 9 tools (ASA Physical Status Classification, Aldrete Score, Apfel Score for PONV, Mallampati Score (Modified))
 
 ## Endpoints
 

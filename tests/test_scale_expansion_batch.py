@@ -112,4 +112,4 @@ def test_registry_includes_batch_expansion_tools() -> None:
     assert "phq2" in tool_ids
     assert "mini_cog" in tool_ids
     assert "palliative_prognostic_index" in tool_ids
-    assert len(tool_ids) == 151
+    assert len(tool_ids) == 152

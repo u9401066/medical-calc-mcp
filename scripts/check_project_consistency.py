@@ -90,20 +90,20 @@ IMPLEMENTED_GUIDELINE_TOOL_ALIASES: dict[str, str] = {
 
 DOC_EXPECTATIONS: dict[str, list[str]] = {
     "README.md": [
-        "Registry Snapshot**: 151 calculators across 31 specialties",
+        "Registry Snapshot**: 152 calculators across 31 specialties",
         "### Generated calculator catalog",
     ],
     "README.zh-TW.md": [
-        "Registry Snapshot**: 151 個計算器，涵蓋 31 個專科",
+        "Registry Snapshot**: 152 個計算器，涵蓋 31 個專科",
         "### 自動生成工具目錄",
     ],
     "docs_site/index.md": [
-        "151 Validated Medical Calculators for AI Agents",
-        "provides **151 validated medical calculators**",
-        "**151 Clinical Calculators**",
+        "152 Validated Medical Calculators for AI Agents",
+        "provides **152 validated medical calculators**",
+        "**152 Clinical Calculators**",
     ],
     "docs_site/development/roadmap.md": [
-        "- ✅ 151 Medical Calculators",
+        "- ✅ 152 Medical Calculators",
     ],
 }
 
@@ -235,14 +235,14 @@ def validate_docs(stats: RegistryStats, version: str, check_tests: bool) -> list
     """Validate core documentation snapshots against implementation stats."""
     issues: list[str] = []
 
-    if stats.calculator_count != 151:
-        issues.append(f"Expected 151 calculators, found {stats.calculator_count}.")
+    if stats.calculator_count != 152:
+        issues.append(f"Expected 152 calculators, found {stats.calculator_count}.")
     if stats.specialty_count != 31:
         issues.append(f"Expected 31 specialties, found {stats.specialty_count}.")
-    if stats.unique_pmids != 286:
-        issues.append(f"Expected 286 unique PMIDs, found {stats.unique_pmids}.")
-    if stats.unique_dois != 244:
-        issues.append(f"Expected 244 unique DOIs, found {stats.unique_dois}.")
+    if stats.unique_pmids != 287:
+        issues.append(f"Expected 287 unique PMIDs, found {stats.unique_pmids}.")
+    if stats.unique_dois != 245:
+        issues.append(f"Expected 245 unique DOIs, found {stats.unique_dois}.")
     if stats.tools_without_references:
         issues.append("Calculators without references: " + ", ".join(stats.tools_without_references))
 
@@ -260,8 +260,8 @@ def validate_docs(stats: RegistryStats, version: str, check_tests: bool) -> list
     if check_tests:
         collected_tests = collect_test_count()
         dynamic_expectations = {
-            "README.md": f"Quality Snapshot**: {collected_tests} collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage",
-            "README.zh-TW.md": f"品質快照**: {collected_tests} 個已收集測試 | 244 個 PMID | 205 個 DOI | 100% 計算器具文獻引用",
+            "README.md": f"Quality Snapshot**: {collected_tests} collected tests | 287 PMIDs | 245 DOIs | 100% citation coverage",
+            "README.zh-TW.md": f"品質快照**: {collected_tests} 個已收集測試 | 287 個 PMID | 245 個 DOI | 100% 計算器具文獻引用",
             "docs_site/index.md": f"tests-{collected_tests}%20collected-brightgreen.svg",
             "docs_site/development/roadmap.md": f"- ✅ {collected_tests:,} Collected Tests",
         }

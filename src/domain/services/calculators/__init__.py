@@ -227,6 +227,7 @@ from .sofa_score import SofaScoreCalculator
 from .spesi import SimplifiedPESICalculator
 from .stone_score import STONEScoreCalculator
 from .stop_bang import StopBangCalculator
+from .stras_score import StrasScoreCalculator
 from .tbsa import TbsaCalculator
 
 # Phase 13: Additional Scores
@@ -280,6 +281,7 @@ __all__ = [
     "KdigoAkiCalculator",  # Phase 8
     # Surgery/Perioperative
     "CapriniVteCalculator",
+    "StrasScoreCalculator",
     # Pulmonology (additional)
     "PsiPortCalculator",
     # Phase 9: Acid-Base & Electrolytes
@@ -473,6 +475,7 @@ CALCULATORS: list[type[BaseCalculator]] = [
     MeldScoreCalculator,
     # Phase 7: Surgery/Perioperative & Pulmonology
     CapriniVteCalculator,
+    StrasScoreCalculator,
     PsiPortCalculator,
     # Phase 8: Guideline-Recommended Tools
     ChildPughCalculator,
