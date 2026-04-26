@@ -64,7 +64,7 @@ A DDD-architected medical calculator service providing clinical scoring tools fo
 - **🛡️ Smart Parameter Matching**: Alias support, fuzzy matching, and typo tolerance
 - **⚠️ Boundary Validation**: Literature-backed clinical range checking with automatic warnings
 - **🏗️ Clean DDD Architecture**: Onion architecture with clear separation of concerns
-- **📚 Evidence-Based**: All 151 calculators cite peer-reviewed research (100% coverage, Vancouver style)
+- **📚 Evidence-Based**: All 152 calculators cite peer-reviewed research (100% coverage, Vancouver style)
 - **🔒 Type Safe**: Full Python type hints with dataclass entities
 - **🌐 Bilingual**: Chinese/English documentation and tool descriptions
 
@@ -1269,7 +1269,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 
 ## 🔧 Available Tools
 
-> **Quality Snapshot**: 2073 collected tests | 244 PMIDs | 205 DOIs | 100% citation coverage
+> **Quality Snapshot**: 2095 collected tests | 287 PMIDs | 245 DOIs | 100% citation coverage
 >
 > 📋 **[See Full Roadmap →](ROADMAP.md)** | **[Contributing Guide →](CONTRIBUTING.md)**
 
@@ -1277,7 +1277,7 @@ Agent: calculate_sofa(pao2_fio2_ratio=200, platelets=80, bilirubin=2.5, ...)
 <!-- BEGIN GENERATED:CATALOG_OVERVIEW -->
 This README no longer carries a hand-maintained calculator inventory. The same generated source now feeds repository docs and MkDocs pages.
 
-**Registry Snapshot**: 151 calculators across 31 specialties
+**Registry Snapshot**: 152 calculators across 31 specialties
 
 - [Full calculator catalog](docs/CALCULATOR_CATALOG.md)
 - [Traditional Chinese catalog](docs/CALCULATOR_CATALOG.zh-TW.md)
@@ -1290,9 +1290,9 @@ This README no longer carries a hand-maintained calculator inventory. The same g
 | Critical Care | 18 |
 | Geriatrics | 13 |
 | Cardiology | 11 |
+| Anesthesiology | 9 |
 | Emergency Medicine | 9 |
 | Psychiatry | 9 |
-| Anesthesiology | 8 |
 
 You can still inspect the live registry via `python scripts/count_tools.py`, `calculator://list`, or `list_calculators()` from your MCP client.
 <!-- END GENERATED:CATALOG_OVERVIEW -->

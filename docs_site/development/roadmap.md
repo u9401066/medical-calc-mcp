@@ -4,8 +4,8 @@ See the full [ROADMAP.md](https://github.com/u9401066/medical-calc-mcp/blob/main
 
 ## Current Status (v1.6.2)
 
-- ✅ 151 Medical Calculators
-- ✅ 2,073 Collected Tests
+- ✅ 152 Medical Calculators
+- ✅ 2,095 Collected Tests
 - ✅ MCP + REST API
 - ✅ Docker support
 - ✅ Security features (rate limiting, API key)

@@ -3,13 +3,13 @@
 > Generated from the live calculator registry. Do not edit manually.
 > Regenerate with `uv run python scripts/generate_tool_catalog_docs.py` (v1.6.2).
 
-This snapshot contains **151 calculators** across **31 primary specialties**.
+This snapshot contains **152 calculators** across **31 primary specialties**.
 
 ## Specialty Summary
 
 | Specialty | Tools | Sample tool IDs |
 |-----------|------:|-----------------|
-| Anesthesiology | 8 | `aldrete_score`, `apfel_ponv`, `asa_physical_status` |
+| Anesthesiology | 9 | `aldrete_score`, `apfel_ponv`, `asa_physical_status` |
 | Cardiology | 11 | `acef_ii`, `chads2_va`, `chads2_vasc` |
 | Critical Care | 18 | `anion_gap`, `apache_ii`, `cam_icu` |
 | Dermatology | 5 | `bsa_dermatology`, `dlqi`, `pasi` |
@@ -52,6 +52,7 @@ This snapshot contains **151 calculators** across **31 primary specialties**.
 | `mallampati_score` | Mallampati Score (Modified) | Anesthesiology | Predict difficult intubation based on oropharyngeal visualization | 2 |
 | `rcri` | Revised Cardiac Risk Index (Lee Index) | Anesthesiology | Estimate risk of major cardiac complications after non-cardiac surgery | 2 |
 | `stop_bang` | STOP-BANG Questionnaire | Anesthesiology | Screen for obstructive sleep apnea risk in surgical patients | 2 |
+| `stras_score` | Stroke after Surgery (STRAS) Score | Anesthesiology | Estimate postoperative stroke risk after non-cardiac surgery | 1 |
 | `transfusion_calc` | Transfusion Volume Calculator | Anesthesiology | Calculate blood product volume needed for target Hct/Hgb/Plt | 4 |
 | `acef_ii` | ACEF II Score | Cardiology | Predict cardiac surgery mortality risk | 2 |
 | `chads2_va` | CHA₂DS₂-VA Score (2024 ESC) | Cardiology | Estimate stroke risk in AF using 2024 ESC sex-neutral criteria for anticoagulation decisions | 2 |
@@ -199,7 +200,7 @@ This snapshot contains **151 calculators** across **31 primary specialties**.
 
 ## By Specialty
 
-### Anesthesiology (8)
+### Anesthesiology (9)
 
 | Tool ID | Name | Purpose |
 |--------|------|---------|
@@ -210,6 +211,7 @@ This snapshot contains **151 calculators** across **31 primary specialties**.
 | `mallampati_score` | Mallampati Score (Modified) | Predict difficult intubation based on oropharyngeal visualization |
 | `rcri` | Revised Cardiac Risk Index (Lee Index) | Estimate risk of major cardiac complications after non-cardiac surgery |
 | `stop_bang` | STOP-BANG Questionnaire | Screen for obstructive sleep apnea risk in surgical patients |
+| `stras_score` | Stroke after Surgery (STRAS) Score | Estimate postoperative stroke risk after non-cardiac surgery |
 | `transfusion_calc` | Transfusion Volume Calculator | Calculate blood product volume needed for target Hct/Hgb/Plt |
 
 ### Cardiology (11)

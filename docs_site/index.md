@@ -2,12 +2,12 @@
 
 <div align="center">
 
-🏥 **151 Validated Medical Calculators for AI Agents**
+🏥 **152 Validated Medical Calculators for AI Agents**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP SDK](https://img.shields.io/badge/MCP-FastMCP-green.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/u9401066/medical-calc-mcp/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-2073%20collected-brightgreen.svg)](https://github.com/u9401066/medical-calc-mcp)
+[![Tests](https://img.shields.io/badge/tests-2095%20collected-brightgreen.svg)](https://github.com/u9401066/medical-calc-mcp)
 
 </div>
 
@@ -15,7 +15,7 @@
 
 ## 🎯 What is this?
 
-**Medical-Calc-MCP** is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides **151 validated medical calculators** for AI agents like Claude, GPT, and other LLMs.
+**Medical-Calc-MCP** is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides **152 validated medical calculators** for AI agents like Claude, GPT, and other LLMs.
 
 !!! warning "Clinical Disclaimer"
     This tool is for educational and research purposes. Always verify calculations with clinical judgment and institutional protocols.
@@ -24,7 +24,7 @@
 
 <div class="grid cards" markdown>
 
-- :material-calculator:{ .lg .middle } **151 Clinical Calculators**
+- :material-calculator:{ .lg .middle } **152 Clinical Calculators**
 
     ---
 

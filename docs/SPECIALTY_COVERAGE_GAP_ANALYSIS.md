@@ -23,13 +23,13 @@
 
 | Specialty | Tool Count | Example Tool IDs |
 |-----------|-----------:|------------------|
-| Internal Medicine | 83 | 4ts_hit, aa_gradient, abcd2, aims65, anion_gap |
+| Internal Medicine | 84 | 4ts_hit, aa_gradient, abcd2, aims65, anion_gap |
 | Critical Care | 72 | 4ts_hit, aa_gradient, acef_ii, aims65, aldrete_score |
 | Emergency Medicine | 61 | aa_gradient, abcd2, aims65, anion_gap, apache_ii |
-| Anesthesiology | 36 | aa_gradient, acef_ii, aldrete_score, anion_gap, apache_ii |
+| Anesthesiology | 37 | aa_gradient, acef_ii, aldrete_score, anion_gap, apache_ii |
 | Geriatrics | 29 | barthel_index, braden_scale, cfs, charlson_comorbidity_index, cockcroft_gault |
-| Surgery | 26 | 4ts_hit, acef_ii, aldrete_score, apfel_ponv, asa_physical_status |
-| Neurology | 23 | abcd2, barthel_index, cam_icu, chads2_va, chads2_vasc |
+| Surgery | 27 | 4ts_hit, acef_ii, aldrete_score, apfel_ponv, asa_physical_status |
+| Neurology | 24 | abcd2, barthel_index, cam_icu, chads2_va, chads2_vasc |
 | Family Medicine | 21 | athens_insomnia_scale, audit, audit_c, berlin_questionnaire, cage |
 | Psychiatry | 21 | athens_insomnia_scale, audit, audit_c, cage, cam_icu |
 | Pulmonology | 21 | aa_gradient, apache_ii, berlin_questionnaire, cpis, curb65 |

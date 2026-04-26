@@ -3,13 +3,13 @@
 > 由目前 registry 自動產生，請勿手動編輯。
 > 重新產生指令：`uv run python scripts/generate_tool_catalog_docs.py` (v1.6.2)。
 
-此快照包含 **151 個計算器**，涵蓋 **31 個主要專科**。
+此快照包含 **152 個計算器**，涵蓋 **31 個主要專科**。
 
 ## 專科摘要
 
 | 專科 | 工具數 | 範例 tool ID |
 |------|------:|--------------|
-| 麻醉科 | 8 | `aldrete_score`, `apfel_ponv`, `asa_physical_status` |
+| 麻醉科 | 9 | `aldrete_score`, `apfel_ponv`, `asa_physical_status` |
 | 心臟科 | 11 | `acef_ii`, `chads2_va`, `chads2_vasc` |
 | 重症醫學科 | 18 | `anion_gap`, `apache_ii`, `cam_icu` |
 | 皮膚科 | 5 | `bsa_dermatology`, `dlqi`, `pasi` |
@@ -52,6 +52,7 @@
 | `mallampati_score` | Mallampati Score (Modified) | 麻醉科 | Predict difficult intubation based on oropharyngeal visualization | 2 |
 | `rcri` | Revised Cardiac Risk Index (Lee Index) | 麻醉科 | Estimate risk of major cardiac complications after non-cardiac surgery | 2 |
 | `stop_bang` | STOP-BANG Questionnaire | 麻醉科 | Screen for obstructive sleep apnea risk in surgical patients | 2 |
+| `stras_score` | Stroke after Surgery (STRAS) Score | 麻醉科 | Estimate postoperative stroke risk after non-cardiac surgery | 1 |
 | `transfusion_calc` | Transfusion Volume Calculator | 麻醉科 | Calculate blood product volume needed for target Hct/Hgb/Plt | 4 |
 | `acef_ii` | ACEF II Score | 心臟科 | Predict cardiac surgery mortality risk | 2 |
 | `chads2_va` | CHA₂DS₂-VA Score (2024 ESC) | 心臟科 | Estimate stroke risk in AF using 2024 ESC sex-neutral criteria for anticoagulation decisions | 2 |
@@ -199,7 +200,7 @@
 
 ## 依專科分組
 
-### 麻醉科 (8)
+### 麻醉科 (9)
 
 | Tool ID | 名稱 | 用途 |
 |--------|------|------|
@@ -210,6 +211,7 @@
 | `mallampati_score` | Mallampati Score (Modified) | Predict difficult intubation based on oropharyngeal visualization |
 | `rcri` | Revised Cardiac Risk Index (Lee Index) | Estimate risk of major cardiac complications after non-cardiac surgery |
 | `stop_bang` | STOP-BANG Questionnaire | Screen for obstructive sleep apnea risk in surgical patients |
+| `stras_score` | Stroke after Surgery (STRAS) Score | Estimate postoperative stroke risk after non-cardiac surgery |
 | `transfusion_calc` | Transfusion Volume Calculator | Calculate blood product volume needed for target Hct/Hgb/Plt |
 
 ### 心臟科 (11)
